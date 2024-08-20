@@ -1,0 +1,182 @@
+/////////////////////////////////
+///Tutorial 09 - GIRAFFE 2.0/////
+/////////////////////////////////
+
+//Creation of nodes
+Nodes	51
+//Number	X	Y	Z
+Node	1	0	0	0.0
+Node	2	0	0	0.02
+Node	3	0	0	0.04
+Node	4	0	0	0.06
+Node	5	0	0	0.08
+Node	6	0	0	0.1
+Node	7	0	0	0.12
+Node	8	0	0	0.14
+Node	9	0	0	0.16
+Node	10	0	0	0.18
+Node	11	0	0	0.2
+Node	12	0	0	0.22
+Node	13	0	0	0.24
+Node	14	0	0	0.26
+Node	15	0	0	0.28
+Node	16	0	0	0.3
+Node	17	0	0	0.32
+Node	18	0	0	0.34
+Node	19	0	0	0.36
+Node	20	0	0	0.38
+Node	21	0	0	0.4
+Node	22	0	0	0.42
+Node	23	0	0	0.44
+Node	24	0	0	0.46
+Node	25	0	0	0.48
+Node	26	0	0	0.5
+Node	27	0	0	0.52
+Node	28	0	0	0.54
+Node	29	0	0	0.56
+Node	30	0	0	0.58
+Node	31	0	0	0.6
+Node	32	0	0	0.62
+Node	33	0	0	0.64
+Node	34	0	0	0.66
+Node	35	0	0	0.68
+Node	36	0	0	0.7
+Node	37	0	0	0.72
+Node	38	0	0	0.74
+Node	39	0	0	0.76
+Node	40	0	0	0.78
+Node	41	0	0	0.8
+Node	42	0	0	0.82
+Node	43	0	0	0.84
+Node	44	0	0	0.86
+Node	45	0	0	0.88
+Node	46	0	0	0.9
+Node	47	0	0	0.92
+Node	48	0	0	0.94
+Node	49	0	0	0.96
+Node	50	0	0	0.98
+Node	51	0	0	1.0
+
+
+//Creation of node sets
+NodeSets	2
+//Point A
+NodeSet	1	Nodes	1	List	1
+//Point B
+NodeSet	2	Nodes	1	List	51
+
+//Creation of elements
+Elements	25									
+Beam_1	1	Mat	1	Sec	1	CS	1	Nodes 	1	2	3
+Beam_1	2	Mat	1	Sec	1	CS	1	Nodes 	3	4	5
+Beam_1	3	Mat	1	Sec	1	CS	1	Nodes 	5	6	7
+Beam_1	4	Mat	1	Sec	1	CS	1	Nodes 	7	8	9
+Beam_1	5	Mat	1	Sec	1	CS	1	Nodes 	9	10	11
+Beam_1	6	Mat	1	Sec	1	CS	1	Nodes 	11	12	13
+Beam_1	7	Mat	1	Sec	1	CS	1	Nodes 	13	14	15
+Beam_1	8	Mat	1	Sec	1	CS	1	Nodes 	15	16	17
+Beam_1	9	Mat	1	Sec	1	CS	1	Nodes 	17	18	19
+Beam_1	10	Mat	1	Sec	1	CS	1	Nodes 	19	20	21
+Beam_1	11	Mat	1	Sec	1	CS	1	Nodes 	21	22	23
+Beam_1	12	Mat	1	Sec	1	CS	1	Nodes 	23	24	25
+Beam_1	13	Mat	1	Sec	1	CS	1	Nodes 	25	26	27
+Beam_1	14	Mat	1	Sec	1	CS	1	Nodes 	27	28	29
+Beam_1	15	Mat	1	Sec	1	CS	1	Nodes 	29	30	31
+Beam_1	16	Mat	1	Sec	1	CS	1	Nodes 	31	32	33
+Beam_1	17	Mat	1	Sec	1	CS	1	Nodes 	33	34	35
+Beam_1	18	Mat	1	Sec	1	CS	1	Nodes 	35	36	37
+Beam_1	19	Mat	1	Sec	1	CS	1	Nodes 	37	38	39
+Beam_1	20	Mat	1	Sec	1	CS	1	Nodes 	39	40	41
+Beam_1	21	Mat	1	Sec	1	CS	1	Nodes 	41	42	43
+Beam_1	22	Mat	1	Sec	1	CS	1	Nodes 	43	44	45
+Beam_1	23	Mat	1	Sec	1	CS	1	Nodes 	45	46	47
+Beam_1	24	Mat	1	Sec	1	CS	1	Nodes 	47	48	49
+Beam_1	25	Mat	1	Sec	1	CS	1	Nodes 	49	50	51
+
+
+//Creation of materials
+Materials	1
+Hooke	1	E	1e7	Nu	0.3	Rho	2000
+
+//Creation of sections
+Sections	1
+Rectangle	1	B	0.1	H	0.1
+
+//Creation of coordinate systems
+CoordinateSystems	1
+CS	1	E1	1	0	0	E3	0	0	1
+
+//Creation of the solution steps
+SolutionSteps	2
+//First step: Pertubation force at the tip of the beam
+Static 1
+EndTime 1
+TimeStep	0.1
+MaxTimeStep	0.1
+MinTimeStep	0.01
+MaxIt	20
+MinIt	3
+ConvIncrease	4
+IncFactor	1.0
+Sample	2
+//Second step: Compression force applied at the tip of the beam
+Static	2
+EndTime	2
+TimeStep	0.1
+MaxTimeStep	0.1
+MinTimeStep	0.01
+MaxIt	20
+MinIt	3
+ConvIncrease	4
+IncFactor	1.0
+Sample	2
+
+//Creation of concomitant solution
+ConcomitantSolution 
+Sample 3 	BoolTable 0 1 
+Modal	NumberModes	10	Tolerance 1E-6
+
+//Creation of loads
+Loads	2
+NodalLoad	1	NodeSet	2	CS	1	NTimes	2
+//Time FX FY FZ MX MY MZ
+0	0	0	0	0	0	0
+1	0	1	0	0	0	0
+NodalLoad	2	NodeSet	2	CS	1	NTimes	2
+//Time FX FY FZ MX MY MZ
+1	0	0	0	0	0	0
+2	0	0	-206	0	0	0
+
+
+//Creation of constraints
+Constraints	1
+NodalConstraint	1	NodeSet	1
+	UX		BoolTable	1 
+	UY		BoolTable	1 
+	UZ		BoolTable	1 
+	ROTX	BoolTable	1
+	ROTY	BoolTable	1
+	ROTZ	BoolTable	1
+
+//Creation of solver options
+SolverOptions
+Processors	1	LinSys	Direct
+
+//Creation of monitors
+Monitor	Sample	1
+MonitorNodes	1	51		
+
+//Cration of post files
+PostFiles	
+MagFactor	1
+WriteMesh	1
+WriteRenderMesh	1
+WriteRigidContactSurfaces	0
+WriteFlexibleContactSurfaces	0
+WriteForces	0
+WriteConstraints	0
+WriteSpecialConstraints	0
+WriteContactForces	0
+WriteRenderRigidBodies	0
+WriteRenderParticles	0
+
