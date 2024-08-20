@@ -1,4 +1,5 @@
-![alt text](https://github.com/[username]/[reponame]/blob/[branch]/image.jpg?raw=true)
+![alt text](https://github.com/alfredogneto/GIRAFFE/images/logo.png?raw=true)
+
 ==============================
 # GIRAFFE
 Generic Interface Readilly Accessible for Finite Elements
