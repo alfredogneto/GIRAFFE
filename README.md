@@ -1,4 +1,4 @@
-![alt text](https://github.com/alfredogneto/GIRAFFE/images/logo.png?raw=true)
+![alt text](https://github.com/alfredogneto/GIRAFFE/images/Giraffe.png?raw=true)
 
 ==============================
 # GIRAFFE
