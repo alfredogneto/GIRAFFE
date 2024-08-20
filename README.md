@@ -1,4 +1,4 @@
-![alt text](https://github.com/alfredogneto/GIRAFFE/images/Giraffe.png?raw=true)
+https://github.com/alfredogneto/GIRAFFE/images/Giraffe.png
 
 ==============================
 # GIRAFFE
@@ -16,10 +16,6 @@ Generic Interface Readilly Accessible for Finite Elements
 
 #  Introduction
 
-**GiraffeMoor** is a preprocessor tool for the FEM platform **Giraffe** (acronym of “Generic Interface Readily Accessible for Finite Elements”), 
-started by [Prof. Alfredo Gay Neto](http://sites.poli.usp.br/p/alfredo.gay/#me-section) at the [University of São Paulo](https://www5.usp.br/#english), Brazil. 
-The main goal of **GiraffeMoor** is to generate FEM models of mooring systems with few information and invoke Giraffe to solve it. 
-**GiraffeMoor** also provides a summary of the mooring system, based on its statics. 
 
 
 # Dependencies
