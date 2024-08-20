@@ -1,0 +1,91 @@
+#pragma once
+#include "mkl.h"
+#include "mkl_blas.h"
+#include "mkl_types.h"
+#include "mkl_lapack.h"
+#include "mkl_dss.h"
+#include "stdio.h"
+#include <cmath>
+#include "arpack.h"
+
+class Matrix
+{
+public:
+	//Constructors and Destrutor
+	Matrix(void);													//Construtor Padrão
+	Matrix(long lines);												//Construtor de matriz coluna
+	Matrix(long lines, long columns);								//Construtor Paramétrico
+	Matrix(const Matrix &copied);									//Construtor de cópia
+	~Matrix(void);													//Destrutor Padrão
+
+	//Gets and Sets
+	long getLines();												//Retorna o número de linhas da matriz
+	long getColumns();												//Retorna o número de colunas da matriz 
+
+	void setLines(long value);										//Define o número de linhas da matriz 
+	void setColumns(long value);									//Define o número de colunas da matriz 
+	double* getMatrix();											//Retorna o endereço de uma matriz
+	
+	//General Functions
+	void print();													//Imprime a matriz no console
+	void fprint(char* s);											//Imprime a matriz em um arquivo de texto, cujo nome está no char s
+	bool alloc();													//Aloca a matriz
+	bool flush();													//Libera a memória ocupada pela matriz
+	void clear();													//Zera a matriz, mantando as dimensões atuais
+
+	//Operators
+	void MatrixToPtr(double** ptr, int order);						//Salva ponteiro double** em ptr
+	void PtrToMatrix(double** ptr, int order);						//Salva na matrix o conteúdo do double**
+	void PtrToMatrix(double** ptr, int lines, int columns);			//Salva na matrix o conteúdo do double**
+	double &operator() (long line, long column);					//Retorno do valor na posição especificada
+	Matrix &operator = (Matrix const &matrix1);						//Operador de Atribuição
+
+	///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	double*  m_matrix;												//Matriz unidimensional
+	long     m_lines;												//Número de linhas
+	long     m_columns;												//Número de colunas
+	long	 m_alloced_lines;										//Número de linhas atualmente alocadas
+	bool	 m_lines_deleted;										//Flag que indica se as linhas foram desalocadas				
+};
+
+Matrix operator + (Matrix &matrix1, Matrix &matrix2);				//Operador Soma
+Matrix operator - (Matrix &matrix1, Matrix &matrix2);				//Operador Subtração
+Matrix operator * (Matrix &matrix1, Matrix &matrix2);				//Operador Multiplicacao de matrizes
+Matrix operator * (double escalar, Matrix &matrix1);				//Operador Multiplicacao por escalar
+Matrix operator * (Matrix &matrix1, double escalar);				//Operador Multiplicacao por escalar
+bool operator == (Matrix &matrix1, Matrix &matrix2);				//Verificação de igualdade
+bool operator != (Matrix &matrix1, Matrix &matrix2);				//Verificação de inegualdade
+double dot(Matrix &matrix1, Matrix &matrix2);						//Produto escalar entre dois vetores
+Matrix cross(Matrix &matrix1, Matrix &matrix2);						//Operador produto vetorial entre duas matrizes
+Matrix dyadic(Matrix &matrix1, Matrix &matrix2);					//Operador produto vetorial entre duas matrizes
+Matrix skew(Matrix &matrix1);										//Operador skew de um vetor
+Matrix axial(Matrix &matrix1);										//Operador axial de um vetor
+Matrix fullsystem(Matrix &A, Matrix &b, int *flag_error);			//Resolve o sistema linear da forma Ax=b
+double norm(Matrix &matrix1);										//Retorna a norma de um vetor
+double norm4(Matrix &matrix1);										//Retorna a norma de um vetor considerando somente os 4 primeiros graus de liberdade
+Matrix transp(Matrix &matrix1);										//Retorna a transposta de uma matriz
+void zeros(Matrix* matrix1);										//Zera a matriz
+Matrix invert2x2(Matrix &matrix);									//Inverte uma matriz 2x2
+Matrix invert3x3(Matrix &matrix);									//Inverte uma matriz 3x3
+Matrix invert4x4(Matrix &matrix);									//Inverte uma matriz 4x4
+Matrix invert5x5(Matrix &matrix);									//Inverte uma matriz 5x5
+Matrix invert6x6(Matrix &matrix);									//Inverte uma matriz 6x6	
+Matrix invert(Matrix &matrix);										//Inverte uma matriz de 2x2 a 6x6 escolhendo automaticamente a função correta
+
+int fulleigen1(Matrix &A, Matrix &P, Matrix &D, double abstol);		//Calcula os autovalores e autovetores de uma matriz simétrica
+int fulleigen2(Matrix &A, Matrix &P, Matrix &D);					//Calcula os autovalores e autovetores de uma matriz simétrica
+double mineigen(Matrix &A, Matrix &P, Matrix &D, double abstol);	//Calcula o menor autovalor de uma matriz simétrica
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+Matrix V(Matrix x, Matrix t, double alpha_escalar);					//Função para o cálculo do operador V (para montagem da matriz de rigidez geométrica)
+Matrix d_V(Matrix x, Matrix d_x, Matrix t, double alpha_escalar);	//Função para o cálculo do operador d_V (para montagem da matriz de rigidez geométrica)
+
+double ArcReduction(double arc);									//Calcula redução à primeira volta [-pi,pi]
+double ArcReduction2p(double arc);									//Calcula redução à primeira volta [0,2*pi]
+//Funções para conversar com o Mathematica
+Matrix List(double a, double b, double c);							//Retorna um vetor com esses componentes a,b,c
+double Power(double a, double b);
+double Power(Matrix a, double b);
+double Sin(double a);
+double Cos(double a);
+Matrix Dot(Matrix &matrix1, Matrix &matrix2);						//Produto de matrizes
+double operator + (double a, Matrix &matrix2);						//Operador Soma de matriz com um elemento e um vetor
