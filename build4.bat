@@ -3,9 +3,5 @@ setx GIRAFFE_PATH %%GIRAFFE_INSTALL%%\arpack-ng_x64-windows\bin\;%%GIRAFFE_INSTA
 setx MKL_PATH "C:\Program Files (x86)\Intel\oneAPI\mkl\latest\bin;C:\Program Files (x86)\Intel\oneAPI\compiler\latest\bin"
 setx ADD_PATH %%GIRAFFE_PATH%%;%%MKL_PATH%%;
 
-::Include in the system PATH:
-::..\dependencies\vcpkg\packages\arpack-ng_x64-windows\bin\
-::..\dependencies\vcpkg\packages\lapack-reference_x64-windows\bin\
-::..\dependencies\vcpkg\packages\openblas_x64-windows\bin\
-::..\dependencies\vcpkg\packages\vcpkg-gfortran_x64-windows\bin\
-::C:\Program Files (x86)\Intel\oneAPI\mkl\2024.2\bin
+::The last step is to include in the system PATH the environment variable %ADD_PATH%.
+::This is not done automatically by this script routine.
