@@ -1,43 +1,45 @@
-https://github.com/alfredogneto/GIRAFFE/images/Giraffe.png
 
-==============================
-# GIRAFFE
-Generic Interface Readilly Accessible for Finite Elements
+# GIRAFFE: Generic Interface Readilly Accessible for Finite Elements
+<img src="./images/Giraffe.png" width="300">
 
 **Table of contents**
-
-- [:giraffe: GiraffeMoor :anchor:](#giraffe-giraffemoor-anchor)
 - [Introduction](#introduction)
 - [Dependencies](#dependencies)
 - [Building and compiling](#building-and-compiling)
 - [Executing](#executing)
-- [User defined language for Notepad++](#user-defined-language-for-notepad)
-- [Some disclaimers...](#some-disclaimers)
+- [Documentation](#documentation)
 
 #  Introduction
+**Giraffe** is the acronym of “Generic Interface Readily Accessible for Finite Elements”. It is a platform coded using C++ language, with the objective of generating a base-interface to be used by researchers, to implement their own finite element formulations. It was already used for structural problems, including translational and rotational degrees of freedom. The platform is coded in a way that permits embracing new elements, new contact formulations, new constraint equations, among other features. With that aim, the **Giraffe** code was started in 2014 by Prof. Alfredo Gay Neto, at University of Sao Paulo, Brazil.
 
+**Giraffe** has started as a generalization of a previous-developed finite element code, named “FemCable”, which had the objective of simulating offshore structures: risers for oil exploitation. It had implementations of geometric nonlinear beam elements and classical node to surface contact formulation. Since a natural expansion required including new contact models, new structural elements and other resources, Giraffe was designed to have all the models included in “FemCable”. Furthermore, it was thought to embrace easy inclusion of new resources, using object orientation programming. Giraffe is under continuous development by Prof. Alfredo Gay Neto and co-workers.
 
+**Giraffe** has resources to straightforwardly switch on/off boundary conditions, loads, joints, contacts, etc. This leads to the possibility of creating scenarios where load sequence is an issue. Furthermore, it provides numerical strategies to achieve solution of challenging nonlinear problems. Also, post-processing possibilities are convenient, with an organized set of post files, which is automatically generated for using [Paraview](https://www.paraview.org/). Giraffe has a proper input file format, documented in its [user's manual](/documentation/Giraffe%20User's%20Manual%20v2.0.124.pdf).
 
 # Dependencies
 
-**GiraffeMoor** only depends on [Intel oneMKL](https://software.intel.com/content/www/us/en/develop/documentation/get-started-with-mkl-for-dpcpp/top.html). 
-
-It is part of the [Intel oneAPI](https://software.intel.com/content/www/us/en/develop/tools/oneapi.html#gs.409kvt). Just make sure to get **`version 2021.3.0`** or later.  There is no need to install the plugin for Visual Studio, the linking will be done by the CMake file. 
-
-
+ **Giraffe** needs:
+- [Intel oneMKL](https://www.intel.com/content/www/us/en/developer/tools/oneapi/onemkl-download.html), as part of the [Intel oneAPI](https://www.intel.com/content/www/us/en/developer/tools/oneapi/base-toolkit-download.html). You need to install this library, which will be linked to Giraffe via [CMake](https://cmake.org/);
+- [exprtk](https://github.com/ArashPartow/exprtk.git), as a library used for mathematical expressions interpretation in Giraffe input files;
+- [Eigen](https://gitlab.com/libeigen/eigen.git), as a library used for mathematical operations, matrix organizations, etc.;
+- [arpack-ng](https://github.com/opencollab/arpack-ng.git), as a library used to evaluate large-scale eigenvalue problems; 
 
 # Building and compiling
 
-You can build the solution with [CMake](https://cmake.org/) and the auxiliary batch file. Thus, install the current CMake before proceeding.
+You can build the solution with [CMake](https://cmake.org/) and the auxiliary batch files. Thus, install the CMake before proceeding.
+Furthermore, the provided batch files automatically download some prerequisites from public repositories. For that, you need to install [Git](https://git-scm.com/).
 
 :warning: Do not forget to get **oneMKL**: [download](https://software.intel.com/content/www/us/en/develop/tools/oneapi/base-toolkit/download.html) 
 and install `version 2021.3.0` or later. Earlies versions do not include the `Config.cmake` file.
 
+- [vcpkg](https://github.com/microsoft/vcpkg.git), as an installer for [arpack-ng](https://github.com/opencollab/arpack-ng.git) that automatically provides the necessary files to use it in Windows environment.
+
+
 Then, follow these steps:
-  1. Clone [this repository](https://github.com/G-R-Martins/GiraffeMoor)
+  1. Clone [this repository](https://github.com/alfredogneto/GIRAFFE.git)
 
 ```cmd
-git clone https://github.com/G-R-Martins/GiraffeMoor.git
+git clone https://github.com/alfredogneto/GIRAFFE.git
 ```
 
   2. Run the batch file `build.bat`. This will generate and build (release mode by default) the solution without opening Visual Studio.
@@ -49,44 +51,11 @@ And that's it! :grin: :tada:
 
 # Executing 
 
-As **oneMKL** creates environment variables, its DLLs are accessible after compiling the code or download the GiraffeMoor executable (see [releases](https://github.com/G-R-Martins/GiraffeMoor/releases)). Therefore, you can move the executable `GiraffeMoor.exe` to any desirable directory.
-
-```cmd
-<exe_dir>
-├─────GiraffeMoor.exe
-└─────<inp_name>
-      └─────<inp_name>.gmr
-```
-
-You can execute and input 
-
-1. from command line:
-   ```cmd
-   cd <executable dir>
-   giraffemoor <input name>
-   ```
-2. opening the executable and typing the `<input name>` when asked for the file name. 
-
-
-
-# User defined language for Notepad++
-
-Despite the fact the input file is designed to be short and comprehensive, it is provided a defined language for [Notepad++](https://notepad-plus-plus.org/downloads/) to help you identify possible typos and invalid keywords in the GiraffeMoor input file - with the extension `.gmr`.
 
 
 # Some disclaimers...
 
   - IDE and OS supported: 
     
-    Currently, GiraffeMoor is built and tested only with MSVC ([Microsoft Visual Studio](https://visualstudio.microsoft.com/)) and Windows platform. 
-    I plan to expand to Linux and Mac, support other compilers, and do other stuff, but this is far from being the priority at this moment - also because Giraffe is available only for Windows at this moment.
-  
-  - Coding style:
-    
-    GiraffeMoor is an academic program and nowadays maintained only by me - a civil engineer and MSc student. Also, the first scratch of the code had a huge influence on the C language, thus there is a mix of styles - e.g., raw and smart pointers throughout the code. 
-    Due to a _"more in-depth"_ contact later with C++ and a personal preference, I have been converting some parts to the C++ style, but very slowly.
-    
-
-\
-\
-    Check the [projects](https://github.com/G-R-Martins/GiraffeMoor/projects) and **don't hesitate to make suggestions and corrections, please!**
+    Currently, **Giraffe** is built and tested only with MSVC ([Microsoft Visual Studio](https://visualstudio.microsoft.com/)) and Windows platform. 
+    We plan to expand it to Linux and Mac.
