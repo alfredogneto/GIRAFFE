@@ -65,7 +65,7 @@ To execute **Giraffe**, you just have to open its executable file either in [Mic
 The **Giraffe** input  file must be located inside a folder with the same name of the input file. It is mandatory the usage of the file extension `*.inp` for the input file. Files with different extensions or with no extensions will result in error messages when **Giraffe** tries to read them.
 Example: the input file named `tutorial01.inp` is located inside a folder named `tutorial01`.
 
-The folder with the input file can be located in the possible locations:
+The folder with the input file can be located:
 
   1. In the directory of `Giraffe.exe` executable file;
   2. In the folder `/inputs` located in the installation directory of **Giraffe** software;
