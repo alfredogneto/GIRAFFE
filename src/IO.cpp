@@ -27,9 +27,7 @@ bool IO::ReadFile(int argc, char* argv[])
 	printf("|                                                            |\n");
 	printf("|               University of Sao Paulo - Brazil             |\n");
 	printf("|                                                            |\n");
-	printf("|  by Prof. Alfredo Gay Neto                                 |\n");
-	printf("|                                                 v. %s |\n",db.version);
-	printf("|____________________________________________________________|\n\n");
+	printf("|____________________________________________________________|\n\n"); 
 	while (readOK == false)
 	{
 		if (argc <= 1)
@@ -52,28 +50,52 @@ bool IO::ReadFile(int argc, char* argv[])
 		printf("\n");
 		//tries to read the same location of the executable file of Giraffe
 		f = fopen(name, "r");
+		//if no folder/file is found, the second try is on the Giraffe instalation directory, inside the folder inputs
 		if (f == NULL)
 		{
 			//saves directory of the current loged user on windows
-			char* dir_user;
+			char* dir_install;
 			//saves the name of the required environment variable
 			char variable[20];
-			strcpy(variable, "PUBLIC");
+			strcpy(variable, "GIRAFFE_INSTALL");
 			//reads the environment variable
-			dir_user = std::getenv(variable);
-			strcpy(db.folder_name, dir_user);
-			strcat(db.folder_name, "/Documents/Giraffe/");
-			//checks if there is a folder called "Giraffe" in this directory
-			struct stat info;
-			if (stat(db.folder_name, &info) != 0)
-				_mkdir(db.folder_name);
+			dir_install = std::getenv(variable);
+			strcpy(db.folder_name, dir_install);
+			strcat(db.folder_name, "/inputs/");
 			strcat(db.folder_name, name_input);
 			strcat(db.folder_name, "/");
 			strcpy(name, db.folder_name);
 			strcat(name, db.file_name);
 			f = fopen(name, "r");
+			//last try is on the public directory, folder /Documents/Giraffe/
 			if (f == NULL)
-				printf("Error reading the input file. Try again.\n");
+			{
+				//saves directory of the current loged user on windows
+				char* dir_user;
+				//saves the name of the required environment variable
+				char variable[20];
+				strcpy(variable, "PUBLIC");
+				//reads the environment variable
+				dir_user = std::getenv(variable);
+				strcpy(db.folder_name, dir_user);
+				strcat(db.folder_name, "/Documents/Giraffe/");
+				//checks if there is a folder called "Giraffe" in this directory
+				struct stat info;
+				if (stat(db.folder_name, &info) != 0)
+					_mkdir(db.folder_name);
+				strcat(db.folder_name, name_input);
+				strcat(db.folder_name, "/");
+				strcpy(name, db.folder_name);
+				strcat(name, db.file_name);
+				f = fopen(name, "r");
+				if (f == NULL)
+				{
+					printf("Error reading the input file.\n");
+					return false;
+				}
+				else
+					readOK = true;
+			}
 			else
 				readOK = true;
 		}
@@ -95,7 +117,7 @@ bool IO::ReadFile(int argc, char* argv[])
 			read = false;
 			db.solution_exist = true;
 		}
-		///////////////////////////Leitura dos nós////////////////////////////////
+		///////////////////////////Leitura dos nÃ³s////////////////////////////////
 		if (!strcmp(s, "Nodes") && read == true)
 		{
 			if (!ReadNodes(f))	
@@ -135,7 +157,7 @@ bool IO::ReadFile(int argc, char* argv[])
 			read = false;
 			db.elements_exist = true;
 		}
-		///////////////////////////Leitura das partículas////////////////////////////
+		///////////////////////////Leitura das partÃ­culas////////////////////////////
 		if (!strcmp(s, "Particles") && read == true)
 		{
 			if (!ReadParticles(f))
@@ -159,7 +181,7 @@ bool IO::ReadFile(int argc, char* argv[])
 			read = false;
 			db.materials_exist = true;
 		}
-		///////////////////////////Leitura das seções//////////////////////////////
+		///////////////////////////Leitura das seÃ§Ãµes//////////////////////////////
 		if (!strcmp(s, "Sections") && read == true)
 		{
 			if (!ReadSections(f))
@@ -167,7 +189,7 @@ bool IO::ReadFile(int argc, char* argv[])
 			read = false;
 			db.sections_exist = true;
 		}
-		///////////////////////////Leitura das seções de tubos/////////////////////
+		///////////////////////////Leitura das seÃ§Ãµes de tubos/////////////////////
 		if (!strcmp(s, "PipeSections") && read == true)
 		{
 			if (!ReadPipeSections(f))
@@ -175,7 +197,7 @@ bool IO::ReadFile(int argc, char* argv[])
 			read = false;
 			db.pipe_sections_exist = true;
 		}
-		///////////////////////////Leitura das seções de cascas/////////////////////
+		///////////////////////////Leitura das seÃ§Ãµes de cascas/////////////////////
 		if (!strcmp(s, "ShellSections") && read == true)
 		{
 			if (!ReadShellSections(f))
@@ -191,7 +213,7 @@ bool IO::ReadFile(int argc, char* argv[])
 			read = false;
 			db.CS_exist = true;
 		}
-		///////////////////////////Leitura das propriedades de corpo rígido/////////////////////
+		///////////////////////////Leitura das propriedades de corpo rÃ­gido/////////////////////
 		if (!strcmp(s, "RigidBodyData") && read == true)
 		{
 			if (!ReadRigidBodyData(f))
@@ -343,7 +365,7 @@ bool IO::ReadFile(int argc, char* argv[])
 			read = false;
 			db.section_details_exist = true;
 		}
-		///////////////////////////Leitura dos dados aerodinâmicos//////////////////
+		///////////////////////////Leitura dos dados aerodinÃ¢micos//////////////////
 		if (!strcmp(s, "AerodynamicData") && read == true)
 		{
 			if (!ReadAerodynamicData(f))
@@ -461,10 +483,10 @@ bool IO::ReadFile(int argc, char* argv[])
 			read = false;
 		}
 		
-		//Se read == true nesse ponto, trata-se de palavra chave não conhecida
+		//Se read == true nesse ponto, trata-se de palavra chave nÃ£o conhecida
 		if (read == true)
 		{
-			//Chama leitura de possível comentário no input file - retorna true se houve leitura de comentário - false se não houve
+			//Chama leitura de possÃ­vel comentÃ¡rio no input file - retorna true se houve leitura de comentÃ¡rio - false se nÃ£o houve
 			read = ReadComment(f, s, 10000);
 			if (read == false)
 			{
@@ -474,7 +496,7 @@ bool IO::ReadFile(int argc, char* argv[])
 			
 		}
 		else
-			strcpy(last_key, s);//Copia a palavra chave para saber qual foi a última lida
+			strcpy(last_key, s);//Copia a palavra chave para saber qual foi a Ãºltima lida
 		
 	}
 	fclose(f);
@@ -485,40 +507,40 @@ bool IO::ReadFile(int argc, char* argv[])
 	return true;
 }
 
-//Lê comentários - retorna o stream no ponto após leitura de comentário
+//LÃª comentÃ¡rios - retorna o stream no ponto apÃ³s leitura de comentÃ¡rio
 bool ReadComment(FILE *f, char* s, int dim_char)
 {
 	bool read = false;
-	///////////////////////////Comentário///////////////////////////////////////
-	if (s[0] == '/' && s[1] == '/')//linha de comentário
+	///////////////////////////ComentÃ¡rio///////////////////////////////////////
+	if (s[0] == '/' && s[1] == '/')//linha de comentÃ¡rio
 	{
-		//Leitura até encontrar o caracter de fim de linha
+		//Leitura atÃ© encontrar o caracter de fim de linha
 		while (s[0] != '\n')
 			fscanf(f, "%c", s);
 		read = true;
 	}
-	if (s[0] == '/' && s[1] == '*')//bloco de comentário
+	if (s[0] == '/' && s[1] == '*')//bloco de comentÃ¡rio
 	{
-		//Leitura até encontrar o fim do comentário
+		//Leitura atÃ© encontrar o fim do comentÃ¡rio
 		char c1[1];
 		char c2[1];
 		bool exit = false;
 		//Busca pelo fim do bloco em duas fases
-		//1) No próprio texto já lido salvo em "s"
+		//1) No prÃ³prio texto jÃ¡ lido salvo em "s"
 		for (int i = 2; i < 999; i++)
 		{
 			if (s[i] == '*' && s[i + 1] == '/')
 				exit = true;
 		}
-		//2) Fora do próprio texto já lido. Busca de caracter em caracter até encontrar o fim do comentário
+		//2) Fora do prÃ³prio texto jÃ¡ lido. Busca de caracter em caracter atÃ© encontrar o fim do comentÃ¡rio
 		while (exit == false)
 		{
 			//Leitura do primeiro caracter
 			fscanf(f, "%c", c1);
-			//Se encontrou o primeiro caracter da saída do comentário - tenta verificar o segundo caracter para confirmar saída
+			//Se encontrou o primeiro caracter da saÃ­da do comentÃ¡rio - tenta verificar o segundo caracter para confirmar saÃ­da
 			if (c1[0] == '*')
 			{
-				//Salva a posição (stream) - antes da leitura do segundo caractere
+				//Salva a posiÃ§Ã£o (stream) - antes da leitura do segundo caractere
 				fpos_t pos;
 				fgetpos(f, &pos);
 				fscanf(f, "%c", c2);
@@ -533,21 +555,21 @@ bool ReadComment(FILE *f, char* s, int dim_char)
 	return read;
 }
 
-//Tenta ler comentários. Retorna o stream no ponto em que a próxima leitura não é um comentário
+//Tenta ler comentÃ¡rios. Retorna o stream no ponto em que a prÃ³xima leitura nÃ£o Ã© um comentÃ¡rio
 void TryComment(FILE *f)
 {
-	bool comment = true;//flag que indica que leu comentário na última tentativa
+	bool comment = true;//flag que indica que leu comentÃ¡rio na Ãºltima tentativa
 	char s[10000];
 	while (comment == true)
 	{
-		//Salva a posição (stream) - antes da leitura
+		//Salva a posiÃ§Ã£o (stream) - antes da leitura
 		fpos_t pos;
 		fgetpos(f, &pos);
 		//Leitura
 		fscanf(f, "%s", s);
 		comment = ReadComment(f, s, 10000);
 		if (comment == false)
-			fsetpos(f, &pos);//volta à posição original do stream - não leu comentário
+			fsetpos(f, &pos);//volta Ã  posiÃ§Ã£o original do stream - nÃ£o leu comentÃ¡rio
 	}
 	
 }
@@ -669,32 +691,32 @@ bool IO::ReadSolutions(FILE *f)
 	char s[1000];
 	fscanf(f, "%s", s);
 	db.number_solutions = atoi(s);
-	db.solution = new Solution*[db.number_solutions];	//Alocação do vetor
+	db.solution = new Solution*[db.number_solutions];	//AlocaÃ§Ã£o do vetor
 	bool solution_OK = false;
 	for (int i = 0; i < db.number_solutions; i++)
 	{
 		TryComment(f);
 		solution_OK = false;
 		fscanf(f, "%s", s);
-		//Alocação do solution "Static"
+		//AlocaÃ§Ã£o do solution "Static"
 		if (!strcmp(s, "Static"))
 		{
 			db.solution[i] = new Static();
 			solution_OK = true;
 		}
-		//Alocação do solution "Dynamic"
+		//AlocaÃ§Ã£o do solution "Dynamic"
 		if (!strcmp(s, "Dynamic"))
 		{
 			db.solution[i] = new Dynamic();
 			solution_OK = true;
 		}
-		//Alocação do solution "ExplicitDynamic"
+		//AlocaÃ§Ã£o do solution "ExplicitDynamic"
 		if (!strcmp(s, "ExplicitDynamic"))
 		{
 			db.solution[i] = new ExplicitDynamic();
 			solution_OK = true;
 		}
-		//Alocação do solution "Modal"
+		//AlocaÃ§Ã£o do solution "Modal"
 		if (!strcmp(s, "Modal"))
 		{
 			db.solution[i] = new Modal();
@@ -705,18 +727,18 @@ bool IO::ReadSolutions(FILE *f)
 			if (!db.solution[i]->Read(f))
 			{
 				printf("Error reading Solution %d.\n", i + 1);
-				db.number_solutions = i + 1;	//altera o número de instâncias alocadas - evita erro no destrutor
+				db.number_solutions = i + 1;	//altera o nÃºmero de instÃ¢ncias alocadas - evita erro no destrutor
 				return false;
 			}
 		}
 		else
 		{
 			printf("Error reading Solution %d or %d.\n", i, i + 1);
-			db.number_solutions = i;	//altera o número de instâncias alocadas - evita erro no destrutor
+			db.number_solutions = i;	//altera o nÃºmero de instÃ¢ncias alocadas - evita erro no destrutor
 			return false;
 		}
 	}
-	db.EvaluateStartEndTimes();	//Preenche dados de start e end time das soluções - é importante fazer esse preenchimento aqui e não no PreCalc(), pois a função de verificar erros é chamada na sequência imediata, antes da PreCalc()
+	db.EvaluateStartEndTimes();	//Preenche dados de start e end time das soluÃ§Ãµes - Ã© importante fazer esse preenchimento aqui e nÃ£o no PreCalc(), pois a funÃ§Ã£o de verificar erros Ã© chamada na sequÃªncia imediata, antes da PreCalc()
 
 	return true;
 }
@@ -728,15 +750,15 @@ bool IO::ReadNodes(FILE *f)
 	fscanf(f, "%s", s);
 	n_nodes = atoi(s);
 	db.number_nodes = n_nodes;		//seta no database
-	db.nodes = new Node*[n_nodes];	//Alocação do vetor
+	db.nodes = new Node*[n_nodes];	//AlocaÃ§Ã£o do vetor
 	for (int i = 0; i < n_nodes; i++)
 	{
-		db.nodes[i] = new Node(db.number_GLs_node);		//Alocação de cada nó
+		db.nodes[i] = new Node(db.number_GLs_node);		//AlocaÃ§Ã£o de cada nÃ³
 		TryComment(f);
-		if (!db.nodes[i]->Read(f))						//Leitura dos dados do nó
+		if (!db.nodes[i]->Read(f))						//Leitura dos dados do nÃ³
 		{
 			printf("Error reading Node %d.\n",i+1);
-			db.number_nodes = i + 1;	//altera o número de instâncias alocadas - evita erro no destrutor
+			db.number_nodes = i + 1;	//altera o nÃºmero de instÃ¢ncias alocadas - evita erro no destrutor
 			return false;
 		}
 	}
@@ -750,15 +772,15 @@ bool IO::ReadPoints(FILE *f)
 	fscanf(f, "%s", s);
 	n_points = atoi(s);
 	db.number_points = n_points;		//seta no database
-	db.points = new Point*[n_points];	//Alocação do vetor
+	db.points = new Point*[n_points];	//AlocaÃ§Ã£o do vetor
 	for (int i = 0; i < n_points; i++)
 	{
-		db.points[i] = new Point();		//Alocação de cada ponto
+		db.points[i] = new Point();		//AlocaÃ§Ã£o de cada ponto
 		TryComment(f);
 		if (!db.points[i]->Read(f))		//Leitura dos dados do ponto
 		{
 			printf("Error reading Point %d.\n", i + 1);
-			db.number_points = i + 1;	//altera o número de instâncias alocadas - evita erro no destrutor
+			db.number_points = i + 1;	//altera o nÃºmero de instÃ¢ncias alocadas - evita erro no destrutor
 			return false;
 		}
 	}
@@ -772,15 +794,15 @@ bool IO::ReadArcs(FILE *f)
 	fscanf(f, "%s", s);
 	n_arcs = atoi(s);
 	db.number_arcs = n_arcs;		//seta no database
-	db.arcs = new ArcCirc*[n_arcs];	//Alocação do vetor
+	db.arcs = new ArcCirc*[n_arcs];	//AlocaÃ§Ã£o do vetor
 	for (int i = 0; i < n_arcs; i++)
 	{
-		db.arcs[i] = new ArcCirc();		//Alocação de cada ponto
+		db.arcs[i] = new ArcCirc();		//AlocaÃ§Ã£o de cada ponto
 		TryComment(f);
 		if (!db.arcs[i]->Read(f))		//Leitura dos dados do ponto
 		{
 			printf("Error reading Arc %d.\n", i + 1);
-			db.number_arcs = i + 1;	//altera o número de instâncias alocadas - evita erro no destrutor
+			db.number_arcs = i + 1;	//altera o nÃºmero de instÃ¢ncias alocadas - evita erro no destrutor
 			return false;
 		}
 	}
@@ -794,62 +816,62 @@ bool IO::ReadElements(FILE *f)
 	fscanf(f, "%s", s);
 	n_elements = atoi(s);
 	db.number_elements = n_elements;			//seta no database
-	db.elements = new Element*[n_elements];	//Alocação do vetor
+	db.elements = new Element*[n_elements];	//AlocaÃ§Ã£o do vetor
 	bool element_OK = false;
 	for (int i = 0; i < n_elements; i++)
 	{
 		TryComment(f);
 		element_OK = false;
 		fscanf(f, "%s", s);
-		//Alocação do elemento "Beam_1"
+		//AlocaÃ§Ã£o do elemento "Beam_1"
 		if (!strcmp(s, "Beam_1"))
 		{
 			db.elements[i] = new Beam_1();
 			element_OK = true;
 		}
-		//Alocação do elemento "Pipe_1"
+		//AlocaÃ§Ã£o do elemento "Pipe_1"
 		if (!strcmp(s, "Pipe_1"))
 		{
 			db.elements[i] = new Pipe_1();
 			element_OK = true;
 		}
-		//Alocação do elemento "Shell_1"
+		//AlocaÃ§Ã£o do elemento "Shell_1"
 		if (!strcmp(s, "Shell_1"))
 		{
 			db.elements[i] = new Shell_1();
 			element_OK = true;
 		}
-		//Alocação do elemento "Solid_1"
+		//AlocaÃ§Ã£o do elemento "Solid_1"
 		if (!strcmp(s, "Solid_1"))
 		{
 			db.elements[i] = new Solid_1();
 			element_OK = true;
 		}
-		//Alocação do elemento "SpringDashpot_1"
+		//AlocaÃ§Ã£o do elemento "SpringDashpot_1"
 		if (!strcmp(s, "SpringDashpot_1"))
 		{
 			db.elements[i] = new SpringDashpot_1();
 			element_OK = true;
 		}
-		//Alocação do elemento "Mass_1"
+		//AlocaÃ§Ã£o do elemento "Mass_1"
 		if (!strcmp(s, "Mass_1"))
 		{
 			db.elements[i] = new Mass_1();
 			element_OK = true;
 		}
-		//Alocação do elemento "RigidBody_1"
+		//AlocaÃ§Ã£o do elemento "RigidBody_1"
 		if (!strcmp(s, "RigidBody_1"))
 		{
 			db.elements[i] = new RigidBody_1();
 			element_OK = true;
 		}
-		//Alocação do elemento "Truss_1"
+		//AlocaÃ§Ã£o do elemento "Truss_1"
 		if (!strcmp(s, "Truss_1"))
 		{
 			db.elements[i] = new Truss_1();
 			element_OK = true;
 		}
-		//Alocação do elemento "TwoNodeConnector_1"
+		//AlocaÃ§Ã£o do elemento "TwoNodeConnector_1"
 		if (!strcmp(s, "TwoNodeConnector_1"))
 		{
 			db.elements[i] = new TwoNodeConnector_1();
@@ -860,14 +882,14 @@ bool IO::ReadElements(FILE *f)
 			if (!db.elements[i]->Read(f))
 			{
 				printf("Error reading Element %d.\n", i + 1);
-				db.number_elements = i + 1;	//altera o número de instâncias alocadas - evita erro no destrutor
+				db.number_elements = i + 1;	//altera o nÃºmero de instÃ¢ncias alocadas - evita erro no destrutor
 				return false;
 			}
 		}
 		else
 		{
 			printf("Error reading Element %d or %d.\n", i, i + 1);
-			db.number_elements = i;	//altera o número de instâncias alocadas - evita erro no destrutor
+			db.number_elements = i;	//altera o nÃºmero de instÃ¢ncias alocadas - evita erro no destrutor
 			return false;
 		}
 	}
@@ -881,35 +903,35 @@ bool IO::ReadParticles(FILE *f)
 	fscanf(f, "%s", s);
 	n_particles = atoi(s);
 	db.number_particles = n_particles;		//seta no database
-	db.particles = new Particle*[n_particles];	//Alocação do vetor
+	db.particles = new Particle*[n_particles];	//AlocaÃ§Ã£o do vetor
 	bool particle_OK = false;
 	for (int i = 0; i < n_particles; i++)
 	{
 		TryComment(f);
 		particle_OK = false;
 		fscanf(f, "%s", s);
-		//Alocação da partícula "Sphere"
+		//AlocaÃ§Ã£o da partÃ­cula "Sphere"
 		if (!strcmp(s, "Sphere"))
 		{
 			db.particles[i] = new Sphere();
 			particle_OK = true;
 		}
 
-		//Alocação da partícula "Polyhedron"
+		//AlocaÃ§Ã£o da partÃ­cula "Polyhedron"
 		if (!strcmp(s, "Polyhedron"))
 		{
 			db.particles[i] = new Polyhedron();
 			particle_OK = true;
 		}
 
-		//Alocação da partícula "NURBS"
+		//AlocaÃ§Ã£o da partÃ­cula "NURBS"
 		if (!strcmp(s, "NURBSParticle"))
 		{
 			db.particles[i] = new NURBSParticle();
 			particle_OK = true;
 		}
 
-		//Alocação da partícula "VEMPolyhedron"
+		//AlocaÃ§Ã£o da partÃ­cula "VEMPolyhedron"
 		if (!strcmp(s, "VEMPolyhedron"))
 		{
 			db.particles[i] = new VEMPolyhedron();
@@ -922,14 +944,14 @@ bool IO::ReadParticles(FILE *f)
 			if (!db.particles[i]->Read(f))
 			{
 				printf("Error reading Particle %d.\n", i + 1);
-				db.number_particles = i + 1;	//altera o número de instâncias alocadas - evita erro no destrutor
+				db.number_particles = i + 1;	//altera o nÃºmero de instÃ¢ncias alocadas - evita erro no destrutor
 				return false;
 			}
 		}
 		else
 		{
 			printf("Error reading Particle %d or %d.\n", i, i + 1);
-			db.number_particles = i;	//altera o número de instâncias alocadas - evita erro no destrutor
+			db.number_particles = i;	//altera o nÃºmero de instÃ¢ncias alocadas - evita erro no destrutor
 			return false;
 		}
 	}
@@ -944,15 +966,15 @@ bool IO::ReadInitialConditions(FILE *f)
 	n_IC = atoi(s);
 	db.number_IC = n_IC;	//seta no database
 
-	db.IC = new InitialCondition*[n_IC];	//Alocação do vetor
+	db.IC = new InitialCondition*[n_IC];	//AlocaÃ§Ã£o do vetor
 	for (int i = 0; i < n_IC; i++)
 	{
-		db.IC[i] = new InitialCondition();		//Alocação de cada condição inicial
+		db.IC[i] = new InitialCondition();		//AlocaÃ§Ã£o de cada condiÃ§Ã£o inicial
 		TryComment(f);
 		if (!db.IC[i]->Read(f))
 		{
 			printf("Error reading Initial Condition %d.\n", i + 1);
-			db.number_IC = i + 1;	//altera o número de instâncias alocadas - evita erro no destrutor
+			db.number_IC = i + 1;	//altera o nÃºmero de instÃ¢ncias alocadas - evita erro no destrutor
 			return false;
 		}
 	}
@@ -966,26 +988,26 @@ bool IO::ReadMaterials(FILE *f)
 	fscanf(f, "%s", s);
 	n_materials = atoi(s);
 	db.number_materials = n_materials;			//seta no database
-	db.materials = new Material*[n_materials];	//Alocação do vetor
+	db.materials = new Material*[n_materials];	//AlocaÃ§Ã£o do vetor
 	bool materialOK = false;
 	for (int i = 0; i < n_materials; i++)
 	{
 		TryComment(f);
 		materialOK = false;
 		fscanf(f, "%s", s);
-		//Alocação do material "Hooke"
+		//AlocaÃ§Ã£o do material "Hooke"
 		if (!strcmp(s, "Hooke"))
 		{
 			db.materials[i] = new Hooke();
 			materialOK = true;
 		}
-		//Alocação do material "ElasticPlasticIsoHardening"
+		//AlocaÃ§Ã£o do material "ElasticPlasticIsoHardening"
 		if (!strcmp(s, "ElasticPlasticIsoHardening"))
 		{
 			db.materials[i] = new ElasticPlasticIsoHardening();
 			materialOK = true;
 		}
-		//Alocação do material "Orthotropic"
+		//AlocaÃ§Ã£o do material "Orthotropic"
 		if (!strcmp(s, "Orthotropic"))
 		{
 			db.materials[i] = new Orthotropic();
@@ -998,14 +1020,14 @@ bool IO::ReadMaterials(FILE *f)
 			if (!db.materials[i]->Read(f))
 			{
 				printf("Error reading Material %d.\n", i + 1);
-				db.number_materials = i + 1;	//altera o número de instâncias alocadas - evita erro no destrutor
+				db.number_materials = i + 1;	//altera o nÃºmero de instÃ¢ncias alocadas - evita erro no destrutor
 				return false;
 			}
 		}
 		else
 		{
 			printf("Error reading Material %d or %d.\n",i, i + 1);
-			db.number_materials = i;	//altera o número de instâncias alocadas - evita erro no destrutor
+			db.number_materials = i;	//altera o nÃºmero de instÃ¢ncias alocadas - evita erro no destrutor
 			return false;
 		}
 	}
@@ -1019,46 +1041,46 @@ bool IO::ReadSections(FILE *f)
 	n_sec = atoi(s);
 	db.number_sections = n_sec;	//seta no database
 	bool sectionOK = false;
-	db.sections = new Section*[n_sec];	//Alocação do vetor
+	db.sections = new Section*[n_sec];	//AlocaÃ§Ã£o do vetor
 	for (int i = 0; i < n_sec; i++)
 	{
 		TryComment(f);
 		sectionOK = false;
 		fscanf(f, "%s", s);
-		//Alocação da seção "General"
+		//AlocaÃ§Ã£o da seÃ§Ã£o "General"
 		if (!strcmp(s, "General"))
 		{
-			db.sections[i] = new SecGeneral();		//Alocação da seção
+			db.sections[i] = new SecGeneral();		//AlocaÃ§Ã£o da seÃ§Ã£o
 			sectionOK = true;
 		}
-		//Alocação da seção "Rectangle"
+		//AlocaÃ§Ã£o da seÃ§Ã£o "Rectangle"
 		if (!strcmp(s, "Rectangle"))
 		{
-			db.sections[i] = new SecRectangle();		//Alocação da seção
+			db.sections[i] = new SecRectangle();		//AlocaÃ§Ã£o da seÃ§Ã£o
 			sectionOK = true;
 		}	
-		//Alocação da seção "SuperEllipse"
+		//AlocaÃ§Ã£o da seÃ§Ã£o "SuperEllipse"
 		if (!strcmp(s, "SuperEllipse"))
 		{
-			db.sections[i] = new SecSuperEllipse();	//Alocação da seção
+			db.sections[i] = new SecSuperEllipse();	//AlocaÃ§Ã£o da seÃ§Ã£o
 			sectionOK = true;
 		}
-		//Alocação da seção "SuperEllipse"
+		//AlocaÃ§Ã£o da seÃ§Ã£o "SuperEllipse"
 		if (!strcmp(s, "Tube"))
 		{
-			db.sections[i] = new SecTube();			//Alocação da seção
+			db.sections[i] = new SecTube();			//AlocaÃ§Ã£o da seÃ§Ã£o
 			sectionOK = true;
 		}
-		//Alocação da seção "UserDefined"
+		//AlocaÃ§Ã£o da seÃ§Ã£o "UserDefined"
 		if (!strcmp(s, "UserDefined"))
 		{
-			db.sections[i] = new SecUserDefined();		//Alocação da seção
+			db.sections[i] = new SecUserDefined();		//AlocaÃ§Ã£o da seÃ§Ã£o
 			sectionOK = true;
 		}
-		//Alocação da seção "HelicalFiber"
+		//AlocaÃ§Ã£o da seÃ§Ã£o "HelicalFiber"
 		if (!strcmp(s, "HelicalFiber"))
 		{
-			db.sections[i] = new SecHelicalFiber();		//Alocação da seção
+			db.sections[i] = new SecHelicalFiber();		//AlocaÃ§Ã£o da seÃ§Ã£o
 			sectionOK = true;
 		}
 		if (sectionOK == true)
@@ -1067,14 +1089,14 @@ bool IO::ReadSections(FILE *f)
 			if (!db.sections[i]->Read(f))
 			{
 				printf("Error reading Section %d.\n", i + 1);
-				db.number_sections = i + 1;	//altera o número de instâncias alocadas - evita erro no destrutor
+				db.number_sections = i + 1;	//altera o nÃºmero de instÃ¢ncias alocadas - evita erro no destrutor
 				return false;
 			}
 		}
 		else
 		{
 			printf("Error reading Section %d or %d.\n",i, i + 1);
-			db.number_sections = i;	//altera o número de instâncias alocadas - evita erro no destrutor
+			db.number_sections = i;	//altera o nÃºmero de instÃ¢ncias alocadas - evita erro no destrutor
 			return false;
 		}
 	}
@@ -1088,15 +1110,15 @@ bool IO::ReadPipeSections(FILE *f)
 	n_pipe_sec = atoi(s);
 	db.number_pipe_sections = n_pipe_sec;	//seta no database
 
-	db.pipe_sections = new PipeSection*[n_pipe_sec];	//Alocação do vetor
+	db.pipe_sections = new PipeSection*[n_pipe_sec];	//AlocaÃ§Ã£o do vetor
 	for (int i = 0; i < n_pipe_sec; i++)
 	{
-		db.pipe_sections[i] = new PipeSection();		//Alocação de cada Pipe Section
+		db.pipe_sections[i] = new PipeSection();		//AlocaÃ§Ã£o de cada Pipe Section
 		TryComment(f);
 		if (!db.pipe_sections[i]->Read(f))
 		{
 			printf("Error reading Pipe Section %d.\n", i + 1);
-			db.number_pipe_sections = i + 1;	//altera o número de instâncias alocadas - evita erro no destrutor
+			db.number_pipe_sections = i + 1;	//altera o nÃºmero de instÃ¢ncias alocadas - evita erro no destrutor
 			return false;
 		}
 	}
@@ -1110,19 +1132,19 @@ bool IO::ReadShellSections(FILE *f)
 	n_shell_sec = atoi(s);
 	db.number_shell_sections = n_shell_sec;	//seta no database
 	bool section_OK = false;
-	db.shell_sections = new ShellSection*[n_shell_sec];	//Alocação do vetor
+	db.shell_sections = new ShellSection*[n_shell_sec];	//AlocaÃ§Ã£o do vetor
 	for (int i = 0; i < n_shell_sec; i++)
 	{
 		TryComment(f);
 		section_OK = false;
 		fscanf(f, "%s", s);
-		//Alocação do elemento "Homogeneous"
+		//AlocaÃ§Ã£o do elemento "Homogeneous"
 		if (!strcmp(s, "Homogeneous"))
 		{
 			db.shell_sections[i] = new ShellSectionHomogeneous();
 			section_OK = true;
 		}
-		//Alocação do elemento "Composite"
+		//AlocaÃ§Ã£o do elemento "Composite"
 		if (!strcmp(s, "Composite"))
 		{
 			db.shell_sections[i] = new ShellSectionComposite();
@@ -1134,14 +1156,14 @@ bool IO::ReadShellSections(FILE *f)
 			if (!db.shell_sections[i]->Read(f))
 			{
 				printf("Error reading Shell Section %d.\n", i + 1);
-				db.number_shell_sections = i + 1;	//altera o número de instâncias alocadas - evita erro no destrutor
+				db.number_shell_sections = i + 1;	//altera o nÃºmero de instÃ¢ncias alocadas - evita erro no destrutor
 				return false;
 			}
 		}
 		else
 		{
 			printf("Error reading Shell Section %d or %d.\n", i, i + 1);
-			db.number_shell_sections = i;	//altera o número de instâncias alocadas - evita erro no destrutor
+			db.number_shell_sections = i;	//altera o nÃºmero de instÃ¢ncias alocadas - evita erro no destrutor
 			return false;
 		}
 	}
@@ -1154,16 +1176,16 @@ bool IO::ReadCoordinateSystems(FILE *f)
 	fscanf(f, "%s", s);
 	n_CS = atoi(s);
 	db.number_CS = n_CS;	//seta no database
-	db.CS = new CoordinateSystem*[n_CS];	//Alocação do vetor
+	db.CS = new CoordinateSystem*[n_CS];	//AlocaÃ§Ã£o do vetor
 	for (int i = 0; i < n_CS; i++)
 	{
-		db.CS[i] = new CoordinateSystem();		//Alocação de cada CS
+		db.CS[i] = new CoordinateSystem();		//AlocaÃ§Ã£o de cada CS
 		//Leitura dos dados do CS
 		TryComment(f);
 		if (!db.CS[i]->Read(f))
 		{
 			printf("Error reading CS %d.\n", i + 1);
-			db.number_CS = i + 1;	//altera o número de instâncias alocadas - evita erro no destrutor
+			db.number_CS = i + 1;	//altera o nÃºmero de instÃ¢ncias alocadas - evita erro no destrutor
 			return false;
 		}
 	}
@@ -1177,16 +1199,16 @@ bool IO::ReadRigidBodyData(FILE *f)
 	fscanf(f, "%s", s);
 	n_RBD = atoi(s);
 	db.number_RB_data = n_RBD;	//seta no database
-	db.RB_data = new RigidBodyData*[n_RBD];	//Alocação do vetor
+	db.RB_data = new RigidBodyData*[n_RBD];	//AlocaÃ§Ã£o do vetor
 	for (int i = 0; i < n_RBD; i++)
 	{
-		db.RB_data[i] = new RigidBodyData();		//Alocação de cada CS
+		db.RB_data[i] = new RigidBodyData();		//AlocaÃ§Ã£o de cada CS
 		TryComment(f);
 		//Leitura dos dados do RBD
 		if (!db.RB_data[i]->Read(f))
 		{
 			printf("Error reading Rigid Body Data %d.\n", i + 1);
-			db.number_RB_data = i + 1;	//altera o número de instâncias alocadas - evita erro no destrutor
+			db.number_RB_data = i + 1;	//altera o nÃºmero de instÃ¢ncias alocadas - evita erro no destrutor
 			return false;
 		}
 	}
@@ -1236,16 +1258,16 @@ bool IO::ReadAnalyticalSurfaces(FILE *f)
 	n_analytical = atoi(s);
 	db.number_analytical_surfaces = n_analytical;	//seta no database
 	bool analyticalOK = false;
-	db.analytical_surfaces = new AnalyticalSurface*[n_analytical];	//Alocação do vetor
+	db.analytical_surfaces = new AnalyticalSurface*[n_analytical];	//AlocaÃ§Ã£o do vetor
 	for (int i = 0; i < n_analytical; i++)
 	{
 		TryComment(f);
 		analyticalOK = false;
 		fscanf(f, "%s", s);
-		//Alocação do "Plane"
+		//AlocaÃ§Ã£o do "Plane"
 		if (!strcmp(s, "Plane"))
 		{
-			db.analytical_surfaces[i] = new Plane();		//Alocação de cada objeto
+			db.analytical_surfaces[i] = new Plane();		//AlocaÃ§Ã£o de cada objeto
 			analyticalOK = true;
 		}
 			
@@ -1255,14 +1277,14 @@ bool IO::ReadAnalyticalSurfaces(FILE *f)
 			if (!db.analytical_surfaces[i]->Read(f))
 			{
 				printf("Error reading Analytical Surface %d.\n", i + 1);
-				db.number_analytical_surfaces = i + 1;	//altera o número de instâncias alocadas - evita erro no destrutor
+				db.number_analytical_surfaces = i + 1;	//altera o nÃºmero de instÃ¢ncias alocadas - evita erro no destrutor
 				return false;
 			}
 		}
 		else
 		{
 			printf("Error reading Analytical Surface %d or %d.\n",i, i + 1);
-			db.number_analytical_surfaces = i;	//altera o número de instâncias alocadas - evita erro no destrutor
+			db.number_analytical_surfaces = i;	//altera o nÃºmero de instÃ¢ncias alocadas - evita erro no destrutor
 			return false;
 		}
 		
@@ -1278,54 +1300,54 @@ bool IO::ReadSurfaces(FILE *f)
 	n_surf = atoi(s);
 	db.number_surfaces = n_surf;	//seta no database
 	bool surfOK = false;
-	db.surfaces = new Surface*[n_surf];	//Alocação do vetor
+	db.surfaces = new Surface*[n_surf];	//AlocaÃ§Ã£o do vetor
 	for (int i = 0; i < n_surf; i++)
 	{
 		TryComment(f);
 		surfOK = false;
 		fscanf(f, "%s", s);
-		//Alocação do "RigidTriangularSurface_1"
+		//AlocaÃ§Ã£o do "RigidTriangularSurface_1"
 		if (!strcmp(s, "RigidTriangularSurface_1"))
 		{
-			db.surfaces[i] = new RigidTriangularSurface_1();		//Alocação de cada objeto
+			db.surfaces[i] = new RigidTriangularSurface_1();		//AlocaÃ§Ã£o de cada objeto
 			surfOK = true;
 		}
-		//Alocação do "RigidOscillatorySurface_1"
+		//AlocaÃ§Ã£o do "RigidOscillatorySurface_1"
 		if (!strcmp(s, "RigidOscillatorySurface_1"))
 		{
-			db.surfaces[i] = new RigidOscillatorySurface_1();		//Alocação de cada objeto
+			db.surfaces[i] = new RigidOscillatorySurface_1();		//AlocaÃ§Ã£o de cada objeto
 			surfOK = true;
 		}
-		//Alocação do "FlexibleTriangularSurface_2"
+		//AlocaÃ§Ã£o do "FlexibleTriangularSurface_2"
 		if (!strcmp(s, "FlexibleTriangularSurface_2"))
 		{
-			db.surfaces[i] = new FlexibleTriangularSurface_2();		//Alocação de cada objeto
+			db.surfaces[i] = new FlexibleTriangularSurface_2();		//AlocaÃ§Ã£o de cada objeto
 			surfOK = true;
 		}
-		//Alocação do "FlexibleSECylinder_1"
+		//AlocaÃ§Ã£o do "FlexibleSECylinder_1"
 		if (!strcmp(s, "FlexibleSECylinder_1"))
 		{
-			db.surfaces[i] = new FlexibleSECylinder_1();		//Alocação de cada objeto
+			db.surfaces[i] = new FlexibleSECylinder_1();		//AlocaÃ§Ã£o de cada objeto
 			surfOK = true;
 		}
-		//Alocação do "FlexibleArcExtrusion_1"
+		//AlocaÃ§Ã£o do "FlexibleArcExtrusion_1"
 		if (!strcmp(s, "FlexibleArcExtrusion_1"))
 		{
-			db.surfaces[i] = new FlexibleArcExtrusion_1();		//Alocação de cada objeto
+			db.surfaces[i] = new FlexibleArcExtrusion_1();		//AlocaÃ§Ã£o de cada objeto
 			surfOK = true;
 		}
 
-		//Alocação do "RigidArcRevolution_1"
+		//AlocaÃ§Ã£o do "RigidArcRevolution_1"
 		if (!strcmp(s, "RigidArcRevolution_1"))
 		{
-			db.surfaces[i] = new RigidArcRevolution_1();		//Alocação de cada objeto
+			db.surfaces[i] = new RigidArcRevolution_1();		//AlocaÃ§Ã£o de cada objeto
 			surfOK = true;
 		}
 
-		//Alocação do "RigidNURBS_1"
+		//AlocaÃ§Ã£o do "RigidNURBS_1"
 		if (!strcmp(s, "RigidNURBS_1"))
 		{
-			db.surfaces[i] = new RigidNURBS_1();		//Alocação de cada objeto
+			db.surfaces[i] = new RigidNURBS_1();		//AlocaÃ§Ã£o de cada objeto
 			surfOK = true;
 		}
 
@@ -1335,14 +1357,14 @@ bool IO::ReadSurfaces(FILE *f)
 			if (!db.surfaces[i]->Read(f))
 			{
 				printf("Error reading Surface %d.\n", i + 1);
-				db.number_surfaces = i + 1;	//altera o número de instâncias alocadas - evita erro no destrutor
+				db.number_surfaces = i + 1;	//altera o nÃºmero de instÃ¢ncias alocadas - evita erro no destrutor
 				return false;
 			}
 		}
 		else
 		{
 			printf("Error reading Surface %d or %d.\n", i, i + 1);
-			db.number_surfaces = i;	//altera o número de instâncias alocadas - evita erro no destrutor
+			db.number_surfaces = i;	//altera o nÃºmero de instÃ¢ncias alocadas - evita erro no destrutor
 			return false;
 		}
 
@@ -1357,15 +1379,15 @@ bool IO::ReadSplines(FILE *f)
 	fscanf(f, "%s", s);
 	number_splines = atoi(s);
 	db.number_splines = number_splines;		//seta no database
-	db.splines = new Spline*[number_splines];	//Alocação do vetor
+	db.splines = new Spline*[number_splines];	//AlocaÃ§Ã£o do vetor
 	for (int i = 0; i < number_splines; i++)
 	{
-		db.splines[i] = new Spline();		//Alocação de cada nó
+		db.splines[i] = new Spline();		//AlocaÃ§Ã£o de cada nÃ³
 		TryComment(f);
-		if (!db.splines[i]->Read(f))						//Leitura dos dados do nó
+		if (!db.splines[i]->Read(f))						//Leitura dos dados do nÃ³
 		{
 			printf("Error reading Spline %d.\n", i + 1);
-			db.number_splines = i + 1;	//altera o número de instâncias alocadas - evita erro no destrutor
+			db.number_splines = i + 1;	//altera o nÃºmero de instÃ¢ncias alocadas - evita erro no destrutor
 			return false;
 		}
 	}
@@ -1381,16 +1403,16 @@ bool IO::ReadLineRegions(FILE *f)
 	n_line_r = atoi(s);
 	db.number_line_regions = n_line_r;	//seta no database
 
-	db.line_regions = new LineRegion*[n_line_r];	//Alocação do vetor
+	db.line_regions = new LineRegion*[n_line_r];	//AlocaÃ§Ã£o do vetor
 	for (int i = 0; i < n_line_r; i++)
 	{
-		db.line_regions[i] = new LineRegion();		//Alocação de cada objeto
+		db.line_regions[i] = new LineRegion();		//AlocaÃ§Ã£o de cada objeto
 		TryComment(f);
 		//Leitura dos dados do objeto
 		if (!db.line_regions[i]->Read(f))
 		{
 			printf("Error reading Line Region %d.\n", i + 1);
-			db.number_line_regions = i + 1;	//altera o número de instâncias alocadas - evita erro no destrutor
+			db.number_line_regions = i + 1;	//altera o nÃºmero de instÃ¢ncias alocadas - evita erro no destrutor
 			return false;
 		}
 	}
@@ -1405,16 +1427,16 @@ bool IO::ReadSurfaceRegions(FILE *f)
 	n_surf_r = atoi(s);
 	db.number_surface_regions = n_surf_r;	//seta no database
 
-	db.surface_regions = new SurfaceRegion*[n_surf_r];	//Alocação do vetor
+	db.surface_regions = new SurfaceRegion*[n_surf_r];	//AlocaÃ§Ã£o do vetor
 	for (int i = 0; i < n_surf_r; i++)
 	{
-		db.surface_regions[i] = new SurfaceRegion();		//Alocação de cada objeto
+		db.surface_regions[i] = new SurfaceRegion();		//AlocaÃ§Ã£o de cada objeto
 		TryComment(f);
 		//Leitura dos dados do objeto
 		if (!db.surface_regions[i]->Read(f))
 		{
 			printf("Error reading Surface Region %d.\n", i + 1);
-			db.number_surface_regions = i + 1;	//altera o número de instâncias alocadas - evita erro no destrutor
+			db.number_surface_regions = i + 1;	//altera o nÃºmero de instÃ¢ncias alocadas - evita erro no destrutor
 			return false;
 		}
 	}
@@ -1429,40 +1451,40 @@ bool IO::ReadContacts(FILE *f)
 	n_contacts = atoi(s);
 	db.number_contacts = n_contacts;	//seta no database
 	bool contactOK = false;
-	db.contacts = new Contact*[n_contacts];	//Alocação do vetor
+	db.contacts = new Contact*[n_contacts];	//AlocaÃ§Ã£o do vetor
 	for (int i = 0; i < n_contacts; i++)
 	{
 		TryComment(f);
 		contactOK = false;
 		fscanf(f, "%s", s);
-		//Alocação do contato "LRLR"
+		//AlocaÃ§Ã£o do contato "LRLR"
 		if (!strcmp(s, "LRLR"))
 		{
-			db.contacts[i] = new LRLR();		//Alocação de cada objeto
+			db.contacts[i] = new LRLR();		//AlocaÃ§Ã£o de cada objeto
 			contactOK = true;
 		}
-		//Alocação do contato "GeneralPLR"
+		//AlocaÃ§Ã£o do contato "GeneralPLR"
 		if (!strcmp(s, "GeneralPLR"))
 		{
-			db.contacts[i] = new GeneralPLR();	//Alocação de cada objeto
+			db.contacts[i] = new GeneralPLR();	//AlocaÃ§Ã£o de cada objeto
 			contactOK = true;
 		}
-		//Alocação do contato "NSSS"
+		//AlocaÃ§Ã£o do contato "NSSS"
 		if (!strcmp(s, "NSSS"))
 		{
-			db.contacts[i] = new NSSS();	//Alocação de cada objeto
+			db.contacts[i] = new NSSS();	//AlocaÃ§Ã£o de cada objeto
 			contactOK = true;
 		}
-		//Alocação do contato "SSSS"
+		//AlocaÃ§Ã£o do contato "SSSS"
 		if (!strcmp(s, "SSSS"))
 		{
-			db.contacts[i] = new SSSS();	//Alocação de cada objeto
+			db.contacts[i] = new SSSS();	//AlocaÃ§Ã£o de cada objeto
 			contactOK = true;
 		}
-		//Alocação do contato "SPSP"
+		//AlocaÃ§Ã£o do contato "SPSP"
 		if (!strcmp(s, "SPSP"))
 		{
-			db.contacts[i] = new SPSP();	//Alocação de cada objeto
+			db.contacts[i] = new SPSP();	//AlocaÃ§Ã£o de cada objeto
 			contactOK = true;
 		}
 	
@@ -1472,14 +1494,14 @@ bool IO::ReadContacts(FILE *f)
 			if (!db.contacts[i]->Read(f))
 			{
 				printf("Error reading Contact %d.\n", i + 1);
-				db.number_contacts = i + 1;	//altera o número de instâncias alocadas - evita erro no destrutor
+				db.number_contacts = i + 1;	//altera o nÃºmero de instÃ¢ncias alocadas - evita erro no destrutor
 				return false;
 			}
 		}
 		else
 		{
 			printf("Error reading Contact %d or %d.\n",i, i + 1);
-			db.number_contacts = i;	//altera o número de instâncias alocadas - evita erro no destrutor
+			db.number_contacts = i;	//altera o nÃºmero de instÃ¢ncias alocadas - evita erro no destrutor
 			return false;
 		}
 		
@@ -1496,16 +1518,16 @@ bool IO::ReadNodeSets(FILE *f)
 	n_n_sets = atoi(s);
 	db.number_node_sets = n_n_sets;	//seta no database
 
-	db.node_sets = new NodeSet*[n_n_sets];	//Alocação do vetor
+	db.node_sets = new NodeSet*[n_n_sets];	//AlocaÃ§Ã£o do vetor
 	for (int i = 0; i < n_n_sets; i++)
 	{
-		db.node_sets[i] = new NodeSet();		//Alocação de cada objeto
+		db.node_sets[i] = new NodeSet();		//AlocaÃ§Ã£o de cada objeto
 		TryComment(f);
 		//Leitura dos dados do objeto
 		if (!db.node_sets[i]->Read(f))
 		{
 			printf("Error reading Node Set %d.\n", i + 1);
-			db.number_node_sets = i + 1;	//altera o número de instâncias alocadas - evita erro no destrutor
+			db.number_node_sets = i + 1;	//altera o nÃºmero de instÃ¢ncias alocadas - evita erro no destrutor
 			return false;
 		}
 	}
@@ -1520,16 +1542,16 @@ bool IO::ReadSuperNodeSets(FILE *f)
 	n_sn_sets = atoi(s);
 	db.number_super_node_sets = n_sn_sets;	//seta no database
 
-	db.super_node_sets = new SuperNodeSet*[n_sn_sets];	//Alocação do vetor
+	db.super_node_sets = new SuperNodeSet*[n_sn_sets];	//AlocaÃ§Ã£o do vetor
 	for (int i = 0; i < n_sn_sets; i++)
 	{
-		db.super_node_sets[i] = new SuperNodeSet();		//Alocação de cada objeto
+		db.super_node_sets[i] = new SuperNodeSet();		//AlocaÃ§Ã£o de cada objeto
 		TryComment(f);
 		//Leitura dos dados do objeto
 		if (!db.super_node_sets[i]->Read(f))
 		{
 			printf("Error reading Super Node Set %d.\n", i + 1);
-			db.number_node_sets = i + 1;	//altera o número de instâncias alocadas - evita erro no destrutor
+			db.number_node_sets = i + 1;	//altera o nÃºmero de instÃ¢ncias alocadas - evita erro no destrutor
 			return false;
 		}
 	}
@@ -1543,16 +1565,16 @@ bool IO::ReadSurfaceSets(FILE *f)
 	fscanf(f, "%s", s);
 	n_s_sets = atoi(s);
 	db.number_surface_sets = n_s_sets;	//seta no database
-	db.surface_sets = new SurfaceSet*[n_s_sets];	//Alocação do vetor
+	db.surface_sets = new SurfaceSet*[n_s_sets];	//AlocaÃ§Ã£o do vetor
 	for (int i = 0; i < n_s_sets; i++)
 	{
-		db.surface_sets[i] = new SurfaceSet();		//Alocação de cada objeto
+		db.surface_sets[i] = new SurfaceSet();		//AlocaÃ§Ã£o de cada objeto
 		TryComment(f);
 		//Leitura dos dados do objeto
 		if (!db.surface_sets[i]->Read(f))
 		{
 			printf("Error reading Surface Set %d.\n", i + 1);
-			db.number_surface_sets = i + 1;	//altera o número de instâncias alocadas - evita erro no destrutor
+			db.number_surface_sets = i + 1;	//altera o nÃºmero de instÃ¢ncias alocadas - evita erro no destrutor
 			return false;
 		}
 	}
@@ -1566,16 +1588,16 @@ bool IO::ReadElementSets(FILE *f)
 	fscanf(f, "%s", s);
 	n_e_sets = atoi(s);
 	db.number_element_sets = n_e_sets;	//seta no database
-	db.element_sets = new ElementSet*[n_e_sets];	//Alocação do vetor
+	db.element_sets = new ElementSet*[n_e_sets];	//AlocaÃ§Ã£o do vetor
 	for (int i = 0; i < n_e_sets; i++)
 	{
-		db.element_sets[i] = new ElementSet();		//Alocação de cada objeto
+		db.element_sets[i] = new ElementSet();		//AlocaÃ§Ã£o de cada objeto
 		TryComment(f);
 		//Leitura dos dados do objeto
 		if (!db.element_sets[i]->Read(f))
 		{
 			printf("Error reading Element Set %d.\n", i + 1);
-			db.number_element_sets = i + 1;	//altera o número de instâncias alocadas - evita erro no destrutor
+			db.number_element_sets = i + 1;	//altera o nÃºmero de instÃ¢ncias alocadas - evita erro no destrutor
 			return false;
 		}
 	}
@@ -1589,7 +1611,7 @@ bool IO::ReadLoads(FILE *f)
 	fscanf(f, "%s", s);
 	n_loads = atoi(s);
 	db.number_loads = n_loads;									//seta no database
-	db.loads = new Load*[n_loads];								//Alocação do vetor
+	db.loads = new Load*[n_loads];								//AlocaÃ§Ã£o do vetor
 	bool load_OK = false;
 	for (int i = 0; i < n_loads; i++)
 	{
@@ -1597,31 +1619,31 @@ bool IO::ReadLoads(FILE *f)
 		load_OK = false;
 		fscanf(f, "%s", s);
 
-		//Alocação do constraint do tipo "NodalLoad"
+		//AlocaÃ§Ã£o do constraint do tipo "NodalLoad"
 		if (!strcmp(s, "NodalLoad"))
 		{
 			db.loads[i] = new NodalLoad();
 			load_OK = true;
 		}
-		//Alocação do constraint do tipo "NodalFollowerLoad"
+		//AlocaÃ§Ã£o do constraint do tipo "NodalFollowerLoad"
 		if (!strcmp(s, "NodalFollowerLoad"))
 		{
 			db.loads[i] = new NodalFollowerLoad();
 			load_OK = true;
 		}
-		//Alocação do constraint do tipo "PipeLoad"
+		//AlocaÃ§Ã£o do constraint do tipo "PipeLoad"
 		if (!strcmp(s, "PipeLoad"))
 		{
 			db.loads[i] = new PipeLoad();
 			load_OK = true;
 		}
-		//Alocação do constraint do tipo "ShellLoad"
+		//AlocaÃ§Ã£o do constraint do tipo "ShellLoad"
 		if (!strcmp(s, "ShellLoad"))
 		{
 			db.loads[i] = new ShellLoad();
 			load_OK = true;
 		}
-		//Alocação do constraint do tipo "SuperNodalLoad"
+		//AlocaÃ§Ã£o do constraint do tipo "SuperNodalLoad"
 		if (!strcmp(s, "SuperNodalLoad"))
 		{
 			db.loads[i] = new SuperNodalLoad();
@@ -1633,14 +1655,14 @@ bool IO::ReadLoads(FILE *f)
 			if (!db.loads[i]->Read(f))
 			{
 				printf("Error reading Load %d.\n", i + 1);
-				db.number_loads = i + 1;			//altera o número de instâncias alocadas - evita erro no destrutor
+				db.number_loads = i + 1;			//altera o nÃºmero de instÃ¢ncias alocadas - evita erro no destrutor
 				return false;
 			}
 		}
 		else
 		{
 			printf("Error reading Load %d or %d.\n", i, i + 1);
-			db.number_loads = i;					//altera o número de instâncias alocadas - evita erro no destrutor
+			db.number_loads = i;					//altera o nÃºmero de instÃ¢ncias alocadas - evita erro no destrutor
 			return false;
 		}
 	}
@@ -1654,21 +1676,21 @@ bool IO::ReadDisplacements(FILE *f)
 	fscanf(f, "%s", s);
 	n_disp = atoi(s);
 	db.number_displacements = n_disp;								//seta no database
-	db.displacements = new Displacement*[n_disp];					//Alocação do vetor
+	db.displacements = new Displacement*[n_disp];					//AlocaÃ§Ã£o do vetor
 	bool disp_OK = false;
 	for (int i = 0; i < n_disp; i++)
 	{
 		TryComment(f);
 		disp_OK = false;
 		fscanf(f, "%s", s);
-		//Alocação do constraint do tipo "NodalDisplacement"
+		//AlocaÃ§Ã£o do constraint do tipo "NodalDisplacement"
 		if (!strcmp(s, "NodalDisplacement"))
 		{
 			db.displacements[i] = new NodalDisplacement();
 			disp_OK = true;
 		}
 
-		//Alocação do constraint do tipo "NodalDisplacement"
+		//AlocaÃ§Ã£o do constraint do tipo "NodalDisplacement"
 		if (!strcmp(s, "DisplacementField"))
 		{
 			db.displacements[i] = new DisplacementField();
@@ -1680,14 +1702,14 @@ bool IO::ReadDisplacements(FILE *f)
 			if (!db.displacements[i]->Read(f))
 			{
 				printf("Error reading Displacement %d.\n", i + 1);
-				db.number_displacements = i + 1;			//altera o número de instâncias alocadas - evita erro no destrutor
+				db.number_displacements = i + 1;			//altera o nÃºmero de instÃ¢ncias alocadas - evita erro no destrutor
 				return false;
 			}
 		}
 		else
 		{
 			printf("Error reading Displacement %d or %d.\n", i, i + 1);
-			db.number_displacements = i;					//altera o número de instâncias alocadas - evita erro no destrutor
+			db.number_displacements = i;					//altera o nÃºmero de instÃ¢ncias alocadas - evita erro no destrutor
 			return false;
 		}
 	}
@@ -1702,7 +1724,7 @@ bool IO::ReadConstraints(FILE *f)
 	fscanf(f, "%s", s);
 	n_const = atoi(s);
 	db.number_constraints = n_const;					//seta no database
-	db.constraints = new Constraint*[n_const];		//Alocação do vetor
+	db.constraints = new Constraint*[n_const];		//AlocaÃ§Ã£o do vetor
 	bool c_OK = false;
 	for (int i = 0; i < n_const; i++)
 	{
@@ -1710,13 +1732,13 @@ bool IO::ReadConstraints(FILE *f)
 		c_OK = false;
 		fscanf(f, "%s", s);
 
-		//Alocação do constraint do tipo "NodalConstraint"
+		//AlocaÃ§Ã£o do constraint do tipo "NodalConstraint"
 		if (!strcmp(s, "NodalConstraint"))
 		{
 			db.constraints[i] = new NodalConstraint();
 			c_OK = true;
 		}
-		//Alocação do constraint do tipo "SuperNodalConstraint"
+		//AlocaÃ§Ã£o do constraint do tipo "SuperNodalConstraint"
 		if (!strcmp(s, "SuperNodalConstraint"))
 		{
 			db.constraints[i] = new SuperNodalConstraint();
@@ -1728,14 +1750,14 @@ bool IO::ReadConstraints(FILE *f)
 			if (!db.constraints[i]->Read(f))
 			{
 				printf("Error reading Constraint %d.\n", i + 1);
-				db.number_constraints = i + 1;	//altera o número de instâncias alocadas - evita erro no destrutor
+				db.number_constraints = i + 1;	//altera o nÃºmero de instÃ¢ncias alocadas - evita erro no destrutor
 				return false;
 			}
 		}
 		else
 		{
 			printf("Error reading Constraint %d or %d.\n", i, i + 1);
-			db.number_constraints = i;	//altera o número de instâncias alocadas - evita erro no destrutor
+			db.number_constraints = i;	//altera o nÃºmero de instÃ¢ncias alocadas - evita erro no destrutor
 			return false;
 		}
 	}
@@ -1749,7 +1771,7 @@ bool IO::ReadSpecialConstraints(FILE *f)
 	fscanf(f, "%s", s);
 	n_special_c = atoi(s);
 	db.number_special_constraints = n_special_c;					//seta no database
-	db.special_constraints = new SpecialConstraint*[n_special_c];	//Alocação do vetor
+	db.special_constraints = new SpecialConstraint*[n_special_c];	//AlocaÃ§Ã£o do vetor
 	bool special_c_OK = false;
 	for (int i = 0; i < n_special_c; i++)
 	{
@@ -1757,43 +1779,43 @@ bool IO::ReadSpecialConstraints(FILE *f)
 		special_c_OK = false;
 		fscanf(f, "%s", s);
 
-		//Alocação do constraint do tipo "SameDisplacement"
+		//AlocaÃ§Ã£o do constraint do tipo "SameDisplacement"
 		if (!strcmp(s, "SameDisplacement"))
 		{
 			db.special_constraints[i] = new SameDisplacement();
 			special_c_OK = true;
 		}
-		//Alocação do constraint do tipo "Hinge"
+		//AlocaÃ§Ã£o do constraint do tipo "Hinge"
 		if (!strcmp(s, "HingeJoint"))
 		{
 			db.special_constraints[i] = new Hinge();
 			special_c_OK = true;
 		}
-		//Alocação do constraint do tipo "UniversalJoint"
+		//AlocaÃ§Ã£o do constraint do tipo "UniversalJoint"
 		if (!strcmp(s, "UniversalJoint"))
 		{
 			db.special_constraints[i] = new UniversalJoint();
 			special_c_OK = true;
 		}
-		//Alocação do constraint do tipo "SameRotation"
+		//AlocaÃ§Ã£o do constraint do tipo "SameRotation"
 		if (!strcmp(s, "SameRotation"))
 		{
 			db.special_constraints[i] = new SameRotation();
 			special_c_OK = true;
 		}
-		//Alocação do constraint do tipo "SameRotation"
+		//AlocaÃ§Ã£o do constraint do tipo "SameRotation"
 		if (!strcmp(s, "RigidNodeSet"))
 		{
 			db.special_constraints[i] = new RigidNodeSet();
 			special_c_OK = true;
 		}
-		//Alocação do constraint do tipo "TranslationalJoint"
+		//AlocaÃ§Ã£o do constraint do tipo "TranslationalJoint"
 		if (!strcmp(s, "TranslationalJoint"))
 		{
 			db.special_constraints[i] = new TranslationalJoint();
 			special_c_OK = true;
 		}
-		//Alocação do constraint do tipo "NodalConstraintDOF"
+		//AlocaÃ§Ã£o do constraint do tipo "NodalConstraintDOF"
 		if (!strcmp(s, "NodalConstraintDOF"))
 		{
 			db.special_constraints[i] = new NodalConstraintDOF();
@@ -1806,14 +1828,14 @@ bool IO::ReadSpecialConstraints(FILE *f)
 			if (!db.special_constraints[i]->Read(f))
 			{
 				printf("Error reading Special Constraint %d.\n", i + 1);
-				db.number_special_constraints = i + 1;	//altera o número de instâncias alocadas - evita erro no destrutor
+				db.number_special_constraints = i + 1;	//altera o nÃºmero de instÃ¢ncias alocadas - evita erro no destrutor
 				return false;
 			}
 		}
 		else
 		{
 			printf("Error reading Special Constraint %d or %d.\n", i, i + 1);
-			db.number_special_constraints = i;	//altera o número de instâncias alocadas - evita erro no destrutor
+			db.number_special_constraints = i;	//altera o nÃºmero de instÃ¢ncias alocadas - evita erro no destrutor
 			return false;
 		}
 	}
@@ -1828,19 +1850,19 @@ bool IO::ReadSectionDetails(FILE *f)
 	n_sec_details = atoi(s);
 	db.number_section_details = n_sec_details;	//seta no database
 	bool read_OK = false;
-	db.section_details = new SectionDetails*[n_sec_details];	//Alocação do vetor
+	db.section_details = new SectionDetails*[n_sec_details];	//AlocaÃ§Ã£o do vetor
 	for (int i = 0; i < n_sec_details; i++)
 	{
 		TryComment(f);
 		fscanf(f, "%s", s);
 		if (!strcmp(s, "SolidSection"))
 		{
-			db.section_details[i] = new SolidSection();			//Alocação de cada SectionDetails
+			db.section_details[i] = new SolidSection();			//AlocaÃ§Ã£o de cada SectionDetails
 			read_OK = true;
 		}
 		if (!strcmp(s, "MultiCellSection"))
 		{
-			db.section_details[i] = new MultiCellSection();		//Alocação de cada SectionDetails
+			db.section_details[i] = new MultiCellSection();		//AlocaÃ§Ã£o de cada SectionDetails
 			read_OK = true;
 		}
 		if (read_OK == true)
@@ -1850,14 +1872,14 @@ bool IO::ReadSectionDetails(FILE *f)
 			if (!db.section_details[i]->Read(f))
 			{
 				printf("Error reading Section Details %d.\n", i + 1);
-				db.number_section_details = i + 1;	//altera o número de instâncias alocadas - evita erro no destrutor
+				db.number_section_details = i + 1;	//altera o nÃºmero de instÃ¢ncias alocadas - evita erro no destrutor
 				return false;
 			}
 		}
 		else
 		{
 			printf("Error reading Section Details %d or %d.\n", i, i + 1);
-			db.number_section_details = i;	//altera o número de instâncias alocadas - evita erro no destrutor
+			db.number_section_details = i;	//altera o nÃºmero de instÃ¢ncias alocadas - evita erro no destrutor
 			return false;
 		}
 
@@ -1873,15 +1895,15 @@ bool IO::ReadAerodynamicData(FILE *f)
 	fscanf(f, "%s", s);
 	n_aero = atoi(s);
 	db.number_aerodynamicdata = n_aero;					//seta no database
-	db.aerodynamic_data = new AerodynamicData*[n_aero];	//Alocação do vetor
+	db.aerodynamic_data = new AerodynamicData*[n_aero];	//AlocaÃ§Ã£o do vetor
 	for (int i = 0; i < n_aero; i++)
 	{
-		db.aerodynamic_data[i] = new AerodynamicData();		//Alocação de cada ponto
+		db.aerodynamic_data[i] = new AerodynamicData();		//AlocaÃ§Ã£o de cada ponto
 		TryComment(f);
 		if (!db.aerodynamic_data[i]->Read(f))		//Leitura dos dados do aerodynamicdata
 		{
 			printf("Error reading AerodynamicData %d.\n", i + 1);
-			db.number_aerodynamicdata = i + 1;	//altera o número de instâncias alocadas - evita erro no destrutor
+			db.number_aerodynamicdata = i + 1;	//altera o nÃºmero de instÃ¢ncias alocadas - evita erro no destrutor
 			return false;
 		}
 	}
@@ -1895,20 +1917,20 @@ bool IO::ReadCADData(FILE *f)
 	fscanf(f, "%s", s);
 	n_CAD = atoi(s);
 	db.number_cad_data = n_CAD;				//seta no database
-	db.cad_data = new CADData*[n_CAD];		//Alocação do vetor
+	db.cad_data = new CADData*[n_CAD];		//AlocaÃ§Ã£o do vetor
 	bool CAD_OK = false;
 	for (int i = 0; i < n_CAD; i++)
 	{
 		TryComment(f);
 		CAD_OK = false;
 		fscanf(f, "%s", s);
-		//Alocação do elemento "STLSurface"
+		//AlocaÃ§Ã£o do elemento "STLSurface"
 		if (!strcmp(s, "STLSurface"))
 		{
 			db.cad_data[i] = new STLSurface();
 			CAD_OK = true;
 		}
-		//Alocação do elemento "NURBSSurface"
+		//AlocaÃ§Ã£o do elemento "NURBSSurface"
 		if (!strcmp(s, "NURBSSurface"))
 		{
 			db.cad_data[i] = new NURBSSurface();
@@ -1920,14 +1942,14 @@ bool IO::ReadCADData(FILE *f)
 			if (!db.cad_data[i]->Read(f))
 			{
 				printf("Error reading CADData %d.\n", i + 1);
-				db.number_cad_data = i + 1;	//altera o número de instâncias alocadas - evita erro no destrutor
+				db.number_cad_data = i + 1;	//altera o nÃºmero de instÃ¢ncias alocadas - evita erro no destrutor
 				return false;
 			}
 		}
 		else
 		{
 			printf("Error reading CADData %d or %d.\n", i, i + 1);
-			db.number_cad_data = i;	//altera o número de instâncias alocadas - evita erro no destrutor
+			db.number_cad_data = i;	//altera o nÃºmero de instÃ¢ncias alocadas - evita erro no destrutor
 			return false;
 		}
 	}
@@ -1941,20 +1963,20 @@ bool IO::ReadContactInterfaces(FILE *f)
 	fscanf(f, "%s", s);
 	n_interfaces = atoi(s);
 	db.number_contactinterfaces = n_interfaces;						//Seta no database
-	db.contactinterfaces = new ContactInterface*[n_interfaces];		//Alocação do vetor
+	db.contactinterfaces = new ContactInterface*[n_interfaces];		//AlocaÃ§Ã£o do vetor
 	bool Interface_OK = false;
 	for (int i = 0; i < n_interfaces; i++)
 	{
 		TryComment(f);
 		Interface_OK = false;
 		fscanf(f, "%s", s);
-		//Alocação da interface "Interface_1"
+		//AlocaÃ§Ã£o da interface "Interface_1"
 		if (!strcmp(s, "Interface_1"))
 		{
 			db.contactinterfaces[i] = new Interface_1();
 			Interface_OK = true;
 		}
-		//Alocação da interface "Interface_0"
+		//AlocaÃ§Ã£o da interface "Interface_0"
 		if (!strcmp(s, "Interface_0"))
 		{
 			db.contactinterfaces[i] = new Interface_0();
@@ -1965,14 +1987,14 @@ bool IO::ReadContactInterfaces(FILE *f)
 			if (!db.contactinterfaces[i]->Read(f))
 			{
 				printf("Error reading ContactInterface %d.\n", i + 1);
-				db.number_contactinterfaces = i + 1;	//altera o número de instâncias alocadas - evita erro no destrutor
+				db.number_contactinterfaces = i + 1;	//altera o nÃºmero de instÃ¢ncias alocadas - evita erro no destrutor
 				return false;
 			}
 		}
 		else
 		{
 			printf("Error reading ContactInterface %d or %d.\n", i, i + 1);
-			db.number_contactinterfaces = i;	//altera o número de instâncias alocadas - evita erro no destrutor
+			db.number_contactinterfaces = i;	//altera o nÃºmero de instÃ¢ncias alocadas - evita erro no destrutor
 			return false;
 		}
 	}
@@ -1986,26 +2008,26 @@ bool IO::ReadGeometries(FILE *f)
 	fscanf(f, "%s", s);
 	n_geometries = atoi(s);
 	db.number_geometries = n_geometries;							//Seta no database
-	db.geometries = new Geometry*[n_geometries];					//Alocação do vetor
+	db.geometries = new Geometry*[n_geometries];					//AlocaÃ§Ã£o do vetor
 	bool GEOM_OK = false;
 	for (int i = 0; i < n_geometries; i++)
 	{
 		TryComment(f);
 		GEOM_OK = false;
 		fscanf(f, "%s", s);
-		//Alocação da interface "SECylinder"
+		//AlocaÃ§Ã£o da interface "SECylinder"
 		if (!strcmp(s, "SECylinder"))
 		{
 			db.geometries[i] = new SECylinder();
 			GEOM_OK = true;
 		}
-		//Alocação da interface "ArcExtrusion"
+		//AlocaÃ§Ã£o da interface "ArcExtrusion"
 		if (!strcmp(s, "ArcExtrusion"))
 		{
 			db.geometries[i] = new ArcExtrusion();
 			GEOM_OK = true;
 		}
-		//Alocação da interface "ArcRevolution"
+		//AlocaÃ§Ã£o da interface "ArcRevolution"
 		if (!strcmp(s, "ArcRevolution"))
 		{
 			db.geometries[i] = new ArcRevolution();
@@ -2017,14 +2039,14 @@ bool IO::ReadGeometries(FILE *f)
 			if (!db.geometries[i]->Read(f))
 			{
 				printf("Error reading Geometry %d.\n", i + 1);
-				db.number_geometries = i + 1;	//altera o número de instâncias alocadas - evita erro no destrutor
+				db.number_geometries = i + 1;	//altera o nÃºmero de instÃ¢ncias alocadas - evita erro no destrutor
 				return false;
 			}
 		}
 		else
 		{
 			printf("Error reading Geometry %d or %d.\n", i, i + 1);
-			db.number_geometries = i;	//altera o número de instâncias alocadas - evita erro no destrutor
+			db.number_geometries = i;	//altera o nÃºmero de instÃ¢ncias alocadas - evita erro no destrutor
 			return false;
 		}
 	}
@@ -2038,15 +2060,15 @@ bool IO::ReadBodyGeometries(FILE *f)
 	fscanf(f, "%s", s);
 	n_body = atoi(s);
 	db.number_body_geometries = n_body;					//seta no database
-	db.body_geometries = new BodyGeometry*[n_body];		//Alocação do vetor
+	db.body_geometries = new BodyGeometry*[n_body];		//AlocaÃ§Ã£o do vetor
 	for (int i = 0; i < n_body; i++)
 	{
-		db.body_geometries[i] = new BodyGeometry();		//Alocação de cada body
+		db.body_geometries[i] = new BodyGeometry();		//AlocaÃ§Ã£o de cada body
 		TryComment(f);
 		if (!db.body_geometries[i]->Read(f))			//Leitura dos dados
 		{
 			printf("Error reading BodyGeometry %d.\n", i + 1);
-			db.number_body_geometries = i + 1;					//altera o número de instâncias alocadas - evita erro no destrutor
+			db.number_body_geometries = i + 1;					//altera o nÃºmero de instÃ¢ncias alocadas - evita erro no destrutor
 			return false;
 		}
 	}
@@ -2060,14 +2082,14 @@ bool IO::ReadBoundaries(FILE *f)
 	fscanf(f, "%s", s);
 	n_bound = atoi(s);
 	db.number_boundaries = n_bound;						//Seta no database
-	db.boundaries = new Boundary*[n_bound];				//Alocação do vetor
+	db.boundaries = new Boundary*[n_bound];				//AlocaÃ§Ã£o do vetor
 	bool boundary_OK = false;
 	for (int i = 0; i < n_bound; i++)
 	{
 		TryComment(f);
 		boundary_OK = false;
 		fscanf(f, "%s", s);
-		//Alocação de "STLBoundary"
+		//AlocaÃ§Ã£o de "STLBoundary"
 		if (!strcmp(s, "STLBoundary"))
 		{
 			db.boundaries[i] = new STLBoundary();
@@ -2078,14 +2100,14 @@ bool IO::ReadBoundaries(FILE *f)
 			if (!db.boundaries[i]->Read(f))
 			{
 				printf("Error reading Boundary %d.\n", i + 1);
-				db.number_boundaries = i + 1;	//altera o número de instâncias alocadas - evita erro no destrutor
+				db.number_boundaries = i + 1;	//altera o nÃºmero de instÃ¢ncias alocadas - evita erro no destrutor
 				return false;
 			}
 		}
 		else
 		{
 			printf("Error reading Boundary %d or %d.\n", i, i + 1);
-			db.number_boundaries = i;	//altera o número de instâncias alocadas - evita erro no destrutor
+			db.number_boundaries = i;	//altera o nÃºmero de instÃ¢ncias alocadas - evita erro no destrutor
 			return false;
 		}
 	}
@@ -2192,15 +2214,15 @@ bool IO::ReadSuperNodes(FILE *f)
 	fscanf(f, "%s", s);
 	n_sn = atoi(s);
 	db.number_super_nodes = n_sn;			//seta no database
-	db.super_nodes = new SuperNode*[n_sn];	//Alocação do vetor
+	db.super_nodes = new SuperNode*[n_sn];	//AlocaÃ§Ã£o do vetor
 	for (int i = 0; i < n_sn; i++)
 	{
-		db.super_nodes[i] = new SuperNode();			//Alocação de cada super node
+		db.super_nodes[i] = new SuperNode();			//AlocaÃ§Ã£o de cada super node
 		TryComment(f);
 		if (!db.super_nodes[i]->Read(f))						//Leitura dos dados do super node
 		{
 			printf("Error reading Super Node %d.\n", i + 1);
-			db.number_super_nodes = i + 1;	//altera o número de instâncias alocadas - evita erro no destrutor
+			db.number_super_nodes = i + 1;	//altera o nÃºmero de instÃ¢ncias alocadas - evita erro no destrutor
 			return false;
 		}
 	}
@@ -2209,7 +2231,7 @@ bool IO::ReadSuperNodes(FILE *f)
 
 void IO::WriteSolutions(FILE *f)
 {
-	///////////////////////////Escrita dos nós////////////////////////////////
+	///////////////////////////Escrita dos nÃ³s////////////////////////////////
 	fprintf(f, "\nSolutionSteps\t%d\n", db.number_solutions);
 	for (int i = 0; i < db.number_solutions; i++)
 		db.solution[i]->Write(f);			//Escrita dos dados 
@@ -2217,7 +2239,7 @@ void IO::WriteSolutions(FILE *f)
 
 void IO::WriteNodes(FILE *f)
 {
-	///////////////////////////Escrita dos nós////////////////////////////////
+	///////////////////////////Escrita dos nÃ³s////////////////////////////////
 	fprintf(f, "\nNodes\t%d\n", db.number_nodes);
 	for (int i = 0; i < db.number_nodes; i++)
 		db.nodes[i]->Write(f);			//Escrita dos dados 
@@ -2248,14 +2270,14 @@ void IO::WriteElements(FILE *f)
 }
 void IO::WriteParticles(FILE *f)
 {
-	///////////////////////////Escrita das partículas///////////////////////////
+	///////////////////////////Escrita das partÃ­culas///////////////////////////
 	fprintf(f, "\nParticles\t%d\n", db.number_particles);
 	for (int i = 0; i < db.number_particles; i++)
 		db.particles[i]->Write(f);			//Escrita dos dados
 }
 void IO::WriteInitialConditions(FILE *f)
 {
-	///////////////////////////Escrita das condições iniciais///////////////////
+	///////////////////////////Escrita das condiÃ§Ãµes iniciais///////////////////
 	fprintf(f, "\nInitialConditions\t%d\n", db.number_IC);
 	for (int i = 0; i < db.number_IC; i++)
 		db.IC[i]->Write(f);			//Escrita dos dados
@@ -2269,21 +2291,21 @@ void IO::WriteMaterials(FILE *f)
 }
 void IO::WriteSections(FILE *f)
 {
-	///////////////////////////Escrita das seções//////////////////////////////
+	///////////////////////////Escrita das seÃ§Ãµes//////////////////////////////
 	fprintf(f, "\nSections\t%d\n", db.number_sections);
 	for (int i = 0; i < db.number_sections; i++)
 		db.sections[i]->Write(f);			//Escrita dos dados
 }
 void IO::WritePipeSections(FILE *f)
 {
-	///////////////////////////Escrita das seções de tubos/////////////////////
+	///////////////////////////Escrita das seÃ§Ãµes de tubos/////////////////////
 	fprintf(f, "\nPipeSections\t%d\n", db.number_pipe_sections);
 	for (int i = 0; i < db.number_pipe_sections; i++)
 		db.pipe_sections[i]->Write(f);	//Escrita dos dados
 }
 void IO::WriteShellSections(FILE *f)
 {
-	///////////////////////////Escrita das seções de tubos/////////////////////
+	///////////////////////////Escrita das seÃ§Ãµes de tubos/////////////////////
 	fprintf(f, "\nShellSections\t%d\n", db.number_shell_sections);
 	for (int i = 0; i < db.number_shell_sections; i++)
 		db.shell_sections[i]->Write(f);	//Escrita dos dados
@@ -2438,7 +2460,7 @@ void IO::WriteSpecialConstraints(FILE *f)
 
 void IO::WriteSectionDetails(FILE *f)
 {
-	///////////////////////////Escrita das seções de tubos/////////////////////
+	///////////////////////////Escrita das seÃ§Ãµes de tubos/////////////////////
 	fprintf(f, "\nSectionDetails\t%d\n", db.number_section_details);
 	for (int i = 0; i < db.number_section_details; i++)
 		db.section_details[i]->Write(f);	//Escrita dos dados
