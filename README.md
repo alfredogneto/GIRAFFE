@@ -50,7 +50,7 @@ git clone https://github.com/alfredogneto/GIRAFFE.git
 
   `build3.bat`: builds and compiles **Giraffe** for [Microsoft Visual Studio](https://visualstudio.microsoft.com/) (Debug mode by default).
 
-  `build4.bat`: creates environment variables for **GIRAFFE** execution. All variables are created in the user's profile and are based in the folder where Giraffe lies in your computer.
+  `build4.bat`: creates environment variables for **GIRAFFE** execution. All variables are created in the user's profile and are based in the folder where Giraffe is located in your computer.
 
   5. The last step is to manually add to the environment variable `Path` of your operational system the following paths: `%GIRAFFE_PATH%` and `%MKL_PATH%`. This can be done, for example, using the procedure described [here](https://www.java.com/en/download/help/path.html). PS: you can add these paths either to system variables or to variables for the user. Both work fine. Take care not to overwrite some of the available paths defined in your system/user, to avoid problems.
 
