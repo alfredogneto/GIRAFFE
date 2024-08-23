@@ -1,3 +1,3 @@
 cd dependencies/vcpkg
-::arpack-ng
+::install arpack-ng
 vcpkg install arpack-ng
