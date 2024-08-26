@@ -83,7 +83,7 @@ source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR} FILES ${TREE_FILES})
 
 
 ## Other files to include in Visual Studio solution explorer
-set(FILES_TO_ADD README.md build1.bat build2.bat build3.bat)
+set(FILES_TO_ADD README.md install_dependencies.bat build.bat)
 
 ## Create the executable
 
