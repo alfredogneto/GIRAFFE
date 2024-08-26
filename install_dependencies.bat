@@ -7,15 +7,13 @@ set GIRAFFE_INSTALL="%cd%"
 :: ---------------------------
 :: Dependencies
 :: ---------------------------
-if not exist dependencies (mkdir dependencies)
-cd dependencies
 ::
 :: exprtk
 ::
 echo Searching for exprtk...
-if not exist exprtk (
-echo exprtk folder not found, cloning exprtk...& ^
-git clone https://github.com/ArashPartow/exprtk.git
+if not exist dependencies/exprtk (
+echo exprtk not found, cloning exprtk...& ^
+git clone https://github.com/ArashPartow/exprtk.git dependencies/exprtk
 ) else (
 echo exprtk found.
 )
@@ -24,9 +22,9 @@ echo exprtk found.
 ::
 echo.
 echo Searching for eigen...
-if not exist eigen (
-echo eigen folder not found, cloning eigen...& ^
-git clone https://gitlab.com/libeigen/eigen.git
+if not exist dependencies/eigen (
+echo eigen not found, cloning eigen...& ^
+git clone https://gitlab.com/libeigen/eigen.git dependencies/eigen
 ) else (
 echo eigen found.
 )
@@ -35,25 +33,25 @@ echo eigen found.
 ::
 echo.
 echo Searching for vcpkg...
-if not exist vcpkg (
-echo vcpkg folder not found, cloning vcpkg...& ^
-git clone https://github.com/microsoft/vcpkg.git & ^
+IF NOT DEFINED vcpkg_root (
+if not exist dependencies/vcpkg (
+echo vcpkg not found, cloning vcpkg...& ^
+git clone https://github.com/microsoft/vcpkg.git dependencies/vcpkg & ^
 echo installing vcpkg...& ^
-cd vcpkg & bootstrap-vcpkg.bat & ^
+cd depedencies/vcpkg & bootstrap-vcpkg.bat & ^
 echo vcpkg installed.& ^
-echo.& ^
+echo.&^
 echo installing arpack-ng...& ^
 vcpkg install arpack-ng & ^
 echo arpack-ng installed.& ^
 cd ../..
-) else (
+)) else (
 echo vcpkg found.& ^
-cd vcpkg &^
+mklink /j "dependencies/vcpkg" "%vcpkg_root%"&^
 echo.&^
 echo installing arpack-ng...& ^
-vcpkg install arpack-ng & ^
-echo arpack-ng installed. & ^
-cd ../..
+%vcpkg_root%/vcpkg install arpack-ng & ^
+echo arpack-ng installed.
 )
 :: 
 :: Set GIRAFFE_PATH
