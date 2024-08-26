@@ -1,6 +1,7 @@
 @echo off
 ::Creation of Giraffe installation path environment variable
 setx GIRAFFE_INSTALL "%cd%"
+set GIRAFFE_INSTALL="%cd%"
 :: Prerequisites:
 :: OpenMKL
 :: ---------------------------
@@ -51,15 +52,21 @@ cd vcpkg &^
 echo.&^
 echo installing arpack-ng...& ^
 vcpkg install arpack-ng & ^
-echo arpack-ng installed.
+echo arpack-ng installed. & ^
+cd ../..
 )
 :: 
 :: Set GIRAFFE_PATH
 ::
 echo.
 echo Setting GIRAFFE_PATH...
-set GIRAFFE_DEPENDENCIES="%cd%/packages"& ^
-setx GIRAFFE_PATH "%GIRAFFE_DEPENDENCIES%/arpack-ng_x64-windows/bin/;%GIRAFFE_DEPENDENCIES%/lapack-reference_x64-windows/bin/;%GIRAFFE_DEPENDENCIES%/openblas_x64-windows/bin/;%GIRAFFE_DEPENDENCIES%/vcpkg-gfortran_x64-windows/bin/;"
+
+setx GIRAFFE_PATH "%GIRAFFE_INSTALL%\dependencies\vcpkg\packages\arpack-ng_x64-windows\bin\;%GIRAFFE_INSTALL%\dependencies\vcpkg\packages\lapack-reference_x64-windows\bin\;%GIRAFFE_INSTALL%\dependencies\vcpkg\packages\openblas_x64-windows\bin\;%GIRAFFE_INSTALL%\dependencies\vcpkg\packages\vcpkg-gfortran_x64-windows\bin;"
+set GIRAFFE_PATH="%GIRAFFE_INSTALL%\dependencies\vcpkg\packages\arpack-ng_x64-windows\bin\;%GIRAFFE_INSTALL%\dependencies\vcpkg\packages\lapack-reference_x64-windows\bin\;%GIRAFFE_INSTALL%\dependencies\vcpkg\packages\openblas_x64-windows\bin\;%GIRAFFE_INSTALL%\dependencies\vcpkg\packages\vcpkg-gfortran_x64-windows\bin;"
+
+::set GIRAFFE_DEPENDENCIES="%cd%/packages"
+::setx GIRAFFE_PATH "%GIRAFFE_DEPENDENCIES%/arpack-ng_x64-windows/bin/;%GIRAFFE_DEPENDENCIES%/lapack-reference_x64-windows/bin/;%GIRAFFE_DEPENDENCIES%/openblas_x64-windows/bin/;%GIRAFFE_DEPENDENCIES%/vcpkg-gfortran_x64-windows/bin/;"
+::set GIRAFFE_PATH="%%GIRAFFE_DEPENDENCIES%%/arpack-ng_x64-windows/bin/;%%GIRAFFE_DEPENDENCIES%%/lapack-reference_x64-windows/bin/;%%GIRAFFE_DEPENDENCIES%%/openblas_x64-windows/bin/;%%GIRAFFE_DEPENDENCIES%%/vcpkg-gfortran_x64-windows/bin/;"
 echo GIRAFFE_PATH set.
 :: 
 :: Set MKL_PATH
@@ -67,6 +74,7 @@ echo GIRAFFE_PATH set.
 echo.
 echo Setting MKL_PATH...
 setx MKL_PATH "C:/Program Files (x86)/Intel/oneAPI/mkl/latest/bin/;C:/Program Files (x86)/Intel/oneAPI/compiler/latest/bin/;"
+set MKL_PATH="C:/Program Files (x86)/Intel/oneAPI/mkl/latest/bin/;C:/Program Files (x86)/Intel/oneAPI/compiler/latest/bin/;"
 echo MKL_PATH set.
 ::
 ::
