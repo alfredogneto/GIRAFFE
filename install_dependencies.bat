@@ -58,13 +58,8 @@ echo arpack-ng installed.
 ::
 echo.
 echo Setting GIRAFFE_PATH...
-
 setx GIRAFFE_PATH "%GIRAFFE_INSTALL%\dependencies\vcpkg\packages\arpack-ng_x64-windows\bin\;%GIRAFFE_INSTALL%\dependencies\vcpkg\packages\lapack-reference_x64-windows\bin\;%GIRAFFE_INSTALL%\dependencies\vcpkg\packages\openblas_x64-windows\bin\;%GIRAFFE_INSTALL%\dependencies\vcpkg\packages\vcpkg-gfortran_x64-windows\bin;"
 set GIRAFFE_PATH="%GIRAFFE_INSTALL%\dependencies\vcpkg\packages\arpack-ng_x64-windows\bin\;%GIRAFFE_INSTALL%\dependencies\vcpkg\packages\lapack-reference_x64-windows\bin\;%GIRAFFE_INSTALL%\dependencies\vcpkg\packages\openblas_x64-windows\bin\;%GIRAFFE_INSTALL%\dependencies\vcpkg\packages\vcpkg-gfortran_x64-windows\bin;"
-
-::set GIRAFFE_DEPENDENCIES="%cd%/packages"
-::setx GIRAFFE_PATH "%GIRAFFE_DEPENDENCIES%/arpack-ng_x64-windows/bin/;%GIRAFFE_DEPENDENCIES%/lapack-reference_x64-windows/bin/;%GIRAFFE_DEPENDENCIES%/openblas_x64-windows/bin/;%GIRAFFE_DEPENDENCIES%/vcpkg-gfortran_x64-windows/bin/;"
-::set GIRAFFE_PATH="%%GIRAFFE_DEPENDENCIES%%/arpack-ng_x64-windows/bin/;%%GIRAFFE_DEPENDENCIES%%/lapack-reference_x64-windows/bin/;%%GIRAFFE_DEPENDENCIES%%/openblas_x64-windows/bin/;%%GIRAFFE_DEPENDENCIES%%/vcpkg-gfortran_x64-windows/bin/;"
 echo GIRAFFE_PATH set.
 :: 
 :: Set MKL_PATH
