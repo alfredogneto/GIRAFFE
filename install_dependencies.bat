@@ -38,7 +38,7 @@ if not exist dependencies/vcpkg (
 echo vcpkg not found, cloning vcpkg...& ^
 git clone https://github.com/microsoft/vcpkg.git dependencies/vcpkg & ^
 echo installing vcpkg...& ^
-cd depedencies/vcpkg & bootstrap-vcpkg.bat & ^
+cd dependencies/vcpkg & bootstrap-vcpkg.bat & ^
 echo vcpkg installed.& ^
 echo.&^
 echo installing arpack-ng...& ^
