@@ -1,5 +1,6 @@
 @echo off
 ::Creation of Giraffe installation path environment variable
+echo Creating GIRAFFE_INSTALL variable.
 setx GIRAFFE_INSTALL "%cd%"
 set GIRAFFE_INSTALL="%cd%"
 :: Prerequisites:
@@ -33,26 +34,50 @@ echo eigen found.
 ::
 echo.
 echo Searching for vcpkg...
-IF NOT DEFINED vcpkg_root (
-if not exist dependencies/vcpkg (
-echo vcpkg not found, cloning vcpkg...& ^
-git clone https://github.com/microsoft/vcpkg.git dependencies/vcpkg & ^
-echo installing vcpkg...& ^
-cd dependencies/vcpkg & bootstrap-vcpkg.bat & ^
-echo vcpkg installed.& ^
-echo.&^
-echo installing arpack-ng...& ^
-vcpkg install arpack-ng & ^
-echo arpack-ng installed.& ^
-cd ../..
-)) else (
-echo vcpkg found.& ^
-mklink /j "dependencies/vcpkg" "%vcpkg_root%"&^
-echo.&^
-echo installing arpack-ng...& ^
-%vcpkg_root%/vcpkg install arpack-ng & ^
-echo arpack-ng installed.
+if exist dependencies/vcpkg goto begininstallarpack
+if defined vcpkg_root goto beginvcpkgdefined
+if not defined vcpkg_root goto begincheckpath
+
+:beginvcpkgdefined
+echo VCPKG_ROOT found.
+mklink /j "dependencies/vcpkg" "%vcpkg_root%"
+goto begininstallarpack
+
+:begincheckpath
+for %%G in ("%path:;=" "%") do @echo %%G >> temp.txt
+findstr /c:"vcpkg" temp.txt > nul
+if %errorlevel%==0 (
+goto beginfoundinpath
+) else (
+goto beginclonevcpkg
 )
+:endcheckpath
+del temp.txt
+goto begininstallarpack
+
+:beginfoundinpath
+echo vcpkg found in path
+for /f %%G in ('findstr vcpkg temp.txt') do set vcpkgroot=%%G & goto setjunction
+:setjunction
+mklink /j "dependencies/vcpkg" "%vcpkgroot%"
+goto endcheckpath
+
+:beginclonevcpkg
+echo vcpkg not found, cloning vcpkg...
+git clone https://github.com/microsoft/vcpkg.git dependencies/vcpkg
+echo installing vcpkg...
+cd dependencies/vcpkg & bootstrap-vcpkg.bat
+echo vcpkg installed.
+cd ../..
+goto endcheckpath
+
+:begininstallarpack
+echo.
+echo installing arpack-ng...
+cd dependencies/vcpkg
+vcpkg install arpack-ng
+cd ../..
+echo arpack-ng installed.
 :: 
 :: Set GIRAFFE_PATH
 ::
@@ -77,3 +102,11 @@ echo.
 echo Step 1 of the setup is ready
 echo Please update your PATH variable (user or system) to contain ^%%GIRAFFE_PATH%% and ^%%MKL_PATH%%.
 echo After this, proceed with the CMake build by executing build.bat
+
+
+
+
+
+
+
+::del temp.txt
