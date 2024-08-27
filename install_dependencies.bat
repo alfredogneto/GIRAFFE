@@ -34,17 +34,23 @@ echo eigen found.
 ::
 echo.
 echo Searching for vcpkg...
-if exist dependencies/vcpkg goto begininstallarpack
+:: Look if it is already adequately set up
+if exist dependencies/vcpkg echo vcpkg found.& goto begininstallarpack
+:: If not, see if there is VCPKG_ROOT definition
 if defined vcpkg_root goto beginvcpkgdefined
-if not defined vcpkg_root goto begincheckpath
+:: If not, check the PATH variable for likely location of the executable
+goto begincheckpath
 
 :beginvcpkgdefined
 echo VCPKG_ROOT found.
+:: Create directory junction
 mklink /j "dependencies/vcpkg" "%vcpkg_root%"
 goto begininstallarpack
 
 :begincheckpath
+:: Write PATH to temporary file
 for %%G in ("%path:;=" "%") do @echo %%G >> temp.txt
+:: Look for the string vcpkg in it
 findstr /c:"vcpkg" temp.txt > nul
 if %errorlevel%==0 (
 goto beginfoundinpath
@@ -56,11 +62,13 @@ del temp.txt
 goto begininstallarpack
 
 :beginfoundinpath
+:: Check, for the entries with the string "vcpkg", if they contain the executable
+:: If they do, create the junction, if not, clone vcpkg and install it.
 for /f %%G in ('findstr vcpkg temp.txt') do if exist %%G/vcpkg.exe (set vcpkgroot=%%G & goto setjunction)
 goto beginclonevcpkg
 
 :setjunction
-echo vcpkg found in path
+echo vcpkg found in path.
 mklink /j "dependencies/vcpkg" "%vcpkgroot%"
 goto endcheckpath
 
@@ -71,7 +79,6 @@ echo installing vcpkg...
 cd dependencies/vcpkg
 call bootstrap-vcpkg.bat
 echo vcpkg installed.
-
 cd ../..
 goto endcheckpath
 
@@ -99,18 +106,11 @@ setx MKL_PATH "C:/Program Files (x86)/Intel/oneAPI/mkl/latest/bin/;C:/Program Fi
 set MKL_PATH="C:/Program Files (x86)/Intel/oneAPI/mkl/latest/bin/;C:/Program Files (x86)/Intel/oneAPI/compiler/latest/bin/;"
 echo MKL_PATH set.
 ::
-::
+:: Final instructions
 ::
 echo.
 echo.
 echo Step 1 of the setup is ready
 echo Please update your PATH variable (user or system) to contain ^%%GIRAFFE_PATH%% and ^%%MKL_PATH%%.
 echo After this, proceed with the CMake build by executing build.bat
-
-
-
-
-
-
-
-::del temp.txt
+pause
