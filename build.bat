@@ -3,6 +3,6 @@ md build & cd .\build
 :: Generate project
 cmake .. 
 :: Build Giraffe (Debug)
-cmake --build . --config Debug
+cmake --build . --config Release
 cd ..
 
