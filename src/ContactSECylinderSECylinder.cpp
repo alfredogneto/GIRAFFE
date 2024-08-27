@@ -1057,7 +1057,7 @@ double ContactSECylinderSECylinder::Gap(Matrix& mc, bool fixed_normals, Matrix& 
 	double* normalB = nB.getMatrix();
 
 	//AceGen
-	int b303;
+	
 	v[247] = cos(c[1]);
 	v[169] = sin(c[1]);
 	v[251] = fabs(v[169]);
@@ -1254,7 +1254,7 @@ void ContactSECylinderSECylinder::GradientGap(Matrix& mc, Matrix& mGra, bool fix
 	double* normalB = nB.getMatrix();
 
 	//AceGen
-	int i312, i426, i427, b303, b314;
+	int i312, i426, i427, b314;
 	v[247] = cos(c[1]);
 	v[169] = sin(c[1]);
 	v[388] = _copysign(1.e0, v[169]);
@@ -1591,7 +1591,7 @@ void ContactSECylinderSECylinder::HessianGap(Matrix& mc, Matrix& mHes, bool fixe
 	double* normalB = nB.getMatrix();
 
 	//AceGen
-	int i312, i411, i681, i684, i687, i690, i718, i732, b303, b314, b509, b641;
+	int i312, i411, i681, i684, i687, i690, i718, i732, b314, b509;
 	v[247] = cos(c[1]);
 	v[702] = (*aA)*v[247];
 	v[169] = sin(c[1]);
@@ -16577,9 +16577,9 @@ double v07; double v08; double v09;
 int i1624, i1798, i2317, i3318, i5745, i6318, i8153, i8154, i8155, i8156, i8157, i8158
 , i8160, i8161, i8162, i8163, i8164, i8165, i8295, i8296, i8297, i8298, i8299, i8300, i8315
 , i8316, i8317, i8318, i8319, i8320, i8641, i8642, i8643, i8644, i8645, i8646, i8647, i8648
-, i8649, i8650, i8651, i8652, b4, b5, b6, b488, b524, b525, b1341, b1342, b1374, b1506, b1515
-, b1516, b1524, b1525, b1526, b1527, b1530, b1531, b1539, b1540, b1553, b1554, b1555, b1556
-, b1572, b1589, b1590, b1602, b1632, b1636, b1637, b1641, b1643, b1977, b1991, b1995, b1996
+, i8649, i8650, i8651, i8652, b4, b5, b6, b524, b1341, b1515
+, b1524, b1526, b1539, b1555
+, b1589, b1632, b1636, b1637, b1641, b1643, b1977, b1991, b1995, b1996
 , b2004, b2008, b2322, b2323, b2324, b2325, b2430, b2431, b2435, b2439, b2440, b2454, b2455
 , b2806, b2852, b2905, b2912, b3789, b3803, b3875, b3921, b4573, b4577, b4579, b4580, b4585
 , b4586, b4615, b4616, b4617, b4633, b4800, b4801, b4811, b4815, b4819, b4833, b4834, b5089

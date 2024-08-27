@@ -255,8 +255,8 @@ void RigidNURBS_1_RigidNURBS_1::ContactSS(bool *stick, bool *stickupdated, bool 
 	double v08; double v09;
 	int i847, i915, i1143, i1429, i2302, i2362, i2773, i2774, i2775, i2776, i2777, i2778, i2819
 		, i2820, i2821, i2822, i2823, i2824, i2833, i2834, i2835, i2845, i2846, i2847, i2848, i2849
-		, i2850, i2992, i2993, i2994, i2995, i2996, i2997, b709, b710, b742, b776, b777, b778, b794
-		, b811, b812, b824, b1092, b1148, b1149, b1150, b1191, b1228, b1687, b1732, b1800, b1801
+		, i2850, i2992, i2993, i2994, i2995, i2996, i2997, b709, b777
+		, b811, b1148, b1149, b1150, b1191, b1228, b1687, b1732, b1800, b1801
 		, b1818, b1936, b1961;
 	v[2783] = -((*a4)*(*ct));
 	v[4084] = 0e0;
@@ -4500,7 +4500,7 @@ double RigidNURBS_1_RigidNURBS_1::Gap(Matrix& mc, bool fixed_normals, Matrix& nA
 	double* normalA = nA.getMatrix();
 	double* normalB = nB.getMatrix();
 
-	int b243;
+	
 	v[161] = Power(alphaA[0], 2);
 	v[159] = 0.5e0*alphaA[0] * alphaA[1];
 	v[154] = Power(alphaA[1], 2);
@@ -4604,7 +4604,7 @@ void RigidNURBS_1_RigidNURBS_1::GradientGap(Matrix& mc, Matrix& mGra, bool fixed
 	double* normalA = nA.getMatrix();
 	double* normalB = nB.getMatrix();
 	
-	int i252, i312, i313, b243, b254;
+	int i252, i312, i313, b254;
 	v[161] = Power(alphaA[0], 2);
 	v[159] = 0.5e0*alphaA[0] * alphaA[1];
 	v[154] = Power(alphaA[1], 2);
@@ -4801,7 +4801,7 @@ void RigidNURBS_1_RigidNURBS_1::HessianGap(Matrix& mc, Matrix& mHes, bool fixed_
 	double* normalA = nA.getMatrix();
 	double* normalB = nB.getMatrix();
 	
-	int i252, i305, i425, i426, i427, i428, b243, b254, b365, b411;
+	int i252, i305, i425, i426, i427, i428, b254, b365;
 	v[608] = 0e0;
 	v[609] = 0e0;
 	v[610] = dGBp[2][0];

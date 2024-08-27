@@ -464,7 +464,7 @@ double FlexibleArcExtrusion_1_RigidArcRevolution_1::Gap(Matrix& mc, bool fixed_n
 	
 
 	//AceGen
-	int b237;
+	
 	v[215] = cos(c[2]);
 	v[210] = sin(c[2]);
 	v[250] = v[210] * (*zfac);
@@ -681,7 +681,7 @@ void FlexibleArcExtrusion_1_RigidArcRevolution_1::GradientGap(Matrix& mc, Matrix
 	
 
 	//AceGen
-	int i246, i312, i313, b237, b248;
+	int i246, i312, i313, b248;
 	v[215] = cos(c[2]);
 	v[317] = -(v[215] * (*xfac));
 	v[210] = sin(c[2]);
@@ -991,7 +991,7 @@ void FlexibleArcExtrusion_1_RigidArcRevolution_1::HessianGap(Matrix& mc, Matrix&
 	double Hes[4][4];
 	
 	//AceGen
-	int i246, i302, i438, i441, i450, b237, b248, b361, b421, b462;
+	int i246, i302, i438, i441, i450, b248, b361, b462;
 	v[215] = cos(c[2]);
 	v[210] = sin(c[2]);
 	v[93] = Power(dA[3], 2);
@@ -2036,7 +2036,7 @@ void FlexibleArcExtrusion_1_RigidArcRevolution_1::HessianPhase1(Matrix& mc, Matr
 	double Hes[4][4];
 
 	//AceGen
-	int i246, i254, i295, b287, b297;
+	int i246, i254, i295, b297;
 	v[215] = cos(c[2]);
 	v[294] = v[215] * (*xfac);
 	v[210] = sin(c[2]);
@@ -2346,8 +2346,8 @@ void FlexibleArcExtrusion_1_RigidArcRevolution_1::ContactSS(bool *stick, bool *s
 	int i1087, i1169, i1514, i1876, i3049, i3128, i3711, i3712, i3713, i3714, i3715, i3716
 		, i3717, i3718, i3719, i3789, i3790, i3791, i3792, i3793, i3794, i3795, i3796, i3797, i3798
 		, i3799, i3800, i3801, i3802, i3803, i3813, i3814, i3815, i4016, i4017, i4018, i4019, i4020
-		, i4021, i4022, i4023, i4024, b909, b910, b942, b1016, b1017, b1018, b1034, b1051, b1052
-		, b1064, b1436, b1519, b1520, b1521, b1565, b1608, b2238, b2283, b2366, b2367, b2384, b2547
+		, i4021, i4022, i4023, i4024, b909, b1017, b1051
+		, b1519, b1520, b1521, b1565, b1608, b2238, b2283, b2366, b2367, b2384, b2547
 		, b2578;
 	v[3734] = -((*a4)*(*ct));
 	v[1438] = cos(cp[2]);

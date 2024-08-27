@@ -7115,8 +7115,8 @@ double v020; double v021; double v022; double v023; double v024; double v025;
 double v026; double v027; double v03; double v04; double v05; double v06; double v07;
 double v08; double v09;
 int i840, i933, i1194, i1799, i3212, i3510, i4599, i4600, i4601, i4602, i4603, i4604, i4618
-, i4619, i4620, b29, b30, b329, b330, b678, b679, b711, b733, b734, b735, b736, b742, b743
-, b752, b753, b769, b770, b771, b772, b788, b805, b806, b818, b845, b846, b850, b1023, b1024
+, i4619, i4620, b29, b30, b329, b678, b733, b735
+, b752, b771, b805, b845, b846, b850, b1023, b1024
 , b1035, b1199, b1200, b1201, b1202, b1269, b1273, b1274, b1291, b1292, b1446, b1480, b1533
 , b2109, b2151, b2197, b2519, b2520, b2529, b2530, b2554, b2555, b2556, b2572, b2667, b2671
 , b2675, b2686, b2687, b2788, b2813, b2869, b3221, b3222, b3226, b3231, b3232, b3317, b3789
@@ -13596,8 +13596,7 @@ void RigidTriangularFace_RigidTriangularFace::MountLocalContributionsExplicit(do
 	double v020; double v021; double v022; double v023; double v024; double v025;
 	double v026; double v027; double v03; double v04; double v05; double v06; double v07;
 	double v08; double v09;
-	int b276, b281, b313, b352, b353, b354, b355, b361, b362, b372, b388, b389, b391, b407, b425
-		, b437;
+	int b352, b354;
 	v[1] = gti[0];
 	v[2] = gti[1];
 	v[3] = gti[2];
@@ -14213,8 +14212,7 @@ void RigidTriangularFace_RigidTriangularFace::FinalUpdateExplicit(double t)
 	double v020; double v021; double v022; double v023; double v024; double v025;
 	double v026; double v027; double v03; double v04; double v05; double v06; double v07;
 	double v08; double v09;
-	int b276, b281, b313, b352, b353, b354, b355, b361, b362, b372, b388, b389, b391, b407, b425
-		, b437;
+	int b352, b354;
 	v[1] = gti[0];
 	v[2] = gti[1];
 	v[3] = gti[2];

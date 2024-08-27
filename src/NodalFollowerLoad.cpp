@@ -213,7 +213,7 @@ void NodalFollowerLoad::EvaluateExplicit(double t)
 		}
 		//Global contributions
 		int GL_lin;
-		int GL_col;
+		//int GL_col;
 		for (int lin = 0; lin < 6; lin++)
 		{
 			GL_lin = db.nodes[node - 1]->GLs[lin];

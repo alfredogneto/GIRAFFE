@@ -499,11 +499,11 @@ void Monitor::UpdateGlobalMonitor(double time)
 			db.gcs->n_monitoring_BOBO, db.gcs->n_active_BOBO, db.gcs->n_monitoring_PBO, db.gcs->n_active_PBO);
 		if (print_times)
 		{
-			fprintf(f_global[0], "%d\t", db.gcs->duration_verlet);
-			fprintf(f_global[0], "%d\t", db.gcs->duration_linkedcells);
-			fprintf(f_global[0], "%d\t", db.gcs->duration_collision_detection);
-			fprintf(f_global[0], "%d\t", db.gcs->global_n_collisiondetection);
-			fprintf(f_global[0], "%d\t", db.gcs->duration_mount_contact);
+			fprintf(f_global[0], "%d\t", (int)db.gcs->duration_verlet);
+			fprintf(f_global[0], "%d\t", (int)db.gcs->duration_linkedcells);
+			fprintf(f_global[0], "%d\t", (int)db.gcs->duration_collision_detection);
+			fprintf(f_global[0], "%d\t", (int)db.gcs->global_n_collisiondetection);
+			fprintf(f_global[0], "%d\t", (int)db.gcs->duration_mount_contact);
 		}
 	}
 		
