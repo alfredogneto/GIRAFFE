@@ -66,8 +66,10 @@ goto endcheckpath
 echo vcpkg not found, cloning vcpkg...
 git clone https://github.com/microsoft/vcpkg.git dependencies/vcpkg
 echo installing vcpkg...
-cd dependencies/vcpkg & bootstrap-vcpkg.bat
+cd dependencies/vcpkg
+call bootstrap-vcpkg.bat
 echo vcpkg installed.
+
 cd ../..
 goto endcheckpath
 
