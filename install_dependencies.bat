@@ -56,9 +56,11 @@ del temp.txt
 goto begininstallarpack
 
 :beginfoundinpath
-echo vcpkg found in path
-for /f %%G in ('findstr vcpkg temp.txt') do set vcpkgroot=%%G & goto setjunction
+for /f %%G in ('findstr vcpkg temp.txt') do if exist %%G/vcpkg.exe (set vcpkgroot=%%G & goto setjunction)
+goto beginclonevcpkg
+
 :setjunction
+echo vcpkg found in path
 mklink /j "dependencies/vcpkg" "%vcpkgroot%"
 goto endcheckpath
 
