@@ -32,11 +32,12 @@ All the files provided in the GIRAFFE repository are part of the GIRAFFE project
 For intallation and usage of GIRAFFE software one needs third party software/libraries, for which individual licenses apply.
 
 * Intel oneMKL
-	Intel Simplified Software License https://www.intel.com/content/www/us/en/developer/articles/license/end-user-license-agreement.html
+	Intel Simplified Software License 
+	https://www.intel.com/content/www/us/en/developer/articles/license/end-user-license-agreement.html
 
 * exprtk
 	Source code available at: https://github.com/ArashPartow/exprtk
-    The MIT License
+   	The MIT License
 	https://opensource.org/licenses/MIT
 
 * Eigen
