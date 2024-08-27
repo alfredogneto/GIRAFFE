@@ -46,7 +46,7 @@ git clone https://github.com/alfredogneto/GIRAFFE.git
   
   `install_dependencies.bat`: creates a `/dependencies` folder, clones [exprtk](https://github.com/ArashPartow/exprtk.git), [Eigen](https://gitlab.com/libeigen/eigen.git) and [vcpkg](https://github.com/microsoft/vcpkg.git), such as installs the last one. Afer, it installs [arpack-ng](https://github.com/opencollab/arpack-ng.git). Creates environment variables for **GIRAFFE** execution. All variables are created in the user's profile and are based in the folder where Giraffe is located on your computer.
 
-  `build.bat`: builds and compiles **Giraffe** for [Microsoft Visual Studio](https://visualstudio.microsoft.com/) (Debug mode by default).
+  `build.bat`: builds and compiles **Giraffe** for [Microsoft Visual Studio](https://visualstudio.microsoft.com/) (Release mode by default).
   
   5. The last step is to manually add to the environment variable `Path` of your operational system the following paths: `%GIRAFFE_PATH%` and `%MKL_PATH%`. This can be done, for example, using the procedure described [here](https://www.java.com/en/download/help/path.html). PS: you can add these paths either to system variables or to variables for the user. Both work fine. Take care not to overwrite some of the available paths defined in your system/user, to avoid problems.
 
@@ -56,7 +56,7 @@ After finishing all the steps, you will find the [Microsoft Visual Studio](https
 
 **Giraffe** execution is based on reading input files, with a proper syntax. Examples of input files are found in the folder `/inputs`. 
 
-To execute **Giraffe**, you simply have to open its executable file either in [Microsoft Visual Studio](https://visualstudio.microsoft.com/) environment or directly in the folder created after compiling it (`/build/Debug`) or (`/build/Release`), depending on the option chosen (default is Debug). The only instruction **Giraffe** needs is the name of the input file.
+To execute **Giraffe**, you simply have to open its executable file either in [Microsoft Visual Studio](https://visualstudio.microsoft.com/) environment or directly in the folder created after compiling it (`/build/Debug`) or (`/build/Release`), depending on the option chosen (default is Release). The only instruction **Giraffe** needs is the name of the input file.
 
 The **Giraffe** input  file must be located inside a folder with the same name as the input file. It is mandatory to use the file extension `*.inp` for the input file. Files with different extensions or with no extensions will result in error messages when **Giraffe** tries to read them.
 Example: the input file named `tutorial01.inp` is located inside a folder named `tutorial01`.
