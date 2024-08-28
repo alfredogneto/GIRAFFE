@@ -1,7 +1,16 @@
 #include "ArcExtrusion.h"
 
-#include"Database.h"
+#include "BoundingCylinder.h"
+#include "MatrixFloat.h"
+#include "ArcCirc.h"
+#include "Node.h"
+#include "CoordinateSystem.h"
+#include "Encoding.h"
+#include "PostFiles.h"
+#include "Interface_1.h"
+#include "GeneralContactSearch.h"
 
+#include"Database.h"
 //Variáveis globais
 extern
 Database db;

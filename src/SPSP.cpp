@@ -1,9 +1,20 @@
 #include "SPSP.h"
-#define PI 3.1415926535897932384626433832795
+
+#include "Spline.h"
+#include "SplineElement.h"
+#include "SplineElementData.h"
+#include "SplineElementPair.h"
+#include "SplineElement_SplineElement.h"
+#include "PostFiles.h"
+#include "Encoding.h"
+#include "Monitor.h"
+#include "SPContactData.h"
+#include "Matrix.h"
 #include"Database.h"
 //Variáveis globais
 extern
 Database db;
+#define PI 3.1415926535897932384626433832795
 
 SPSP::SPSP()
 {

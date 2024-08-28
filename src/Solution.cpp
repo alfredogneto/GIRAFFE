@@ -1,10 +1,31 @@
 #include "Solution.h"
-#include"Database.h"
+#include <iostream>
 
+#include "Node.h"
+#include "SuperNode.h"
+#include "SpecialConstraint.h"
+#include "Element.h"
+#include "Particle.h"
+#include "BodyGeometry.h"
+#include "Surface.h"
+#include "Geometry.h"
+#include "Boundary.h"
+#include "Constraint.h"
+#include "PSYCoupling.h"
+#include "Load.h"
+#include "Spline.h"
+#include "Contact.h"
+#include "SplineElement.h"
+#include "GeneralContactSearch.h"
+#include "Displacement.h"
+#include "InitialCondition.h"
+
+#include "Database.h"
 //Variáveis globais
 extern
 Database db;
 
+using namespace std::chrono;
 
 Solution::Solution()
 {

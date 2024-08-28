@@ -1,4 +1,16 @@
 #include "PSYCoupling.h"
+#include <iostream>
+
+#include "Matrix.h"
+#include "Displacement.h"
+#include "Constraint.h"
+#include "NodalDisplacement.h"
+#include "NodalConstraint.h"
+#include "Particle.h"
+#include "Table.h"
+#include "Node.h"
+#include "Sphere.h"
+#include "Hooke.h"
 #include"Database.h"
 //Variáveis globais
 extern

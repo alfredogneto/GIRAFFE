@@ -1,5 +1,9 @@
 #include "SurfacePair.h"
+#include <direct.h>
 
+#include "SSContactData.h"
+#include "Surface.h"
+#include "FlexibleArcExtrusion_1_RigidArcRevolution_1.h"
 #include"Database.h"
 //Variáveis globais
 extern

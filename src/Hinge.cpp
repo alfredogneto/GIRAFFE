@@ -1,9 +1,16 @@
 #include "Hinge.h"
-#include"Database.h"
 
+#include "InitialCondition.h"
+#include "Node.h"
+#include "CoordinateSystem.h"
+#include "Dynamic.h"
+
+#include"Database.h"
 //Variáveis globais
 extern
 Database db;
+
+#define PI 3.1415926535897932384626433832795
 
 Hinge::Hinge()
 {

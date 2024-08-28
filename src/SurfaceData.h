@@ -1,4 +1,5 @@
-#include "Matrix.h"
+class Matrix;
+
 class SurfaceData
 {
 public:

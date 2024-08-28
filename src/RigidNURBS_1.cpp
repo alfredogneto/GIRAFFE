@@ -1,5 +1,10 @@
 #include "RigidNURBS_1.h"
 
+#include "NURBSSurface.h"
+#include "PostFiles.h"
+#include "Node.h"
+#include "CoordinateSystem.h"
+
 #include"Database.h"
 //Variáveis globais
 extern

@@ -1,6 +1,5 @@
 #pragma once
 #include "SplineElementPair.h"
-#include "Spline.h"
 
 class SplineElement_SplineElement :
 	public SplineElementPair

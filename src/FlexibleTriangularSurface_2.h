@@ -1,5 +1,6 @@
 #pragma once
 #include "Surface.h"
+
 class FlexibleTriangularSurface_2 :
 	public Surface
 {

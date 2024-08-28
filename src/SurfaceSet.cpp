@@ -1,4 +1,6 @@
 #include "SurfaceSet.h"
+#include <string>
+
 
 #include"Database.h"
 //Variáveis globais

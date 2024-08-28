@@ -1,5 +1,11 @@
 #include "FlexibleTriangularSurface_2.h"
 
+#include "Dynamic.h"
+#include "PostFiles.h"
+#include "Encoding.h"
+#include "Node.h"
+#include "NSContactData.h"
+
 #include"Database.h"
 //Variáveis globais
 extern

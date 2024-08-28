@@ -1,7 +1,8 @@
 #pragma once
 #include "Contact.h"
-#include "NSContactData.h"
-#include <typeinfo>
+
+class Matrix;
+class NSContactData;
 
 ////////Contato do tipo NSSS - "Node Set to Surface Set"///////////
 class NSSS:

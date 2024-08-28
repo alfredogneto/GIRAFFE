@@ -1,11 +1,8 @@
 #pragma once
 #include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <math.h>
-#include "Table.h"
-#include "Matrix.h"
-#include "MathCode.h"
+
+class Table;
+class MathCode;
 
 class Load
 {

@@ -1,5 +1,7 @@
 #pragma once
 #include "Load.h"
+#include "Matrix.h"
+
 class NodalFollowerLoad :
 	public Load
 {

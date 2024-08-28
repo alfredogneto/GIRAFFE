@@ -1,8 +1,17 @@
 #include "Monitor.h"
-#include"Database.h"
 #include <direct.h>
-#include "IO.h"
 
+#include "Node.h"
+#include "Element.h"
+#include "Contact.h"
+#include "NodeSet.h"
+#include "Particle.h"
+#include "SpecialConstraint.h"
+#include "GeneralContactSearch.h"
+#include "ConvergenceCriteria.h"
+
+#include"Database.h"
+#include "IO.h"
 //Variáveis globais
 extern
 Database db;

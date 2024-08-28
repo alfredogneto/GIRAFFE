@@ -1,5 +1,4 @@
 #pragma once
-#include <math.h>
 
 //This class contains data about a bounding box of a given 3D object
 class Box

@@ -1,4 +1,15 @@
 #include "LRLR.h"
+#include <typeinfo>
+
+#include "Contact.h"
+#include "Pipe_1.h"
+#include "Beam_1.h"
+#include "SecTube.h"
+#include "LagrangeSaveLRAS.h"
+#include "LineRegion.h"
+#include "Node.h"
+#include "Matrix.h"
+
 #define PI 3.1415926535897932384626433832795
 #include"Database.h"
 //Variáveis globais

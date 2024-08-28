@@ -1,6 +1,6 @@
 #pragma once
 #include "Displacement.h"
-#include "BoolTable.h"
+#include "Matrix.h"
 
 
 class DisplacementField :

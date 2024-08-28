@@ -1,6 +1,9 @@
 #include "DisplacementField.h"
-#include "IO.h"
 
+#include "Node.h"
+#include "CoordinateSystem.h"
+#include "Solution.h"
+#include "IO.h"
 
 DisplacementField::DisplacementField()
 {

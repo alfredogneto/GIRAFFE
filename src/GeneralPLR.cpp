@@ -1,6 +1,20 @@
 #include "GeneralPLR.h"
 #include <direct.h>
-#include <omp.h>
+
+#include "Dynamic.h"
+#include "Matrix.h"
+#include "LineRegion.h"
+#include "Particle.h"
+#include "Sphere.h"
+#include "Element.h"
+#include "Pipe_1.h"
+#include "Beam_1.h"
+#include "SecTube.h"
+#include "PipeSection.h"
+#include "Node.h"
+
+
+//#include <omp.h>
 #define PI 3.1415926535897932384626433832795
 #include"Database.h"
 //Variáveis globais

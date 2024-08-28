@@ -1,6 +1,16 @@
 #include "ContactVEMPolyhedronVEMPolyhedron.h"
-#include "Database.h"
 
+#include "VEMPolyhedron.h"
+#include "STLSurface.h"
+#include "TriangularFace.h"
+#include "Matrix.h"
+#include "FlexibleTriangularFace_FlexibleTriangularFace.h"
+#include "SurfacePairGeneralContact.h"
+#include "GeneralContactSearch.h"
+#include "SSContactData.h"
+#include "SuperNode.h"
+
+#include "Database.h"
 //Variáveis globais
 extern
 Database db;

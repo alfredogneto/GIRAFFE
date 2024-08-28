@@ -1,9 +1,15 @@
 #include "RigidBodyData.h"
 
+
+#include "Matrix.h"
+#include "CoordinateSystem.h"
+#include "Node.h"
+#include "CADData.h"
 #include"Database.h"
 //Variáveis globais
 extern
 Database db;
+#define PI 3.1415926535897932384626433832795
 
 RigidBodyData::RigidBodyData()
 {

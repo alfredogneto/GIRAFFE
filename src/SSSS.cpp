@@ -1,9 +1,30 @@
 #include "SSSS.h"
-#define PI 3.1415926535897932384626433832795
+
+#include "SSContactData.h"
+#include "SurfacePair.h"
+#include "Matrix.h"
+//Tipos de pares de superfície:
+#include "FlexibleSECylinder_1_FlexibleSECylinder_1.h"
+#include "FlexibleArcExtrusion_1_RigidArcRevolution_1.h"
+#include "RigidNURBS_1_RigidNURBS_1.h"
+#include "FlexibleSECylinder_1_FlexibleTriangularSurface_2.h"
+#include "SurfaceSet.h"
+#include "Surface.h"
+#include "PostFiles.h"
+#include "SurfaceData.h"
+#include "Encoding.h"
+#include "Monitor.h"
+#include "FlexibleSECylinder_1.h"
+#include "FlexibleArcExtrusion_1.h"
+#include "RigidArcRevolution_1.h"
+#include "RigidNURBS_1.h"
+#include "FlexibleTriangularSurface_2.h"
+
 #include"Database.h"
 //Variáveis globais
 extern
 Database db;
+#define PI 3.1415926535897932384626433832795
 
 SSSS::SSSS()
 {

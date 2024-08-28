@@ -1,14 +1,13 @@
 #pragma once
 #include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include "Beam_1.h"
+
+class Beam_1;
 
 class SectionDetails
 {
 public:
-	SectionDetails();
-	virtual ~SectionDetails();
+	SectionDetails() {}
+	virtual ~SectionDetails() {}
 	virtual bool Read(FILE *f) = 0;
 	virtual void Write(FILE *f) = 0;
 	virtual void WriteVTK_XMLRender(FILE *f, Beam_1* elem) = 0;

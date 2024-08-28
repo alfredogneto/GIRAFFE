@@ -1,6 +1,12 @@
 #include "STLSurface.h"
-#include"Database.h"
-#include"Eigen/dense"
+#include <Eigen/dense>
+
+#include "MatrixFloat.h"
+#include "TriangularFace.h"
+#include "Particle.h"
+#include "VEMPolyhedron.h"
+#include "Encoding.h"
+#include "Database.h"
 //Variáveis globais
 extern
 Database db;

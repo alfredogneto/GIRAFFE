@@ -1,6 +1,7 @@
 #pragma once
 #include "Element.h"
-#include "LagrangeSave.h"
+
+class LagrangeSave;
 
 class Pipe_1 :
 	public Element

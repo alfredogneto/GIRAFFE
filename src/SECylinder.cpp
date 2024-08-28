@@ -1,5 +1,14 @@
 #include "SECylinder.h"
 
+#include "BoundingCylinder.h"
+#include "MatrixFloat.h"
+#include "Node.h"
+#include "CoordinateSystem.h"
+#include "GeneralContactSearch.h"
+#include "Interface_1.h"
+#include "PostFiles.h"
+#include "Encoding.h"
+
 #include"Database.h"
 
 //extern

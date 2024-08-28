@@ -1,4 +1,8 @@
 #include "Surface.h"
+#include <string>
+
+#include "Matrix.h"
+#include "NSContactData.h"
 
 Surface::Surface()
 {

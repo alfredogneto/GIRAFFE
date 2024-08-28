@@ -1,10 +1,15 @@
 #include "Environment.h"
-#define PI 3.1415926535897932384626433832795
+#include <math.h>
+
+#include "CoordinateSystem.h"
+
 #include"Database.h"
 #include "IO.h"
 //Variáveis globais
 extern 
 Database db;
+
+#define PI 3.1415926535897932384626433832795
 
 Environment::Environment(void)
 {

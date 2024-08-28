@@ -1,9 +1,9 @@
 #pragma once
-#include "SPContactData.h"
-#include "Surface.h"
 #include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
+
+#include "Matrix.h"
+
+class SPContactData;
 
 class SplineElementPair
 {

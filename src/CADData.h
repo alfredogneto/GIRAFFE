@@ -1,16 +1,13 @@
 #pragma once
 #include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <math.h>
-#include "Matrix.h"
-#include <vector>
+
+class Matrix;
 
 class CADData
 {
 public:
-	CADData();
-	virtual ~CADData();
+	CADData() {}
+	virtual ~CADData() {}
 	int number;
 	char file[200];																//Nome do arquivo CAD
 	virtual bool Read(FILE *f) = 0;												//Leitura do arquivo de entrada

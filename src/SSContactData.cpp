@@ -1,7 +1,7 @@
 #include "SSContactData.h"
-#include "stdio.h"
-#include "math.h"
 
+#include "Matrix.h"
+#include "SurfaceData.h"
 #include"Database.h"
 //Variáveis globais
 extern

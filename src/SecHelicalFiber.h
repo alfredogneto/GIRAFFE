@@ -1,5 +1,6 @@
 #pragma once
 #include "Section.h"
+
 class SecHelicalFiber :
 	public Section
 {

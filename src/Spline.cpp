@@ -1,8 +1,17 @@
 #include "Spline.h"
+
+#include "Matrix.h"
+#include "SplineElement.h"
+#include "NodeSet.h"
+#include "Node.h"
+#include "PostFiles.h"
+#include "Encoding.h"
+#include "Dynamic.h"
 #include "Database.h"
 //Variáveis globais
 extern
 Database db;
+#define PI 3.1415926535897932384626433832795
 
 Spline::Spline()
 {

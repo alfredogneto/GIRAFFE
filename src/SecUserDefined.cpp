@@ -1,4 +1,9 @@
 #include "SecUserDefined.h"
+
+#include "SectionDetails.h"
+#include "SolidSection.h"
+#include "MultiCellSection.h"
+
 #include"Database.h"
 //Variáveis globais
 extern

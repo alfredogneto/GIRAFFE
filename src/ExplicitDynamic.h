@@ -1,5 +1,8 @@
 #pragma once
 #include "Solution.h"
+
+class Matrix;
+
 class ExplicitDynamic :
 	public Solution
 {

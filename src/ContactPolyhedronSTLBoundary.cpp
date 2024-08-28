@@ -1,6 +1,16 @@
 #include "ContactPolyhedronSTLBoundary.h"
-#include "Database.h"
 
+#include "Polyhedron.h"
+#include "STLBoundary.h"
+#include "STLSurface.h"
+#include "TriangularFace.h"
+#include "Matrix.h"
+#include "RigidTriangularFace_RigidTriangularFace.h"
+#include "GeneralContactSearch.h"
+#include "SurfacePairGeneralContact.h"
+#include "Node.h"
+
+#include "Database.h"
 //Variáveis globais
 extern
 Database db;

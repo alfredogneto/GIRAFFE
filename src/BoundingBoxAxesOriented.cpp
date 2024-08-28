@@ -1,5 +1,6 @@
 #include "BoundingBoxAxesOriented.h"
 
+#include "MatrixFloat.h"
 #include "Database.h"
 
 //Variáveis globais

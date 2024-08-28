@@ -1,6 +1,14 @@
 #include "ContactSECylinderSECylinder.h"
-#include "Database.h"
 
+#include "SECylinder.h"
+#include "Matrix.h"
+#include "SSContactData.h"
+#include "ExecutionData.h"
+#include "BodyGeometry.h"
+#include "CoordinateSystem.h"
+#include "Dynamic.h"
+
+#include "Database.h"
 //Variáveis globais
 extern
 Database db;

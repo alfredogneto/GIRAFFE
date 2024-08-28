@@ -1,5 +1,5 @@
 #include "Table.h"
-#include <stdio.h>
+#include <string>
 
 Table::Table()
 {

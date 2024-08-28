@@ -1,6 +1,22 @@
 #include "VEMPolyhedron.h"
-#include"Database.h"
 
+#include "Matrix.h"
+#include "MatrixFloat.h"
+#include "BoundingSphere.h"
+#include "CADData.h"
+#include "STLSurface.h"
+#include "CoordinateSystem.h"
+#include "SuperNode.h"
+#include "BoundingTriangularBox.h"
+#include "BoundingCylinder.h"
+#include "Hooke.h"
+#include "TriangularFace.h"
+#include "GeneralContactSearch.h"
+#include "Environment.h"
+#include "Interface_1.h"
+#include "Encoding.h"
+#include "Dynamic.h"
+#include"Database.h"
 //Variáveis globais
 extern
 Database db;

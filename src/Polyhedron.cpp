@@ -1,9 +1,25 @@
 #include "Polyhedron.h"
-#include"Database.h"
+
+#include "BoundingSphere.h"
+#include "CADData.h"
+#include "MatrixFloat.h"
+#include "STLSurface.h"
+#include "CoordinateSystem.h"
+#include "Material.h"
+#include "GeneralContactSearch.h"
+#include "Interface_1.h"
+#include "BoundingTriangularBox.h"
+#include "BoundingCylinder.h"
+#include "Environment.h"
+#include "Node.h"
+#include "ContactParticleParticle.h"
+#include "Dynamic.h"
+#include "TriangularFace.h"
 
 //extern
 //FILE *fdebug;
 
+#include"Database.h"
 //Variáveis globais
 extern
 Database db;

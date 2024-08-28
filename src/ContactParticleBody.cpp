@@ -1,7 +1,19 @@
 #include "ContactParticleBody.h"
-#include "Database.h"
-//#include "CollisionDetection.h"
+#include <direct.h>
 
+//#include "CollisionDetection.h"
+#include "SSContactData.h"
+#include "Matrix.h"
+#include "Encoding.h"
+#include "Particle.h"
+#include "BodyGeometry.h"
+#include "BoundingCylinder.h"
+#include "BoundingTriangularBox.h"
+#include "BoundingSphere.h"
+#include "Boundary.h"
+#include "Geometry.h"
+
+#include "Database.h"
 //Variáveis globais
 extern
 Database db;

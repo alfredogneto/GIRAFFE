@@ -1,9 +1,10 @@
 #pragma once
 #include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
 #include "Surface.h"
-#include "NURBSSurface.h"
+
+#include "Matrix.h"
+
+class NURBSSurface;
 
 class RigidNURBS_1 :
 	public Surface

@@ -1,14 +1,12 @@
 #include "SparseMatrix.h"
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <direct.h>
-
+#include <iostream>
+#include "mkl.h"
 
 #include "arpack.hpp"
 #include "debug_c.hpp"  // debug arpack.
 #include "stat_c.hpp"   // arpack statistics.
 
+#include "SolverOptions.h"
 #include "Database.h"
 //Variáveis globais
 extern

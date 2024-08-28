@@ -1,4 +1,5 @@
 #include "Point.h"
+#include <string>
 
 #include"Database.h"
 //Variáveis globais

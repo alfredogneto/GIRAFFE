@@ -1,9 +1,10 @@
 #pragma once
 #include "ContactParticleBody.h"
-#include "Polyhedron.h"
-#include "STLSurface.h"
-#include "TriangularFace.h"
-#include "ArcExtrusion.h"
+
+class Polyhedron;
+class TriangularFace;
+class STLSurface;
+class Matrix;
 
 class ContactPolyhedronArcExtrusion :
 	public ContactParticleBody

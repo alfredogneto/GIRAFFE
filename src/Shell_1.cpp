@@ -1,9 +1,24 @@
 #include "Shell_1.h"
 
+#include "Matrix.h"
+#include "Node.h"
+#include "PostFiles.h"
+#include "Material.h"
+#include "ShellSection.h"
+#include "Environment.h"
+#include "ShellSectionComposite.h"
+#include "Orthotropic.h"
+#include "CoordinateSystem.h"
+#include "Hooke.h"
+#include "Dynamic.h"
+#include "Encoding.h"
+#include "ShellLoad.h"
+
 #include"Database.h"
 //Variáveis globais
 extern
 Database db;
+#define PI 3.1415926535897932384626433832795
 
 Shell_1::Shell_1()
 {
@@ -234,7 +249,8 @@ Shell_1::Shell_1()
 
 	n_1 = Matrix(3, 1);
 	n_2 = Matrix(3, 1);
-	m_1 = Matrix(3, 1);
+	m_1 = Matrix
+	(3, 1);
 	m_2 = Matrix(3, 1);
 
 	e_1 = Matrix(3, 1);

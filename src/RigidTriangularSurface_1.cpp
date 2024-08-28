@@ -1,5 +1,11 @@
 #include "RigidTriangularSurface_1.h"
 
+#include "PostFiles.h"
+#include "Node.h"
+#include "Encoding.h"
+#include "Point.h"
+#include "NSContactData.h"
+#include "Dynamic.h"
 #include"Database.h"
 //Variáveis globais
 extern

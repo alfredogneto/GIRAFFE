@@ -1,9 +1,22 @@
 #include "Beam_1.h"
-#include"Database.h"
 
+#include "LagrangeSave.h"
+#include "SecUserDefined.h"
+#include "SecHelicalFiber.h"
+#include "Hooke.h"
+#include "Node.h"
+#include "CoordinateSystem.h"
+#include "Environment.h"
+#include "AerodynamicData.h"
+#include "BEM.h"
+#include "Dynamic.h"
+#include "Table.h"
+#include "SectionDetails.h"
+#include"Database.h"
 //Variáveis globais
 extern
 Database db;
+#define PI 3.1415926535897932384626433832795
 
 Beam_1::Beam_1(void)
 {

@@ -1,5 +1,8 @@
 #include "CoordinateSystem.h"
 
+#include <string>
+
+#include "Matrix.h"
 
 CoordinateSystem::CoordinateSystem()
 {

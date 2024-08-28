@@ -1,11 +1,7 @@
 #pragma once
 #include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-
 #include <vector>
-#include <string>
-#include <ctype.h>
+
 using namespace std;
 
 class Monitor

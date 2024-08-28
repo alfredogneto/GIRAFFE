@@ -1,6 +1,13 @@
 #include "SpringDashpot_1.h"
-#define PI 3.1415926535897932384626433832795
+
+#include "Matrix.h"
+#include "Node.h"
+#include "Encoding.h"
+#include "Dynamic.h"
 #include"Database.h"
+
+#define PI 3.1415926535897932384626433832795
+
 //Variáveis globais
 extern
 Database db;

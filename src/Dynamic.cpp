@@ -1,8 +1,26 @@
 #include "Dynamic.h"
-#include"Database.h"
+#include <chrono>
+#include <iostream>
+
+#include "ConcomitantSolution.h"
+#include "ConvergenceCriteria.h"
+#include "Monitor.h"
+#include "GeneralContactSearch.h"
+#include "SolverOptions.h"
+#include "ConfigurationSave.h"
+#include "PostFiles.h"
+#include "Node.h"
+#include "SuperNode.h"
+#include "SpecialConstraint.h"
+
+#include "Database.h"
 //Variáveis globais
 extern
 Database db;
+
+using namespace std;
+using namespace std::chrono;
+
 
 Dynamic::Dynamic()
 {

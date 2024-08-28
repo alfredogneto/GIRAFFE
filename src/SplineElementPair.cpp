@@ -1,6 +1,11 @@
 #include "SplineElementPair.h"
+#include <direct.h>
 
-#include"Database.h"
+#include "SPContactData.h"
+#include "Surface.h"
+#include "Spline.h"
+#include "SplineElement.h"
+#include "Database.h"
 //Variáveis globais
 extern
 Database db;

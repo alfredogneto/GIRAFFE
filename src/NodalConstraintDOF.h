@@ -1,6 +1,7 @@
 #pragma once
 #include "SpecialConstraint.h"
 #include "BoolTable.h"
+#include "Matrix.h"
 
 class NodalConstraintDOF:
 	public SpecialConstraint

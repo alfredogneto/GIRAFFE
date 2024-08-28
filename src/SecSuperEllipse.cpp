@@ -1,5 +1,9 @@
 #include "SecSuperEllipse.h"
+#include <string>
 
+#include "SolidSection.h"
+#include "SparseMatrix.h"
+#define PI 3.1415926535897932384626433832795
 
 SecSuperEllipse::SecSuperEllipse()
 {

@@ -1,18 +1,12 @@
 #pragma once
-#pragma once
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <math.h>
-#include "Matrix.h"
+
 #include "BoolTable.h"
-#define PI 3.1415926535897932384626433832795
 
 class SpecialConstraint
 {
 public:
-	SpecialConstraint();
-	virtual ~SpecialConstraint();
+	SpecialConstraint() {}
+	virtual ~SpecialConstraint() {}
 
 	virtual bool Read(FILE *f) = 0;		//Leitura
 	virtual void Write(FILE *f) = 0;	//Gravação

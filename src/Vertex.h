@@ -1,8 +1,8 @@
 #pragma once
-#include "Matrix.h"
-#include "MatrixFloat.h"
-
 #include <vector>
+
+class Matrix;
+class MatrixFloat;
 
 using namespace std;
 

@@ -1,6 +1,19 @@
 #include "ContactPolyhedronArcExtrusion.h"
-#include "Database.h"
 
+#include "Polyhedron.h"
+#include "STLSurface.h"
+#include "TriangularFace.h"
+#include "ArcExtrusion.h"
+#include "SSContactData.h"
+#include "ExecutionData.h"
+#include "BodyGeometry.h"
+#include "Node.h"
+#include "ArcCirc.h"
+#include "Interface_0.h"
+#include "Interface_1.h"
+#include "Dynamic.h"
+
+#include "Database.h"
 //Variáveis globais
 extern
 Database db;

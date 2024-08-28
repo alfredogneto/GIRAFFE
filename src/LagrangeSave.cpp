@@ -1,5 +1,6 @@
 #include "LagrangeSave.h"
 
+#include "Matrix.h"
 #include"Database.h"
 //Variáveis globais
 extern

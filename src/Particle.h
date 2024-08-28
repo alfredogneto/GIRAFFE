@@ -1,11 +1,8 @@
 #pragma once
 #include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <math.h>
-#include "Matrix.h"
-#include "BoundingVolume.h"
-#define PI 3.1415926535897932384626433832795
+
+class Matrix;
+class BoundingVolume;
 
 class Particle
 {

@@ -1,8 +1,14 @@
 #include "NURBSSurface.h"
+#include <math.h>
+
+#include "Encoding.h"
+
 #include"Database.h"
 //Variáveis globais
 extern
 Database db;
+
+using namespace std;
 
 NURBSSurface::NURBSSurface()
 {

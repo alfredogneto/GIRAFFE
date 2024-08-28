@@ -1,6 +1,9 @@
 #include "Boundary.h"
-#include"Database.h"
 
+#include "Node.h"
+#include "Matrix.h"
+#include "BoundingVolume.h"
+#include "Database.h"
 //Variáveis globais
 extern
 Database db;

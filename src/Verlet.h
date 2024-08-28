@@ -1,12 +1,6 @@
 #pragma once
-#include "BoundingVolume.h"
 #include <vector>
-#include <string>
-#include <ctype.h>
-#include <cstdio>
 #include <array>
-#include <omp.h>
-
 using namespace std;
 
 class Verlet

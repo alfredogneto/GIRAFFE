@@ -1,9 +1,19 @@
 #include "Sphere.h"
-#include"Database.h"
 
+#include "BoundingSphere.h"
+#include "Material.h"
+#include "CoordinateSystem.h"
+#include "Node.h"
+#include "Encoding.h"
+#include "GeneralContactSearch.h"
+#include "Environment.h"
+#include "MatrixFloat.h"
+#include "Dynamic.h"
+#include"Database.h"
 //Variáveis globais
 extern
 Database db;
+#define PI 3.1415926535897932384626433832795
 
 Sphere::Sphere()
 {

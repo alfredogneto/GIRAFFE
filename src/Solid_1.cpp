@@ -1,4 +1,6 @@
 #include "Solid_1.h"
+#include "Beam_1.h"
+#include "Encoding.h"	
 
 #include"Database.h"
 //Variáveis globais

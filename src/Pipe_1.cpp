@@ -1,9 +1,22 @@
 #include "Pipe_1.h"
 
+#include "LagrangeSave.h"
+#include "CoordinateSystem.h"
+#include "Node.h"
+#include "PipeSection.h"
+#include "SolidSection.h"
+#include "PostFiles.h"
+#include "Encoding.h"
+#include "Environment.h"
+#include "Dynamic.h"
+#include "Load.h"
+
+
 #include"Database.h"
 //Variáveis globais
 extern
 Database db;
+#define PI 3.1415926535897932384626433832795
 
 Pipe_1::Pipe_1()
 {

@@ -1,7 +1,6 @@
 #pragma once
 #include "SurfacePair.h"
-#include "FlexibleArcExtrusion_1.h"
-#include "RigidArcRevolution_1.h"
+class Matrix;
 
 class FlexibleArcExtrusion_1_RigidArcRevolution_1 :
 	public SurfacePair

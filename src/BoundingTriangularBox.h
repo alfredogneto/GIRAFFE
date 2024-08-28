@@ -1,6 +1,8 @@
 #pragma once
 #include "BoundingVolume.h"
 
+class MatrixFloat;
+
 class BoundingTriangularBox :
 	public BoundingVolume
 {

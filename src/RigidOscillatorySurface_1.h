@@ -1,5 +1,6 @@
 #pragma once
 #include "Surface.h"
+
 class RigidOscillatorySurface_1 :
 	public Surface
 {

@@ -1,5 +1,10 @@
 #include "ShellLoad.h"
 #include "IO.h"
+#include "Table.h"
+#include "MathCode.h"
+#include "ElementSet.h"
+#include "Element.h"
+#include "Shell_1.h"
 
 ShellLoad::ShellLoad()
 {

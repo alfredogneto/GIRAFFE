@@ -1,16 +1,12 @@
 #pragma once
-#include <typeinfo>
-#include <omp.h>
-#include <process.h>
-#include <vector>
-#include <string>
-#include <ctype.h> 
-#include "SSContactData.h"
-#include "TimeStepControlData.h"
-#include "Interface_0.h"
-#include "Interface_1.h"
-#include "Geometry.h"
-#include "Particle.h"
+#include <stdio.h>
+
+class Geometry;
+class SSContactData;
+class Interface_0;
+class Interface_1;
+class Particle;
+class Matrix;
 
 using namespace std;
 

@@ -1,7 +1,16 @@
 #include "ArcRevolution.h"
 
-#include"Database.h"
+#include "BoundingBoxAxesOriented.h"
+#include "MatrixFloat.h"
+#include "ArcCirc.h"
+#include "Interface_1.h"
+#include "Node.h"
+#include "CoordinateSystem.h"
+#include "GeneralContactSearch.h"
+#include "PostFiles.h"
+#include "Encoding.h"
 
+#include"Database.h"
 //Variáveis globais
 extern
 Database db;

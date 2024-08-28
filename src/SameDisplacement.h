@@ -1,5 +1,8 @@
 #pragma once
 #include "SpecialConstraint.h"
+
+#include "Matrix.h"
+
 class SameDisplacement :
 	public SpecialConstraint
 {

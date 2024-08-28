@@ -1,5 +1,8 @@
 #pragma once
 #include "Geometry.h"
+
+class MatrixFloat;
+
 class ArcRevolution :
 	public Geometry
 {

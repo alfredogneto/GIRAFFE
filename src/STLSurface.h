@@ -1,14 +1,14 @@
 #pragma once
+#include <stdio.h>
+#include <vector>
 #include "CADData.h"
-#include "TriangularFace.h"
+
 #include "Vertex.h"
 #include "Edge.h"
 #include "Tetrahedron.h"
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-
+class TriangularFace;
+class MatrixFloat;
 using namespace std;
 
 class STLSurface :

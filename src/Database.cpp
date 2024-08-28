@@ -1,6 +1,34 @@
 #include "Database.h"
 #include <stdarg.h>
 
+#include "ConvergenceCriteria.h"
+#include "PostFiles.h"
+#include "SolverOptions.h"
+#include "ExecutionData.h"
+#include "Node.h"
+#include "CADData.h"
+#include "BodyGeometry.h"
+#include "Load.h"
+#include "Constraint.h"
+#include "Displacement.h"
+#include "SpecialConstraint.h"
+#include "ArcCirc.h"
+#include "Section.h"
+#include "Element.h"
+#include "AnalyticalSurface.h"
+#include "Surface.h"
+#include "Spline.h"
+#include "Contact.h"
+#include "Particle.h"
+#include "Boundary.h"
+#include "PipeSection.h"
+#include "ContactInterface.h"
+#include "PSYCoupling.h"
+#include "GeneralContactSearch.h"
+#include "Monitor.h"
+#include "Modal.h"
+#include "SplineElement.h"
+
 Database::Database()
 {
 	//Maximum number of DOFs/node

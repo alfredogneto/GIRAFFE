@@ -1,8 +1,8 @@
 #pragma once
 #include <stdio.h>
-#include <stdlib.h>
 #include <vector>
-#include "Matrix.h"
+
+class Matrix;
 
 using namespace std;
 

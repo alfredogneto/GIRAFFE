@@ -1,16 +1,12 @@
 #pragma once
 #include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <math.h>
-#include "Matrix.h"
 #include "BoolTable.h"
 
 class Contact
 {
 public:
-	Contact();
-	virtual ~Contact();
+	Contact() {}
+	virtual ~Contact() {}
 
 	char* type_name;											//Nome do tipo do elemento
 	int number;													//Número 

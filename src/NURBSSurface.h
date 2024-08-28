@@ -1,5 +1,6 @@
 #pragma once
 #include "CADData.h"
+
 class NURBSSurface :
 	public CADData
 {

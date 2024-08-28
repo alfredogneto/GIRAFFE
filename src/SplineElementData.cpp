@@ -1,5 +1,5 @@
 #include "SplineElementData.h"
-
+#include "Matrix.h"
 SplineElementData::SplineElementData(int n_solutions)
 {
 	n_sol = n_solutions;

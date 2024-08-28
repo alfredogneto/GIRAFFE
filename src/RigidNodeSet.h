@@ -1,8 +1,7 @@
 #pragma once
 #include "SpecialConstraint.h"
-#include "NodeSet.h"
-#include "SameRotation.h"
 
+#include "Matrix.h"
 class RigidNodeSet :
 	public SpecialConstraint
 {

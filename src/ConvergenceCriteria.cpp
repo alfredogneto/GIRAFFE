@@ -1,11 +1,15 @@
 #pragma once
-#include"Database.h"
+#include "ConvergenceCriteria.h"
 
+#include "Node.h"
+#include "SuperNode.h"
+#include "SpecialConstraint.h"
+
+#include"Database.h"
 //Variáveis globais
 extern
 Database db;
 
-#include "ConvergenceCriteria.h"
 
 
 ConvergenceCriteria::ConvergenceCriteria()

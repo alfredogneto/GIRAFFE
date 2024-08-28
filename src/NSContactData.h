@@ -1,6 +1,7 @@
-#include "Matrix.h"
-
 #pragma once
+
+class Matrix;
+
 class NSContactData
 {
 public:

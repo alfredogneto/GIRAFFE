@@ -1,11 +1,11 @@
 #pragma once
 #include "Contact.h"
-#include "SPContactData.h"
-#include "SplineElementPair.h"
 //Tipos de pares de superfície:
-#include "SplineElement_SplineElement.h"
 
-#include <typeinfo>
+class SplineElement_SplineElement;
+class SPContactData;
+class SplineElementPair;
+class Matrix;
 
 ////////Contato do tipo SPSP - "Spline to Spline"///////////
 class SPSP :

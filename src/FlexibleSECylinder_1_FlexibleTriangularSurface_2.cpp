@@ -1,9 +1,17 @@
 #include "FlexibleSECylinder_1_FlexibleTriangularSurface_2.h"
 
-#include"Database.h"
+#include "FlexibleSECylinder_1.h"
+#include "FlexibleTriangularSurface_2.h"
+#include "Dynamic.h"
+#include "Matrix.h"
+#include "SSContactData.h"
+
+#include "Database.h"
 //Variáveis globais
 extern
 Database db;
+
+#define PI 3.1415926535897932384626433832795
 
 FlexibleSECylinder_1_FlexibleTriangularSurface_2::FlexibleSECylinder_1_FlexibleTriangularSurface_2()
 {

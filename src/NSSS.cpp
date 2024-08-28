@@ -1,10 +1,21 @@
 #include "NSSS.h"
-#define PI 3.1415926535897932384626433832795
+#include <typeinfo>
+
+#include "NSContactData.h"
+#include "Matrix.h"
+#include "SurfaceSet.h"
+#include "Surface.h"
+#include "PostFiles.h"
+#include "Encoding.h"
+#include "NodeSet.h"
+#include "Node.h"
+
 #include"Database.h"
 //Variáveis globais
 extern
 Database db;
 
+#define PI 3.1415926535897932384626433832795
 NSSS::NSSS()
 {
 	type_name = new char[20];		//Nome do tipo do contato

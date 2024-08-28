@@ -1,12 +1,10 @@
 #pragma once
-#include "SurfacePairGeneralContact.h"
-#include <typeinfo>
-#include <omp.h>
-#include <process.h>
+#include <stdio.h>
 #include <vector>
-#include <string>
-#include <ctype.h> 
 using namespace std;
+
+class Matrix;
+class SurfacePairGeneralContact;
 
 class ContactParticleBoundary
 {

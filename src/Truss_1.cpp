@@ -1,9 +1,18 @@
 #include "Truss_1.h"
-#define PI 3.1415926535897932384626433832795
-#include"Database.h"
+
+
+#include "Environment.h"
+#include "Node.h"
+#include "Dynamic.h"
+#include "ElasticPlasticIsoHardening.h"
+#include "Hooke.h"
+#include "Section.h"
+#include "PipeSection.h"
+#include "Database.h"
 //Variáveis globais
 extern
 Database db;
+#define PI 3.1415926535897932384626433832795
 
 Truss_1::Truss_1()
 {

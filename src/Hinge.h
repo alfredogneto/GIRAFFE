@@ -1,5 +1,7 @@
 #pragma once
 #include "SpecialConstraint.h"
+#include "Matrix.h"
+
 class Hinge :
 	public SpecialConstraint
 {

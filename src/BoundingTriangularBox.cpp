@@ -1,7 +1,7 @@
 #include "BoundingTriangularBox.h"
 
+#include "MatrixFloat.h"
 #include "Database.h"
-
 //Variáveis globais
 extern
 Database db;

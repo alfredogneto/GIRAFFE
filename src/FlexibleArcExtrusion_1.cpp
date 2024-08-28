@@ -1,10 +1,18 @@
 ﻿#include "FlexibleArcExtrusion_1.h"
 
-#include"Database.h"
+#include "Dynamic.h"
+#include "ArcCirc.h"
+#include "PostFiles.h"
+#include "Node.h"
+#include "CoordinateSystem.h"
+#include "Encoding.h"
 
+#include"Database.h"
 //Variáveis globais
 extern
 Database db;
+
+#define PI 3.1415926535897932384626433832795
 
 FlexibleArcExtrusion_1::FlexibleArcExtrusion_1()
 {

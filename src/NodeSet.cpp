@@ -1,5 +1,8 @@
 #include "NodeSet.h"
 
+#include "Node.h"
+#include "Matrix.h"
+
 #include"Database.h"
 //Variáveis globais
 extern

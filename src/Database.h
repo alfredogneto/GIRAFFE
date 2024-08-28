@@ -1,187 +1,193 @@
 #pragma once
-#include "Node.h"
-#include "SuperNode.h"
-#include "PipeSection.h"
-#include "RigidBodyData.h"
-#include "CoordinateSystem.h"
-#include "Environment.h"
+#include "Matrix.h"
+#include "SparseMatrix.h"
 
-#include "Monitor.h"
-#include "PostFiles.h"
-#include "SolverOptions.h"
+class Node;
+class SuperNode;
+class PipeSection;
+class RigidBodyData;
+class CoordinateSystem;
+class Environment;
 
-#include "NodeSet.h"
-#include "SurfaceSet.h"
-#include "ElementSet.h"
-#include "SuperNodeSet.h"
+class Monitor;
+class PostFiles;
+class SolverOptions;
 
-#include "InitialCondition.h"
-#include "ConvergenceCriteria.h"
+class NodeSet;
+class SurfaceSet;
+class ElementSet;
+class SuperNodeSet;
 
-#include "AnalyticalSurface.h"
-#include "Plane.h"
-#include "LineRegion.h"
-#include "SurfaceRegion.h"
+class InitialCondition;
+class ConvergenceCriteria;
+
+class AnalyticalSurface;
+class Plane;
+class LineRegion;
+class SurfaceRegion;
 
 //Elementos
-#include "Element.h"
-#include "Beam_1.h"
-#include "Pipe_1.h"
-#include "Shell_1.h"
-#include "Solid_1.h"
-#include "SpringDashpot_1.h"
-#include "Mass_1.h"
-#include "RigidBody_1.h"
-#include "Truss_1.h"
-#include "TwoNodeConnector_1.h"
+class Element;
+class Beam_1;
+class Pipe_1;
+class Shell_1;
+class Solid_1;
+class SpringDashpot_1;
+class Mass_1;
+class RigidBody_1;
+class Truss_1;
+class TwoNodeConnector_1;
 
 //Materiais
-#include "Material.h"
-#include "Hooke.h"
-#include "ElasticPlasticIsoHardening.h"
-#include "Orthotropic.h"
+class Material;
+class Hooke;
+class ElasticPlasticIsoHardening;
+class Orthotropic;
 
 //Point & Curves
-#include "Point.h"
-#include "ArcCirc.h"
+class Point;
+class ArcCirc;
 
 //Surfaces
-#include "Surface.h"
-#include "RigidTriangularSurface_1.h"
-#include "RigidOscillatorySurface_1.h"
-#include "FlexibleTriangularSurface_2.h"
-#include "FlexibleSECylinder_1.h"
-#include "FlexibleArcExtrusion_1.h"
-#include "RigidArcRevolution_1.h"
-#include "RigidNURBS_1.h"
+class Surface;
+class RigidTriangularSurface_1;
+class RigidOscillatorySurface_1;
+class FlexibleTriangularSurface_2;
+class FlexibleSECylinder_1;
+class FlexibleArcExtrusion_1;
+class RigidArcRevolution_1;
+class RigidNURBS_1;
 
 //Geometries
-#include "Geometry.h"
-#include "SECylinder.h"
-#include "ArcExtrusion.h"
-#include "ArcRevolution.h"
+class Geometry;
+class SECylinder;
+class ArcExtrusion;
+class ArcRevolution;
 
 //BodyGeometry
-#include "BodyGeometry.h"
+class BodyGeometry;
 
 //Splines
-#include "Spline.h"
+class Spline;
+class SplineElement;
 
 //Contatos
-#include "Contact.h"
-#include "LRLR.h"
-#include "GeneralPLR.h"
-#include "NSSS.h"
-#include "SSSS.h"
-#include "SPSP.h"
+class Contact;
+class LRLR;
+class GeneralPLR;
+class NSSS;
+class SSSS;
+class SPSP;
 
 //GeneralContactSearch
-#include "GeneralContactSearch.h"
+class GeneralContactSearch;
 
 //Seções transversais
-#include "Section.h"
-#include "SecGeneral.h"
-#include "SecRectangle.h"
-#include "SecSuperEllipse.h"
-#include "SecTube.h"
-#include "SecUserDefined.h"
-#include "SecHelicalFiber.h"
+class Section;
+class SecGeneral;
+class SecRectangle;
+class SecSuperEllipse;
+class SecTube;
+class SecUserDefined;
+class SecHelicalFiber;
 
 //Shell sections
-#include "ShellSection.h"
-#include "ShellSectionHomogeneous.h"
-#include "ShellSectionComposite.h"
+class ShellSection;
+class ShellSectionHomogeneous;
+class ShellSectionComposite;
 
 //Special constraints
-#include "SpecialConstraint.h"
-#include "SameDisplacement.h"
-#include "Hinge.h"
-#include "UniversalJoint.h"
-#include "SameRotation.h"
-#include "RigidNodeSet.h"
-#include "TranslationalJoint.h"
-#include "NodalConstraintDOF.h"
+class SpecialConstraint;
+class SameDisplacement;
+class Hinge;
+class UniversalJoint;
+class SameRotation;
+class RigidNodeSet;
+class TranslationalJoint;
+class NodalConstraintDOF;
 
 //Partículas
-#include "Particle.h"
-#include "Sphere.h"
-#include "Polyhedron.h"
-#include "NURBSParticle.h"
-#include "VEMPolyhedron.h"
+class Particle;
+class Sphere;
+class Polyhedron;
+class NURBSParticle;
+class VEMPolyhedron;
 
 //Boundaries
-#include "Boundary.h"
-#include "STLBoundary.h"
+class Boundary;
+class STLBoundary;
 
 //Surface pairs (for general contact search)
-#include "SurfacePairGeneralContact.h"
-#include "RigidTriangularFace_RigidTriangularFace.h"
-#include "FlexibleTriangularFace_FlexibleTriangularFace.h"
-#include "FlexibleTriangularFace_RigidTriangularFace.h"
+class SurfacePairGeneralContact;
+class RigidTriangularFace_RigidTriangularFace;
+class FlexibleTriangularFace_FlexibleTriangularFace;
+class FlexibleTriangularFace_RigidTriangularFace;
 
 //Section details
-#include "SectionDetails.h"
-#include "SolidSection.h"
-#include "MultiCellSection.h"
+class SectionDetails;
+class SolidSection;
+class MultiCellSection;
 
 //AerodynamicData
-#include "AerodynamicData.h"
-#include "BEM.h"
+class AerodynamicData;
+class BEM;
 
 //Solutions
-#include "Solution.h"
-#include "Static.h"
-#include "Dynamic.h"
-#include "Modal.h"
-#include "ConcomitantSolution.h"
-#include "ExplicitDynamic.h"
+class Solution;
+class Static;
+class Dynamic;
+class Modal;
+class ConcomitantSolution;
+class ExplicitDynamic;
 
 //Loads
-#include "Load.h"
-#include "NodalLoad.h"
-#include "NodalFollowerLoad.h"
-#include "ShellLoad.h"
-#include "PipeLoad.h"
-#include "SuperNodalLoad.h"
+class Load;
+class NodalLoad;
+class NodalFollowerLoad;
+class ShellLoad;
+class PipeLoad;
+class SuperNodalLoad;
 
 //Deslocamentos prescritos
-#include "Displacement.h"
-#include "NodalDisplacement.h"
-#include "DisplacementField.h"
+class Displacement;
+class NodalDisplacement;
+class DisplacementField;
 
 //Constraints
-#include "Constraint.h"
-#include "NodalConstraint.h"
-#include "SuperNodalConstraint.h"
+class Constraint;
+class NodalConstraint;
+class SuperNodalConstraint;
 
 //PSY
-#include "PSYCoupling.h"
+class PSYCoupling;
 
 //CADData
-#include "CADData.h"
-#include "STLSurface.h"
-#include "NURBSSurface.h"
+class CADData;
+class STLSurface;
+class NURBSSurface;
 
 //ContactInterfaces
-#include "ContactInterface.h"
-#include "Interface_0.h"
-#include "Interface_1.h"
+class ContactInterface;
+class Interface_0;
+class Interface_1;
 
 //BoundingVolumes
-#include "BoundingVolume.h"
-#include "BoundingSphere.h"
-#include "BoundingCylinder.h"
-#include "BoundingTriangularBox.h"
-#include "BoundingBoxAxesAligned.h"
-#include "BoundingBoxAxesOriented.h"
+class BoundingVolume;
+class BoundingSphere;
+class BoundingCylinder;
+class BoundingTriangularBox;
+class BoundingBoxAxesAligned;
+class BoundingBoxAxesOriented;
 
-#include "Encoding.h"
-#include "ExecutionData.h"
-#include "ConfigurationSave.h"
+class Encoding;
+class ExecutionData;
+class ConfigurationSave;
+
+
 
 //OPENMP
-#include <omp.h>
-#include <process.h>
+//#include <omp.h>
+//#include <process.h>
 
 class Database
 {

@@ -1,10 +1,7 @@
 #pragma once
 #include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include "SolidSection.h"
-#include <math.h>
-#define PI 3.1415926535897932384626433832795
+
+class SolidSection;
 
 class PipeSection
 {

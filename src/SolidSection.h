@@ -1,5 +1,6 @@
 #pragma once
 #include "SectionDetails.h"
+
 class SolidSection :
 	public SectionDetails
 {

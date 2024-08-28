@@ -1,6 +1,9 @@
 #include "UniversalJoint.h"
-#include"Database.h"
 
+#include "Node.h"
+#include "InitialCondition.h"
+#include "CoordinateSystem.h"
+#include"Database.h"
 //Variáveis globais
 extern
 Database db;

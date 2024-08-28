@@ -1,8 +1,8 @@
 #pragma once
 #include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include "Matrix.h"
+
+class Matrix;
+
 class CoordinateSystem
 {
 public:

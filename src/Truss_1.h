@@ -1,5 +1,7 @@
 #pragma once
 #include "Element.h"
+#include "Matrix.h"
+
 class Truss_1 :
 	public Element
 {

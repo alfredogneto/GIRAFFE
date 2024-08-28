@@ -1,7 +1,50 @@
 #include "GeneralContactSearch.h"
-#include "Database.h"
-#include "CollisionDetection.h"
 
+#include "CollisionDetection.h"
+#include "ContactParticleParticle.h"
+#include "ContactParticleBoundary.h"
+#include "ContactBodyBody.h"
+#include "ContactParticleBody.h"
+#include "Particle.h"
+#include "Boundary.h"
+#include "BodyGeometry.h"
+#include "Node.h"
+#include "Polyhedron.h"
+#include "VEMPolyhedron.h"
+#include "STLBoundary.h"
+#include "SECylinder.h"
+#include "ArcExtrusion.h"
+#include "ArcRevolution.h"
+#include "SurfacePairGeneralContact.h"
+#include "SSContactData.h"
+#include "Solution.h"
+#include "BoundingVolume.h"
+
+//Particle pairs:
+#include "ContactPolyhedronPolyhedron.h"
+#include "ContactVEMPolyhedronVEMPolyhedron.h"
+//Particle-boundary pairs:
+#include "ContactPolyhedronSTLBoundary.h"
+#include "ContactVEMPolyhedronSTLBoundary.h"
+//Geometry pairs:
+#include "ContactSECylinderSECylinder.h"
+#include "ContactArcExtrusionArcRevolution.h"
+//Particle-body pairs:
+#include "ContactPolyhedronArcExtrusion.h"
+
+//#include <vector>
+//#include <array>
+//#include <string>
+//#include <ctype.h>
+//
+//#include <cstdio>
+//
+//#include <omp.h>
+//#include <process.h>
+#include <chrono>
+using namespace std::chrono;
+
+#include "Database.h"
 //Variáveis globais
 extern
 Database db;

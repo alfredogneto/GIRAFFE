@@ -1,6 +1,7 @@
 #pragma once
-#include "SSContactData.h"
-#include "TimeStepControlData.h"
+class SSContactData;
+class TimeStepControlData;
+class Matrix;
 
 class SurfacePairGeneralContact
 {

@@ -1,4 +1,5 @@
 #include "BandMatrix.h"
+#include "mkl.h"
 
 //Construtor Padrão
 BandMatrix::BandMatrix(void)

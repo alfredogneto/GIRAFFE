@@ -1,5 +1,8 @@
 #include "Edge.h"
+
 #include "STLSurface.h"
+#include "Matrix.h"
+#include "MatrixFloat.h"
 #include"Database.h"
 //Variáveis globais
 extern

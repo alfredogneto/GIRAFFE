@@ -1,8 +1,6 @@
 #pragma once
 #include "Contact.h"
-#include "Pipe_1.h"
-#include "LagrangeSaveLRAS.h"
-#include <typeinfo>
+class Matrix;
 
 ////////Contato do tipo LRLR - "Line region to line region"///////////
 /////Desenvolvido para trabalhar em conjunto com elementos Pipe_1/////

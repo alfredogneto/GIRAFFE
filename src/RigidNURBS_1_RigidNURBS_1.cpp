@@ -1,5 +1,11 @@
 #include "RigidNURBS_1_RigidNURBS_1.h"
 
+
+#include "RigidNURBS_1.h"
+#include "SSContactData.h"
+#include "NURBSSurface.h"
+#include "Node.h"
+#include "Dynamic.h"
 #include"Database.h"
 //Variáveis globais
 extern

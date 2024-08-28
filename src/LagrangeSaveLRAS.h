@@ -1,7 +1,6 @@
 #pragma once
-#include "Matrix.h"
-#include <stdio.h>
-#include <math.h>
+
+class Matrix;
 
 class LagrangeSaveLRAS
 {

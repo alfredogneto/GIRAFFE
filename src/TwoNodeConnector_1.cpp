@@ -1,4 +1,8 @@
 #include "TwoNodeConnector_1.h"
+
+#include "Node.h"
+#include "CoordinateSystem.h"
+#include "Dynamic.h"
 #include"Database.h"
 //Variáveis globais
 extern

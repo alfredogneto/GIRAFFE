@@ -1,12 +1,7 @@
 #pragma once
-#include "mkl.h"
-#include "mkl_blas.h"
-#include "mkl_types.h"
-#include "mkl_lapack.h"
-#include "mkl_dss.h"
 #include "stdio.h"
 #include <cmath>
-#include "arpack.h"
+
 #include "Matrix.h"
 
 class MatrixFloat

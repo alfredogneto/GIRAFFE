@@ -1,10 +1,17 @@
 #include "RigidOscillatorySurface_1.h"
 
+#include "PostFiles.h"
+#include "Node.h"
+#include "Encoding.h"
+#include "CoordinateSystem.h"
+#include "NSContactData.h"
+#include "Dynamic.h"
+
 #include"Database.h"
 //Variáveis globais
 extern
 Database db;
-
+#define PI 3.1415926535897932384626433832795
 RigidOscillatorySurface_1::RigidOscillatorySurface_1()
 {
 	nDOFs = 6;

@@ -1,5 +1,9 @@
 #include "SplineElement_SplineElement.h"
 
+#include "SplineElement.h"
+#include "Dynamic.h"
+#include "Spline.h"
+#include "SPContactData.h"
 #include"Database.h"
 //Variáveis globais
 extern

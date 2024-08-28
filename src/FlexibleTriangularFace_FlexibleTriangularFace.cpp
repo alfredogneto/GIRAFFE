@@ -1,10 +1,22 @@
 #include "FlexibleTriangularFace_FlexibleTriangularFace.h"
-#include"Database.h"
 
+#include "SSContactData.h"
+#include "ExecutionData.h"
+#include "SuperNode.h"
+#include "STLSurface.h"
+#include "TriangularFace.h"
+#include "Interface_1.h"
+#include "VEMPolyhedron.h"
+#include "Dynamic.h"
+#include "Material.h"
+#include "TimeStepControlData.h"
+#include "Matrix.h"
+
+#include "Database.h"
 //Variáveis globais
 extern
 Database db;
-
+#define PI 3.1415926535897932384626433832795
 ////////////////////////////////////////////////////////////////////
 #define _CRTDBG_MAP_ALLOC
 #include <stdlib.h>

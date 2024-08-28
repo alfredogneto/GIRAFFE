@@ -1,6 +1,8 @@
 #include "SuperNodalConstraint.h"
-#include "IO.h"
 
+#include "SuperNode.h"
+#include "SuperNodeSet.h"
+#include "IO.h"
 
 SuperNodalConstraint::SuperNodalConstraint()
 {

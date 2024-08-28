@@ -1,5 +1,11 @@
 #include "Verlet.h"
 
+#include "GeneralContactSearch.h"
+#include "Particle.h"
+#include "BoundingVolume.h"
+#include "Boundary.h"
+#include "BodyGeometry.h"
+#include "Geometry.h"
 #include"Database.h"
 
 //Variáveis globais

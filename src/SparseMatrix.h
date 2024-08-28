@@ -1,11 +1,7 @@
 #pragma once
-#include <iostream>
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include "mkl.h"
+
 #include "Eigen\SparseCore"
-#include"Matrix.h"
+#include "Matrix.h"
 //#include <unsupported/Eigen/SparseExtra>
 
 class SparseMatrix

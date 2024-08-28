@@ -1,4 +1,15 @@
 #include "Static.h"
+#include <chrono>
+using namespace std::chrono;
+#include <iostream>
+
+#include "ConvergenceCriteria.h"
+#include "Monitor.h"
+#include "ConcomitantSolution.h"
+#include "GeneralContactSearch.h"
+#include "SolverOptions.h"
+#include "ConfigurationSave.h"
+#include "PostFiles.h"
 #include"Database.h"
 //Variáveis globais
 extern

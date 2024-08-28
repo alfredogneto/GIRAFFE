@@ -1,12 +1,10 @@
 #pragma once
-#include <math.h>
-#include "MatrixFloat.h"
 
 class BoundingVolume
 {
 public:
-	BoundingVolume();
-	virtual ~BoundingVolume();
+	BoundingVolume() {}
+	virtual ~BoundingVolume() {}
 	virtual void SaveConfiguration() = 0;	//Saves in "prev" variables the current variables to serve as next saved configuration
 	virtual void Report() = 0;
 

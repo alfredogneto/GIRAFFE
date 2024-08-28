@@ -1,7 +1,7 @@
-#include "Matrix.h"
-#include "SplineElementData.h"
-
 #pragma once
+class Matrix;
+class SplineElementData;
+
 class SPContactData
 {
 public:

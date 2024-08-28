@@ -1,6 +1,6 @@
 #pragma once
 #include "SurfacePair.h"
-#include "FlexibleSECylinder_1.h"
+class Matrix;
 
 class FlexibleSECylinder_1_FlexibleSECylinder_1 :
 	public SurfacePair

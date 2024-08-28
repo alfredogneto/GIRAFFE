@@ -1,5 +1,5 @@
-#include "Matrix.h"
-#include "SurfaceData.h"
+class Matrix;
+class SurfaceData;
 
 #pragma once
 class SSContactData

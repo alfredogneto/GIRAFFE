@@ -1,6 +1,7 @@
 #pragma once
 #include "SurfacePair.h"
-#include "RigidNURBS_1.h"
+
+class SSContactData;
 
 class RigidNURBS_1_RigidNURBS_1 :
 	public SurfacePair

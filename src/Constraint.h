@@ -1,14 +1,11 @@
 #pragma once
 #include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <math.h>
 
 class Constraint
 {
 public:
-	Constraint();
-	virtual ~Constraint();
+	Constraint() {}
+	virtual ~Constraint() {}
 
 	virtual bool Read(FILE *f) = 0;						//Reads input file
 	virtual void Write(FILE *f) = 0;					//Writes output file

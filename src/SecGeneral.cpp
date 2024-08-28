@@ -1,5 +1,8 @@
 #include "SecGeneral.h"
+#include <string>
 
+#include "SolidSection.h"
+#include "SectionDetails.h"
 
 SecGeneral::SecGeneral()
 {

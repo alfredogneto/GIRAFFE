@@ -1,6 +1,13 @@
 #include "ContactArcExtrusionArcRevolution.h"
-#include "Database.h"
 
+#include "SSContactData.h"
+#include "ExecutionData.h"
+#include "BodyGeometry.h"
+#include "ArcCirc.h"
+#include "ArcRevolution.h"
+#include "ArcExtrusion.h"
+#include "Dynamic.h"
+#include "Database.h"
 //Variáveis globais
 extern
 Database db;

@@ -1,7 +1,16 @@
 #include "ContactBodyBody.h"
-#include "Database.h"
-//#include "CollisionDetection.h"
 
+#include <direct.h>
+
+//#include "CollisionDetection.h"
+#include "SSContactData.h"
+#include "ContactInterface.h"
+#include "BodyGeometry.h"
+#include "Interface_0.h"
+#include "Interface_1.h"
+#include "Encoding.h"
+
+#include "Database.h"
 //Variáveis globais
 extern
 Database db;

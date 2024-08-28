@@ -1,9 +1,16 @@
-#include<stdio.h>
-#include<math.h>
-#include"IO.h"
+#include <stdio.h>
+#include <math.h>
+#include <string>
+#include <chrono>
+#include <iostream>
+using namespace std;
+using namespace std::chrono;
+#include "IO.h"
 #include "Errors.h"
-#include "string.h"
-
+#include "Monitor.h"
+#include "ConcomitantSolution.h"
+#include "PostFiles.h"
+#include "Solution.h"
 //#define _CRTDBG_MAP_ALLOC
 //#include <stdlib.h>
 //#include <crtdbg.h>

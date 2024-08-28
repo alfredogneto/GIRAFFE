@@ -1,5 +1,12 @@
 #include "SolidSection.h"
 
+
+#include "Beam_1.h"
+#include "Encoding.h"
+#include "Node.h"
+#include "Section.h"
+#include "PostFiles.h"
+
 #include"Database.h"
 
 //Variáveis globais

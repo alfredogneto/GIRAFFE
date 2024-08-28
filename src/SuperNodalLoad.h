@@ -1,5 +1,6 @@
 #pragma once
 #include "Load.h"
+
 class SuperNodalLoad :
 	public Load
 {

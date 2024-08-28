@@ -1,9 +1,16 @@
 ﻿#include "RigidArcRevolution_1.h"
 
+#include "ArcCirc.h"
+#include "PostFiles.h"
+#include "Node.h"
+#include "Encoding.h"
+#include "CoordinateSystem.h"
+
 #include"Database.h"
 //Variáveis globais
 extern
 Database db;
+#define PI 3.1415926535897932384626433832795
 
 RigidArcRevolution_1::RigidArcRevolution_1()
 {

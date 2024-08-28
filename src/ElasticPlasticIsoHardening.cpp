@@ -1,4 +1,5 @@
 #include "ElasticPlasticIsoHardening.h"
+#include <string>
 
 
 ElasticPlasticIsoHardening::ElasticPlasticIsoHardening()

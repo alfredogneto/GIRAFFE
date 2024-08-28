@@ -1,8 +1,16 @@
 #include "Mass_1.h"
+
+#include "Node.h"
+#include "Encoding.h"
+#include "Environment.h"
+#include "Material.h"
+#include "Dynamic.h"
+
 #include"Database.h"
 //Variáveis globais
 extern
 Database db;
+#define PI 3.1415926535897932384626433832795
 
 Mass_1::Mass_1()
 {

@@ -1,10 +1,22 @@
 #include "Modal.h"
-#include"Database.h"
+#include <direct.h>
+#include <chrono>
+#include <iostream>
+
+#include "Node.h"
+#include "PostFiles.h"
+#include "Element.h"
+#include "Particle.h"
+#include "VEMPolyhedron.h"
+
 #include "IO.h"
+#include"Database.h"
 //Variáveis globais
 extern
 Database db;
-
+#define PI 3.1415926535897932384626433832795
+using namespace std::chrono;
+using namespace std;
 
 Modal::Modal()
 {

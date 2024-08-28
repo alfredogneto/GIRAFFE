@@ -1,5 +1,6 @@
 #pragma once
 #include "Particle.h"
+
 class NURBSParticle :
 	public Particle
 {

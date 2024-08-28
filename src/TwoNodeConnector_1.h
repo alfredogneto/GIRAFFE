@@ -1,5 +1,6 @@
 #pragma once
 #include "Element.h"
+
 class TwoNodeConnector_1 :
 	public Element
 {

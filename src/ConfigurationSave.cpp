@@ -1,10 +1,14 @@
 #include "ConfigurationSave.h"
+
+#include <direct.h>
+
+#include "Node.h"
+#include "Boundary.h"
+#include "Particle.h"
+#include "Polyhedron.h"
+
 #include"Database.h"
 #include"IO.h"
-#include <direct.h>
-#include <sys/types.h>
-#include <sys/stat.h>
-
 //Variáveis globais
 extern Database db;
 extern IO io;

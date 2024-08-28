@@ -1,12 +1,9 @@
 #pragma once
 #include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <math.h>
-#include "Matrix.h"
-#include "Displacement.h"
-#include "Constraint.h"
 #include "BoolTable.h"
+
+class Constraint;
+class Displacement;
 
 class PSYCoupling
 {

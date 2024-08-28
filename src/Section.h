@@ -1,21 +1,14 @@
 #pragma once
 #include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <math.h>
 #include "Matrix.h"
-#include "BandMatrix.h"
-#include "SparseMatrix.h"
-#include "SectionDetails.h"
-#include "SolidSection.h"
-#include "MultiCellSection.h"
-#define PI 3.1415926535897932384626433832795
+
+class SectionDetails;
 
 class Section
 {
 public:
-	Section();
-	virtual ~Section();
+	Section() {}
+	virtual ~Section() {}
 
 	int number;							//ID da seção
 	double A, I11, I22, I12, I33, It;	//propriedades da seção

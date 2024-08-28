@@ -1,9 +1,8 @@
 #pragma once
-#include "SSContactData.h"
-#include "Surface.h"
 #include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
+#include "Matrix.h"
+
+class SSContactData;
 
 class SurfacePair
 {

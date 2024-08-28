@@ -1,7 +1,13 @@
 #include "NodalFollowerLoad.h"
-#include"Database.h"
-#include "IO.h"
 
+#include "Table.h"
+#include "MathCode.h"
+#include "NodeSet.h"
+#include "Node.h"
+#include "CoordinateSystem.h"
+#include "Encoding.h"
+#include "IO.h"
+#include"Database.h"
 //Variáveis globais
 extern
 Database db;

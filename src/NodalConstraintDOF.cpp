@@ -1,4 +1,9 @@
 #include "NodalConstraintDOF.h"
+
+#include "Node.h"
+#include "InitialCondition.h"
+
+
 #include "IO.h"
 
 NodalConstraintDOF::NodalConstraintDOF()

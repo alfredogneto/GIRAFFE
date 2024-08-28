@@ -1,9 +1,18 @@
 #include "FlexibleArcExtrusion_1_RigidArcRevolution_1.h"
 
-#include"Database.h"
+#include "Dynamic.h"
+#include "FlexibleArcExtrusion_1.h"
+#include "RigidArcRevolution_1.h"
+#include "ArcCirc.h"
+#include "Node.h"
+#include "Matrix.h"
+#include "SSContactData.h"
+
+#include "Database.h"
 //Variáveis globais
 extern
 Database db;
+#define PI 3.1415926535897932384626433832795
 
 FlexibleArcExtrusion_1_RigidArcRevolution_1::FlexibleArcExtrusion_1_RigidArcRevolution_1()
 {

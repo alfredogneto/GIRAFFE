@@ -1,4 +1,10 @@
 #include "RigidBody_1.h"
+
+#include "RigidBodyData.h"
+#include "Node.h"
+#include "CoordinateSystem.h"
+#include "Dynamic.h"
+#include "Environment.h"
 #include"Database.h"
 //Variáveis globais
 extern

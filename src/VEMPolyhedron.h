@@ -1,5 +1,9 @@
 #pragma once
 #include "Particle.h"
+
+class Matrix;
+class MatrixFloat;
+
 class VEMPolyhedron :
 	public Particle
 {

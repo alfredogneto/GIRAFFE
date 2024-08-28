@@ -1,4 +1,21 @@
 #include "ExplicitDynamic.h"
+#include <iostream>
+using namespace std;
+#include <chrono>
+using namespace std::chrono;
+
+#include "Matrix.h"
+#include "ConcomitantSolution.h"
+#include "PostFiles.h"
+#include "Monitor.h"
+#include "GeneralContactSearch.h"
+#include "ConfigurationSave.h"
+#include "Node.h"
+#include "Particle.h"
+#include "Load.h"
+#include "Displacement.h"
+#include "Boundary.h"
+
 #include"Database.h"
 //Variáveis globais
 extern

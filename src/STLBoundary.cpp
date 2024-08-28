@@ -1,6 +1,19 @@
 #include "STLBoundary.h"
-#include"Database.h"
 
+#include "BoundingSphere.h"
+#include "CADData.h"
+#include "STLSurface.h"
+#include "Node.h"
+#include "CoordinateSystem.h"
+#include "GeneralContactSearch.h"
+#include "BoundingTriangularBox.h"
+#include "BoundingCylinder.h"
+#include "Particle.h"
+#include "VEMPolyhedron.h"
+#include "Encoding.h"
+#include "TriangularFace.h"
+#include "MatrixFloat.h"
+#include"Database.h"
 //Variáveis globais
 extern
 Database db;

@@ -1,6 +1,5 @@
 #pragma once
 #include "Surface.h"
-#define PI 3.1415926535897932384626433832795
 
 class RigidArcRevolution_1 :
 	public Surface

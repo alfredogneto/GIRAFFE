@@ -1,5 +1,8 @@
 #pragma once
 #include "Geometry.h"
+
+class MatrixFloat;
+
 class SECylinder :
 	public Geometry
 {

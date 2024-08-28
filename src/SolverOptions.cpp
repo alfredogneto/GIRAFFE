@@ -1,5 +1,6 @@
 #include "SolverOptions.h"
 #include"Database.h"
+#include "mkl.h"
 //Variáveis globais
 extern
 Database db;

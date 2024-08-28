@@ -1,4 +1,8 @@
 #include "SplineElement.h"
+
+#include "Matrix.h"
+#include "Node.h"
+
 #include "Database.h"
 extern
 Database db;

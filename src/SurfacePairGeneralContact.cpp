@@ -1,5 +1,8 @@
 #include "SurfacePairGeneralContact.h"
 
+#include "TimeStepControlData.h"
+#include "SSContactData.h"
+#include "Matrix.h"
 
 ////////////////////////////////////////////////////////////////////
 #define _CRTDBG_MAP_ALLOC

@@ -1,11 +1,12 @@
 #include "SecHelicalFiber.h"
 
-#include"Database.h"
-
+#include "SolidSection.h"
+#include "Hooke.h"
+#include "Database.h"
 //Variáveis globais
 extern
 Database db;
-
+#define PI 3.1415926535897932384626433832795
 SecHelicalFiber::SecHelicalFiber()
 {
 	sec_details = new SolidSection();

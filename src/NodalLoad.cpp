@@ -1,5 +1,12 @@
 #include "NodalLoad.h"
+
 #include "IO.h"
+#include "Table.h"
+#include "MathCode.h"
+#include "NodeSet.h"
+#include "Node.h"
+#include "Encoding.h"
+#include "CoordinateSystem.h"
 
 NodalLoad::NodalLoad()
 {

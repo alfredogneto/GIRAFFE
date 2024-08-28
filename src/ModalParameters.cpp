@@ -1,5 +1,5 @@
 #include "ModalParameters.h"
-
+#include <string>
 
 ModalParameters::ModalParameters()
 {

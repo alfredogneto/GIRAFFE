@@ -1,5 +1,12 @@
 #include "PipeLoad.h"
+
 #include "IO.h"
+#include "Table.h"
+#include "MathCode.h"
+#include "ElementSet.h"
+#include "Element.h"
+#include "Pipe_1.h"
+
 
 PipeLoad::PipeLoad()
 {

@@ -4,6 +4,25 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 
+#include "Static.h"
+#include "Dynamic.h"
+#include "ExplicitDynamic.h"
+#include "Modal.h"
+#include "Element.h"
+#include "RigidBody_1.h"
+#include "Particle.h"
+#include "Contact.h"
+#include "Boundary.h"
+#include "Geometry.h"
+#include "GeneralContactSearch.h"
+#include "Node.h"
+#include "Encoding.h"
+#include "Sphere.h"
+#include "Spline.h"
+#include "SpecialConstraint.h"
+#include "Constraint.h"
+#include "Load.h"
+
 //Variáveis globais
 extern
 Database db;

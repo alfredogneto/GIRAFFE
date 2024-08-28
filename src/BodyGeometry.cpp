@@ -1,5 +1,8 @@
 #include "BodyGeometry.h"
 
+#include "Geometry.h"
+#include "BoundingBoxAxesAligned.h"
+#include "GeneralContactSearch.h"
 #include"Database.h"
 //Variáveis globais
 extern

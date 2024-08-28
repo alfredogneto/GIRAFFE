@@ -1,6 +1,18 @@
 #include "NURBSParticle.h"
-#include"Database.h"
 
+#include "BoundingSphere.h"
+#include "CADData.h"
+#include "NURBSSurface.h"
+#include "CoordinateSystem.h"
+#include "Material.h"
+#include "Node.h"
+#include "MatrixFloat.h"
+#include "Environment.h"
+#include "GeneralContactSearch.h"
+#include "SurfaceSet.h"
+#include "Dynamic.h"
+
+#include"Database.h"
 //Variáveis globais
 extern
 Database db;

@@ -1,5 +1,9 @@
 #pragma once
 #include "Contact.h"
+#include <stdio.h>
+
+#include "Matrix.h"
+
 class GeneralPLR :
 	public Contact
 {

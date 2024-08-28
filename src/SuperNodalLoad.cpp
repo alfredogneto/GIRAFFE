@@ -1,6 +1,11 @@
 #include "SuperNodalLoad.h"
-#include "IO.h"
 
+
+#include "Table.h"
+#include "MathCode.h"
+#include "SuperNode.h"
+#include "Encoding.h"
+#include "IO.h"
 
 SuperNodalLoad::SuperNodalLoad()
 {

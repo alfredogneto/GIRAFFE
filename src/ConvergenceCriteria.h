@@ -1,4 +1,6 @@
 #pragma once
+#include <stdio.h>
+
 class ConvergenceCriteria
 {
 public:

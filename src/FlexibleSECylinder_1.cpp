@@ -1,9 +1,19 @@
 #include "FlexibleSECylinder_1.h"
 
+#include "Dynamic.h"
+#include "PostFiles.h"
+#include "Node.h"
+#include "Encoding.h"
+#include "CoordinateSystem.h"
+#include "NSContactData.h"
+
+
 #include"Database.h"
 //Variáveis globais
 extern
 Database db;
+
+#define PI 3.1415926535897932384626433832795
 
 FlexibleSECylinder_1::FlexibleSECylinder_1()
 {

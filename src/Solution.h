@@ -1,18 +1,7 @@
 #pragma once
 #include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <math.h>
-#include "Matrix.h"
-#include <vector>
-#include <direct.h>
-#include <omp.h>
-#include <chrono>
-#include <iostream>
-#include <process.h>
 
 using namespace std;
-using namespace std::chrono;
 
 class Solution
 {

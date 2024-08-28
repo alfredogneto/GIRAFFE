@@ -1,5 +1,6 @@
 #pragma once
 #include "Load.h"
+
 class NodalLoad :
 	public Load
 {

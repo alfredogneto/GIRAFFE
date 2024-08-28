@@ -1,8 +1,9 @@
 #include "SPContactData.h"
-#include "stdio.h"
-#include "math.h"
 
-#include"Database.h"
+
+#include "Matrix.h"
+#include "SplineElementData.h"
+#include "Database.h"
 //Variáveis globais
 extern
 Database db;
