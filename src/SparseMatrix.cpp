@@ -6,6 +6,7 @@
 #include <debug_c.hpp>  // debug arpack.
 #include <stat_c.hpp>   // arpack statistics.
 
+#include "Matrix.h"
 #include "SolverOptions.h"
 #include "Database.h"
 //Variaveis globais
@@ -14,6 +15,7 @@ Database db;
 
 SparseMatrix::SparseMatrix()
 {
+	mounted = false;
 	rows = 1;
 	cols = 1;
 	non_null_estimative = 1;
@@ -437,9 +439,9 @@ Matrix sparseeigen(SparseMatrix &K, SparseMatrix &M, Matrix &z, int n_e, bool ei
 		db.myprintf("%.6f + %.6f i -> residual %.2e\n", dr(i, 0), di(i, 0), res_calc(i,0));
 	db.myprintf("\nConverged Eigenvalues: %d\n", iparam[4]);
 
-	delete iparam;
-	delete ipntr;
-	delete select;	
+	delete[] iparam;
+	delete[] ipntr;
+	delete[] select;	
 	return return_m;
 
 	//Valores de retorno

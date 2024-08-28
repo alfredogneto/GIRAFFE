@@ -1,7 +1,7 @@
 #pragma once
-
 #include <Eigen\SparseCore>
-#include "Matrix.h"
+
+class Matrix;
 //#include <unsupported/Eigen/SparseExtra>
 
 class SparseMatrix
