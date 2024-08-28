@@ -23,7 +23,7 @@ public:
 
 	virtual void UpdateVariables() = 0;
 	virtual void UpdateBoundingVolumes() = 0;				//Updates bounding volumes
-	virtual void SaveLagrange() = 0;						//Salva variáveis
+	virtual void SaveLagrange() = 0;						//Salva variaveis
 
 	virtual void SurfacePosition(Matrix* Gamma, double z, double th, bool next) = 0;	//returns the surface position on the vector Gamma, evaluated at (z,th) on current (i) or next (i+1) configuration
 	virtual void NormalExt(double z, double th, Matrix* n, bool next) = 0;							//returns the exterior normal of the surface
@@ -36,17 +36,17 @@ public:
 	float inc_len_factor;	//increase factor do BV
 	float bv_offset;		//offset do BV
 	float max[3], min[3];	//coordinates max and min - global CS - to guide the BodyGeometry Axis Aligned BV
-	float largest_gnb;		//para auxiliar no cálculo do 'size' do bounding volume - Verlet/LinkedCells schemes
+	float largest_gnb;		//para auxiliar no calculo do 'size' do bounding volume - Verlet/LinkedCells schemes
 
 	int number;				//ID da Geometry
 	int material;			//ID do material
-	int super_node;			//Super node (quando aplicável)
-	int mother_entity;		//ID da superfície mãe usada para degeneração (para casos de hierarquia de pares de contato)
+	int super_node;			//Super node (quando aplicavel)
+	int mother_entity;		//ID da superficie mãe usada para degeneração (para casos de hierarquia de pares de contato)
 	char* type_name;		//Nome do tipo de Geometry
 	int *nodes;				//Lista de nós
-	int n_nodes;			//Número de nós
+	int n_nodes;			//Numero de nós
 	int **DOFs;				//Indica para a indexação de cada grau de liberdade, 1 ou 0, ativo ou inativo
-	int nDOFs;				//Número do GL (global)
+	int nDOFs;				//Numero do GL (global)
 	int **GLs;				//Ponteiro para os GL globais utilizados
 
 	double* body_mass;		//Mass of the associated body (pointer)

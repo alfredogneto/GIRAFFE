@@ -8,7 +8,7 @@
 #include "Encoding.h"
 
 #include"Database.h"
-//Variáveis globais
+//Variaveis globais
 extern
 Database db;
 
@@ -147,7 +147,7 @@ void FlexibleArcExtrusion_1::SurfacePoint(double& zeta, double& theta, Matrix& p
 	point = (1 - zeta) / 2 * (*x_AAp + (*Q_AAp) * ar) + (1 + zeta) / 2 * (*x_BAp + (*Q_BAp) * ar);
 }
 
-//Normal exterior à superfície na posição escolhida
+//Normal exterior a superficie na posição escolhida
 void FlexibleArcExtrusion_1::NormalExt(double* zeta, double* theta, Matrix* n)
 {
 	double *d = d_A->getMatrix();		//ponteiro para o vetor d
@@ -260,7 +260,7 @@ void FlexibleArcExtrusion_1::WriteVTK_XMLRender(FILE *f)
 	{
 		int n_circ = 24;
 
-		//Número de pontos a serem gerados
+		//Numero de pontos a serem gerados
 		int n_points = n_circ + 1;
 		double** points;
 		points = new double*[n_points];
@@ -274,7 +274,7 @@ void FlexibleArcExtrusion_1::WriteVTK_XMLRender(FILE *f)
 		double theta_fmod;
 		//
 
-		//Se os ângulos inicial e final esiverem do segundo para o terceiro quadrante
+		//Se os angulos inicial e final esiverem do segundo para o terceiro quadrante
 		if ((((db.arcs[arc_ID - 1]->theta_i) >= PI / 2 && (db.arcs[arc_ID - 1]->theta_i) <= PI)) && (((db.arcs[arc_ID - 1]->theta_f) < -PI / 2 && (db.arcs[arc_ID - 1]->theta_f) >= -PI)))
 		{
 			if ((db.arcs[arc_ID - 1]->theta_i) < 0)
@@ -306,14 +306,14 @@ void FlexibleArcExtrusion_1::WriteVTK_XMLRender(FILE *f)
 				index += 1;
 			}
 		}
-		//vetores para escrita no formato binário - usando a função 'enconde'
+		//vetores para escrita no formato binario - usando a função 'enconde'
 		std::vector<float> float_vector;
 		std::vector<int> int_vector;
 
 		Matrix vec_P(3);
-		//Número de pontos a serem gerados
+		//Numero de pontos a serem gerados
 		n_points = n_circ * 2;
-		//Número de células a serem geradas
+		//Numero de celulas a serem geradas
 		int n_cells = n_circ;
 		//Opens Piece
 		fprintf(f, "\t\t<Piece NumberOfPoints=\"%d\" NumberOfCells=\"%d\">\n", n_points, n_cells);
@@ -325,7 +325,7 @@ void FlexibleArcExtrusion_1::WriteVTK_XMLRender(FILE *f)
 		//Preenchendo as coordenadas dos pontos
 		for (int i = 0; i < 2; i++)//percorrendo os 2 nós das extremidades
 		{
-			for (int point = 0; point < n_circ; point++)//Percorre os nós que descrevem o perímetro da ST
+			for (int point = 0; point < n_circ; point++)//Percorre os nós que descrevem o perimetro da ST
 			{
 				//Posição de cada ponto P no plano xy (referência)
 				vec_P(0, 0) = points[point][0];
@@ -517,7 +517,7 @@ bool FlexibleArcExtrusion_1::Check()
 	return true;
 }
 
-//Realiza chute inicial para as variáveis zeta e theta
+//Realiza chute inicial para as variaveis zeta e theta
 void FlexibleArcExtrusion_1::InitialGuess(Matrix* xS, double** convective, int n_solutions)
 {
 	//TODO
@@ -551,7 +551,7 @@ void FlexibleArcExtrusion_1::PreCalc()
 	Matrix e2l = *db.CS[cs - 1]->E2;
 	Matrix e3l = *db.CS[cs - 1]->E3;
 
-	//Salva a matriz de transformação de coordenadas (para orientar o plano da ST de acordo com a orientação de referência da superfície)
+	//Salva a matriz de transformação de coordenadas (para orientar o plano da ST de acordo com a orientação de referência da superficie)
 	(*Q0A)(0, 0) = dot(e1g, e1l);
 	(*Q0A)(0, 1) = dot(e1g, e2l);
 	(*Q0A)(0, 2) = dot(e1g, e3l);
@@ -570,7 +570,7 @@ void FlexibleArcExtrusion_1::PreCalc()
 
 }
 
-//Retorna as coordenadas da superfície para um par (zeta,theta) - configuração anterior convergida
+//Retorna as coordenadas da superficie para um par (zeta,theta) - configuração anterior convergida
 void FlexibleArcExtrusion_1::Gamma_and_Triad(Matrix* G_p, Matrix* t1_p, Matrix* t2_p, Matrix* n_p, Matrix* G_i, Matrix* t1_i, Matrix* t2_i, Matrix* n_i, Matrix* G_ip, double* zetai, double* thi, double* zetap, double* thp)
 {
 
@@ -777,13 +777,13 @@ void FlexibleArcExtrusion_1::Gamma_and_Triad(Matrix* G_p, Matrix* t1_p, Matrix* 
 	
 }
 
-//Dado o ponto xS, calcula as coordenadas (zeta,theta) referentes à mínima distância
+//Dado o ponto xS, calcula as coordenadas (zeta,theta) referentes a minima distancia
 void FlexibleArcExtrusion_1::FindMinimimumParameters(Matrix* xS, NSContactData* cd)
 {
 
 }
 
-//Atualiza as variáveis internas da superfície, para pegarem info do pilot node para uso posterior com posição atualizada
+//Atualiza as variaveis internas da superficie, para pegarem info do pilot node para uso posterior com posição atualizada
 void FlexibleArcExtrusion_1::FillNodes()
 {
 	Matrix alphaAA(3);
@@ -822,7 +822,7 @@ void FlexibleArcExtrusion_1::FillNodes()
 	*x_BAp = *x_BAi + uB;
 }
 
-//Retorna coordenadas globais do ponto central da superfície a ser utilizado para cálculos grosseiros de sua localização (pinball)
+//Retorna coordenadas globais do ponto central da superficie a ser utilizado para calculos grosseiros de sua localização (pinball)
 void FlexibleArcExtrusion_1::CenterPoint(Matrix* center)
 {
 	*center = 0.5*(*x_AAi + *x_BAi);
@@ -856,7 +856,7 @@ void FlexibleArcExtrusion_1::SaveConfiguration()
 	double g = 4.0 / (4.0 + alpha*alpha);					//função g(alpha) - em algumas ref. tb. chamado de h(alpha)
 	*Q_AAi = *I3 + g*(A + 0.5*(A*A));						//Tensor de rotação
 	*Q_AAic = *Q_AAi;										//Cópia - antes da transformação embutida
-	*Q_AAi = (*Q_AAi)*(*Q0A);								//Para já realizar a transformação da parametrização do arco para o sistema global
+	*Q_AAi = (*Q_AAi)*(*Q0A);								//Para ja realizar a transformação da parametrização do arco para o sistema global
 	Q_AAi->MatrixToPtr(aQ_AAi, 3);
 	//Q_BAi
 	alpha = norm(*alpha_BA);								//Valor escalar do parametro alpha
@@ -864,13 +864,13 @@ void FlexibleArcExtrusion_1::SaveConfiguration()
 	g = 4.0 / (4.0 + alpha*alpha);							//função g(alpha) - em algumas ref. tb. chamado de h(alpha)
 	*Q_BAi = *I3 + g*(A + 0.5*(A*A));						//Tensor de rotação
 	*Q_BAic = *Q_BAi;										//Cópia - antes da transformação embutida
-	*Q_BAi = (*Q_BAi)*(*Q0A);								//Para já realizar a transformação da parametrização do arco para o sistema global
+	*Q_BAi = (*Q_BAi)*(*Q0A);								//Para ja realizar a transformação da parametrização do arco para o sistema global
 	Q_BAi->MatrixToPtr(aQ_BAi, 3);
 }
 
 void FlexibleArcExtrusion_1::UpdateBox()
 {
-	//Objetivo dessa funÁ„o È obter o minimo box que englobe o arco
+	//Objetivo dessa funa„o e obter o minimo box que englobe o arco
 
 	//Atribuindo valores do arco
 	radius = &db.arcs[arc_ID - 1]->radius;
@@ -893,18 +893,18 @@ void FlexibleArcExtrusion_1::UpdateBox()
 	Matrix p3(2); //no eixo x negativo
 	Matrix p4(2); //no eixo y negativo
 
-	//Iniciando os pontos com o mesmo valor do initial point, pois assim mesmo que o ponto pn n„o exista, ele n„o ir· interferir na localizaÁ„o
+	//Iniciando os pontos com o mesmo valor do initial point, pois assim mesmo que o ponto pn n„o exista, ele n„o ir· interferir na localizaa„o
 	//de m·ximo e mÌnimos, pois o ponto i sempre ir· existir...
 	p1 = i_point0;
 	p2 = i_point0;
 	p3 = i_point0;
 	p4 = i_point0;
 
-	//Criando thetas que v„o de 0 a 2PI, para viabilizar as verificaÁıes da exisitÍncia dos pontos p1-4
+	//Criando thetas que vao de 0 a 2PI, para viabilizar as verificaaıes da existencia dos pontos p1-4
 	double theta_imod;
 	double theta_fmod;
 
-	//Caso seja um retorno do terceiro ou quarto quadrante (negativo na funÁ„o atan2), somar 2PI para obter o ‚ngulo completo. Caso contr·tio, usar o ‚ngulo original.
+	//Caso seja um retorno do terceiro ou quarto quadrante (negativo na funcao atan2), somar 2PI para obter o angulo completo. Caso contrario, usar o angulo original.
 	if (*theta_i < 0)// && *theta_i >= -PI)
 		theta_imod = 2 * PI + *theta_i;
 	else
@@ -1070,10 +1070,10 @@ void FlexibleArcExtrusion_1::UpdateBox()
 	}
 
 
-	//Organizando os pontos em uma tabela para comparaÁ„o (centro, inicial, final, p1, p2, p3 e p4)
+	//Organizando os pontos em uma tabela para comparaa„o (centro, inicial, final, p1, p2, p3 e p4)
 	Matrix points(7, 2);
-	points(0, 0) = i_point0(0, 0); //Mudei de ideia, melhor n„o incluir o center point na comparaÁ„o, pois a principio parece desnecess·rio
-	points(0, 1) = i_point0(1, 0); //No entanto, se identificar que È melhor fazer o box incluindo o centro È sÛ trocar i_point0 por c_point0 nessas duas linhas
+	points(0, 0) = i_point0(0, 0); //Mudei de ideia, melhor n„o incluir o center point na comparaa„o, pois a principio parece desnecess·rio
+	points(0, 1) = i_point0(1, 0); //No entanto, se identificar que e melhor fazer o box incluindo o centro e sÛ trocar i_point0 por c_point0 nessas duas linhas
 
 	points(1, 0) = i_point0(0, 0);
 	points(1, 1) = i_point0(1, 0);
@@ -1112,7 +1112,7 @@ void FlexibleArcExtrusion_1::UpdateBox()
 			mincorner0(1, 0) = points(i, 1);
 	}
 
-	//Definindo os quatro vertices do retangulo e contabilizando a posiÁ„o do centro de curvatura
+	//Definindo os quatro vertices do retangulo e contabilizando a posia„o do centro de curvatura
 	Matrix A0(2);
 	Matrix B0(2);
 	Matrix C0(2);
@@ -1156,7 +1156,7 @@ void FlexibleArcExtrusion_1::UpdateBox()
 	vD(1, 0) = D(1, 0);
 	vD(2, 0) = 0.0;
 
-	//InterpolaÁ„o
+	//Interpolaa„o
 	Matrix xAAi(3);
 	xAAi = *x_AAi;
 	Matrix xBAi(3);
@@ -1218,16 +1218,16 @@ void FlexibleArcExtrusion_1::UpdateBox()
 	y[7] = v8(1, 0);
 	z[7] = v8(2, 0);
 
-	//Setando os vÈrtices
+	//Setando os vertices
 	box.SetVertices(x, y, z);
 }
-//Calcula contribuições de contato entre esfera e superfície
+//Calcula contribuições de contato entre esfera e superficie
 void FlexibleArcExtrusion_1::ContactSphereSurfaceSticking(double* Rc, double** Kc, double zetap, double thetap, double zetai, double thetai, double* gti, int node, double* epsn, double* epst, double* cn, double* ct, double* mu, double* radius)
 {
 	//TODO
 }
 
-//Calcula contribuições de contato entre esfera e superfície
+//Calcula contribuições de contato entre esfera e superficie
 void FlexibleArcExtrusion_1::ContactSphereSurfaceSliding(double* Rc, double** Kc, double zetap, double thetap, double zetai, double thetai, double* gti, int node, double* epsn, double* epst, double* cn, double* ct, double* mu, double* radius)
 {
 	//TODO

@@ -9,7 +9,7 @@
 #include "Section.h"
 #include "PipeSection.h"
 #include "Database.h"
-//Variáveis globais
+//Variaveis globais
 extern
 Database db;
 #define PI 3.1415926535897932384626433832795
@@ -58,7 +58,7 @@ Truss_1::Truss_1()
 		DOFs[i][2] = 1;
 	}
 
-	//Variáveis do elemento
+	//Variaveis do elemento
 	T = 0.0;										
 	L = 0.0;										
 	l = 0.0;										
@@ -105,7 +105,7 @@ Truss_1::Truss_1()
 	flag_hydro = false;
 	pipe_sec = 0;
 
-	//Cada variável carregará a informação para seu ponto de Gauss
+	//Cada variavel carregara a informação para seu ponto de Gauss
 	int ngauss = 2;
 	N1 = new double[ngauss];
 	N2 = new double[ngauss];
@@ -162,7 +162,7 @@ bool Truss_1::Read(FILE *f)
 		fscanf(f, "%s", s);
 		material = atoi(s);
 
-		flag_hydro = false;			//não vai computar esforços hidrodinâmicos (não há coef. disponíveis)
+		flag_hydro = false;			//não vai computar esforços hidrodinamicos (não ha coef. disponiveis)
 
 		fscanf(f, "%s", s);
 		if (!strcmp(s, "Sec"))
@@ -180,7 +180,7 @@ bool Truss_1::Read(FILE *f)
 			fscanf(f, "%s", s);
 			pipe_sec = atoi(s);
 
-			flag_hydro = true;		//vai computar esforços hidrodinâmicos (há coef. disponíveis)
+			flag_hydro = true;		//vai computar esforços hidrodinamicos (ha coef. disponiveis)
 		}
 		else
 			return false;
@@ -583,7 +583,7 @@ void Truss_1::MountGlobal()
 		}
 	}
 }
-//Salva variáveis nos pontos de Gauss úteis para descrição lagrangiana atualizada
+//Salva variaveis nos pontos de Gauss uteis para descrição lagrangiana atualizada
 void Truss_1::SaveLagrange()
 {
 	//Saving copies of plasticity history variables
@@ -591,7 +591,7 @@ void Truss_1::SaveLagrange()
 	epsp_i = epsp;
 	l_p_i = l_p;
 }
-//Pré-cálculo de variáveis é feito uma única vez no início
+//Pre-calculo de variaveis e feito uma unica vez no inicio
 void Truss_1::PreCalc()
 {
 	//Position of nodes
@@ -638,7 +638,7 @@ void Truss_1::PreCalc()
 	{
 		E = db.pipe_sections[pipe_sec - 1]->EA;
 		A = 1.0;
-		Ahydro = PI*db.pipe_sections[pipe_sec - 1]->De*db.pipe_sections[pipe_sec - 1]->De / 4.0;	//área externa
+		Ahydro = PI*db.pipe_sections[pipe_sec - 1]->De*db.pipe_sections[pipe_sec - 1]->De / 4.0;	//area externa
 		rho_len = db.pipe_sections[pipe_sec - 1]->Rho;
 		double rho_f = 0.0;
 		if (db.environment_exist == true)
@@ -678,7 +678,7 @@ void Truss_1::PreCalc()
 	l_p = L;
 	l_p_i = L;
 
-	//Percorre pontos de Gauss para salvar algumas matrizes/vetores de interesse nos cálculos do elemento
+	//Percorre pontos de Gauss para salvar algumas matrizes/vetores de interesse nos calculos do elemento
 	int ngauss = 2;
 	double csi = 0.0;
 	for (int gauss = 0; gauss < ngauss; gauss++)
@@ -761,7 +761,7 @@ void Truss_1::MountMassModal()
 	MountAddedMassModal();
 }
 
-//Monta a matriz de amortecimento para realização da análise modal
+//Monta a matriz de amortecimento para realização da analise modal
 void Truss_1::MountDampingModal()
 {
 	//TODO
@@ -798,7 +798,7 @@ void Truss_1::MountDyn()
 	c_stiffness_matrix = c_stiffness_matrix + c_mass_matrix + c_damping_matrix;
 }
 
-//Montagens para análise modal - inserção da matriz de massa e amortecimento na matriz de rigidez para posterior montagem global
+//Montagens para analise modal - inserção da matriz de massa e amortecimento na matriz de rigidez para posterior montagem global
 void Truss_1::MountDynModal()
 {
 	c_stiffness_matrix = c_mass_modal;
@@ -910,7 +910,7 @@ void Truss_1::MountAddedMass()
 	}	
 }
 
-//Monta a matriz de massa adicional para análise modal
+//Monta a matriz de massa adicional para analise modal
 void Truss_1::MountAddedMassModal()
 {
 	if (db.environment_exist == true && db.environment->ocean_data_exist == true && db.environment->g_exist)

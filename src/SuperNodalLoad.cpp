@@ -117,7 +117,7 @@ void SuperNodalLoad::WriteVTK_XML(FILE *f)
 		else
 			vertex = (localDOF - db.super_nodes[super_node_ID - 1]->n_displacement_DOFs - 1) / 3 + 1;
 
-		//vetores para escrita no formato binário - usando a função 'enconde'
+		//vetores para escrita no formato binario - usando a função 'enconde'
 		std::vector<float> float_vector;
 		std::vector<int> int_vector;
 
@@ -128,7 +128,7 @@ void SuperNodalLoad::WriteVTK_XML(FILE *f)
 		//Opens DataArray
 		fprintf(f, "\t\t\t\t<DataArray type=\"Float32\" NumberOfComponents=\"3\" format=\"binary\">\n");
 		float_vector.clear();
-		//Preenchendo as coordenadas do vértice do super node
+		//Preenchendo as coordenadas do vertice do super node
 		float_vector.push_back((float)(db.super_nodes[super_node_ID - 1]->copy_coordinates[(vertex - 1) * 3]));
 		float_vector.push_back((float)(db.super_nodes[super_node_ID - 1]->copy_coordinates[(vertex - 1) * 3 + 1]));
 		float_vector.push_back((float)(db.super_nodes[super_node_ID - 1]->copy_coordinates[(vertex - 1) * 3 + 2]));
@@ -193,7 +193,7 @@ void SuperNodalLoad::PreCalc()
 
 }
 
-//Atualiza dados necessários e que sejam dependentes de DOFs ativos/inativos - chamado no início de cada solution step
+//Atualiza dados necessarios e que sejam dependentes de DOFs ativos/inativos - chamado no inicio de cada solution step
 void SuperNodalLoad::UpdateforSolutionStep()
 {
 	

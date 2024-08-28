@@ -4,13 +4,13 @@
 #include "InitialCondition.h"
 #include "CoordinateSystem.h"
 #include"Database.h"
-//Variáveis globais
+//Variaveis globais
 extern
 Database db;
 
 UniversalJoint::UniversalJoint()
 {
-	n_GL = 4;						//Dois graus de liberdade (esse vínculo possui 4 multiplicadores de lagrange)
+	n_GL = 4;						//Dois graus de liberdade (esse vinculo possui 4 multiplicadores de lagrange)
 	active_lambda = new int[n_GL];
 	lambda = new double[n_GL];
 	copy_lambda = new double[n_GL];
@@ -50,10 +50,10 @@ UniversalJoint::UniversalJoint()
 	//As contribuições estão divididas em duas partes:
 	//Parte 1 - exatamente a mesma contribuição do Same Displacement
 	//Parte 2 - restrições das rotações
-	//Matriz de rigidez tangente e vetor resíduo
+	//Matriz de rigidez tangente e vetor residuo
 	stiffness1 = new Matrix(9, 9);
 	residual1 = new Matrix(9, 1);
-	//Matriz de rigidez tangente e vetor resíduo
+	//Matriz de rigidez tangente e vetor residuo
 	stiffness2 = new double*[7];
 	for (int i = 0; i < 7; i++)
 		stiffness2[i] = new double[7];
@@ -181,18 +181,18 @@ bool UniversalJoint::Check()
 	return true;
 }
 
-//Montagem dos resíduos e rigidez tangente
+//Montagem dos residuos e rigidez tangente
 void UniversalJoint::Mount()
 {
-	//Nesse vínculo a rigidez tangente da parte 1 não se modifica nunca. É montada no PreCalc()
-	//Montagem do resíduo da parte 1:
+	//Nesse vinculo a rigidez tangente da parte 1 não se modifica nunca. e montada no PreCalc()
+	//Montagem do residuo da parte 1:
 	if (active_lambda[0] == 1 && active_lambda[1] == 1 && active_lambda[2] == 1)
 	{
 		for (int i = 0; i < 3; i++)
 			r1(i, 0) = (db.nodes[node_A - 1]->copy_coordinates[i] - db.nodes[node_A - 1]->ref_coordinates[i] + db.nodes[node_A - 1]->displacements[i]) -
 			(db.nodes[node_B - 1]->copy_coordinates[i] - db.nodes[node_B - 1]->ref_coordinates[i] + db.nodes[node_B - 1]->displacements[i]);
 
-		//Atualização do vetor de resíduos
+		//Atualização do vetor de residuos
 		(*residual1)(0, 0) = lambda[0];
 		(*residual1)(1, 0) = lambda[1];
 		(*residual1)(2, 0) = lambda[2];
@@ -206,28 +206,28 @@ void UniversalJoint::Mount()
 		(*residual1)(8, 0) = r1(2, 0);
 	}
 
-	//Montagem da rigidez tangente e resíduo da parte 2:
+	//Montagem da rigidez tangente e residuo da parte 2:
 	if (active_lambda[3] == 1)
 	{
 		for (int i = 0; i < 3; i++)
 		{
 			alphaA(i, 0) = db.nodes[node_A - 1]->displacements[i + 3];	//vetor rotação (atual) do nó A
 			alphaB(i, 0) = db.nodes[node_B - 1]->displacements[i + 3];	//vetor rotação (atual) do nó B
-			alphaiA(i, 0) = db.nodes[node_A - 1]->copy_coordinates[i + 3];	//vetor rotação acumulada (do início) do nó A
-			alphaiB(i, 0) = db.nodes[node_B - 1]->copy_coordinates[i + 3];	//vetor rotação acumulada (do início) do nó B
+			alphaiA(i, 0) = db.nodes[node_A - 1]->copy_coordinates[i + 3];	//vetor rotação acumulada (do inicio) do nó A
+			alphaiB(i, 0) = db.nodes[node_B - 1]->copy_coordinates[i + 3];	//vetor rotação acumulada (do inicio) do nó B
 		}
 		
 		alpha_escalar_i = norm(alphaiA);
 		A = skew(alphaiA);
 		g = 4.0 / (4.0 + alpha_escalar_i*alpha_escalar_i);
 		QA = I3 + g*(A + 0.5*(A*A));
-		ei1A = QA*(*db.CS[csA - 1]->E1);	//Eixo e1 no início do incremento
+		ei1A = QA*(*db.CS[csA - 1]->E1);	//Eixo e1 no inicio do incremento
 		
 		alpha_escalar_i = norm(alphaiB);
 		A = skew(alphaiB);
 		g = 4.0 / (4.0 + alpha_escalar_i*alpha_escalar_i);
 		QB = I3 + g*(A + 0.5*(A*A));
-		ei2B = QB*(*db.CS[csB - 1]->E2);	//Eixo e2 no início do incremento
+		ei2B = QB*(*db.CS[csB - 1]->E2);	//Eixo e2 no inicio do incremento
 		
 		temp_lambda[0] = lambda[3];
 		EvaluateUniversalJointContribution(temp_v, residual2, stiffness2, alphaA.getMatrix(), alphaB.getMatrix(), ei1A.getMatrix(), ei2B.getMatrix(), temp_lambda);
@@ -242,7 +242,7 @@ void UniversalJoint::Mount()
 //Preenche a contribuição do elemento nas matrizes globais
 void UniversalJoint::MountGlobal()
 {
-	//Variáveis temporárias para salvar a indexação global dos graus de liberdade a serem setados na matriz de rigidez global
+	//Variaveis temporarias para salvar a indexação global dos graus de liberdade a serem setados na matriz de rigidez global
 	int GL_global_1 = 0;
 	int GL_global_2 = 0;
 	double anterior = 0;
@@ -382,7 +382,7 @@ void UniversalJoint::MountGlobal()
 
 void UniversalJoint::ComputeInitialGuessDisplacements()
 {
-	//Se for o step de criação do vínculo inicializa condições iniciais
+	//Se for o step de criação do vinculo inicializa condições iniciais
 	if (bool_table.GetAt(db.current_solution_number - 1) == true)
 	{
 		//Percorre GL e seta condições iniciais
@@ -421,7 +421,7 @@ void UniversalJoint::ComputeInitialGuessDisplacements()
 //Computa efeito das condições iniciais nos nós da restrição
 void UniversalJoint::ComputeVelAccel()
 {
-	//Se for o step de criação do vínculo inicializa condições iniciais
+	//Se for o step de criação do vinculo inicializa condições iniciais
 	if (bool_table.GetAt(db.current_solution_number - 1) == true)
 	{
 		//Percorre GL e seta condições iniciais
@@ -460,7 +460,7 @@ void UniversalJoint::ComputeVelAccel()
 	
 }
 
-//Pré-cálculo de variáveis que é feito uma única vez no início
+//Pre-calculo de variaveis que e feito uma unica vez no inicio
 void UniversalJoint::PreCalc()
 {
 	for (int i = 0; i < 3; i++)
@@ -474,7 +474,7 @@ void UniversalJoint::PreCalc()
 		}
 	}
 
-	//Zerando contribuição dos resíduos e rigidez 2
+	//Zerando contribuição dos residuos e rigidez 2
 	for (int i = 0; i < 7; i++)
 	{
 		residual2[i] = 0.0;
@@ -485,7 +485,7 @@ void UniversalJoint::PreCalc()
 	}
 }
 
-//Salvando variáveis da configuração convergida
+//Salvando variaveis da configuração convergida
 void UniversalJoint::SaveLagrange()
 {
 	for (int i = 0; i < n_GL; i++)
@@ -518,7 +518,7 @@ void UniversalJoint::ActivateDOFs()
 	}
 }
 
-//Calcula contribuições do resíduo e operador tangente - gerado no AceGen
+//Calcula contribuições do residuo e operador tangente - gerado no AceGen
 void UniversalJoint::EvaluateUniversalJointContribution(double *v, double *residual
 	, double **stiffness, double *alphaA, double *alphaB, double *ei1A
 	, double *ei2B, double *lambda)
@@ -885,7 +885,7 @@ void UniversalJoint::EvaluateUniversalJointContribution(double *v, double *resid
 	};
 };
 
-//Calcula contribuições do resíduo e operador tangente - gerado no AceGen - sem usar SMSD
+//Calcula contribuições do residuo e operador tangente - gerado no AceGen - sem usar SMSD
 void UniversalJoint::EvaluateUniversalJointContribution2(double *v, double *residual
 	, double **stiffness, double *alphaA, double *alphaB, double *ei1A
 	, double *ei2B, double *lambda)

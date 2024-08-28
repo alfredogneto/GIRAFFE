@@ -22,7 +22,7 @@ public:
 	double** Bin;	//Binomial coefficients
 
 	bool Read(FILE *f);												//Leitura do arquivo de entrada
-	void Write(FILE *f);											//Escrita do arquivo de saída
+	void Write(FILE *f);											//Escrita do arquivo de saida
 	void PreCalc();													//PreCalc
 
 	//Geometric evaluation functions

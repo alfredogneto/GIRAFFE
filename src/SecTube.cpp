@@ -72,7 +72,7 @@ bool SecTube::Read(FILE *f)
 			return false;
 	}
 	else
-		fsetpos(f, &pos);	//volta à posição anterior
+		fsetpos(f, &pos);	//volta a posição anterior
 
 
 	return true;

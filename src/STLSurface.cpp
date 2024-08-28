@@ -7,7 +7,7 @@
 #include "VEMPolyhedron.h"
 #include "Encoding.h"
 #include "Database.h"
-//Variáveis globais
+//Variaveis globais
 extern
 Database db;
 
@@ -74,7 +74,7 @@ bool STLSurface::Read(FILE *f)
 	return true;
 }
 
-//Escrita do arquivo de saída
+//Escrita do arquivo de saida
 void STLSurface::Write(FILE *f)
 {
 	fprintf(f, "STLSurface\t%d\t%s\n",

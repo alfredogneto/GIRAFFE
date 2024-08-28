@@ -1,5 +1,5 @@
 #include "BandMatrix.h"
-#include "mkl.h"
+#include <mkl.h>
 
 //Construtor Padrão
 BandMatrix::BandMatrix(void)
@@ -9,12 +9,12 @@ BandMatrix::BandMatrix(void)
 	m_columns = 1;
 	m_band_s = 0;
 	m_band_i = 0;
-	//Inicializa a matriz como null e tenta alocá-la
+	//Inicializa a matriz como null e tenta aloca-la
 	m_matrix = NULL;
 	if(!alloc())
 		printf("Not possible to alloc matrix\n");
 }
-//Construtor Paramétrico
+//Construtor Parametrico
 BandMatrix::BandMatrix(long band_s,long band_i,long columns)
 {
 	m_lines_deleted = true;
@@ -22,7 +22,7 @@ BandMatrix::BandMatrix(long band_s,long band_i,long columns)
 	m_columns = columns;
 	m_band_s = band_s;
 	m_band_i = band_i;
-	//Inicializa a matriz como null e tenta alocá-la
+	//Inicializa a matriz como null e tenta aloca-la
 	m_matrix = NULL;
 	if(!alloc())
 		printf("Not possible to alloc matrix\n");
@@ -30,7 +30,7 @@ BandMatrix::BandMatrix(long band_s,long band_i,long columns)
 //Construtor de cópia
 BandMatrix::BandMatrix(BandMatrix &copied)
 {
-	//Verifica dimensões da matriz - se necessário, faz re-alocação
+	//Verifica dimensões da matriz - se necessario, faz re-alocação
 	//if (copied.m_alloced_lines != m_alloced_lines)
 //	{
 		flush();
@@ -38,7 +38,7 @@ BandMatrix::BandMatrix(BandMatrix &copied)
 		m_columns = copied.m_columns;
 		m_band_s = copied.m_band_s;
 		m_band_i = copied.m_band_i;
-		//Inicializa a matriz como null e tenta alocá-la
+		//Inicializa a matriz como null e tenta aloca-la
 		m_matrix = NULL;
 		if(!alloc())
 			printf("Not possible to alloc matrix\n");
@@ -69,7 +69,7 @@ void BandMatrix::print()
 	}
 	printf("\n");
 }
-//Imprime a matriz em um arquivo de texto, cujo nome está no char s
+//Imprime a matriz em um arquivo de texto, cujo nome esta no char s
 void BandMatrix::fprint(char* s)
 {
 	FILE *file1 = fopen(s,"w");
@@ -89,7 +89,7 @@ void BandMatrix::fprint(char* s)
 	fclose(file1);
 }
 
-//Imprime a matriz em um arquivo de texto, cujo nome está no char s (em formato quadrada)
+//Imprime a matriz em um arquivo de texto, cujo nome esta no char s (em formato quadrada)
 void BandMatrix::fprintSquare(char* s)
 {
 	FILE *file1 = fopen(s,"w");
@@ -97,7 +97,7 @@ void BandMatrix::fprintSquare(char* s)
 	{
 		for(long j=0; j < m_columns; j++)
 		{
-			//Se está na região de valores não nulos
+			//Se esta na região de valores não nulos
 			if(i-j <= m_band_i && j-i <= m_band_s)
 				fprintf(file1," %.20e\t",this->getValue(i,j));
 			else
@@ -132,7 +132,7 @@ bool BandMatrix::alloc()
 bool BandMatrix::flush()
 {
 	//Percorre as linhas
-	//Se há linhas para desalocar
+	//Se ha linhas para desalocar
 	if (m_lines_deleted == false)
 	{
 		delete[]m_matrix;
@@ -162,7 +162,7 @@ int BandMatrix::getBands()
 {
 	return m_band_s;
 }
-//Retorna o número de linhas da matriz
+//Retorna o numero de linhas da matriz
 int BandMatrix::getColumns()
 {
 	return m_columns;
@@ -177,7 +177,7 @@ void BandMatrix::setBands(int bands)
 {
 	m_band_s = bands;
 }
-//Seta o número de colunas da matriz
+//Seta o numero de colunas da matriz
 void BandMatrix::setColumns(int columns)
 {	
 	m_columns = columns;
@@ -187,7 +187,7 @@ double BandMatrix::getValue(long i, long j)
 {
 	long column,line;
 	bool flag_write = true;
-	//Testa para ver se a posição está dentro da banda alocada
+	//Testa para ver se a posição esta dentro da banda alocada
 	if (i>j)//parte inferior da diagonal
 	{
 		if (i-j > m_band_i)
@@ -223,7 +223,7 @@ void BandMatrix::setValue(long i, long j, double v)
 	long column,line;
 
 	bool flag_write = true;
-	//Testa para ver se a posição está dentro da banda alocada
+	//Testa para ver se a posição esta dentro da banda alocada
 	if (i>j)//parte inferior da diagonal
 	{
 		if (i-j > m_band_i)
@@ -321,7 +321,7 @@ Matrix BandMatrix::Full()
 	{
 		for(long j=0; j < m_columns; j++)
 		{
-			//Se está na região de valores não nulos
+			//Se esta na região de valores não nulos
 			if(i-j <= m_band_i && j-i <= m_band_s)
 				return_m(i,j) = this->getValue(i,j);
 			else

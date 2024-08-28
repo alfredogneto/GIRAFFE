@@ -17,7 +17,7 @@
 //#include <omp.h>
 #define PI 3.1415926535897932384626433832795
 #include"Database.h"
-//Variáveis globais
+//Variaveis globais
 extern
 Database db;
 
@@ -164,12 +164,12 @@ void GeneralPLR::WriteMonitor(FILE *f, bool first_record, double time)
 {
 	//DOES NOTHING
 }
-//Pré-cálculo de variáveis que é feito uma única vez no início
+//Pre-calculo de variaveis que e feito uma unica vez no inicio
 void GeneralPLR::PreCalc()
 {
-	n_particles = db.number_particles;					//Número de partículas
-	n_elements = db.line_regions[n_LR - 1]->n_elements;	//Número de elementos do line region
-	Alloc();												//Alocação dinâmica, de acordo com o número de contatos
+	n_particles = db.number_particles;					//Numero de particulas
+	n_elements = db.line_regions[n_LR - 1]->n_elements;	//Numero de elementos do line region
+	Alloc();												//Alocação dinamica, de acordo com o numero de contatos
 }
 
 //Checa inconsistências no elemento para evitar erros de execução
@@ -184,10 +184,10 @@ void GeneralPLR::Mount()
 	int n_p1 = 0;		//particle
 	int n_element = 0;	//element
 	
-	double r1, r2;	//Raios das partículas
-	Sphere* p1;		//Ponteiro para partículas
+	double r1, r2;	//Raios das particulas
+	Sphere* p1;		//Ponteiro para particulas
 	int temp_node;
-	Matrix z1z2(3);	//distância entre centros
+	Matrix z1z2(3);	//distancia entre centros
 	double gn;		//gap normal
 	Matrix n(3);	//direção normal de contato
 	Matrix non(3, 3);
@@ -201,7 +201,7 @@ void GeneralPLR::Mount()
 
 			if (activate[i][j] == true)
 			{
-				/////////////////////////////////////////PARTÍCULA ESFÉRICA em contato com Viga////////////////////////////////////////////////////////
+				/////////////////////////////////////////PARTiCULA ESFeRICA em contato com Viga////////////////////////////////////////////////////////
 				if (typeid(*db.particles[i]) == typeid(Sphere))
 				{
 					bool evaluate = false;
@@ -226,7 +226,7 @@ void GeneralPLR::Mount()
 						p1 = static_cast<Sphere*>(db.particles[n_p1 - 1]);
 						r1 = p1->radius;
 
-						//Posição da partícula
+						//Posição da particula
 						temp_node = db.particles[n_p1 - 1]->node;
 						z1(0, 0) = db.nodes[temp_node - 1]->copy_coordinates[0] + db.nodes[temp_node - 1]->displacements[0];
 						z1(1, 0) = db.nodes[temp_node - 1]->copy_coordinates[1] + db.nodes[temp_node - 1]->displacements[1];
@@ -239,7 +239,7 @@ void GeneralPLR::Mount()
 							z2(0, 0) = db.nodes[temp_node - 1]->copy_coordinates[0] + db.nodes[temp_node - 1]->displacements[0];
 							z2(1, 0) = db.nodes[temp_node - 1]->copy_coordinates[1] + db.nodes[temp_node - 1]->displacements[1];
 							z2(2, 0) = db.nodes[temp_node - 1]->copy_coordinates[2] + db.nodes[temp_node - 1]->displacements[2];
-							//Cálculo da função GAP
+							//Calculo da função GAP
 							z1z2 = z1 - z2;
 							gn = sqrt(dot(z1z2, z1z2)) - r1 - r2;
 							f = (gn / (gn + r1 + r2));
@@ -307,20 +307,20 @@ void GeneralPLR::MountDyn()
 		{
 			n_element = db.line_regions[n_LR - 1]->elements[j];
 
-			//Se houver alocação do contato, computa alterações devido à dinâmica
+			//Se houver alocação do contato, computa alterações devido a dinamica
 			if (alloc_control[i][j] == true)
 			{
-				//Nó da partícula
+				//Nó da particula
 				for (int ind = 0; ind < 3; ind++)
 					vel(ind, 0) = db.nodes[db.particles[n_p1 - 1]->node - 1]->vel[ind];
 					
 				//Percorre os três nós da viga
 				for (int k = 0; k < 3; k++)
 				{
-					//Modificações da dinâmica na matriz de rigidez:
+					//Modificações da dinamica na matriz de rigidez:
 					Dynamic* ptr_sol = static_cast<Dynamic*>(db.solution[db.current_solution_number - 1]);
 					(*c_stiffness[i][j][k]) = (*c_stiffness[i][j][k]) + ptr_sol->a4*(*c_damping[i][j][k]);
-					//Modificações da dinâmica nos esforços - presença das forças de amortecimento
+					//Modificações da dinamica nos esforços - presença das forças de amortecimento
 					//Nó da viga
 					for (int ind = 0; ind < 3; ind++)
 						vel(ind+3, 0) = db.nodes[db.elements[n_element - 1]->nodes[k] - 1]->vel[ind];
@@ -362,7 +362,7 @@ void GeneralPLR::MountGlobal()
 					for (int i = 0; i < 6; i++)
 					{
 						//(*c_loading[ni][nj][k]).print();
-						//Partícula
+						//Particula
 						if (i<3)
 							GL_global_1 = db.nodes[db.particles[n_p1 - 1]->node - 1]->GLs[i];
 						//Esfera do elemento
@@ -382,10 +382,10 @@ void GeneralPLR::MountGlobal()
 						}
 						for (int j = 0; j < 6; j++)
 						{
-							//Partícula 1
+							//Particula 1
 							if (j<3)
 								GL_global_2 = db.nodes[db.particles[n_p1 - 1]->node - 1]->GLs[j];
-							//Partícula 2
+							//Particula 2
 							else
 								GL_global_2 = db.nodes[db.elements[n_element - 1]->nodes[k] - 1]->GLs[j - 3];
 
@@ -417,12 +417,12 @@ void GeneralPLR::MountGlobal()
 	}
 }
 
-//Salva variáveis para descrição lagrangiana atualizada
+//Salva variaveis para descrição lagrangiana atualizada
 void GeneralPLR::SaveLagrange()
 {
 	//DOES NOTHING
 }
-//Retorna 1 - há algum erro, mesmo que tenha convergido. Ex: penetração excessiva
+//Retorna 1 - ha algum erro, mesmo que tenha convergido. Ex: penetração excessiva
 bool GeneralPLR::HaveErrors()
 {
 	//DOES NOTHING
@@ -479,7 +479,7 @@ void GeneralPLR::Alloc()
 		}
 	}
 
-	//Incialização de variáveis
+	//Incialização de variaveis
 	for (int i = 0; i < n_particles; i++)
 	{
 		for (int j = 0; j < n_elements; j++)
@@ -490,7 +490,7 @@ void GeneralPLR::Alloc()
 	}
 }
 
-//Aloca matrizes para contato específico
+//Aloca matrizes para contato especifico
 void GeneralPLR::AllocSpecific(int i, int j)
 {
 	if (alloc_control[i][j] == false)
@@ -514,7 +514,7 @@ void GeneralPLR::AllocSpecific(int i, int j)
 	}
 }
 
-//Desaloca matrizes para contato específico
+//Desaloca matrizes para contato especifico
 void GeneralPLR::FreeSpecific(int i, int j)
 {
 	if (alloc_control[i][j] == true)
@@ -529,7 +529,7 @@ void GeneralPLR::FreeSpecific(int i, int j)
 	}
 }
 
-//checagem inicial do contato  - início de cada incremento
+//checagem inicial do contato  - inicio de cada incremento
 void GeneralPLR::BeginStepCheck()
 {
 	
@@ -541,7 +541,7 @@ void GeneralPLR::PinballCheck()
 	int n_p1 = 0;		//particle
 	int n_element = 0;	//element
 	int temp_node;
-	Matrix z1z2(3);	//distância entre centros
+	Matrix z1z2(3);	//distancia entre centros
 	
 	//Searching is done for each pair of contact
 	for (int i = 0; i < n_particles; i++)
@@ -550,7 +550,7 @@ void GeneralPLR::PinballCheck()
 		for (int j = 0; j < db.line_regions[n_LR - 1]->n_elements; j++)
 		{
 			n_element = db.line_regions[n_LR - 1]->elements[j];
-			//Posição da partícula
+			//Posição da particula
 			temp_node = db.particles[n_p1 - 1]->node;
 			z1(0, 0) = db.nodes[temp_node - 1]->copy_coordinates[0] + db.nodes[temp_node - 1]->displacements[0];
 			z1(1, 0) = db.nodes[temp_node - 1]->copy_coordinates[1] + db.nodes[temp_node - 1]->displacements[1];
@@ -564,7 +564,7 @@ void GeneralPLR::PinballCheck()
 			if (norm(z1 - z2) <= pinball)
 			{
 				activate[i][j] = true;			//Near to contact
-				//Ainda não aloca as matrizes - alocação será feita somente se o gap normal for negativo - isso é calculado na função Mount.
+				//Ainda não aloca as matrizes - alocação sera feita somente se o gap normal for negativo - isso e calculado na função Mount.
 			}
 			else
 			{

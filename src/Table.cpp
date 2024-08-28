@@ -24,7 +24,7 @@ Table::Table(int e_times, int e_values)
 		values[i] = new double[n_values];
 	}
 
-	//Zera todas as componentes dos vetores recém-alocados
+	//Zera todas as componentes dos vetores recem-alocados
 	for (int i = 0; i < n_times; i++)
 	{
 		times[i] = 0;
@@ -77,7 +77,7 @@ double Table::GetValueAt(double time_value, int value_index)
 
 	if (n_times == 0)
 		return return_value;
-	//Se for maior que o último time, retorna o último
+	//Se for maior que o ultimo time, retorna o ultimo
 	if (time_value >= times[n_times - 1])
 		return values[n_times - 1][value_index];
 	//Se for menor que o primeiro time, retorna o primeiro

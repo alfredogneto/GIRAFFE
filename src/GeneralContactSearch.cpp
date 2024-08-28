@@ -45,7 +45,7 @@
 using namespace std::chrono;
 
 #include "Database.h"
-//Variáveis globais
+//Variaveis globais
 extern
 Database db;
 
@@ -561,7 +561,7 @@ void GeneralContactSearch::AlltoAll()
 										pair->PreCalc();
 										contactPP_list[i].push_back(pair);
 									}
-									//outros tipos de pares de colisão entre diferentes tipos de partículas
+									//outros tipos de pares de colisão entre diferentes tipos de particulas
 								}
 								//Previously existing contact is made active
 								else
@@ -626,7 +626,7 @@ void GeneralContactSearch::AlltoAll()
 										pair->PreCalc();
 										contactPB_list[i].push_back(pair);
 									}
-									//outros tipos de pares de colisão entre diferentes tipos de partículas e contornos
+									//outros tipos de pares de colisão entre diferentes tipos de particulas e contornos
 								}
 								//Previously existing contact is made active
 								else
@@ -758,7 +758,7 @@ void GeneralContactSearch::AlltoAll()
 										contactPBO_list[i].push_back(pair);
 									}
 									
-									//outros tipos de pares de colisão entre diferentes tipos de partículas e bodies
+									//outros tipos de pares de colisão entre diferentes tipos de particulas e bodies
 								}
 								//Previously existing contact is made active
 								else
@@ -1049,7 +1049,7 @@ void GeneralContactSearch::VerletMethod()
 									contactPBO_list[i].push_back(pair);
 								}
 
-								//outros tipos de pares de colisão entre diferentes tipos de partículas e bodies
+								//outros tipos de pares de colisão entre diferentes tipos de particulas e bodies
 							}
 							//Previously existing contact is made active
 							else
@@ -1247,7 +1247,7 @@ void GeneralContactSearch::LinkedCellsMethod()
 																	pair->PreCalc();
 																	contactPP_list[i].push_back(pair);
 																}
-																//outros tipos de pares de colisão entre diferentes tipos de partículas
+																//outros tipos de pares de colisão entre diferentes tipos de particulas
 															}
 															//Previously existing contact is made active
 															else
@@ -1255,7 +1255,7 @@ void GeneralContactSearch::LinkedCellsMethod()
 																contactPP_list[i][index]->cur_active = true;
 															}
 														}
-														//Atualização do ponteiro. Obs: o último apontara NULL, mas não entrará no loop (sai antes)
+														//Atualização do ponteiro. Obs: o ultimo apontara NULL, mas não entrara no loop (sai antes)
 														ptr_subbv = ptr_subbv->next;
 													}
 												}
@@ -1265,7 +1265,7 @@ void GeneralContactSearch::LinkedCellsMethod()
 								}
 							}
 
-							//Atualização do ponteiro. Obs: o último apontara NULL, mas não entrará no loop (sai antes)
+							//Atualização do ponteiro. Obs: o ultimo apontara NULL, mas não entrara no loop (sai antes)
 							ptr_bv = ptr_bv->next;
 						}
 					}
@@ -1352,7 +1352,7 @@ void GeneralContactSearch::LinkedCellsMethod()
 																pair->PreCalc();
 																contactPB_list[i].push_back(pair);
 															}
-															//outros tipos de pares de colisão entre diferentes tipos de partículas e contornos
+															//outros tipos de pares de colisão entre diferentes tipos de particulas e contornos
 														}
 														//Previously existing contact is made active
 														else
@@ -1360,7 +1360,7 @@ void GeneralContactSearch::LinkedCellsMethod()
 															contactPB_list[i][index]->cur_active = true;
 														}
 													}
-													//Atualização do ponteiro. Obs: o último apontara NULL, mas não entrará no loop (sai antes)
+													//Atualização do ponteiro. Obs: o ultimo apontara NULL, mas não entrara no loop (sai antes)
 													ptr_subbv = ptr_subbv->next;
 												}
 											}
@@ -1368,7 +1368,7 @@ void GeneralContactSearch::LinkedCellsMethod()
 									}
 								}
 							}
-							//Atualização do ponteiro. Obs: o último apontara NULL, mas não entrará no loop (sai antes)
+							//Atualização do ponteiro. Obs: o ultimo apontara NULL, mas não entrara no loop (sai antes)
 							ptr_bv = ptr_bv->next;
 						}
 					}
@@ -1474,7 +1474,7 @@ void GeneralContactSearch::LinkedCellsMethod()
 																	contactBOBO_list[i].push_back(pair);
 																}
 																
-																//outros tipos de pares de colisão entre diferentes tipos de partículas
+																//outros tipos de pares de colisão entre diferentes tipos de particulas
 															}
 															//Previously existing contact is made active
 															else
@@ -1482,7 +1482,7 @@ void GeneralContactSearch::LinkedCellsMethod()
 																contactBOBO_list[i][index]->cur_active = true;
 															}
 														}
-														//Atualização do ponteiro. Obs: o último apontara NULL, mas não entrará no loop (sai antes)
+														//Atualização do ponteiro. Obs: o ultimo apontara NULL, mas não entrara no loop (sai antes)
 														ptr_subbv = ptr_subbv->next;
 													}
 												}
@@ -1492,7 +1492,7 @@ void GeneralContactSearch::LinkedCellsMethod()
 								}
 							}
 
-							//Atualização do ponteiro. Obs: o último apontara NULL, mas não entrará no loop (sai antes)
+							//Atualização do ponteiro. Obs: o ultimo apontara NULL, mas não entrara no loop (sai antes)
 							ptr_bv = ptr_bv->next;
 						}
 					}
@@ -1570,7 +1570,7 @@ void GeneralContactSearch::LinkedCellsMethod()
 																contactPBO_list[i].push_back(pair);
 															}
 
-															//outros tipos de pares de colisão entre diferentes tipos de partículas e bodies
+															//outros tipos de pares de colisão entre diferentes tipos de particulas e bodies
 														}
 														//Previously existing contact is made active
 														else
@@ -1578,7 +1578,7 @@ void GeneralContactSearch::LinkedCellsMethod()
 															contactPBO_list[i][index]->cur_active = true;
 														}
 													}
-													//Atualização do ponteiro. Obs: o último apontara NULL, mas não entrará no loop (sai antes)
+													//Atualização do ponteiro. Obs: o ultimo apontara NULL, mas não entrara no loop (sai antes)
 													ptr_subbv = ptr_subbv->next;
 												}
 											}
@@ -1586,7 +1586,7 @@ void GeneralContactSearch::LinkedCellsMethod()
 									}
 								}
 							}
-							//Atualização do ponteiro. Obs: o último apontara NULL, mas não entrará no loop (sai antes)
+							//Atualização do ponteiro. Obs: o ultimo apontara NULL, mas não entrara no loop (sai antes)
 							ptr_bv = ptr_bv->next;
 						}
 					}
@@ -1647,7 +1647,7 @@ void GeneralContactSearch::UpdateBoundingVolumes()
 {
 #pragma omp parallel
 	{
-		//Percorre partículas e atualiza os bounding volumes
+		//Percorre particulas e atualiza os bounding volumes
 #pragma omp for schedule(dynamic)
 		for (int i = 0; i < db.number_particles; i++)
 			db.particles[i]->UpdateBoundingVolumes();
@@ -1668,7 +1668,7 @@ void GeneralContactSearch::UpdateBoundingVolumes()
 			db.body_geometries[i]->UpdateBoundingVolumes();
 	}
 
-	//Se necessário inserir novas atualizações para superfícies, etc.
+	//Se necessario inserir novas atualizações para superficies, etc.
 }
 
 bool GeneralContactSearch::HaveErrors()
@@ -2599,7 +2599,7 @@ double GeneralContactSearch::TimeStepControl()
 		{
 			if (contactPP_list[i][cont]->cur_active)
 			{
-				//Verificação - energia cinética
+				//Verificação - energia cinetica
 				double kin1 = db.particles[contactPP_list[i][cont]->index1]->kinetic_energy;
 				double kin2 = db.particles[contactPP_list[i][cont]->index2]->kinetic_energy;
 				double step = contactPP_list[i][cont]->TimeStepControl(kin1 + kin2);
@@ -2614,7 +2614,7 @@ double GeneralContactSearch::TimeStepControl()
 		{
 			if (contactPB_list[i][cont]->cur_active)
 			{
-				//Verificação - energia cinética
+				//Verificação - energia cinetica
 				double kin1 = db.particles[contactPB_list[i][cont]->index1]->kinetic_energy;
 				double step = contactPB_list[i][cont]->TimeStepControl(kin1);
 				if (step < temp_step)

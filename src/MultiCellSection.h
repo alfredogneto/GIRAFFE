@@ -14,8 +14,8 @@ public:
 	void WriteVTK_XMLRender(FILE *f, Beam_1* elem);
 	int n_points;
 	int n_webs;
-	double** points;				//Contém coordenadas dos pontos que formam a ST
-	int** webs;						//Contém índices que indicam numerações das webs
+	double** points;				//Contem coordenadas dos pontos que formam a ST
+	int** webs;						//Contem indices que indicam numerações das webs
 
 };
 

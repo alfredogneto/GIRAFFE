@@ -13,7 +13,7 @@
 #include "Matrix.h"
 
 #include "Database.h"
-//Variáveis globais
+//Variaveis globais
 extern
 Database db;
 #define PI 3.1415926535897932384626433832795
@@ -728,7 +728,7 @@ void FlexibleTriangularFace_FlexibleTriangularFace::PreCalc()
 
 void FlexibleTriangularFace_FlexibleTriangularFace::EvaluateNormalGap()
 {
-	//Cálculo da função gap (escalar)
+	//Calculo da função gap (escalar)
 	SurfacePoints();
 	//Gap vetorial
 	*cd->g[0] = *GammaA - *GammaB;

@@ -12,15 +12,15 @@
 
 #define PI 3.1415926535897932384626433832795
 #include"Database.h"
-//Variáveis globais
+//Variaveis globais
 extern
 Database db;
 
 LRLR::LRLR()
 {
 	tol_NR = 1e-16;		//Tolerência NR
-	max_it = 20;		//Número máximo de iterações
-	tol_ortho = 1e-16;	//Tolerância de erro à ortogonalidade
+	max_it = 20;		//Numero maximo de iterações
+	tol_ortho = 1e-16;	//Tolerancia de erro a ortogonalidade
 	type_name = new char[20];//Nome do tipo do contato
 	sprintf(type_name, "LRLR");
 	number = 0;
@@ -33,7 +33,7 @@ LRLR::LRLR()
 	sum_Fx = 0;
 	sum_Fy = 0;
 	sum_Fz = 0;
-	//Variáveis internas
+	//Variaveis internas
 	temp_element1 = 0;
 	temp_element2 = 0;
 	temp_node = 0;
@@ -108,7 +108,7 @@ LRLR::LRLR()
 	t1 = new Matrix(3, 1);
 	t2 = new Matrix(3, 1);
 	delta_csi = new Matrix(2, 1);
-	//Abaixo as variáveis que dependem do número de elementos para serem alocadas - Alocação feita na função Alloc, quando chamada durante o PreCalc
+	//Abaixo as variaveis que dependem do numero de elementos para serem alocadas - Alocação feita na função Alloc, quando chamada durante o PreCalc
 	typeOK1 = NULL;
 	typeOK2 = NULL;
 	activate = NULL;
@@ -506,7 +506,7 @@ void LRLR::WriteMonitor(FILE *f, bool first_record, double time)
 	fprintf(f, "%.6e\t%.6e\t%.6e\n", sum_Fx, sum_Fy, sum_Fz);
 }
 
-//Salva variáveis para descrição lagrangiana atualizada
+//Salva variaveis para descrição lagrangiana atualizada
 void LRLR::SaveLagrange()
 {
 	for (int i = 0; i < n_elements1; i++)
@@ -522,7 +522,7 @@ void LRLR::SaveLagrange()
 			gt1s[i][j] = g_t1s_temp[i][j];
 			gt2s[i][j] = g_t2s_temp[i][j];
 			(*last_dif_pos[i][j]) = (*z2z1[i][j]);
-			//Imprimindo variáveis de controle
+			//Imprimindo variaveis de controle
 			if (activate[i][j] == 1)
 			{
 				if (return_value[i][j] == 0 && g_n[i][j] < 0)
@@ -531,7 +531,7 @@ void LRLR::SaveLagrange()
 		}
 	}
 }
-//Plota características do contato, independente de ter convergido ou não
+//Plota caracteristicas do contato, independente de ter convergido ou não
 void LRLR::PlotContactStatus(int i, int j)
 {
 	db.myprintf("\nLRLR Contact %d\n", number);
@@ -550,28 +550,28 @@ void LRLR::Mount()
 		{
 			zeros(c_stiffness[i][j]);
 			zeros(c_loading[i][j]);
-			//Se o contato está ativo (near) - realiza a montagem
+			//Se o contato esta ativo (near) - realiza a montagem
 			if (activate[i][j] == 1)
 			{
 				temp_element1 = db.line_regions[n_LR1 - 1]->elements[i];
 				temp_element2 = db.line_regions[n_LR2 - 1]->elements[j];
 				FillNodes(temp_element1, temp_element2);
-				//Altera csi_1, csi_2, N1, N2, dN1, dN2, ddN1 e ddN2 para o ponto do possível contato - necessário para construção de funções gap, etc.
+				//Altera csi_1, csi_2, N1, N2, dN1, dN2, ddN1 e ddN2 para o ponto do possivel contato - necessario para construção de funções gap, etc.
 				return_value[i][j] = FindMinimumParameters(i, j);
-				//Retorno 0 - localizou ponto de mínima distância com NR
-				//Retorno 1 - Problemas de convergência NR ou ponto está fora dos domínios das barras com tolerância à ortogonalidade não obedecida
+				//Retorno 0 - localizou ponto de minima distancia com NR
+				//Retorno 1 - Problemas de convergência NR ou ponto esta fora dos dominios das barras com tolerancia a ortogonalidade não obedecida
 				*z1 = (*N1)*(*x1);	//z1
 				*z2 = (*N2)*(*x2);	//z2
 				*z2z1[i][j] = *z2 - *z1;
-				//Cálculo do gap normal
+				//Calculo do gap normal
 				g_n[i][j] = norm(*z2z1[i][j]) - (r1[i] + r2[j]);
-				//Caso seja a primeira montagem, realiza pré-cálculo da distância entre os pontos (para ter referência para verificar cruzamento de vigas)
+				//Caso seja a primeira montagem, realiza pre-calculo da distancia entre os pontos (para ter referência para verificar cruzamento de vigas)
 				if (first_mount[i][j] == true)
 				{
 					*last_dif_pos[i][j] = *z2z1[i][j];
 					first_mount[i][j] = false;
 				}
-				//Verifica se mudou status em relação à última configuração convergida - o resultado desse algoritmo é a variável booleana flag_cross
+				//Verifica se mudou status em relação a ultima configuração convergida - o resultado desse algoritmo e a variavel booleana flag_cross
 				dot_test = dot(*z2z1[i][j], *last_dif_pos[i][j]);
 				if (last_g_n[i][j] > 0.0)
 				{
@@ -583,14 +583,14 @@ void LRLR::Mount()
 						flag_cross[i][j] = false;
 					else
 					{
-						if (dot_test == 0)	//Há um ponto em comum - um ponto em comum entre as vigas - aqui há falha se as vigas girarem 90 deg em um passo (muito raro)
+						if (dot_test == 0)	//Ha um ponto em comum - um ponto em comum entre as vigas - aqui ha falha se as vigas girarem 90 deg em um passo (muito raro)
 							flag_cross[i][j] = true;
 						else				//Muda o status - houve cruzamento de vigas
 							flag_cross[i][j] = true;
 					}
 				}
 				
-				//Se o flag_cross é true - modifica o cálculo do gap normal
+				//Se o flag_cross e true - modifica o calculo do gap normal
 				if (flag_cross[i][j] == true)
 				{
 					g_n[i][j] = -(norm(*z2z1[i][j]) + (r1[i] + r2[j]));
@@ -601,20 +601,20 @@ void LRLR::Mount()
 					//Se houver contato, então realiza a contribuição
 					if (g_n[i][j] <= 0)
 					{
-						//Cálculo das direções tangenciais dos elementos e comprimentos dos elementos
+						//Calculo das direções tangenciais dos elementos e comprimentos dos elementos
 						CalculateLengthsAndTangents();
-						//VERIFICAÇÃO DE DOMÍNIO DAS BARRAS
+						//VERIFICAÇÃO DE DOMiNIO DAS BARRAS
 						//double d = mu*abs(g_n[i][j])*epn / ept;
 						//d = 0.001;
 						////Elemento 1
-						////Ponto no interior do domínio
+						////Ponto no interior do dominio
 						//if (abs(csi_1[i][j]) < 1.0 - 2.0*d / l1)
 						//{
 						//	factor_1 = 1.0;
 						//}
 						//else
 						//{
-						//	//Ponto fora do domínio
+						//	//Ponto fora do dominio
 						//	if (abs(csi_1[i][j]) > 1.0 + 2.0*d / l1)
 						//	{
 						//		factor_1 = 0.0;
@@ -625,14 +625,14 @@ void LRLR::Mount()
 						//	}
 						//}
 						////Elemento 2
-						////Ponto no interior do domínio
+						////Ponto no interior do dominio
 						//if (abs(csi_2[i][j]) < 1.0 - 2.0*d / l2)
 						//{
 						//	factor_2 = 1.0;
 						//}
 						//else
 						//{
-						//	//Ponto fora do domínio
+						//	//Ponto fora do dominio
 						//	if (abs(csi_2[i][j]) > 1.0 + 2.0*d / l2)
 						//	{
 						//		factor_2 = 0.0;
@@ -655,7 +655,7 @@ void LRLR::Mount()
 						*ddz1 = (*ddN1)*(*x1);	//ddz1
 						*ddz2 = (*ddN2)*(*x2);	//ddz2
 						//Construção de matrizes auxiliares do contato
-						//A matriz [A] já está construída - é a própria matriz Jacobiana do algoritmo de busca - NR
+						//A matriz [A] ja esta construida - e a própria matriz Jacobiana do algoritmo de busca - NR
 						//Matriz [B]
 						(*B)(0, 0) = (*dz1)(0, 0);
 						(*B)(0, 1) = (*dz1)(1, 0);
@@ -705,7 +705,7 @@ void LRLR::Mount()
 								(*E)(ii + 6, jj) = (*E2)(ii, jj);
 							}
 						}
-						//Matriz [F] - no caso de elementos com interpolação linear essa contribuição será nula
+						//Matriz [F] - no caso de elementos com interpolação linear essa contribuição sera nula
 						(*F) = transp(*d2)*(transp(*ddz2)*((*n)*(*d2))) - 1.0*(transp(*d1)*(transp(*n)*((*ddz1)*(*d1))));
 						//Matriz [G]
 						d = norm(*z2z1[i][j]);
@@ -720,33 +720,33 @@ void LRLR::Mount()
 						(*G) = (1.0 / d)*((transp(*Ntio) + transp(*d2)*transp(*dz2) - transp(*d1)*transp(*dz1))*(*I3 - (*n)*transp(*n))*(*Ntio + (*dz2)*(*d2) - (*dz1)*(*d1)));
 						//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 						//Direção tangencial - implementação do atrito com base no paper Zavarise e Wriggers (2000)
-						//Verifica se csi0 deve ou não ser atualizado (se o contato está começando nesse passo ou não)
+						//Verifica se csi0 deve ou não ser atualizado (se o contato esta começando nesse passo ou não)
 						if (last_g_n[i][j] >= 0)
 						{
 							csi_1_0[i][j] = csi_1[i][j];
 							csi_2_0[i][j] = csi_2[i][j];
-							//Zera possível acúmulo de deslocamento anterior - o contato está reiniciando - não há deslizamento acumulado
+							//Zera possivel acumulo de deslocamento anterior - o contato esta reiniciando - não ha deslizamento acumulado
 							gt1s[i][j] = 0.0;
 							gt2s[i][j] = 0.0;
 						}
 						else
 						{
-							//Se o ponto caiu fora do domínio de pelo menos uma das barras no último passo convergido (pode ser indicativo de deslizamento de elemento vizinho)
+							//Se o ponto caiu fora do dominio de pelo menos uma das barras no ultimo passo convergido (pode ser indicativo de deslizamento de elemento vizinho)
 							if (last_return_value[i][j] == 3)
 							{
 								csi_1_0[i][j] = csi_1[i][j];
 								csi_2_0[i][j] = csi_2[i][j];
-								//Zera possível acúmulo de deslocamento anterior - o contato está reiniciando - não há deslizamento acumulado
+								//Zera possivel acumulo de deslocamento anterior - o contato esta reiniciando - não ha deslizamento acumulado
 								gt1s[i][j] = 0.0;
 								gt2s[i][j] = 0.0;
 
-								////Cálculo da magnitude do deslizamento entre o ponto de fora do domínio e o ponto atual (no domínio)
+								////Calculo da magnitude do deslizamento entre o ponto de fora do dominio e o ponto atual (no dominio)
 								//double factor = 
 								;
 								//double gt1_pred = 0.5*(csi_1[i][j] - copy_csi_1_converged[i][j])*l1;
 								//double gt2_pred = 0.5*(csi_2[i][j] - copy_csi_2_converged[i][j])*l2;
 								//Matrix g_t_pred = gt1_pred*(*t1) + gt2_pred*(*t2);
-								////Se está delizando consideravelmente - calcula csi_1_0 e csi_2_0 fictícios
+								////Se esta delizando consideravelmente - calcula csi_1_0 e csi_2_0 ficticios
 								//if (norm(g_t_pred)*ept >= factor*abs(mu*epn*g_n[i][j]))
 								//{
 								//	t1t2 = dot(*t1, *t2);
@@ -762,23 +762,23 @@ void LRLR::Mount()
 								//	csi_1_0[i][j] = 0.0;
 								//	csi_2_0[i][j] = 0.0;
 								//}
-								////Zera possível acúmulo de deslocamento anterior - o contato está reiniciando - não há deslizamento acumulado
+								////Zera possivel acumulo de deslocamento anterior - o contato esta reiniciando - não ha deslizamento acumulado
 								//gt1s[i][j] = 0.0;
 								//gt2s[i][j] = 0.0;
 							}
 						}
 						
-						//Cálculo do gap tangencial para o elemento 1 e para o elemento 2
+						//Calculo do gap tangencial para o elemento 1 e para o elemento 2
 						gt1 = 0.5*(csi_1[i][j] - csi_1_0[i][j])*l1;
 						gt2 = 0.5*(csi_2[i][j] - csi_2_0[i][j])*l2;
-						//Gaps tangenciais elásticos (sticking)
+						//Gaps tangenciais elasticos (sticking)
 						gte1 = gt1 - gt1s[i][j];
 						gte2 = gt2 - gt2s[i][j];
-						//Força de atrito máxima
+						//Força de atrito maxima
 						Fat_max = abs(mu*g_n[i][j]*epn);
 						sticking[i][j] = true;
 						//Gaps tangenciais vetoriais
-						*gte = gte1*(*t1) + gte2*(*t2);	//elástico
+						*gte = gte1*(*t1) + gte2*(*t2);	//elastico
 						//Multiplicadores (para decomposição na base não ortho formada pelas barras)
 						t1t2 = dot(*t1, *t2);
 						if (norm(*gte) != 0.0)
@@ -795,7 +795,7 @@ void LRLR::Mount()
 						m1 = ((tt2*t1t2 - tt1) / (t1t2*t1t2 - 1));
 						m2 = ((tt1*t1t2 - tt2) / (t1t2*t1t2 - 1));
 						Fat_try = ept*norm(*gte);
-						//Magnitude da força de atrito que de fato ocorrerá, após as devidas verificações a serem processadas a seguir:
+						//Magnitude da força de atrito que de fato ocorrera, após as devidas verificações a serem processadas a seguir:
 						//Verificação de sticking ou slipping
 						////////////////////////////Sliding//////////////////////////////
 						if (Fat_try >= Fat_max)
@@ -807,7 +807,7 @@ void LRLR::Mount()
 								delta_lambda = (Fat_try - Fat_max) / ept;	//Magnitude da atualização de deslizamento
 							else
 								delta_lambda = 0.0;
-							//Atualiza o gap de deslizamento (mas só de fato será computado no caso de convergência do NR)
+							//Atualiza o gap de deslizamento (mas só de fato sera computado no caso de convergência do NR)
 							if (norm(*gte) != 0.0)
 							{
 								if (delta_lambda != 0.0)
@@ -843,13 +843,13 @@ void LRLR::Mount()
 							Fat2 = Fat*m2;
 							//printf("\nFat %lf\n", norm(Fat1*(*t1) + Fat2*(*t2)));
 						}
-						//Nesse momento já se sabe se stick ou slip. Agora cálculo das contribuiçoes para forma fraca e operador tangente
+						//Nesse momento ja se sabe se stick ou slip. Agora calculo das contribuiçoes para forma fraca e operador tangente
 						for (int ii = 0; ii<3; ii++)
 						{
 							(*t1ext)(ii, 0) = (*t1)(ii, 0);
 							(*t2ext)(ii + 3, 0) = (*t2)(ii, 0);
 						}
-						//Matrix auxiliar para o cálculo de G3 - identidade de ordem 3 com zeros no restante - I361 e I362
+						//Matrix auxiliar para o calculo de G3 - identidade de ordem 3 com zeros no restante - I361 e I362
 						for (int ii = 0; ii<3; ii++)
 						{
 							(*I361)(ii, ii) = 1.0;
@@ -934,7 +934,7 @@ void LRLR::Mount()
 							(*STb) = -1.0*mu*epn*(m2*(*G2b)*transp(*n)*(*Ntio) + m2*g_n[i][j] * 0.5* (transp(*d2)*transp(*G1b) + l2*(*G7b) + (*G1b)*(*d2) + (csi_2[i][j] - csi_2_0[i][j])*(*G3b))/*+ g_n*G2b*...*/);
 						}
 						//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-						//Método de penalidades - construção dos esforços de contato e da matriz de rigidez tangente
+						//Metodo de penalidades - construção dos esforços de contato e da matriz de rigidez tangente
 						(*c_loading[i][j]) = 1.0*epn*g_n[i][j] * (transp(*Ntio)*(*n)) + Fat1*(*G2) + Fat2*(*G2b);
 						(*c_stiffness[i][j]) = epn*(transp(*Ntio)*(*n)*(transp(*n)*(*Ntio)) + g_n[i][j] * ((*E) + transp(*E) + (*F) + (*G))) + (*ST) + (*STb);
 					}//g_n < 0
@@ -967,7 +967,7 @@ void LRLR::MountGlobal()
 			if (return_value[ei][ej] == 0 && g_n[ei][ej] < 0)
 			{
 				//PlotContactStatus(ei, ej);
-				//Variáveis temporárias para salvar a indexação global dos graus de liberdade
+				//Variaveis temporarias para salvar a indexação global dos graus de liberdade
 				int GL_global_1 = 0;
 				int GL_global_2 = 0;
 				double anterior = 0;
@@ -1050,7 +1050,7 @@ void LRLR::MountGlobal()
 //Calcula a banda gerada na matriz global pelo contato
 void LRLR::Band(int* band_fixed, int* band_free)
 {
-	//Verifica os valores máximos dos GLs dos elementos 1 e 2
+	//Verifica os valores maximos dos GLs dos elementos 1 e 2
 	temp_band_free = 0;
 	temp_band_fixed = 0;
 
@@ -1136,16 +1136,16 @@ void LRLR::Band(int* band_fixed, int* band_free)
 	*band_free = temp_band_free;
 }
 
-//Pré-cálculo de variáveis que é feito uma única vez no início
+//Pre-calculo de variaveis que e feito uma unica vez no inicio
 void LRLR::PreCalc()
 {
 	(*I3)(0, 0) = 1.0;
 	(*I3)(1, 1) = 1.0;
 	(*I3)(2, 2) = 1.0;
 
-	n_elements1 = db.line_regions[n_LR1 - 1]->n_elements;		//Número de elementos na line region 1
-	n_elements2 = db.line_regions[n_LR2 - 1]->n_elements;		//Número de elementos na line region 2
-	Alloc(n_elements1, n_elements2);							//Alocação dinâmica, de acordo com o número de elementos do LR1 e LR2
+	n_elements1 = db.line_regions[n_LR1 - 1]->n_elements;		//Numero de elementos na line region 1
+	n_elements2 = db.line_regions[n_LR2 - 1]->n_elements;		//Numero de elementos na line region 2
+	Alloc(n_elements1, n_elements2);							//Alocação dinamica, de acordo com o numero de elementos do LR1 e LR2
 	//Verification of element types assigned to LR1 - only Pipe_1 elements are considered acceptable here
 	for (int i = 0; i < n_elements1; i++)
 	{
@@ -1154,7 +1154,7 @@ void LRLR::PreCalc()
 		{
 			typeOK1[i] = 1;
 			Pipe_1* ptr_element = static_cast<Pipe_1*>(db.elements[temp_element1 - 1]);	//ptr_element is a pointer to element Pipe_1, index i from line_region
-			//Cálculos iniciais
+			//Calculos iniciais
 			L1[i] = ptr_element->CalculateLength();
 			r1[i] = ptr_element->De() / 2.0;
 		}
@@ -1184,7 +1184,7 @@ void LRLR::PreCalc()
 		{
 			typeOK2[i] = 1;
 			Pipe_1* ptr_element = static_cast<Pipe_1*>(db.elements[temp_element2 - 1]);	//ptr_element is a pointer to element Pipe_1, index i from line_region
-			//Cálculos iniciais
+			//Calculos iniciais
 			L2[i] = ptr_element->CalculateLength();
 			r2[i] = ptr_element->De() / 2.0;
 		}
@@ -1208,7 +1208,7 @@ void LRLR::PreCalc()
 	}
 }
 
-//checagem inicial do contato  - início de cada incremento
+//checagem inicial do contato  - inicio de cada incremento
 void LRLR::BeginStepCheck()
 {
 
@@ -1262,7 +1262,7 @@ void LRLR::PinballCheck()
 	}
 }
 
-//Aloca na memória as variáveis que dependem do número de elementos
+//Aloca na memória as variaveis que dependem do numero de elementos
 void LRLR::Alloc(int e_elements1, int e_elements2)
 {
 	n_elements1 = e_elements1;
@@ -1389,7 +1389,7 @@ void LRLR::Alloc(int e_elements1, int e_elements2)
 	}
 }
 
-//Preenche as variáveis dos nós com valores atualizados
+//Preenche as variaveis dos nós com valores atualizados
 void LRLR::FillNodes(int e_element1, int e_element2)
 {
 	temp_node = db.elements[e_element1 - 1]->nodes[0];
@@ -1425,15 +1425,15 @@ void LRLR::FillNodes(int e_element1, int e_element2)
 	//////////////////////////////////
 }
 
-//Algoritmo para determinação de csi_1 e csi_2 - algoritmo de minimização de distância
+//Algoritmo para determinação de csi_1 e csi_2 - algoritmo de minimização de distancia
 //retorno 0 - retorna valores de csi_1 e csi_2
 int LRLR::FindMinimumParameters(int i, int j)
 {
-	//Guarda cópias de variáveis convergidas na última iteração - serão usadas caso o NR não convirja (por exemplo, se houver paralelismo)
+	//Guarda cópias de variaveis convergidas na ultima iteração - serão usadas caso o NR não convirja (por exemplo, se houver paralelismo)
 	double copy_csi_1 = csi_1[i][j];
 	double copy_csi_2 = csi_2[i][j];
 	int flag_error = 0;
-	//Inicialização de chute inicial - o último valor convergido no NR
+	//Inicialização de chute inicial - o ultimo valor convergido no NR
 	csi_1[i][j] = copy_csi_1_converged[i][j];
 	csi_2[i][j] = copy_csi_2_converged[i][j];
 	error = tol_ortho + 1.0;	//Forçando entrar no loop
@@ -1445,8 +1445,8 @@ int LRLR::FindMinimumParameters(int i, int j)
 		{
 			EvaluateParameters(i, j);
 			error = norm(*R);	//Norma infinito
-			//Só faz mais uma iteração, se ainda não convergiu - caso contrário todas as variáveis já ficam salvas com o último valor convergido
-			//Isso é importante pois todas essas variáveis são utilizadas para a montagem da matriz de rigidez do contato
+			//Só faz mais uma iteração, se ainda não convergiu - caso contrario todas as variaveis ja ficam salvas com o ultimo valor convergido
+			//Isso e importante pois todas essas variaveis são utilizadas para a montagem da matriz de rigidez do contato
 			if (error > tol_ortho)
 			{
 				//Resolve sistema linear
@@ -1477,7 +1477,7 @@ int LRLR::FindMinimumParameters(int i, int j)
 		else
 			return 0;
 	}
-	//Ponto fora do domínio da barra
+	//Ponto fora do dominio da barra
 	if (abs(csi_1[i][j]) > 1.0 || abs(csi_2[i][j]) > 1.0)
 	{
 		//Se for um ponto das extremidades (tips) da line region
@@ -1511,11 +1511,11 @@ int LRLR::FindMinimumParameters(int i, int j)
 		//else
 		//	return 0;
 	}
-	//Caso chegue aqui significa que retornará o ponto do Newton-Raphson, convergido devidamente e que obedece às relações de ortogonalidade
+	//Caso chegue aqui significa que retornara o ponto do Newton-Raphson, convergido devidamente e que obedece as relações de ortogonalidade
 	return 0;
 }
 
-//Calcula parâmetros em função de csi_1 e csi_2
+//Calcula parametros em função de csi_1 e csi_2
 void LRLR::EvaluateParameters(int i, int j)
 {
 	////BLOCO - ELEMENTO 1 /////
@@ -1568,7 +1568,7 @@ void LRLR::EvaluateParameters(int i, int j)
 	(*ddN2)(0, 3) = ddN_3_2;
 	(*ddN2)(1, 4) = ddN_3_2;
 	(*ddN2)(2, 5) = ddN_3_2;
-	//Resíduo
+	//Residuo
 	(*R)(0, 0) = dot((*N2)*(*x2) - (*N1)*(*x1), (*dN1)*(*x1));
 	(*R)(1, 0) = dot((*N2)*(*x2) - (*N1)*(*x1), (*dN2)*(*x2));
 	//Monta Jacobiana (A)
@@ -1588,7 +1588,7 @@ void LRLR::CalculateLengthsAndTangents()
 	(*t2) = (1.0 / l2)*((*node_3_2) - (*node_1_2));
 }
 
-//Retorna 0 - não há cruzamento 1 - há cruzamento
+//Retorna 0 - não ha cruzamento 1 - ha cruzamento
 bool LRLR::HaveErrors()
 {
 	for (int i = 0; i < n_elements1; i++)

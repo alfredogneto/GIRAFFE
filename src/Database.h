@@ -106,7 +106,7 @@ class RigidNodeSet;
 class TranslationalJoint;
 class NodalConstraintDOF;
 
-//Partículas
+//Particulas
 class Particle;
 class Sphere;
 class Polyhedron;
@@ -197,35 +197,35 @@ public:
 
 	//Methods
 	int myprintf(const char* format, ...);
-	void PrintPtr(double** ptr, int lines, int columns);				//Imprime na tela o conteúdo do ponteiro ptr (matriz de duas dimensões)
-	void PrintPtr(double* ptr, int lines);								//Imprime na tela o conteúdo do ponteiro ptr (matriz de uma dimensão)
-	double EvaluateBoundingBoxDiag();	//Calcula uma dimensão característica da geometria do modelo - de todos os nós existentes - com base em suas posições atuais
-	void PreCalc();						//Realiza pré-cálculo
-	void EvaluateStartEndTimes();		//Raliza pré-cálculo de start times com base na sequencia de solutions
+	void PrintPtr(double** ptr, int lines, int columns);				//Imprime na tela o conteudo do ponteiro ptr (matriz de duas dimensões)
+	void PrintPtr(double* ptr, int lines);								//Imprime na tela o conteudo do ponteiro ptr (matriz de uma dimensão)
+	double EvaluateBoundingBoxDiag();	//Calcula uma dimensão caracteristica da geometria do modelo - de todos os nós existentes - com base em suas posições atuais
+	void PreCalc();						//Realiza pre-calculo
+	void EvaluateStartEndTimes();		//Raliza pre-calculo de start times com base na sequencia de solutions
 
 	//Variables and objects
 	char file_name[1000];			//Nome do job
 	char folder_name[1000];			//Pasta em que estão sendo salvos arquivos da simulação
 
-	int number_solutions;			//Número de soluções
+	int number_solutions;			//Numero de soluções
 	Solution** solution;			//Vetor de soluções
 
-	int number_nodes;				//Número de nós
+	int number_nodes;				//Numero de nós
 	Node** nodes;					//Vetor de nós
 
-	int number_points;				//Número de pontos
+	int number_points;				//Numero de pontos
 	Point** points;					//Vetor de pontos
 
-	int number_arcs;				//Número de arcos
+	int number_arcs;				//Numero de arcos
 	ArcCirc** arcs;					//Vetor de arcos
 
-	int number_elements;			//Número de elementos
+	int number_elements;			//Numero de elementos
 	Element** elements;				//Vetor de elementos
 
-	int number_particles;			//Número de partículas
-	Particle** particles;			//Vetor de partículas
+	int number_particles;			//Numero de particulas
+	Particle** particles;			//Vetor de particulas
 
-	int number_IC;					//Número de condições iniciais
+	int number_IC;					//Numero de condições iniciais
 	InitialCondition** IC;			//Vetor de condições iniciais
 
 	int number_materials;			
@@ -253,12 +253,12 @@ public:
 	SolverOptions* solver_options;			//SolverOptions
 
 	int number_analytical_surfaces;
-	AnalyticalSurface** analytical_surfaces;		//Vetor de superfícies analíticas
+	AnalyticalSurface** analytical_surfaces;		//Vetor de superficies analiticas
 
 	int number_surfaces;
-	Surface** surfaces;								//Vetor de superfícies
+	Surface** surfaces;								//Vetor de superficies
 
-	int number_splines;								//Número de splines
+	int number_splines;								//Numero de splines
 	Spline** splines;								//Vetor de splines
 
 	int number_line_regions;
@@ -298,24 +298,24 @@ public:
 	SectionDetails** section_details;				//Vetor de section_details
 
 	int number_aerodynamicdata;
-	AerodynamicData** aerodynamic_data;				//Vetor de dados aerodinâmicos
+	AerodynamicData** aerodynamic_data;				//Vetor de dados aerodinamicos
 
-	int number_cad_data;							//Número de CADs
+	int number_cad_data;							//Numero de CADs
 	CADData** cad_data;								//Vetor de CADs
 
-	int number_contactinterfaces;					//Número de interfaces de contato
+	int number_contactinterfaces;					//Numero de interfaces de contato
 	ContactInterface** contactinterfaces;			//Vetor de interfaces de contato
 
 	int number_boundaries;
 	Boundary** boundaries;							//Vetor de boundaries
 
-	int number_super_nodes;							//Número de super nós
+	int number_super_nodes;							//Numero de super nós
 	SuperNode** super_nodes;						//Vetor de super nós
 
-	int number_body_geometries;						//Número de body contact boundaries
+	int number_body_geometries;						//Numero de body contact boundaries
 	BodyGeometry** body_geometries;					//Vetor de body contact boundaries
 
-	int number_geometries;							//Número de geometries
+	int number_geometries;							//Numero de geometries
 	Geometry** geometries;							//Vetor de geometries
 
 	BEM* bem;										//Blade element momentum method
@@ -330,7 +330,7 @@ public:
 	PostFiles* post_files;							//Pós processamento (arquivos)
 	ExecutionData* execution_data;					//Dados de execução do GIRAFFE
 
-	//Variáveis booleanas de controle
+	//Variaveis booleanas de controle
 	bool solution_exist;
 	bool nodes_exist;
 	bool super_nodes_exist;
@@ -378,10 +378,10 @@ public:
 	bool flag_nGL_changed;		//Flag - indica que houve mudança nos graus de liberdade
 	int n_GL_free;				//GLs livres
 	int n_GL_fixed;				//GLs prescritos
-	int number_GLs_node;		//Número de GLs por nó
+	int number_GLs_node;		//Numero de GLs por nó
 
-	//Variáveis para execução do programa
-	double last_converged_time;				//Último instante convergido
+	//Variaveis para execução do programa
+	double last_converged_time;				//ultimo instante convergido
 	double current_time_step;				//Incremento de tempo atual
 	int current_solution_number;			//Atual solution
 	int current_iteration_number;			//Iteration
@@ -396,10 +396,10 @@ public:
 	SparseMatrix global_stiffness_AB;		//Matriz de rigidez global
 	SparseMatrix global_stiffness_BA;		//Matriz de rigidez global
 
-	SparseMatrix global_mass_AA;			//Matriz de massa global - utilizada somente quando há análise modal		
-	SparseMatrix global_damping_AA;			//Matriz de amrotecimento global - utilizada somente quando há análise modal
+	SparseMatrix global_mass_AA;			//Matriz de massa global - utilizada somente quando ha analise modal		
+	SparseMatrix global_damping_AA;			//Matriz de amrotecimento global - utilizada somente quando ha analise modal
 
-	Matrix global_P_A;				//Esforço desbalanceado global (após a resolução do sistema linear, também armazena os deslocamentos generalizados)
+	Matrix global_P_A;				//Esforço desbalanceado global (após a resolução do sistema linear, tambem armazena os deslocamentos generalizados)
 	Matrix global_I_A;				//Esforços internos globais - gl livres
 	Matrix global_P_B;				//Esforços internos globais - gl fixos
 	Matrix global_X_B;				//Vetor de deslocamentos impostos nos GL do sistema
@@ -409,7 +409,7 @@ public:
 	//Matrix global_ABS_P_B;			//Vetor para avaliação do valor absoluto do "fluxo" prescrito em cada DOF
 	//Matrix global_COUNT_ABS_P_B;	//Vetor que conta quantas contribuições foram colocadas em cada DOF
 
-	//Info para saída de resultados de elementos - número de resultados por elemento
+	//Info para saida de resultados de elementos - numero de resultados por elemento
 	int n_element_results;
 
 	FILE* console_output;	//Stream para salvar o console_output para um arquivo de texto

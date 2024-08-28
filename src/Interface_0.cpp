@@ -1,7 +1,7 @@
 #include "Interface_0.h"
 #include"Database.h"
 #include <math.h>
-//Variáveis globais
+//Variaveis globais
 extern
 Database db;
 
@@ -143,7 +143,7 @@ void Interface_0::Write(FILE *f)
 		number, material_1, material_2, epsn1, n1, zetan, mus, mud, epst, ct);
 }
 
-//Pré-cálculo de variáveis que é feito uma única vez no início
+//Pre-calculo de variaveis que e feito uma unica vez no inicio
 void Interface_0::PreCalc()
 {
 

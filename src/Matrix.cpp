@@ -1,5 +1,5 @@
 #include "Matrix.h"
-#include "mkl.h"
+#include <mkl.h>
 
 #define PI 3.1415926535897932384626433832795
 
@@ -10,7 +10,7 @@ Matrix::Matrix(void)
 	m_alloced_lines = 0;
 	m_lines = 1;
 	m_columns = 1;
-	//Inicializa a matriz como null e tenta alocá-la
+	//Inicializa a matriz como null e tenta aloca-la
 	m_matrix = NULL;
 	if(!alloc())
 		printf("Nao foi possivel alocar matriz! \n");
@@ -22,19 +22,19 @@ Matrix::Matrix(long lines)
 	m_alloced_lines = 0;
 	m_lines = lines;
 	m_columns = 1;
-	//Inicializa a matriz como null e tenta alocá-la
+	//Inicializa a matriz como null e tenta aloca-la
 	m_matrix = NULL;
 	if(!alloc())
 		printf("Nao foi possivel alocar matriz! \n");
 }
-//Construtor Paramétrico
+//Construtor Parametrico
 Matrix::Matrix(long lines, long columns)
 {
 	m_lines_deleted = true;
 	m_alloced_lines = 0;
 	m_lines = lines;
 	m_columns = columns;
-	//Inicializa a matriz como null e tenta alocá-la
+	//Inicializa a matriz como null e tenta aloca-la
 	m_matrix = NULL;
 	if(!alloc())
 		printf("Nao foi possivel alocar matriz! \n");
@@ -42,14 +42,14 @@ Matrix::Matrix(long lines, long columns)
 //Construtor de cópia
 Matrix::Matrix(const Matrix &copied)
 {
-	//Verifica dimensões da matriz - se necessário, faz re-alocação
+	//Verifica dimensões da matriz - se necessario, faz re-alocação
 	//if (copied.m_alloced_lines != m_alloced_lines)
 	//{
 		m_alloced_lines = 0;
 		m_lines = copied.m_lines;
 		m_columns = copied.m_columns;
 		m_lines_deleted = true;
-		//Inicializa a matriz como null e tenta alocá-la
+		//Inicializa a matriz como null e tenta aloca-la
 		m_matrix = NULL;
 		if(!alloc())
 			printf("Nao foi possivel alocar matriz! \n");
@@ -64,22 +64,22 @@ Matrix::~Matrix(void)
 	flush();
 }
 
-//Retorna o número de linhas da matriz
+//Retorna o numero de linhas da matriz
 long Matrix::getLines()
 {
 	return this->m_lines;
 }
-//Retorna o número de colunas da matriz 
+//Retorna o numero de colunas da matriz 
 long Matrix::getColumns()
 {
 	return this->m_columns;
 }
-//Define o número de linhas da matriz
+//Define o numero de linhas da matriz
 void Matrix::setLines(long value) 
 {
 	m_lines = value;
 }
-//Define o número de colunas da matriz
+//Define o numero de colunas da matriz
 void Matrix::setColumns(long value) 
 {
 	m_columns = value;
@@ -103,7 +103,7 @@ void Matrix::print()
 	}
 	printf("\n");
 }
-//Imprime a matriz em um arquivo de texto, cujo nome está no char s
+//Imprime a matriz em um arquivo de texto, cujo nome esta no char s
 void Matrix::fprint(char* s)
 {
 	FILE *file1 = fopen(s,"w");
@@ -145,7 +145,7 @@ bool Matrix::alloc()
 bool Matrix::flush()
 {
 	//Percorre as linhas
-	//Se há linhas para desalocar
+	//Se ha linhas para desalocar
 	if (this->m_lines_deleted == false)
 	{
 		if (m_matrix)
@@ -167,15 +167,15 @@ void Matrix::clear()
 //Operador Soma
 Matrix operator + (Matrix &matrix1, Matrix &matrix2)
 {
-	//Verifica se as dimensões das matrizes são compatíveis
+	//Verifica se as dimensões das matrizes são compativeis
 	if((matrix1.getLines() != matrix2.getLines()) || (matrix1.getColumns() != matrix2.getColumns()))
 	{
-		//Mensagem de erro - Dimensões Incompatíveis
+		//Mensagem de erro - Dimensões Incompativeis
 		printf("Matrizes devem possuir a mesma dimensao! \n");
 		//Retorna vazio
 		return NULL;
 	}
-	//Caso as dimensões sejam compatíveis
+	//Caso as dimensões sejam compativeis
 	else
 	{
 		//Cria uma matriz de retorno
@@ -192,15 +192,15 @@ Matrix operator + (Matrix &matrix1, Matrix &matrix2)
 //Operador Subtração
 Matrix operator - (Matrix &matrix1, Matrix &matrix2)
 {
-	//Verifica se as dimensões das matrizes são compatíveis
+	//Verifica se as dimensões das matrizes são compativeis
 	if((matrix1.getLines() != matrix2.getLines()) || (matrix1.getColumns() != matrix2.getColumns()))
 	{
-		//Mensagem de erro - Dimensões Incompatíveis
+		//Mensagem de erro - Dimensões Incompativeis
 		printf("Matrizes devem possuir a mesma dimensao! \n");
 		//Retorna vazio
 		return NULL;
 	}
-	//Caso as dimensões sejam compatíveis
+	//Caso as dimensões sejam compativeis
 	else
 	{
 		//Cria uma matriz de retorno
@@ -266,7 +266,7 @@ Matrix operator * (double escalar, Matrix &matrix1)
 //Operador Multiplicacao por escalar
 Matrix operator * (Matrix &matrix1, double escalar)
 {
-	//Retorna a função anterior, já que esta operação é comutativa
+	//Retorna a função anterior, ja que esta operação e comutativa
 	return escalar*matrix1;
 }
 //Verificação de igualdade
@@ -292,7 +292,7 @@ bool operator != (Matrix &matrix1, Matrix &matrix2)
 //Operador de Atribuição	
 Matrix &Matrix::operator = (Matrix const &matrix1)
 {
-	//Verifica dimensões da matriz - se necessário, faz re-alocação
+	//Verifica dimensões da matriz - se necessario, faz re-alocação
 	if (matrix1.m_alloced_lines != m_alloced_lines)
 	{
 		this->flush();
@@ -300,7 +300,7 @@ Matrix &Matrix::operator = (Matrix const &matrix1)
 		m_lines = matrix1.m_lines;
 		m_columns = matrix1.m_columns;
 		m_lines_deleted = matrix1.m_lines_deleted;
-		//Inicializa a matriz como null e tenta alocá-la
+		//Inicializa a matriz como null e tenta aloca-la
 		m_matrix = NULL;
 		if(!alloc())
 			printf("Nao foi possivel alocar matriz! \n");
@@ -316,7 +316,7 @@ Matrix &Matrix::operator = (Matrix const &matrix1)
 double &Matrix::operator() (long line, long column)
 {
 	
-	//Verifica se a posição é válida
+	//Verifica se a posição e valida
 	if(line > this->m_lines-1 || column > this->m_columns-1 || line < 0 || column < 0)
 	{
 		printf("Not valid position accessed in matrix! (%d,%d)\n",line,column);
@@ -1995,7 +1995,7 @@ void zeros(Matrix* matrix1)
 		}
 	}
 }
-//Função para o cálculo do operador V (para montagem da matriz de rigidez geométrica)
+//Função para o calculo do operador V (para montagem da matriz de rigidez geometrica)
 Matrix V(Matrix x, Matrix t,double alpha_escalar)
 {
 	//Funçoes da pag. 50 e afins da tese M. Lourdes
@@ -2010,7 +2010,7 @@ Matrix V(Matrix x, Matrix t,double alpha_escalar)
 		 h2*skew(t)-h3*(2*skew(x)*skew(t) - skew(t)*skew(x));
 	return return_m;
 }
-//Função para o cálculo do operador d_V (para montagem da matriz de rigidez geométrica)
+//Função para o calculo do operador d_V (para montagem da matriz de rigidez geometrica)
 Matrix d_V(Matrix x,Matrix d_x, Matrix t,double alpha_escalar)
 {
 	//Funçoes da pag. 50 e afins da tese M. Lourdes
@@ -2072,15 +2072,15 @@ double Cos(double a)
 //Operador Soma
 double operator + (double a, Matrix &matrix2)
 {
-	//Verifica se as dimensões das matrizes são compatíveis
+	//Verifica se as dimensões das matrizes são compativeis
 	if ((matrix2.getLines() != 1) || (matrix2.getColumns() != 1))
 	{
-		//Mensagem de erro - Dimensões Incompatíveis
-		printf("Matriz deve ser unitária! Função operator+(double,matrix)\n");
+		//Mensagem de erro - Dimensões Incompativeis
+		printf("Matriz deve ser unitaria! Função operator+(double,matrix)\n");
 		//Retorna vazio
 		return NULL;
 	}
-	//Caso as dimensões sejam compatíveis
+	//Caso as dimensões sejam compativeis
 	else
 	{
 		return matrix2(0,0)+a;
@@ -2104,7 +2104,7 @@ void Matrix::MatrixToPtr(double** ptr, int order)
 	
 }
 
-//Salva na matrix o conteúdo do double**
+//Salva na matrix o conteudo do double**
 void Matrix::PtrToMatrix(double** ptr, int order)
 {
 	for (int i = 0; i < order; i++)
@@ -2115,7 +2115,7 @@ void Matrix::PtrToMatrix(double** ptr, int order)
 	
 }
 
-//Salva na matrix o conteúdo do double**
+//Salva na matrix o conteudo do double**
 void Matrix::PtrToMatrix(double** ptr, int lines, int columns)
 {
 	for (int i = 0; i < lines; i++)
@@ -2127,11 +2127,11 @@ void Matrix::PtrToMatrix(double** ptr, int lines, int columns)
 
 
 
-//Calcula os autovalores e autovetores de uma matriz simétrica
+//Calcula os autovalores e autovetores de uma matriz simetrica
 //A: matriz de entrada
-//P: matriz de saída - possui autovetores organizados em colunas
-//D: matrix de saída - possui autovalores na diagonal principal
-//abstol: tolerância
+//P: matriz de saida - possui autovetores organizados em colunas
+//D: matrix de saida - possui autovalores na diagonal principal
+//abstol: tolerancia
 int fulleigen1(Matrix &A, Matrix &P, Matrix &D, double abstol)
 {
 	char jobz = 'V';
@@ -2164,18 +2164,18 @@ int fulleigen1(Matrix &A, Matrix &P, Matrix &D, double abstol)
 	{
 		//Autovalores:
 		D(i, i) = d(i, 0);
-		//Autovetores já estão salvos na matriz P
+		//Autovetores ja estão salvos na matriz P
 	}
-	P = z;//Copia valores da saída (autovetores) para a matriz P - organizados em colunas
+	P = z;//Copia valores da saida (autovetores) para a matriz P - organizados em colunas
 
 	delete []isuppz;
 	delete []iwork;
 	return info;
 }
-//Calcula os autovalores e autovetores de uma matriz simétrica
+//Calcula os autovalores e autovetores de uma matriz simetrica
 //A: matriz de entrada
-//P: matriz de saída - possui autovetores organizados em colunas
-//d: matrix de saída - possui autovalores na diagonal principal
+//P: matriz de saida - possui autovetores organizados em colunas
+//d: matrix de saida - possui autovalores na diagonal principal
 int fulleigen2(Matrix &A, Matrix &P, Matrix &D)
 {
 	char jobz = 'V';
@@ -2197,12 +2197,12 @@ int fulleigen2(Matrix &A, Matrix &P, Matrix &D)
 	{
 		//Autovalores:
 		D(i, i) = d(i, 0);
-		//Autovetores já estão salvos na matriz P
+		//Autovetores ja estão salvos na matriz P
 	}
-	P = A;//Copia valores da saída (autovetores) para a matriz P - organizados em colunas
+	P = A;//Copia valores da saida (autovetores) para a matriz P - organizados em colunas
 	return info;
 }
-//Calcula o menor autovalor de uma matriz simétrica
+//Calcula o menor autovalor de uma matriz simetrica
 double mineigen(Matrix &A, Matrix &P, Matrix &D, double abstol)
 {
 	char jobz = 'N';
@@ -2235,22 +2235,22 @@ double mineigen(Matrix &A, Matrix &P, Matrix &D, double abstol)
 	{
 		//Autovalores:
 		D(i, i) = d(i, 0);
-		//Autovetores já estão salvos na matriz P
+		//Autovetores ja estão salvos na matriz P
 	}
-	P = z;//Copia valores da saída (autovetores) para a matriz P - organizados em colunas
+	P = z;//Copia valores da saida (autovetores) para a matriz P - organizados em colunas
 
 	delete[]isuppz;
 	delete[]iwork;
 	return d(0,0);
 }
 
-//Calcula redução à primeira volta [-pi,pi]
+//Calcula redução a primeira volta [-pi,pi]
 double ArcReduction(double arc)
 {
 	double cosarc = cos(arc);
 	double sinarc = sin(arc);
 
-	//Evita erros numéricos
+	//Evita erros numericos
 	if (cosarc > 1.0)
 		cosarc = 1.0;
 	if (cosarc < -1.0)
@@ -2274,13 +2274,13 @@ double ArcReduction(double arc)
 	return ret_arc;
 }
 
-//Calcula redução à primeira volta [0,2*pi]
+//Calcula redução a primeira volta [0,2*pi]
 double ArcReduction2p(double arc)
 {
 	double cosarc = cos(arc);
 	double sinarc = sin(arc);
 
-	//Evita erros numéricos
+	//Evita erros numericos
 	if (cosarc > 1.0)
 		cosarc = 1.0;
 	if (cosarc < -1.0)

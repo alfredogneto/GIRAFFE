@@ -16,8 +16,8 @@ NodalLoad::NodalLoad()
 	n_times = 0;
 	n_values = 6;
 
-	n_nodes_f = new int[3];			//número de nós para divisão de forças - 3 componentes
-	n_nodes_m = new int[3];			//número de nós para divisão de momentos - 3 componentes
+	n_nodes_f = new int[3];			//numero de nós para divisão de forças - 3 componentes
+	n_nodes_m = new int[3];			//numero de nós para divisão de momentos - 3 componentes
 	mult_f = new double[3];			//multiplicador para os esforços de força
 	mult_m = new double[3];			//multiplicador para os esforços de momento
 }
@@ -115,7 +115,7 @@ void NodalLoad::Write(FILE *f)
 //Writes VTK XML data for post-processing
 void NodalLoad::WriteVTK_XML(FILE *f)
 {
-	//vetores para escrita no formato binário - usando a função 'enconde'
+	//vetores para escrita no formato binario - usando a função 'enconde'
 	std::vector<float> float_vector;
 	std::vector<int> int_vector;
 	int count = db.node_sets[node_set - 1]->n_nodes;
@@ -232,7 +232,7 @@ void NodalLoad::PreCalc()
 	
 }
 
-//Atualiza dados necessários e que sejam dependentes de DOFs ativos/inativos - chamado no início de cada solution step
+//Atualiza dados necessarios e que sejam dependentes de DOFs ativos/inativos - chamado no inicio de cada solution step
 void NodalLoad::UpdateforSolutionStep()
 {
 	int node;
@@ -250,9 +250,9 @@ void NodalLoad::UpdateforSolutionStep()
 		node = db.node_sets[node_set - 1]->node_list[i];
 		for (int j = 0; j < 3; j++)
 		{
-			if (db.nodes[node - 1]->active_GL[j] != 0)	//se o GL em questão é ativo
+			if (db.nodes[node - 1]->active_GL[j] != 0)	//se o GL em questão e ativo
 				n_nodes_f[j]++;
-			if (db.nodes[node - 1]->active_GL[j + 3] != 0)	//se o GL em questão é ativo
+			if (db.nodes[node - 1]->active_GL[j + 3] != 0)	//se o GL em questão e ativo
 				n_nodes_m[j]++;
 		}
 	}
@@ -340,7 +340,7 @@ void NodalLoad::Mount()
 		//Coordinate transformation (to global)
 		f = transp(*db.CS[cs - 1]->Q)*f;
 		m = transp(*db.CS[cs - 1]->Q)*m;
-		//Calcula e insere o momento concentrado nos nós, de acordo com a rotação pré-existente nesses nós (procedimento de pseudo-momentos)
+		//Calcula e insere o momento concentrado nos nós, de acordo com a rotação pre-existente nesses nós (procedimento de pseudo-momentos)
 		//Rotação do nó em questão:
 		Matrix alpha_delta(3, 1);
 		alpha_delta(0, 0) = db.nodes[node - 1]->displacements[3];

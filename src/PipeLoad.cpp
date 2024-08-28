@@ -36,7 +36,7 @@ void PipeLoad::PreCalc()
 
 }
 
-//Atualiza dados necessários e que sejam dependentes de DOFs ativos/inativos - chamado no início de cada solution step
+//Atualiza dados necessarios e que sejam dependentes de DOFs ativos/inativos - chamado no inicio de cada solution step
 void PipeLoad::UpdateforSolutionStep()
 {
 

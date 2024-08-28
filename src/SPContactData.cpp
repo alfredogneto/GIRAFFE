@@ -4,7 +4,7 @@
 #include "Matrix.h"
 #include "SplineElementData.h"
 #include "Database.h"
-//Variáveis globais
+//Variaveis globais
 extern
 Database db;
 
@@ -176,7 +176,7 @@ void SPContactData::Alloc()
 			initial_guess[i][0] = 0.0;
 			initial_guess[i][1] = 0.0;
 			g_n[i] = 0.0;
-			copy_g_n[i] = 1.0;	//Assumindo que não há contato anterior
+			copy_g_n[i] = 1.0;	//Assumindo que não ha contato anterior
 			return_value[i] = 2;
 			copy_return_value[i] = 2;
 			repeated[i] = true;
@@ -344,7 +344,7 @@ void SPContactData::Free()
 	copy_stick = NULL;
 }
 
-//Checa repetição de raízes e salva a informação na matriz 'repeated'
+//Checa repetição de raizes e salva a informação na matriz 'repeated'
 void SPContactData::CheckRepeated(double tol_coordinate_value)
 {
 	for (int i = 0; i < n_solutions; i++)

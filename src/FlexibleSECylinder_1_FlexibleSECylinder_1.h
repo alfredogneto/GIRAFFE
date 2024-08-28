@@ -8,7 +8,7 @@ class FlexibleSECylinder_1_FlexibleSECylinder_1 :
 public:
 	FlexibleSECylinder_1_FlexibleSECylinder_1();
 	~FlexibleSECylinder_1_FlexibleSECylinder_1();
-	//Chute inicial para coordenadas convectivas do par de superfícies
+	//Chute inicial para coordenadas convectivas do par de superficies
 	void InitialGuess(SSContactData* c_data);
 				
 	double ObjectivePhase1(Matrix& mc);								//Calcula a função objetivo para um conjunto de coordenadas convectivas - Phase 1

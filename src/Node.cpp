@@ -1,17 +1,17 @@
 #include "Node.h"
 
 #include"Database.h"
-//Variáveis globais
+//Variaveis globais
 extern
 Database db;
 
 Node::Node(int e_nGL)
 {
-	nGL = e_nGL;						//Seta o número de graus de liberdade por nó
+	nGL = e_nGL;						//Seta o numero de graus de liberdade por nó
 	ref_coordinates = new double[nGL];	//Coordenadas do nó na configuração de referência
-	copy_coordinates = new double[nGL];	//Coordenadas do nó na configuração de cópia (última convergida)
+	copy_coordinates = new double[nGL];	//Coordenadas do nó na configuração de cópia (ultima convergida)
 	copy_rot_euler = new double[3];
-	displacements = new double[nGL];	//Deslocamentos do nó em relação à última cópia de coordenadas
+	displacements = new double[nGL];	//Deslocamentos do nó em relação a ultima cópia de coordenadas
 	vel = new double[nGL];				//Velocidades
 	copy_vel = new double[nGL];		
 	accel = new double[nGL];			//Acelerações
@@ -215,7 +215,7 @@ void Node::WriteResults(FILE *f)
 	copy_rot_euler[1],
 	copy_rot_euler[2]);
 
-	//Acrescentar aqui outros graus de liberdade possíveis
+	//Acrescentar aqui outros graus de liberdade possiveis
 }
 
 void Node::WriteVTK(FILE *f)
@@ -227,7 +227,7 @@ void Node::WriteVTK(FILE *f)
 }
 void Node::WriteMonitor(FILE *f, bool first_record, double time)
 {
-	//Cálculo do ângulo de rotação
+	//Calculo do angulo de rotação
 	(*rot_rodrigues)(0, 0) = displacements[3];
 	(*rot_rodrigues)(1, 0) = displacements[4];
 	(*rot_rodrigues)(2, 0) = displacements[5];
@@ -253,7 +253,7 @@ void Node::WriteMonitor(FILE *f, bool first_record, double time)
 		
 	if (flag_pseudo_moment)
 	{
-		//Conversão do pseudo-momento para momento (parâmetros de rotação de Rodrigues)
+		//Conversão do pseudo-momento para momento (parametros de rotação de Rodrigues)
 		//Calculando o operador Xi
 		*A = skew(*rot_rodrigues);			//Matriz A
 		g = 4.0 / (4.0 + norm(*rot_rodrigues)*norm(*rot_rodrigues));		//função g(alpha) - em algumas ref. tb. chamado de h(alpha)

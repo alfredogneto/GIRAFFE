@@ -13,7 +13,7 @@
 
 
 #include"Database.h"
-//Variáveis globais
+//Variaveis globais
 extern
 Database db;
 #define PI 3.1415926535897932384626433832795
@@ -755,7 +755,7 @@ void RigidTriangularFace_RigidTriangularFace::PreCalc()
 
 void RigidTriangularFace_RigidTriangularFace::EvaluateNormalGap()
 {
-	//Cálculo da função gap (escalar)
+	//Calculo da função gap (escalar)
 	SurfacePoints();
 	//Gap vetorial
 	*cd->g[0] = *GammaA - *GammaB;
@@ -13529,7 +13529,7 @@ void RigidTriangularFace_RigidTriangularFace::PredictorTimeStep(double kin)
 			dalphaB(i, 0) = db.nodes[node_B - 1]->copy_vel[i + 3];
 		}
 
-		//Obs: Xi é I3 nesse caso - acaba de salvar a configuração e o alpha avaliado em torno desse valor é nulo.
+		//Obs: Xi e I3 nesse caso - acaba de salvar a configuração e o alpha avaliado em torno desse valor e nulo.
 		Matrix omega_A =  dalphaA;
 		Matrix omega_B =  dalphaB;
 

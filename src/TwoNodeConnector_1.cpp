@@ -4,7 +4,7 @@
 #include "CoordinateSystem.h"
 #include "Dynamic.h"
 #include"Database.h"
-//Variáveis globais
+//Variaveis globais
 extern
 Database db;
 
@@ -48,7 +48,7 @@ TwoNodeConnector_1::TwoNodeConnector_1()
 		DOFs[i][5] = 1;
 	}
 
-	//Variáveis do elemento
+	//Variaveis do elemento
 	K = new Matrix(12, 12);													
 	C = new Matrix(12, 12);	
 	Q = new Matrix(12, 12);
@@ -270,7 +270,7 @@ void TwoNodeConnector_1::Mount()
 		xipp(i + 9, 0) = alphaB(i, 0);
 	}
 
-	//Forças elásticas
+	//Forças elasticas
 	*f = (*K)*xipp;
 	//Operador tangente (parcela da rigidez)
 	*Kt = (*K);
@@ -334,12 +334,12 @@ void TwoNodeConnector_1::MountGlobal()
 		}
 	}
 }
-//Salva variáveis nos pontos de Gauss úteis para descrição lagrangiana atualizada
+//Salva variaveis nos pontos de Gauss uteis para descrição lagrangiana atualizada
 void TwoNodeConnector_1::SaveLagrange()
 {
 	//DOES NOTHING
 }
-//Pré-cálculo de variáveis que é feito uma única vez no início
+//Pre-calculo de variaveis que e feito uma unica vez no inicio
 void TwoNodeConnector_1::PreCalc()
 {
 	//Transformação de coordenadas 3x3
@@ -400,7 +400,7 @@ void TwoNodeConnector_1::MountMassModal()
 	//DOES NOTHING
 }
 
-//Monta a matriz de amortecimento para realização da análise modal
+//Monta a matriz de amortecimento para realização da analise modal
 void TwoNodeConnector_1::MountDampingModal()
 {
 	//DOES NOTHING
@@ -434,7 +434,7 @@ void TwoNodeConnector_1::MountDyn()
 	*Kt = (*Kt) + (*Ct);
 }
 
-//Montagens para análise modal - inserção da matriz de massa e amortecimento na matriz de rigidez para posterior montagem global
+//Montagens para analise modal - inserção da matriz de massa e amortecimento na matriz de rigidez para posterior montagem global
 void TwoNodeConnector_1::MountDynModal()
 {
 	//No influences are considered (no mass, neither damping)
@@ -442,7 +442,7 @@ void TwoNodeConnector_1::MountDynModal()
 	zeros(Ct);
 }
 
-//Zera algumas matrizes utilizadas nos cálculos
+//Zera algumas matrizes utilizadas nos calculos
 void TwoNodeConnector_1::Zeros()
 {
 	zeros(f);

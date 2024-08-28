@@ -28,7 +28,7 @@ public:
 	double*** invHessian;						//Inverse of the Hessian matrix - determined during the FindMinimumParameters routine
 	
 	bool* copy_degenerated;						//true ou false para indicar se o contato foi ou não degenerado no passo anterior
-	bool* degenerated;							//true ou false para indicar se o contato é ou não degenerado
+	bool* degenerated;							//true ou false para indicar se o contato e ou não degenerado
 	
 	double* g_n;								//gap normal
 	double* copy_g_n;							//gap normal
@@ -41,11 +41,11 @@ public:
 	bool* stick;								//boolean - indicates stick (true) or slide (false)
 	bool* copy_stick;							//boolean - indicates stick (true) or slide (false) - copia
 	
-	SurfaceData* surf1;							//Dados - superfície 1
-	SurfaceData* surf2;							//Dados - superfície 2
+	SurfaceData* surf1;							//Dados - superficie 1
+	SurfaceData* surf2;							//Dados - superficie 2
 
-	bool alloced;								//Booleana que indica se está ou não alocado - controle de alocação
-	void CheckRepeated(double tol_coordinate_value);	//Checa repetição de raízes e salva a informação na matriz 'repeated'
+	bool alloced;								//Booleana que indica se esta ou não alocado - controle de alocação
+	void CheckRepeated(double tol_coordinate_value);	//Checa repetição de raizes e salva a informação na matriz 'repeated'
 	void Plot();
 	void PlotSmallReport();
 	void Alloc();										//Aloca matrizes

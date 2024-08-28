@@ -7,7 +7,7 @@
 #include "NSContactData.h"
 
 #include"Database.h"
-//Variáveis globais
+//Variaveis globais
 extern
 Database db;
 
@@ -128,7 +128,7 @@ void FlexibleTriangularSurface_2::SurfacePoint(double& zeta, double& theta, Matr
 	point = NAp*(*xA_p) + NBp * (*xB_p) + NCp * (*xC_p) + NDp * (*xD_p) + NEp * (*xE_p) + NFp * (*xF_p);
 }
 
-//Normal exterior à superfície na posição escolhida
+//Normal exterior a superficie na posição escolhida
 void FlexibleTriangularSurface_2::NormalExt(double* zeta, double* theta, Matrix* n)
 {
 	double *xAp = xA_p->getMatrix();	//ponteiro para o vetor xA_p
@@ -228,7 +228,7 @@ void FlexibleTriangularSurface_2::UpdateBox()
 	y[7] = c(1, 0) + radius;
 	z[7] = c(2, 0) + radius;
 
-	//Setando os vértices
+	//Setando os vertices
 	box.SetVertices(x, y, z);
 }
 
@@ -236,12 +236,12 @@ void FlexibleTriangularSurface_2::WriteVTK_XMLRender(FILE *f)
 {
 	if (db.post_files->WriteFlexibleContactSurfaces_flag == true)
 	{
-		//vetores para escrita no formato binário - usando a função 'enconde'
+		//vetores para escrita no formato binario - usando a função 'enconde'
 		std::vector<float> float_vector;
 		std::vector<int> int_vector;
 
-		int n_points = 6;	//seis nós da superfície
-		int n_cells = 1;	//triângulo de segunda ordem
+		int n_points = 6;	//seis nós da superficie
+		int n_cells = 1;	//triangulo de segunda ordem
 	
 		//Opens Piece
 		fprintf(f, "\t\t<Piece NumberOfPoints = \"%d\" NumberOfCells = \"%d\">\n", n_points, n_cells);
@@ -378,7 +378,7 @@ bool FlexibleTriangularSurface_2::Check()
 	return true;
 }
 
-//Realiza chute inicial para as variáveis zeta e theta
+//Realiza chute inicial para as variaveis zeta e theta
 void FlexibleTriangularSurface_2::InitialGuess(Matrix* xS, double** convective, int n_solutions)
 {
 	convective[0][0] = -0.5;
@@ -403,7 +403,7 @@ void FlexibleTriangularSurface_2::PreCalc()
 	DegenerationPreCalc();
 }
 
-//Retorna as coordenadas da superfície para um par (zeta,theta) - configuração anterior convergida
+//Retorna as coordenadas da superficie para um par (zeta,theta) - configuração anterior convergida
 void FlexibleTriangularSurface_2::Gamma_and_Triad(Matrix* G_p, Matrix* t1_p, Matrix* t2_p, Matrix* n_p, Matrix* G_i, Matrix* t1_i, Matrix* t2_i, Matrix* n_i, Matrix* G_ip, double* zi, double* thi, double* zp, double* thp)
 {
 	double *xAp = xA_p->getMatrix();	//ponteiro para o vetor xA_p
@@ -546,7 +546,7 @@ void FlexibleTriangularSurface_2::Gamma_and_Triad(Matrix* G_p, Matrix* t1_p, Mat
 	Gi[2] = v[68] * xAi[2] + v[200] * xBi[2] + v[201] * xCi[2] + v[77] * xDi[2] + v[78] * xEi[2] + v[80] * xFi[2];
 }
 
-//Dado o ponto xS, calcula as coordenadas (zeta,theta) referentes à mínima distância
+//Dado o ponto xS, calcula as coordenadas (zeta,theta) referentes a minima distancia
 void FlexibleTriangularSurface_2::FindMinimimumParameters(Matrix* xS, NSContactData* cd)
 {
 	//Parametros NR
@@ -581,7 +581,7 @@ void FlexibleTriangularSurface_2::FindMinimimumParameters(Matrix* xS, NSContactD
 	{
 		if (error > tol_ortho)
 		{
-			//Cálculo do resíduo e jacobiano
+			//Calculo do residuo e jacobiano
 			v[104] = xE[2] - xF[2];
 			v[103] = xE[1] - xF[1];
 			v[102] = xE[0] - xF[0];
@@ -632,13 +632,13 @@ void FlexibleTriangularSurface_2::FindMinimimumParameters(Matrix* xS, NSContactD
 			delta = fullsystem(Jacobian, -1.0*residual, &flag_error);	//Resolve sistema linear
 			if (flag_error == 0)										//Se conseguiu fazer o sistema linear
 			{
-				(*vNR) = (*vNR) + delta;								//Atualização das variáveis
+				(*vNR) = (*vNR) + delta;								//Atualização das variaveis
 				error = norm(delta);									//Norma do residuo
 				it++;
 			}
 			else
 			{
-				it = max_it + 1;//Força saída - divergência
+				it = max_it + 1;//Força saida - divergência
 			}
 		}
 	}//end while NR
@@ -648,18 +648,18 @@ void FlexibleTriangularSurface_2::FindMinimimumParameters(Matrix* xS, NSContactD
 		delete[]J[i];
 	delete[]J;
 
-	//Convergiu - ainda há ações a verificar...
+	//Convergiu - ainda ha ações a verificar...
 	if (error <= tol_ortho && flag_error == 0)
 	{
-		//Salva nas variáveis
+		//Salva nas variaveis
 		cd->convective[0][0] = (*vNR)(0, 0);
 		cd->convective[0][1] = (*vNR)(1, 0);
-		//Se está no range local de interesse - domínio físico da superfície triangular
+		//Se esta no range local de interesse - dominio fisico da superficie triangular
 		if (abs((*vNR)(0, 0)) <= 1.0 && abs((*vNR)(1, 0)) <= 1.0 && (*vNR)(1, 0) <= -(*vNR)(0, 0))
 			cd->return_value[0] = 0;
 		else
 		{
-			//Se está em região próxima, mas não no range local de interesse
+			//Se esta em região próxima, mas não no range local de interesse
 			if (abs((*vNR)(0, 0)) < 1.2 && abs((*vNR)(1, 0)) < 1.2 && (*vNR)(1, 0) < -(*vNR)(0, 0) + 0.2)
 				cd->return_value[0] = 3;
 			//Se não estiver no range de interesse
@@ -671,15 +671,15 @@ void FlexibleTriangularSurface_2::FindMinimimumParameters(Matrix* xS, NSContactD
 	else
 		cd->return_value[0] = 1;
 	//Retornos da função
-	//0 - Convergiu e está no range de interesse para contato
-	//1 - Não houve convergência (pode ou não estar no range para contato) - retorno problemático!!
-	//2 - Houve convergência, mas não está no range para contato
-	//3 - Houve convergência, está fora do range para contato, mas próximo
+	//0 - Convergiu e esta no range de interesse para contato
+	//1 - Não houve convergência (pode ou não estar no range para contato) - retorno problematico!!
+	//2 - Houve convergência, mas não esta no range para contato
+	//3 - Houve convergência, esta fora do range para contato, mas próximo
 	cd->repeated[0] = false;
 	for (int i = 1; i < cd->n_solutions; i++)
 		cd->repeated[i] = true;
 }
-//Atualiza as variáveis internas da superfície, para pegarem info do pilot node para uso posterior com posição atualizada
+//Atualiza as variaveis internas da superficie, para pegarem info do pilot node para uso posterior com posição atualizada
 void FlexibleTriangularSurface_2::FillNodes()
 {
 	for (int i = 0; i < 3; i++)
@@ -700,7 +700,7 @@ void FlexibleTriangularSurface_2::FillNodes()
 	}
 }
 
-//Retorna coordenadas globais do ponto central da superfície a ser utilizado para cálculos grosseiros de sua localização (pinball)
+//Retorna coordenadas globais do ponto central da superficie a ser utilizado para calculos grosseiros de sua localização (pinball)
 void FlexibleTriangularSurface_2::CenterPoint(Matrix* center)
 {
 	*center = 0.33333333333333333333*(*xA_i + *xB_i + *xC_i);
@@ -735,7 +735,7 @@ void FlexibleTriangularSurface_2::SaveConfiguration()
 	}
 }
 
-//Calcula contribuições de contato entre esfera e superfície
+//Calcula contribuições de contato entre esfera e superficie
 void FlexibleTriangularSurface_2::ContactSphereSurfaceSticking(double* Rc, double** Kc, double zetap, double thetap, double zetai, double thetai, double* gti, int node, double* epsn, double* epst, double* cn, double* ct, double* mu, double* radius)
 {
 	double *xAi = xA_i->getMatrix();	//ponteiro para o vetor xA_i
@@ -24448,7 +24448,7 @@ void FlexibleTriangularSurface_2::ContactSphereSurfaceSticking(double* Rc, doubl
 
 }
 
-//Calcula contribuições de contato entre esfera e superfície
+//Calcula contribuições de contato entre esfera e superficie
 void FlexibleTriangularSurface_2::ContactSphereSurfaceSliding(double* Rc, double** Kc, double zetap, double thetap, double zetai, double thetai, double* gti, int node, double* epsn, double* epst, double* cn, double* ct, double* mu, double* radius)
 {
 	double *xAi = xA_i->getMatrix();	//ponteiro para o vetor xA_i

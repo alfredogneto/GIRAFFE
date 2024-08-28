@@ -10,12 +10,12 @@ public:
 	SuperNodeSet();
 	~SuperNodeSet();
 
-	int n_super_nodes;			//número de super nodes
+	int n_super_nodes;			//numero de super nodes
 	int* super_node_list;		//lista de super nodes
-	int number;					//número de referência
+	int number;					//numero de referência
 
-	bool sequence;		//true se é do tipo sequence
-	bool list;			//true se é do tipo list
+	bool sequence;		//true se e do tipo sequence
+	bool list;			//true se e do tipo list
 
 	//Para o caso de sequence
 	int initial;

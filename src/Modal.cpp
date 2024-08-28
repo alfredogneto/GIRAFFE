@@ -11,7 +11,7 @@
 
 #include "IO.h"
 #include"Database.h"
-//Variáveis globais
+//Variaveis globais
 extern
 Database db;
 #define PI 3.1415926535897932384626433832795
@@ -30,7 +30,7 @@ Modal::Modal()
 	end_time = 0;
 	start_time = 0;
 
-	//Flag que indica se é análise concomitante - default: false
+	//Flag que indica se e analise concomitante - default: false
 	concomitant_solution = false;									
 }
 
@@ -100,7 +100,7 @@ bool Modal::Read(FILE *f)
 	else
 		return false;
 
-	//Alocação do vetor que salvará os autovalores
+	//Alocação do vetor que salvara os autovalores
 	eig = Matrix(number_modes, 2);
 
 	return true;
@@ -123,11 +123,11 @@ void Modal::CreateOutputFolder()
 	sprintf(analysis, "solution_%d", solution_number);
 	strcat(copy_name, analysis);
 	strcat(copy_name, "/");
-	_mkdir(copy_name);			//cria a pasta com o tipo de análise em questão
+	_mkdir(copy_name);			//cria a pasta com o tipo de analise em questão
 	strcat(copy_name, analysis);
 }
 
-//Realiza análise modal
+//Realiza analise modal
 bool Modal::Solve()
 {
 	//Plotagem do dia da simulação
@@ -142,19 +142,19 @@ bool Modal::Solve()
 	else
 		db.myprintf("\nConcomitant solution started at %s\n", ctime(&tt));
 	high_resolution_clock::time_point t1 = high_resolution_clock::now();//Inicia a marcação de tempo de execução
-	DOFsActive();														//Para cada nó ativa DOFs - também opera sobre multiplicadores de Lagrange de SpecialConstraints
+	DOFsActive();														//Para cada nó ativa DOFs - tambem opera sobre multiplicadores de Lagrange de SpecialConstraints
 	SetGlobalDOFs();													//Numeração de graus de liberdade
 	SetGlobalSize();													//Calcula o tamanho da matriz global - com base nos GLs livres e fixos
 	Zeros();															//Zera displacements dos nós
-	//////////////////////////////////////////Montagem da matriz de massa para análise modal//////////////////////////////////////////////////////
+	//////////////////////////////////////////Montagem da matriz de massa para analise modal//////////////////////////////////////////////////////
 	Clear();															//Limpeza das matrizes globais
 	ZerosLocalMatrices();												//Limpeza das matrizes dos elementos (locais)
 	MountMassModal();													//Montagem da matriz de massa
 	MountDynModal();													//Copia informações da matriz de massa para a rigidez, para espalhamento correto no passo posterior
 	MountGlobal();														//Espalhamento das informações locais nas matrizes/vetores globais
 	MountSparse();														//Montagem da matriz esparsa
-	db.global_mass_AA = db.global_stiffness_AA;						//Cria cópia da matriz de massa (a mesma havia sido salva na variável referente à matriz de rigidez para se utilizar das mesmas funções de montagem de matrizes globais)
-	//////////////////////////////////////////Montagem da matriz de rigidez para análise modal////////////////////////////////////////////////////
+	db.global_mass_AA = db.global_stiffness_AA;						//Cria cópia da matriz de massa (a mesma havia sido salva na variavel referente a matriz de rigidez para se utilizar das mesmas funções de montagem de matrizes globais)
+	//////////////////////////////////////////Montagem da matriz de rigidez para analise modal////////////////////////////////////////////////////
 	Clear();															//Limpeza das matrizes globais
 	ZerosLocalMatrices();												//Limpeza das matrizes dos elementos (locais)
 	MountLocal();														//Montagem das matrizes de rigidez (locais)
@@ -164,13 +164,13 @@ bool Modal::Solve()
 	MountLoads();														//Montagem de carregamentos gerais
 	MountGlobal();														//Espalhamento das informações locais nas matrizes/vetores globais
 	MountSparse();														//Montagem da matriz esparsa
-	//Nesse ponto possuímos as duas matrizes relevantes (massa e rigidez), salvas para análise modal. A seguir é feita a rotina de extração de autovalores.
+	//Nesse ponto possuimos as duas matrizes relevantes (massa e rigidez), salvas para analise modal. A seguir e feita a rotina de extração de autovalores.
 	//Se houver requisição, exporta as matrizes para a pasta da solution
 	if (export_matrices == true)
 		WriteMatrices();
 	int ret;
 	if (compute_eigenvectors == true)
-		eigenvectors = Matrix(db.global_stiffness_AA.rows, number_modes + 1);	//saída dos autovetores - alocação
+		eigenvectors = Matrix(db.global_stiffness_AA.rows, number_modes + 1);	//saida dos autovetores - alocação
 	eig = sparseeigen(db.global_stiffness_AA, db.global_mass_AA, eigenvectors, number_modes, compute_eigenvectors, &ret, tolerance);
 	if (ret != 0)
 	{
@@ -473,7 +473,7 @@ double Modal::ComputeModeNorm(int mode)
 	return ret_norm;
 }
 
-//Monta matriz de massa para análise modal
+//Monta matriz de massa para analise modal
 void Modal::MountMassModal()
 {
 	high_resolution_clock::time_point t_last = high_resolution_clock::now();
@@ -490,7 +490,7 @@ void Modal::MountMassModal()
 		cout << "MountMassModal duration:\t" << duration / 1e6 << " sec." << "\n";
 }
 
-//Monta matriz de amortecimento para análise modal
+//Monta matriz de amortecimento para analise modal
 void Modal::MountDampingModal()
 {
 	high_resolution_clock::time_point t_last = high_resolution_clock::now();
@@ -536,7 +536,7 @@ void Modal::MountDynModal()
 	}
 }
 
-//Zera matrizes dos elementos (para uso na análise modal)
+//Zera matrizes dos elementos (para uso na analise modal)
 void Modal::ZerosLocalMatrices()
 {
 #pragma omp parallel

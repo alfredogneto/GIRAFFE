@@ -11,7 +11,7 @@ using namespace std::chrono;
 #include "ConfigurationSave.h"
 #include "PostFiles.h"
 #include"Database.h"
-//Variáveis globais
+//Variaveis globais
 extern
 Database db;
 
@@ -31,7 +31,7 @@ Static::Static()
 	inc_factor = 0;
 	sample = 0;
 
-	file_index = 1;								//Número do arquivo para salvar resultados
+	file_index = 1;								//Numero do arquivo para salvar resultados
 }
 
 
@@ -140,15 +140,15 @@ void Static::Write(FILE *f)
 bool Static::Solve()
 {
 	bool aborted = false;						//flag para abortar simulação
-	int convergence_counter = 0;				//contador de número de vezes seguidas que houve convergência, para possibilitar o incremento de carga
-	int converged_number = 0;					//Contador absoluto do número de configurações convergidas
+	int convergence_counter = 0;				//contador de numero de vezes seguidas que houve convergência, para possibilitar o incremento de carga
+	int converged_number = 0;					//Contador absoluto do numero de configurações convergidas
 	int counter_iterations;						//Contador do numero de iteraçoes
-	db.conv_criteria->n_conv_evaluated = 0;		//Zerando histórico do contador de critério de convergência
+	db.conv_criteria->n_conv_evaluated = 0;		//Zerando histórico do contador de criterio de convergência
 	db.last_converged_time = start_time;		//setting initial (and previously converged time)
 	//Atualiza monitor - somente se for o primeira solution
 	if (db.monitor_exist == true && solution_number == 1)
 		db.monitor->UpdateMonitor(db.last_converged_time);
-	//Atualiza análise concomitante
+	//Atualiza analise concomitante
 	if (db.concomitant_solution_exist == true)
 		db.concomitant_solution->UpdateConcomitantSolution(db.last_converged_time);
 	WriteResults(start_time);								//salvando resultados
@@ -158,7 +158,7 @@ bool Static::Solve()
 	time_t tt;
 	tt = system_clock::to_time_t(today);
 	db.myprintf("\nSolution step %d started at %s\n", solution_number, ctime(&tt));
-	DOFsActive();								//Para cada nó ativa DOFs - também opera sobre multiplicadores de Lagrange de SpecialConstraints
+	DOFsActive();								//Para cada nó ativa DOFs - tambem opera sobre multiplicadores de Lagrange de SpecialConstraints
 	SetGlobalDOFs();							//Numeração de graus de liberdade
 	SetGlobalSize();							//Calcula o tamanho da matriz global - com base nos GLs livres e fixos
 	ZerosVelAccel();
@@ -175,10 +175,10 @@ bool Static::Solve()
 	////////////////////////////////////////////////////////////////////////////////
 	while ((time < end_time || db.conv_criteria->diverged == true) && aborted == false)
 	{
-		//Setando variáveis no database
+		//Setando variaveis no database
 		db.last_converged_time = time;
 		time += time_step;	//Incremento do time step, de acordo com a progressão da solução
-		if (time > 0.99999999*end_time)//Se já estiver muito próximo do último instante de interesse	
+		if (time > 0.99999999*end_time)//Se ja estiver muito próximo do ultimo instante de interesse	
 		{
 			time = end_time;
 			time_step = end_time - db.last_converged_time;
@@ -203,7 +203,7 @@ bool Static::Solve()
 			Clear();
 			MountSpecialConstraints();						//Montagem das special constraints
 			MountContacts();								//Montagem dos contatos
-			MountLocal();									//Montagem dos elementos e partículas (informações locais)
+			MountLocal();									//Montagem dos elementos e particulas (informações locais)
 			MountElementLoads();							//Montagem de carregamentos de campo em elementos
 			MountLoads();
 			MountGlobal();									//Espalhamento das informações locais nas matrizes/vetores globais
@@ -218,10 +218,10 @@ bool Static::Solve()
 			if (db.plot_times == true)
 				cout << "ImposeDisplacements duration:\t" << duration / 1e6 << " sec." << "\n\n";
 			if (counter_iterations == 1)
-				db.conv_criteria->EstablishResidualCriteria();	//Estabelece critérios de parada, com base no vetor de esforços desbalanceados iniciais do incremento
+				db.conv_criteria->EstablishResidualCriteria();	//Estabelece criterios de parada, com base no vetor de esforços desbalanceados iniciais do incremento
 			res_converged = db.conv_criteria->CheckResidualConvergence();
 			int info_fail = 0;
-			//Se houve convergência do resíduo calculado com os últimos incrementos avaliados, não é necessário avaliar novamente
+			//Se houve convergência do residuo calculado com os ultimos incrementos avaliados, não e necessario avaliar novamente
 			if (!(res_converged && GL_converged))
 			{
 				db.myprintf("It.: %d\n", counter_iterations);
@@ -230,17 +230,17 @@ bool Static::Solve()
 				duration = std::chrono::duration_cast<std::chrono::microseconds>(high_resolution_clock::now() - t_last).count();
 				if (db.plot_times == true)
 					cout << "SparseSystem duration:\t" << duration / 1e6 << " sec." << "\n\n";
-				res_converged = false;//Seta fomo false, para obrigar a entrar no while mais uma vez para recalcular resíduo com inc de deslocamentos atual
+				res_converged = false;//Seta fomo false, para obrigar a entrar no while mais uma vez para recalcular residuo com inc de deslocamentos atual
 				UpdateDisps();														//Atualiza os deslocamentos nodais
-				GL_converged = db.conv_criteria->CheckGLConvergence();	//Com os GL já atualizados avalia o critério de convergência
+				GL_converged = db.conv_criteria->CheckGLConvergence();	//Com os GL ja atualizados avalia o criterio de convergência
 			}
-			//Divergência: algum dos critérios não convergiu e atingiu a #max_it ou houve falha na iteração (ex: NaN)
+			//Divergência: algum dos criterios não convergiu e atingiu a #max_it ou houve falha na iteração (ex: NaN)
 			if ((counter_iterations == max_it && !(res_converged && GL_converged)) || info_fail == 1)
 				db.conv_criteria->diverged = true;
 			//Teste para avaliar a divergência
 			if (db.conv_criteria->diverged == true)
 				db.conv_criteria->PlotDivergenceReport();
-			//Teste para avaliar que o time step está muito pequeno - ABORT SIMULATION
+			//Teste para avaliar que o time step esta muito pequeno - ABORT SIMULATION
 			if (time_step < min_time_step && time != end_time)
 			{
 				db.myprintf("\nAborting simulation. Step size is too small!\n\n");
@@ -257,8 +257,8 @@ bool Static::Solve()
 		{
 			converged_number++;
 			SaveConfiguration();	//Salva configuração convergida
-			convergence_counter++;	//Incrementa o número de convergências seguidas
-			//Análise da facilidade de convergência:
+			convergence_counter++;	//Incrementa o numero de convergências seguidas
+			//Analise da facilidade de convergência:
 			if (((counter_iterations) <= min_it || convergence_counter >= conv_increase))
 			{
 				time_step = time_step*inc_factor;
@@ -274,7 +274,7 @@ bool Static::Solve()
 				//Atualiza monitor
 				if (db.monitor_exist == true && (converged_number%db.monitor->sample == 0 || time == end_time))
 					db.monitor->UpdateMonitor(time);
-				//Atualiza análise concomitante
+				//Atualiza analise concomitante
 				if (db.concomitant_solution_exist == true && (converged_number%db.concomitant_solution->sample == 0 || time == end_time))
 					db.concomitant_solution->UpdateConcomitantSolution(time);
 				//Atualiza configuration save
@@ -285,7 +285,7 @@ bool Static::Solve()
 		/////////////////////////////////RETOMANDO CONFIGURAÇÃO CONVERGIDA/////////////////////////////////
 		else
 		{
-			RestoreConfiguration();	//Restaura a última configuração que convergiu
+			RestoreConfiguration();	//Restaura a ultima configuração que convergiu
 			//Modificação do loading factor increment:
 			time -= time_step;
 			time_step = time_step / 2.0;	 //Bissecção

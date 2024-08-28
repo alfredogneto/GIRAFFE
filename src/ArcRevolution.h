@@ -23,7 +23,7 @@ public:
 
 	void UpdateVariables();
 	void UpdateBoundingVolumes();				//Updates bounding volumes
-	void SaveLagrange();						//Salva variáveis
+	void SaveLagrange();						//Salva variaveis
 
 	//Variables - ArcExtrusion
 	int arc_ID;													//ID do arco a ser extrudado
@@ -36,19 +36,19 @@ public:
 	double* theta_f;
 	double theta_valid_min, theta_valid_max;
 
-	Matrix* center_local;										//Ponto central (centro de curvatura ou médio entre pontos inicial e final do arco) no sistema local de coordenadas
+	Matrix* center_local;										//Ponto central (centro de curvatura ou medio entre pontos inicial e final do arco) no sistema local de coordenadas
 
 	//Variables - SECylinder - Bounding volume (cylinder)
 	float x_min, x_max, y_min, y_max;
 	MatrixFloat* local_half_widths;
 
-	//Variáveis para escolha do lado concavo ou convexo
+	//Variaveis para escolha do lado concavo ou convexo
 	bool flag_normal_int;									//Flag para indicar uso de normal interior/exterior
 
-	//Variáveis para calcular estado atual (nas funcoes de bounding volume)
+	//Variaveis para calcular estado atual (nas funcoes de bounding volume)
 	MatrixFloat* xAf;
 
-	//Variáveis para calcular estado atual (nas funcoes de contato)
+	//Variaveis para calcular estado atual (nas funcoes de contato)
 	Matrix* x_Ai;
 	Matrix* x_Ap;
 	Matrix* Q_Ai;

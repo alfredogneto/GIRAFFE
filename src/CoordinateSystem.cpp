@@ -67,7 +67,7 @@ bool CoordinateSystem::Read(FILE *f)
 
 	*E2 = cross(*E3, *E1);
 
-	//Tratamento aos versores - verificação e normalização unitária
+	//Tratamento aos versores - verificação e normalização unitaria
 	double norm1 = norm(*E1);
 	double norm2 = norm(*E2);
 	double norm3 = norm(*E3);

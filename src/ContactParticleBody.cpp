@@ -14,7 +14,7 @@
 #include "Geometry.h"
 
 #include "Database.h"
-//Variáveis globais
+//Variaveis globais
 extern
 Database db;
 
@@ -57,7 +57,7 @@ void ContactParticleBody::SaveConfiguration()
 	{
 		Free();
 	}*/
-	//Zera o gap tangencial se contato não é eligible
+	//Zera o gap tangencial se contato não e eligible
 	if (eligible == false)
 	{
 		zeros(cd->g_t[0]);
@@ -124,7 +124,7 @@ bool ContactParticleBody::NightOwlContact()
 
 void ContactParticleBody::EvaluateNormalGap()
 {
-	//Cálculo da função gap (escalar)
+	//Calculo da função gap (escalar)
 	SurfacePoints();
 	//Gap vetorial
 	*cd->g[0] = *GammaA - *GammaB;
@@ -185,8 +185,8 @@ void ContactParticleBody::SolveLCP()
 	int info = 0;
 	Matrix cb(4);
 
-	//Initial guess - no caso de divergência anterior ou primeiro cálculo
-	//Também entra se no passo anterior a solução encontrada era uma intersecção fora do range - evita soluções "viciadas" por anteriores inadequadas.
+	//Initial guess - no caso de divergência anterior ou primeiro calculo
+	//Tambem entra se no passo anterior a solução encontrada era uma intersecção fora do range - evita soluções "viciadas" por anteriores inadequadas.
 	if (cd->return_value[0] == 1 || cd->return_value[0] == 2 || (cd->copy_characterization_index[0] == 1 && cd->return_value[0] == 4) || cd->return_value[0] == 3 || cd->copy_convergedLCP[0]==false || cd->convergedLCP[0]==false)
 	{
 		InitialGuess();
@@ -227,7 +227,7 @@ void ContactParticleBody::SolveLCP()
 	////////////////////////////LCP solution////////////////////////
 	////////////////////////////////////////////////////////////////
 
-	//Busca sempre ponto de mínimo - mas não pode ser um ponto de intersecção por conta do método Barrier
+	//Busca sempre ponto de minimo - mas não pode ser um ponto de intersecção por conta do metodo Barrier
 
 	//bool intersection = false;
 	if (interface_1_flag)
@@ -333,7 +333,7 @@ void ContactParticleBody::FinalProcessSurfacePairsExplicit(double t)
 
 void ContactParticleBody::WriteVTK_XMLForces(FILE *f)
 {
-	//vetores para escrita no formato binário - usando a função 'enconde'
+	//vetores para escrita no formato binario - usando a função 'enconde'
 	std::vector<float> float_vector;
 	std::vector<int> int_vector;
 
@@ -480,13 +480,13 @@ void ContactParticleBody::EvaluateInvertedHessian()
 }
 
 
-//Otimização - determinação de mínimo
+//Otimização - determinação de minimo
 bool ContactParticleBody::FindMinimumSolution(SSContactData* c_data, Matrix* solution, int &return_info)
 {
 	//Dados - trust region
-	double Deltamax = 1e4;			//máximo raio da trust region permitido
+	double Deltamax = 1e4;			//maximo raio da trust region permitido
 	double Deltak = 0.1;			//atual raio de trust region
-	double etha = 0.15;				//valor entre 0 e 0.15 - indica que a aproximação é ruim e veta o incremento
+	double etha = 0.15;				//valor entre 0 e 0.15 - indica que a aproximação e ruim e veta o incremento
 	double rhok = 0.0;				//razão entre a diferença na função objetivo e a diferença da aproximação utilizada
 	double actual_reduction = 0.0;
 	double predicted_reduction = 0.0;
@@ -504,7 +504,7 @@ bool ContactParticleBody::FindMinimumSolution(SSContactData* c_data, Matrix* sol
 	Matrix D(4, 4);
 	Matrix cHes(4, 4);
 
-	//Inicialização do método - chute inicial
+	//Inicialização do metodo - chute inicial
 	for (int i = 0; i < 4; i++)
 		xk(i, 0) = (*solution)(i, 0);
 
@@ -520,7 +520,7 @@ bool ContactParticleBody::FindMinimumSolution(SSContactData* c_data, Matrix* sol
 	double tol_ortho = tol_convective * abs(max_eig);
 	double tol_small = tol_small_1;
 
-	//Critério para identificar uma intersecção
+	//Criterio para identificar uma intersecção
 	double tol_intersect = max_eig * tol_convective*tol_convective;
 
 	if (write_report)
@@ -577,13 +577,13 @@ bool ContactParticleBody::FindMinimumSolution(SSContactData* c_data, Matrix* sol
 			//Construção da direção de busca
 			//Direção de busca baseada em NR - modificada pelo menor autovalor
 			zeros(&pb);
-			//Se o menor autovalor é menor ou igual a zero (tol_small) - modifica a direção de NR para garantir direção descendente
+			//Se o menor autovalor e menor ou igual a zero (tol_small) - modifica a direção de NR para garantir direção descendente
 			if (min_eig < tol_small)
 			{
 				for (int i = 0; i < 4; i++)
 					pb(i, 0) = -pGra(i, 0) / (D(i, i) - (min_eig - abs(min_eig)*tol_ascent));
 			}
-			//Se o menor autovalor é maior que zero (tol_small) - direção de NR é escolhida
+			//Se o menor autovalor e maior que zero (tol_small) - direção de NR e escolhida
 			else
 			{
 				for (int i = 0; i < 4; i++)
@@ -615,7 +615,7 @@ bool ContactParticleBody::FindMinimumSolution(SSContactData* c_data, Matrix* sol
 		}
 
 		//////////////////////////UPDATING SOLUTION////////////////////////////////
-		//Cálculo de rhok
+		//Calculo de rhok
 		actual_reduction = ObjectivePhase1(xk) - ObjectivePhase1(xk + pk);
 		predicted_reduction = -(transp(Gra)*pk + 0.5*transp(pk)*Hes*pk)(0, 0);
 		rhok = actual_reduction / predicted_reduction;
@@ -671,15 +671,15 @@ bool ContactParticleBody::FindMinimumSolution(SSContactData* c_data, Matrix* sol
 //bool ContactParticleBody::FindSaddleSolution(SSContactData* c_data, Matrix* solution, int &return_info, bool return_gap)
 //{
 //	//Dados - trust region
-//	double Deltamax = 10;			//máximo raio da trust region permitido
+//	double Deltamax = 10;			//maximo raio da trust region permitido
 //	double Deltak = 0.01;			//atual raio de trust region
-//	double etha = 0.15;				//valor entre 0 e 0.15 - indica que a aproximação é ruim e veta o incremento
+//	double etha = 0.15;				//valor entre 0 e 0.15 - indica que a aproximação e ruim e veta o incremento
 //	double rhok = 0.0;				//razão entre a diferença na função objetivo e a diferença da aproximação utilizada
 //	double actual_change = 0.0;
 //	double predicted_change = 0.0;
 //	double tol_small = tol_small_1;
 //	int max_it = max_it_2;			//max iterations
-//	//Variáveis internas de uso geral
+//	//Variaveis internas de uso geral
 //	Matrix Hes(4, 4);
 //	Matrix Gra(4, 1);
 //	Matrix pGra(4, 1);
@@ -689,11 +689,11 @@ bool ContactParticleBody::FindMinimumSolution(SSContactData* c_data, Matrix* sol
 //	Matrix pk(4);
 //	Matrix pb(4);
 //	Matrix xk(4);
-//	//Inicialização do método - chute inicial - obtido da solução anterior - problema de mínima distância
+//	//Inicialização do metodo - chute inicial - obtido da solução anterior - problema de minima distancia
 //	for (int i = 0; i < 4; i++)
 //		xk(i, 0) = (*solution)(i, 0);
 //
-//	//Erro da mínima distância
+//	//Erro da minima distancia
 //	GradientPhase1(xk, Gra);
 //	double ob = ObjectivePhase1(xk);
 //	//Hessiana da função objetivo
@@ -711,7 +711,7 @@ bool ContactParticleBody::FindMinimumSolution(SSContactData* c_data, Matrix* sol
 //	}
 //	double tol_ortho = tol_convective * abs(max_eig);
 //
-//	bool saddle_basin = false;		//variável booleana que indica que a bacia de atração da sela foi localizada
+//	bool saddle_basin = false;		//variavel booleana que indica que a bacia de atração da sela foi localizada
 //	int it = 1;
 //	bool conv1 = false;
 //	saddle_basin = false;
@@ -798,7 +798,7 @@ bool ContactParticleBody::FindMinimumSolution(SSContactData* c_data, Matrix* sol
 //			fprintf(f_TR_report, "After FindMinimumGap, initial guess is not in saddle basin\n");
 //	}
 //
-//	//Cálculos de erro e objetivo
+//	//Calculos de erro e objetivo
 //	GradientPhase1(xk, Gra);
 //	//Erro - forçando primeira entrada
 //	double error = tol_ortho + 1.0;
@@ -811,7 +811,7 @@ bool ContactParticleBody::FindMinimumSolution(SSContactData* c_data, Matrix* sol
 //	char c = 'I';
 //	if (write_report)
 //		fprintf(f_TR_report, "%d\t%.12e\t%.12e\t%.12e\t%.12e\t%.6e\t%.6e\t%.6e\t%c\t%.6e\t%.6e\t%.6e\n", it, xk(0, 0), xk(1, 0), xk(2, 0), xk(3, 0), ob, error, Deltak, c, rhok, actual_change, predicted_change);
-//	/////////////////////////////////Passo de análise da bacia de atração do ponto de sela/////////////////////////////////////
+//	/////////////////////////////////Passo de analise da bacia de atração do ponto de sela/////////////////////////////////////
 //	while ((error > tol_ortho || norm(pk) > tol_convective) && it <= max_it)
 //	{
 //
@@ -827,7 +827,7 @@ bool ContactParticleBody::FindMinimumSolution(SSContactData* c_data, Matrix* sol
 //			pk = (Deltak / norminc)*pk;
 //		c = 'N';
 //		//////////////////////////UPDATING SOLUTION////////////////////////////////
-//		//Cálculo de rhok
+//		//Calculo de rhok
 //		actual_change = ObjectivePhase1(xk) - ObjectivePhase1(xk + pk);
 //		predicted_change = -(transp(Gra)*(pk)+0.5*transp(pk)*Hes*(pk))(0, 0);
 //		rhok = actual_change / predicted_change;
@@ -850,7 +850,7 @@ bool ContactParticleBody::FindMinimumSolution(SSContactData* c_data, Matrix* sol
 //			Deltak = Deltak / 4;
 //		//incrementa iterações
 //		it++;
-//		//Cálculos que serão utilizados para verificar saída do loop - ou na próxima iteração, caso não saia
+//		//Calculos que serão utilizados para verificar saida do loop - ou na próxima iteração, caso não saia
 //		//Objetivo
 //		ob = ObjectivePhase1(xk);
 //		//Gradiente
@@ -864,7 +864,7 @@ bool ContactParticleBody::FindMinimumSolution(SSContactData* c_data, Matrix* sol
 //	if (write_report)
 //		fprintf(f_TR_report, "Error\t%.6e\tTolerance\t%.6e\n", error, tol_ortho);
 //
-//	////////////////////////////////Verificação final - se a solução é ponto de sela/////////////////////////////////////
+//	////////////////////////////////Verificação final - se a solução e ponto de sela/////////////////////////////////////
 //	//Salva resultado em solution
 //	for (int i = 0; i < 4; i++)
 //		(*solution)(i, 0) = xk(i, 0);
@@ -882,13 +882,13 @@ bool ContactParticleBody::FindMinimumSolution(SSContactData* c_data, Matrix* sol
 //		return false;
 //}
 
-//Otimização - determinação de mínimo
+//Otimização - determinação de minimo
 bool ContactParticleBody::FindMinimumSolutionDegenerated(SSContactData* c_data, Matrix* P_0, Matrix* solution)
 {
 	//Dados - trust region
-	double Deltamax = 1e4;			//máximo raio da trust region permitido
+	double Deltamax = 1e4;			//maximo raio da trust region permitido
 	double Deltak = 0.1;			//atual raio de trust region
-	double etha = 0.15;				//valor entre 0 e 0.15 - indica que a aproximação é ruim e veta o incremento
+	double etha = 0.15;				//valor entre 0 e 0.15 - indica que a aproximação e ruim e veta o incremento
 	double rhok = 0.0;				//razão entre a diferença na função objetivo e a diferença da aproximação utilizada
 	double actual_reduction = 0.0;
 	double predicted_reduction = 0.0;
@@ -910,7 +910,7 @@ bool ContactParticleBody::FindMinimumSolutionDegenerated(SSContactData* c_data, 
 	Matrix D(order, order);
 	Matrix cHes(order, order);
 
-	//Inicialização do método - chute inicial - obtido da solução anterior - problema de mínima distância
+	//Inicialização do metodo - chute inicial - obtido da solução anterior - problema de minima distancia
 	for (int i = 0; i < 4; i++)
 		xk(i, 0) = (*solution)(i, 0);
 
@@ -989,13 +989,13 @@ bool ContactParticleBody::FindMinimumSolutionDegenerated(SSContactData* c_data, 
 			//Construção da direção de busca
 			//Direção de busca baseada em NR - modificada pelo menor autovalor
 			zeros(&pb);
-			//Se o menor autovalor é menor ou igual a zero (tol_small) - modifica a direção de NR para garantir direção descendente
+			//Se o menor autovalor e menor ou igual a zero (tol_small) - modifica a direção de NR para garantir direção descendente
 			if (min_eig < tol_small)
 			{
 				for (int i = 0; i < order; i++)
 					pb(i, 0) = -pGra(i, 0) / (D(i, i) - (min_eig - abs(min_eig)*tol_ascent));
 			}
-			//Se o menor autovalor é maior que zero (tol_small) - direção de NR é escolhida
+			//Se o menor autovalor e maior que zero (tol_small) - direção de NR e escolhida
 			else
 			{
 				for (int i = 0; i < order; i++)
@@ -1026,7 +1026,7 @@ bool ContactParticleBody::FindMinimumSolutionDegenerated(SSContactData* c_data, 
 		}
 
 		//////////////////////////UPDATING SOLUTION////////////////////////////////
-		//Cálculo de rhok
+		//Calculo de rhok
 		double actual_reduction = ObjectivePhase1(xk) - ObjectivePhase1(xk + (*P_0)*pk);
 		double predicted_reduction = -(transp(deg_Gra)*pk + 0.5*transp(pk)*deg_Hes*pk)(0, 0);
 		rhok = actual_reduction / predicted_reduction;
@@ -1081,13 +1081,13 @@ bool ContactParticleBody::FindMinimumSolutionDegenerated(SSContactData* c_data, 
 		return false;
 }
 
-//Otimização - determinação de mínimo
+//Otimização - determinação de minimo
 //bool ContactParticleBody::FindMinimumGapDegenerated(SSContactData* c_data, Matrix* P_0, Matrix* solution, int &return_info, bool fixed_normals, Matrix& nA, Matrix& nB)
 //{
 //	//Dados - trust region   
 //	double Deltak = minimum_convective_range / 1000;		//atual raio de trust region
-//	double Deltamax = 100;									//máximo raio da trust region permitido
-//	double etha = 0.15;										//valor entre 0 e 0.15 - indica que a aproximação é ruim e veta o incremento
+//	double Deltamax = 100;									//maximo raio da trust region permitido
+//	double etha = 0.15;										//valor entre 0 e 0.15 - indica que a aproximação e ruim e veta o incremento
 //	double rhok = 0.0;										//razão entre a diferença na função objetivo e a diferença da aproximação utilizada
 //	double last_reduction = 0.0;
 //	double reduction = 0.0;
@@ -1109,7 +1109,7 @@ bool ContactParticleBody::FindMinimumSolutionDegenerated(SSContactData* c_data, 
 //	Matrix D(order, order);
 //	Matrix cHes(order, order);
 //
-//	//	//Inicialização do método - chute inicial
+//	//	//Inicialização do metodo - chute inicial
 //	for (int i = 0; i < 4; i++)
 //		xk(i, 0) = (*solution)(i, 0);
 //
@@ -1180,13 +1180,13 @@ bool ContactParticleBody::FindMinimumSolutionDegenerated(SSContactData* c_data, 
 //			//Construção da direção de busca
 //			//Direção de busca baseada em NR - modificada pelo menor autovalor
 //			zeros(&pb);
-//			//Se o menor autovalor é menor ou igual a zero (tol_small) - modifica a direção de NR para garantir direção descendente
+//			//Se o menor autovalor e menor ou igual a zero (tol_small) - modifica a direção de NR para garantir direção descendente
 //			if (min_eig < tol_small)
 //			{
 //				for (int i = 0; i < order; i++)
 //					pb(i, 0) = -pGra(i, 0) / (D(i, i) - (min_eig - abs(min_eig)*tol_ascent));
 //			}
-//			//Se o menor autovalor é maior que zero (tol_small) - direção de NR é escolhida
+//			//Se o menor autovalor e maior que zero (tol_small) - direção de NR e escolhida
 //			else
 //			{
 //				for (int i = 0; i < order; i++)
@@ -1217,7 +1217,7 @@ bool ContactParticleBody::FindMinimumSolutionDegenerated(SSContactData* c_data, 
 //			}
 //		}
 //		//////////////////////////UPDATING SOLUTION////////////////////////////////
-//		//Cálculo de rhok
+//		//Calculo de rhok
 //		actual_reduction = Gap(xk, fixed_normals, nA, nB) - Gap(xk + (*P_0)*pk, fixed_normals, nA, nB);
 //		predicted_reduction = -(transp(deg_Gra)*pk + 0.5*transp(pk)*deg_Hes*pk)(0, 0);
 //		rhok = actual_reduction / predicted_reduction;
@@ -1287,12 +1287,12 @@ bool ContactParticleBody::FindMinimumSolutionDegenerated(SSContactData* c_data, 
 //{
 //	//Função desenvolvida para degeneração de ordem 3
 //	//Ordem 4 - chamar função FindSaddleSolution
-//	//Ordem 2 - chamar função FindMinimumSolution (não é necessário determinar o ponto de sela)
+//	//Ordem 2 - chamar função FindMinimumSolution (não e necessario determinar o ponto de sela)
 //
 //	//Dados - trust region
-//	double Deltamax = 10;			//máximo raio da trust region permitido
+//	double Deltamax = 10;			//maximo raio da trust region permitido
 //	double Deltak = 0.01;			//atual raio de trust region
-//	double etha = 0.15;				//valor entre 0 e 0.15 - indica que a aproximação é ruim e veta o incremento
+//	double etha = 0.15;				//valor entre 0 e 0.15 - indica que a aproximação e ruim e veta o incremento
 //	double rhok = 0.0;				//razão entre a diferença na função objetivo e a diferença da aproximação utilizada
 //	double actual_change = 0.0;
 //	double predicted_change = 0.0;
@@ -1300,7 +1300,7 @@ bool ContactParticleBody::FindMinimumSolutionDegenerated(SSContactData* c_data, 
 //	double tol_small = tol_small_1;
 //	int max_it = max_it_2;			//max iterations
 //
-//	//Variáveis internas de uso geral
+//	//Variaveis internas de uso geral
 //	Matrix Hes(4, 4);
 //	Matrix Gra(4, 1);
 //	Matrix pGra(3, 1);
@@ -1322,16 +1322,16 @@ bool ContactParticleBody::FindMinimumSolutionDegenerated(SSContactData* c_data, 
 //	if (write_report)
 //		fprintf(f_TR_report, "FindSaddleSolutionDegenerated\n");
 //
-//	//Inicialização do método - chute inicial - obtido da solução anterior - problema de mínima distância
+//	//Inicialização do metodo - chute inicial - obtido da solução anterior - problema de minima distancia
 //	for (int i = 0; i < 4; i++)
 //		xk(i, 0) = (*solution)(i, 0);
 //
-//	//Erro da mínima distância
+//	//Erro da minima distancia
 //	GradientPhase1(xk, Gra);
 //	double error = norm(Gra);
 //	double ob = ObjectivePhase1(xk);
 //
-//	bool saddle_basin = false;		//variável booleana que indica que a bacia de atração da sela foi localizada
+//	bool saddle_basin = false;		//variavel booleana que indica que a bacia de atração da sela foi localizada
 //	int it = 1;
 //
 //	//Hessiana da função objetivo
@@ -1431,7 +1431,7 @@ bool ContactParticleBody::FindMinimumSolutionDegenerated(SSContactData* c_data, 
 //			fprintf(f_TR_report[seq_number], "After FindMinimumGap, initial guess is not in saddle basin\n");
 //	}*/
 //
-//	//Cálculos de erro e objetivo
+//	//Calculos de erro e objetivo
 //	GradientPhase1(xk, Gra);
 //	//Gradiente degenerado
 //	dGra = transp(*P_0)*Gra;
@@ -1448,7 +1448,7 @@ bool ContactParticleBody::FindMinimumSolutionDegenerated(SSContactData* c_data, 
 //	char c = 'I';
 //	if (write_report)
 //		fprintf(f_TR_report, "%d\t%.12e\t%.12e\t%.12e\t%.12e\t%.6e\t%.6e\t%.6e\t%c\t%.6e\t%.6e\t%.6e\n", it, xk(0, 0), xk(1, 0), xk(2, 0), xk(3, 0), ob, error, Deltak, c, rhok, actual_change, predicted_change);
-//	/////////////////////////////////Passo de análise da bacia de atração do ponto de sela/////////////////////////////////////
+//	/////////////////////////////////Passo de analise da bacia de atração do ponto de sela/////////////////////////////////////
 //	while ((error > tol_ortho || norm(pk) > tol_convective) && it <= max_it)
 //	{
 //		//Calculando direções principais e curvaturas principais da função objetivo
@@ -1464,7 +1464,7 @@ bool ContactParticleBody::FindMinimumSolutionDegenerated(SSContactData* c_data, 
 //			pk = (Deltak / norminc)*pk;
 //		c = 'N';
 //		//////////////////////////UPDATING SOLUTION////////////////////////////////
-//		//Cálculo de rhok
+//		//Calculo de rhok
 //		double actual_change = ObjectivePhase1(xk) - ObjectivePhase1(xk + pk);
 //		double predicted_change = -(transp(Gra)*(pk)+0.5*transp(pk)*Hes*(pk))(0, 0);
 //		rhok = actual_change / predicted_change;
@@ -1487,7 +1487,7 @@ bool ContactParticleBody::FindMinimumSolutionDegenerated(SSContactData* c_data, 
 //			Deltak = Deltak / 4;
 //		//incrementa iterações
 //		it++;
-//		//Cálculos que serão utilizados para verificar saída do loop - ou na próxima iteração, caso não saia
+//		//Calculos que serão utilizados para verificar saida do loop - ou na próxima iteração, caso não saia
 //		//Objetivo
 //		ob = ObjectivePhase1(xk);
 //		//Gradiente
@@ -1507,7 +1507,7 @@ bool ContactParticleBody::FindMinimumSolutionDegenerated(SSContactData* c_data, 
 //		fprintf(f_TR_report, "Error\t%.6e\tTolerance\t%.6e\n", error, tol_ortho);
 //
 //
-//	////////////////////////////////Verificação final - se a solução é ponto de sela/////////////////////////////////////
+//	////////////////////////////////Verificação final - se a solução e ponto de sela/////////////////////////////////////
 //	//Salva resultado em solution
 //	for (int i = 0; i < 4; i++)
 //		(*solution)(i, 0) = xk(i, 0);
@@ -1531,13 +1531,13 @@ bool ContactParticleBody::FindMinimumSolutionDegenerated(SSContactData* c_data, 
 
 int ContactParticleBody::CharacterizeCriticalPoint(Matrix* solution)
 {
-	///////////////////////////////Ponteiros e variáveis para facilitar acesso//////////////////////////////////////////
-	//Surface* surf1 = db.surfaces[surf1_ID - 1];		//Ponteiro para a superfície 1
-	//Surface* surf2 = db.surfaces[surf2_ID - 1];		//Ponteiro para a superfície 2
+	///////////////////////////////Ponteiros e variaveis para facilitar acesso//////////////////////////////////////////
+	//Surface* surf1 = db.surfaces[surf1_ID - 1];		//Ponteiro para a superficie 1
+	//Surface* surf2 = db.surfaces[surf2_ID - 1];		//Ponteiro para a superficie 2
 
-	//0 - mínimo estrito
-	//1 - mínimo não estrito (intersecção)
-	//2 - transição mínimo-sela (just-touch)
+	//0 - minimo estrito
+	//1 - minimo não estrito (intersecção)
+	//2 - transição minimo-sela (just-touch)
 	//3 - saddle 2 negative eigenvalues
 	//4 - other
 	Matrix xk(4);
@@ -1562,28 +1562,28 @@ int ContactParticleBody::CharacterizeCriticalPoint(Matrix* solution)
 	double tol_intersect = max_eig * tol_convective*tol_convective;
 	double tol_small = max_eig * tol_small_1;
 
-	//mínimo não estrito (intersecção)
+	//minimo não estrito (intersecção)
 	if (ob < tol_intersect)
 	{
 		if (write_report)
 			fprintf(f_TR_report, "Intersection found (tolerance %.6e). Eigenvalues are %.6e\t%.6e\t%.6e\t%.6e\n", tol_intersect, D(0, 0), D(1, 1), D(2, 2), D(3, 3));
 		return 1;
 	}
-	//mínimo estrito
+	//minimo estrito
 	if (D(0, 0) >= tol_small && D(1, 1) >= tol_small && D(2, 2) >= tol_small && D(3, 3) >= tol_small)
 	{
 		if (write_report)
 			fprintf(f_TR_report, "Strict minimum found. Eigenvalues are %.6e\t%.6e\t%.6e\t%.6e\n", D(0, 0), D(1, 1), D(2, 2), D(3, 3));
 		return 0;
 	}
-	////transição mínimo-sela (just-touch)
+	////transição minimo-sela (just-touch)
 	//if (D(0, 0) >= -tol_small && D(0, 0) <= +tol_small && D(1, 1) >= -tol_small && D(1, 1) <= +tol_small && D(2, 2) >= tol_small && D(3, 3) >= tol_small)
 	//{
 	//	if (write_report)
 	//		fprintf(f_TR_report, "Just-touch found. Eigenvalues are %.6e\t%.6e\t%.6e\t%.6e\n", D(0, 0), D(1, 1), D(2, 2), D(3, 3));
 	//	return 2;
 	//}
-	//transição mínimo-sela (just-touch)
+	//transição minimo-sela (just-touch)
 	if (D(0, 0) <= tol_small && D(1, 1) <= tol_small && D(2, 2) >= tol_small && D(3, 3) >= tol_small)
 	{
 		if (write_report)
@@ -1597,13 +1597,13 @@ int ContactParticleBody::CharacterizeCriticalPoint(Matrix* solution)
 
 int ContactParticleBody::CharacterizeCriticalPointDegenerated(Matrix* solution, Matrix* P_0, bool print)
 {
-	///////////////////////////////Ponteiros e variáveis para facilitar acesso//////////////////////////////////////////
-	//Surface* surf1 = db.surfaces[surf1_ID - 1];		//Ponteiro para a superfície 1
-	//Surface* surf2 = db.surfaces[surf2_ID - 1];		//Ponteiro para a superfície 2
+	///////////////////////////////Ponteiros e variaveis para facilitar acesso//////////////////////////////////////////
+	//Surface* surf1 = db.surfaces[surf1_ID - 1];		//Ponteiro para a superficie 1
+	//Surface* surf2 = db.surfaces[surf2_ID - 1];		//Ponteiro para a superficie 2
 
-	//0 - mínimo estrito
-	//1 - mínimo não estrito (intersecção)
-	//2 - transição mínimo-sela (just-touch)
+	//0 - minimo estrito
+	//1 - minimo não estrito (intersecção)
+	//2 - transição minimo-sela (just-touch)
 	//3 - saddle 2 negative eigenvalues
 	//4 - other
 	Matrix xk(4);
@@ -1635,21 +1635,21 @@ int ContactParticleBody::CharacterizeCriticalPointDegenerated(Matrix* solution, 
 	double tol_intersect = max_eig * tol_convective*tol_convective;
 	double tol_small = max_eig * tol_small_1;
 
-	//mínimo não estrito (intersecção)
+	//minimo não estrito (intersecção)
 	if (ob < tol_intersect)
 	{
 		if (write_report)
 			fprintf(f_TR_report, "Intersection found. Eigenvalues are %.6e\t%.6e\t%.6e\n", D(0, 0), D(1, 1), D(2, 2));
 		return 1;
 	}
-	//mínimo estrito
+	//minimo estrito
 	if (D(0, 0) >= tol_small && D(1, 1) >= tol_small && D(2, 2) >= tol_small)
 	{
 		if (write_report)
 			fprintf(f_TR_report, "Strict minimum found. Eigenvalues are %.6e\t%.6e\t%.6e. Tolerance is %.6e.\n", D(0, 0), D(1, 1), D(2, 2), tol_small);
 		return 0;
 	}
-	////transição mínimo-sela (just-touch)
+	////transição minimo-sela (just-touch)
 	//if (D(0, 0) >= -tol_small && D(0, 0) <= +tol_small && D(1, 1) >= tol_small && D(2, 2) >= tol_small)
 	//{
 	//	if (write_report)

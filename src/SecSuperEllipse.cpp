@@ -90,7 +90,7 @@ bool SecSuperEllipse::Read(FILE *f)
 			return false;
 	}
 	else
-		fsetpos(f, &pos);	//volta à posição anterior
+		fsetpos(f, &pos);	//volta a posição anterior
 
 
 	return true;
@@ -157,13 +157,13 @@ double SecSuperEllipse::MDF_SaintVenantSE()
 	for (int j = 0; j < ny+1; j++)
 		info_p[i][j] = new double[6];
 
-	//Índices utilizados
+	//indices utilizados
 	//0 - não utilizado
 	//1 - x
 	//2 - y
 	//3 - phi(x, y)
 	//4 - status(0) - inativo - (1) ativo
-	//5 - número da linha(equação)
+	//5 - numero da linha(equação)
 
 	//%%%%%%%%%%%%%%%%%%%%%%%%%%GERAÇÃO DE MALHA%%%%%%%%%%%%%%%%%%%%%%%
 	//percorre por linhas
@@ -218,12 +218,12 @@ double SecSuperEllipse::MDF_SaintVenantSE()
 		//percorre por colunas
 		for (int i = 0; i <= nx; i++)
 		{
-			//Se o ponto se encontra no domínio
+			//Se o ponto se encontra no dominio
 			if (info_p[i][j][4] == 1)
 			{
 				A.setValue((long)(info_p[i][j][5]), (long)(info_p[i][j][5]), -2.0 * coefx - 2.0 * coefy);
 				B((long)(info_p[i][j][5]), 0) = -2;
-				//ponto à esquerda - simetria - eixo y
+				//ponto a esquerda - simetria - eixo y
 				if (i == 0)
 				{
 					if (i + 1 <= nx)
@@ -232,7 +232,7 @@ double SecSuperEllipse::MDF_SaintVenantSE()
 							A.setValue((long)(info_p[i][j][5]), (long)(info_p[i + 1][j][5]), 2.0 * coefx);
 					}
 				}
-				//ponto no interior do domínio ou no contorno
+				//ponto no interior do dominio ou no contorno
 				else
 				{
 					if (i + 1 <= nx)
@@ -259,7 +259,7 @@ double SecSuperEllipse::MDF_SaintVenantSE()
 						}
 					}
 				}
-				//ponto no interior do domínio ou no contorno
+				//ponto no interior do dominio ou no contorno
 				else
 				{
 					if (j + 1 <= ny)
@@ -301,7 +301,7 @@ double SecSuperEllipse::MDF_SaintVenantSE()
 		//percorre por colunas
 		for (int i = 0; i <= nx; i++)
 		{
-			// Se o ponto se encontra no domínio
+			// Se o ponto se encontra no dominio
 			if (info_p[i][j][4] == 1)
 			{
 				if ((i == 0 && j == 0) || (i == 0 && j == ny) || (i == nx && j == 0) || (i == nx && j == ny)) // ponto nos cantos

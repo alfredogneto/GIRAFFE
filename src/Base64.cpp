@@ -1,4 +1,4 @@
-#include "base64.h"
+#include "Base64.h"
 
 static const char* B64chars =
 "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";

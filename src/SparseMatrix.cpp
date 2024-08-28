@@ -1,14 +1,14 @@
 #include "SparseMatrix.h"
 #include <iostream>
-#include "mkl.h"
+#include <mkl.h>
 
-#include "arpack.hpp"
-#include "debug_c.hpp"  // debug arpack.
-#include "stat_c.hpp"   // arpack statistics.
+#include <arpack.hpp>
+#include <debug_c.hpp>  // debug arpack.
+#include <stat_c.hpp>   // arpack statistics.
 
 #include "SolverOptions.h"
 #include "Database.h"
-//Variáveis globais
+//Variaveis globais
 extern
 Database db;
 
@@ -18,7 +18,7 @@ SparseMatrix::SparseMatrix()
 	cols = 1;
 	non_null_estimative = 1;
 	m_matrix.resize(1, 1);				//tamanho da matriz
-	tripletList.reserve(1);				//pré-aloca o triplet list
+	tripletList.reserve(1);				//pre-aloca o triplet list
 }
 SparseMatrix::SparseMatrix(int e_rows,int e_cols, int e_non_null_estimative)
 {
@@ -27,7 +27,7 @@ SparseMatrix::SparseMatrix(int e_rows,int e_cols, int e_non_null_estimative)
 	non_null_estimative = e_non_null_estimative;
 	m_matrix.resize(e_rows, e_cols);					//tamanho da matriz
 	m_matrix.reserve(e_non_null_estimative);
-	tripletList.reserve(2*e_non_null_estimative);		//pré-aloca o triplet list
+	tripletList.reserve(2*e_non_null_estimative);		//pre-aloca o triplet list
 	mounted = false;
 }
 SparseMatrix::SparseMatrix(SparseMatrix &copied)
@@ -42,7 +42,7 @@ SparseMatrix::SparseMatrix(SparseMatrix &copied)
 
 SparseMatrix::~SparseMatrix()
 {
-	//Não há variáveis a serem desalocadas manualmente (todas são automáticas)
+	//Não ha variaveis a serem desalocadas manualmente (todas são automaticas)
 }
 
 //Zera coeficientes da matriz esparsa (alocados na tripletList)
@@ -74,15 +74,15 @@ Matrix sparsesystem(SparseMatrix &A, Matrix &b, int *info_fail,int processors,in
 	if (A.mounted == false)
 		A.Mount();
 	
-	//Parâmetros - PARDISO
+	//Parametros - PARDISO
 	int			mtype = 11;						//Tipo de solução -- Real unsymmetric matrix
 	int			nrhs = 1;						//Numero de colunas do lado direito da equacao
 	void*		pt[64];							//Ponteiro de memoria interno do PARDISO
 	int			iparm[64];						//Parametros de controle do PARDISO
-	int			maxfct = 1;						//Numero maximo de fatorizacoes numéricas salvas na memória
+	int			maxfct = 1;						//Numero maximo de fatorizacoes numericas salvas na memória
 	int			mnum = 1;						//Qual fatorizacao utilizar
 	int			phase;							//Fase do processo de solução
-	int			msglvl = 0;						//Imprime informações estatísticas
+	int			msglvl = 0;						//Imprime informações estatisticas
 	int			solver;							//0 - Esparso 
 												//1 - Iterativo
 	if (solver_type != 0 && solver_type != 1)
@@ -99,24 +99,24 @@ Matrix sparsesystem(SparseMatrix &A, Matrix &b, int *info_fail,int processors,in
 	int			idum;										//Variavel dummy
 
 	double*		a = A.m_matrix.valuePtr();					//Valores da matriz
-	int*		ia = A.m_matrix.outerIndexPtr();			//Índice dos valores "outer" da matriz
-	int*		ja = A.m_matrix.innerIndexPtr();			//Índice do primeiro valor da linha da matriz
+	int*		ia = A.m_matrix.outerIndexPtr();			//indice dos valores "outer" da matriz
+	int*		ja = A.m_matrix.innerIndexPtr();			//indice do primeiro valor da linha da matriz
 
-	int			n = (int)A.m_matrix.rows();						//Número de linhas da matriz
-	int			nnz = ia[n];								//Número de valores na matriz
+	int			n = (int)A.m_matrix.rows();						//Numero de linhas da matriz
+	int			nnz = ia[n];								//Numero de valores na matriz
 	Matrix		x(n);										//Matriz de retorno - solução
 	if (n == 0)
 		return n;
 	///////////////////////////////////////////////////////////////////////////
-	//     Inicializa parâmetros de controle                                 //
+	//     Inicializa parametros de controle                                 //
 	///////////////////////////////////////////////////////////////////////////
 	pardisoinit(pt, &mtype, iparm);
-	//Setando algumas variáveis específicas de controle
+	//Setando algumas variaveis especificas de controle
 	iparm[1] = 3;
 	if (solver == 1)//solve iterativo
 		iparm[3] = 31;
 	///////////////////////////////////////////////////////////////////////////
-	//     Adiciona 1 ao índice - 1-index (FORTRAN)                          //
+	//     Adiciona 1 ao indice - 1-index (FORTRAN)                          //
 	///////////////////////////////////////////////////////////////////////////
 	for (size_t i = 0, iLen = n + 1; i < iLen; i++) 
 	{
@@ -128,7 +128,7 @@ Matrix sparsesystem(SparseMatrix &A, Matrix &b, int *info_fail,int processors,in
 		ja[i] += 1;
 	}
 	///////////////////////////////////////////////////////////////////////////
-	//     Fase de análise, fatorização numérica, solução e refinamento      //
+	//     Fase de analise, fatorização numerica, solução e refinamento      //
 	//     iterativo                                                         //
 	///////////////////////////////////////////////////////////////////////////
 	phase = 13;
@@ -140,7 +140,7 @@ Matrix sparsesystem(SparseMatrix &A, Matrix &b, int *info_fail,int processors,in
 		std::cout << "ERROR during analysis, numerical factorization, solver, iterative refinement: " << *info_fail << std::endl;
 	}
 	///////////////////////////////////////////////////////////////////////////
-	//     Subtrai 1 do índice - 0-index (C++)                               //
+	//     Subtrai 1 do indice - 0-index (C++)                               //
 	///////////////////////////////////////////////////////////////////////////
 	for (size_t i = 0, iLen = n + 1; i < iLen; i++) 
 	{
@@ -179,8 +179,8 @@ Matrix operator * (SparseMatrix &matrix1, Matrix &matrix2)
 		Matrix return_m((long)matrix1.m_matrix.rows(), 1);
 
 		double*		a = matrix1.m_matrix.valuePtr();					//Valores da matriz
-		int*		ia = matrix1.m_matrix.outerIndexPtr();			//Índice dos valores das colunas da matriz
-		int*		ja = matrix1.m_matrix.innerIndexPtr();			//Índice do primeiro valor da linha da matriz
+		int*		ia = matrix1.m_matrix.outerIndexPtr();			//indice dos valores das colunas da matriz
+		int*		ja = matrix1.m_matrix.innerIndexPtr();			//indice do primeiro valor da linha da matriz
 		//Multiplicação
 		for (int i = 0; i < matrix1.m_matrix.rows(); i++)
 		{
@@ -268,16 +268,16 @@ SparseMatrix &SparseMatrix::operator = (SparseMatrix const &matrix1)
 Matrix sparseeigen(SparseMatrix &K, SparseMatrix &M, Matrix &z, int n_e, bool eigenvectors, int* ret, double tolerance)
 {
 	*ret = 0;
-	int ido = 0;				//Parâmetro de controle
+	int ido = 0;				//Parametro de controle
 	char bmat = 'G';			//Autovalor generalizado
 	int n = K.rows;				//Ordem do problema
 	char which[2];
 	which[0] = 'L';				//Larger module parts of the eigenvalues (por conta do shift inverse,depois serão transformados para os menores)
 	which[1] = 'M';
-	int nev = n_e;				//Número de autovalores requeridos
-	double tol = tolerance;		//Tolerância - valor nulo para ativar o cálculo interno da precisão de máquina, via Lapack
-	Matrix resid(n);			//Resíduo
-	int ncv = 2 * n_e + 1;		//Dimensão da base utilizada para o cálculo aproximado
+	int nev = n_e;				//Numero de autovalores requeridos
+	double tol = tolerance;		//Tolerancia - valor nulo para ativar o calculo interno da precisão de maquina, via Lapack
+	Matrix resid(n);			//Residuo
+	int ncv = 2 * n_e + 1;		//Dimensão da base utilizada para o calculo aproximado
 	Matrix v(n, ncv);
 	int ldv = n;
 	int* iparam;
@@ -286,7 +286,7 @@ Matrix sparseeigen(SparseMatrix &K, SparseMatrix &M, Matrix &z, int n_e, bool ei
 	iparam[2] = 300;			//Max iterations
 	iparam[6] = 3;				//Mode
 	int* ipntr;
-	ipntr = new int[14];		//Ponteiro para saídas
+	ipntr = new int[14];		//Ponteiro para saidas
 	Matrix workd(3 * n);
 	int lworkl = 3 * ncv*ncv + 18 * ncv;
 	Matrix workl(lworkl);
@@ -315,7 +315,7 @@ Matrix sparseeigen(SparseMatrix &K, SparseMatrix &M, Matrix &z, int n_e, bool ei
 	while (true)
 	{
 		arpack::internal::dnaupd_c(&ido, &bmat, n, which, nev, tol, resid.getMatrix(),ncv, v.getMatrix(), ldv, iparam, ipntr, workd.getMatrix(), workl.getMatrix(), lworkl, &info);
-		//printf("Iteration \t %lf\n",norm(resid));//Plota norma do resíduo
+		//printf("Iteration \t %lf\n",norm(resid));//Plota norma do residuo
 		if (ido == -1)
 		{
 			//printf("IDO = -1\n");
@@ -352,19 +352,19 @@ Matrix sparseeigen(SparseMatrix &K, SparseMatrix &M, Matrix &z, int n_e, bool ei
 			*ret = -1;
 			return return_m;
 		}
-		else//Convergência ocorreu - saída do loop
+		else//Convergência ocorreu - saida do loop
 			break;
 	}//end of while
 
 	//Pós - processamento do ARPACK	
-	//Os autovetores serão armazenados em z (parâmetro de entrada da função), se requeridos
+	//Os autovetores serão armazenados em z (parametro de entrada da função), se requeridos
 	int rvec = int (eigenvectors);		//Computar autovetores ou não
 	char Howmny = 'A';
 	int *select;
 	select = new int[ncv];
 	Matrix dr(nev + 1);		//parte real dos autovalores
-	Matrix di(nev + 1);		//parte imaginária dos autovalores
-	Matrix res_calc(nev + 1);//para salvar o resíduo calculado dos autovetores
+	Matrix di(nev + 1);		//parte imaginaria dos autovalores
+	Matrix res_calc(nev + 1);//para salvar o residuo calculado dos autovetores
 	int ldz = n;
 	Matrix Workev(3 * ncv);
 	arpack::internal::dneupd_c(rvec, &Howmny, select, dr.getMatrix(), di.getMatrix(), z.getMatrix(),ldz, sigmar, sigmai, Workev.getMatrix(), &bmat, n, which, nev,
@@ -387,7 +387,7 @@ Matrix sparseeigen(SparseMatrix &K, SparseMatrix &M, Matrix &z, int n_e, bool ei
 		{
 			Matrix xr(n);
 			Matrix xi(n);
-			//Percorre cada um dos autovetores calculados para cálculo do erro cometido
+			//Percorre cada um dos autovetores calculados para calculo do erro cometido
 			bool first = true;
 			for (int j = 0; j < iparam[4]; j++)
 			{
@@ -401,17 +401,17 @@ Matrix sparseeigen(SparseMatrix &K, SparseMatrix &M, Matrix &z, int n_e, bool ei
 				}
 				else//Autovalor complexo
 				{
-					if (first)//se for o primeiro dos autovetores (o próximo será complexo conjugado)
+					if (first)//se for o primeiro dos autovetores (o próximo sera complexo conjugado)
 					{
 						for (int cp = 0; cp < n; cp++)
 						{
 							xr(cp, 0) = z(cp, j);		//parte real
-							xi(cp, 0) = z(cp, j + 1);	//parte imaginária
+							xi(cp, 0) = z(cp, j + 1);	//parte imaginaria
 						}
 						//parte real
 						Awd = K*xr - dr(j, 0)*(M*xr) + di(j, 0)*(M*xi);
 						res_calc(j, 0) = norm(Awd);
-						//parte imaginária
+						//parte imaginaria
 						Awd = K*xi - dr(j, 0)*(M*xi) - di(j, 0)*(M*xr);
 						double normi = norm(Awd);
 						res_calc(j, 0) = sqrt(res_calc(j, 0)*res_calc(j, 0) + normi*normi);
@@ -431,7 +431,7 @@ Matrix sparseeigen(SparseMatrix &K, SparseMatrix &M, Matrix &z, int n_e, bool ei
 	if (res > tolerance)
 		*ret = -2;
 	
-	//Autovalores e resíduos calculados
+	//Autovalores e residuos calculados
 	db.myprintf("\nARPACK output:\n");
 	for (int i = 0; i < n_e; i++)
 		db.myprintf("%.6f + %.6f i -> residual %.2e\n", dr(i, 0), di(i, 0), res_calc(i,0));
@@ -444,6 +444,6 @@ Matrix sparseeigen(SparseMatrix &K, SparseMatrix &M, Matrix &z, int n_e, bool ei
 
 	//Valores de retorno
 	//-1 - ocorreu erro durante a execução do dneupd
-	//-2 - chegou a pós-processar, mas não houve convergência com a tolerância especificada
+	//-2 - chegou a pós-processar, mas não houve convergência com a tolerancia especificada
 	// 0 - execução correta
 }

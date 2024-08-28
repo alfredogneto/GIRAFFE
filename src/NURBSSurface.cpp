@@ -4,7 +4,7 @@
 #include "Encoding.h"
 
 #include"Database.h"
-//Variáveis globais
+//Variaveis globais
 extern
 Database db;
 
@@ -89,7 +89,7 @@ bool NURBSSurface::Read(FILE *f)
 	return true;
 }
 
-//Escrita do arquivo de saída
+//Escrita do arquivo de saida
 void NURBSSurface::Write(FILE *f)
 {
 	fprintf(f, "NURBSSurface\t%d\t%s\n",
@@ -613,7 +613,7 @@ void NURBSSurface::NURBSDerivatives(double &uc, double &vc, Matrix** &Skl, int &
 
 void NURBSSurface::WriteVTK_XMLRender(FILE *f, Matrix& pos, Matrix& rot, int number)
 {
-	//vetores para escrita no formato binário - usando a função 'enconde'
+	//vetores para escrita no formato binario - usando a função 'enconde'
 	std::vector<float> float_vector;
 	std::vector<int> int_vector;
 

@@ -17,7 +17,7 @@ public:
 	double ept;
 	double epn;
 	double pinball;
-	double sum_Fx;												//Variáveis que armazenam somas vetoriais dos esforços (monitor)
+	double sum_Fx;												//Variaveis que armazenam somas vetoriais dos esforços (monitor)
 	double sum_Fy;
 	double sum_Fz;
 	bool Read(FILE *f);
@@ -26,32 +26,32 @@ public:
 	void WriteMonitor(FILE *f, bool first_record, double time);	//Escreve no monitor do contato
 	void WriteVTK_XMLRender(FILE *f);
 	void WriteVTK_XMLForces(FILE *f);
-	void SaveLagrange();										//Salva variáveis para descrição lagrangiana atualizada
+	void SaveLagrange();										//Salva variaveis para descrição lagrangiana atualizada
 	void Mount();
 	void MountGlobal();											//Preenche a contribuição do contato nas matrizes globais
 	void Band(int* band_fixed, int* band_free);					//Calcula a banda gerada na matriz global pelo contato
-	void PreCalc();												//Pré-cálculo de variáveis que é feito uma única vez no início
+	void PreCalc();												//Pre-calculo de variaveis que e feito uma unica vez no inicio
 	void PinballCheck();										//Checks proximity between each beam from LR to LR
-	void BeginStepCheck();											//checagem inicial do contato  - início de cada incremento
-	void Alloc(int e_elements1, int e_elements2);				//Aloca na memória as variáveis que dependem do número de elementos
-	bool HaveErrors();											//Retorna 0 - não há cruzamento 1 - há cruzamento
+	void BeginStepCheck();											//checagem inicial do contato  - inicio de cada incremento
+	void Alloc(int e_elements1, int e_elements2);				//Aloca na memória as variaveis que dependem do numero de elementos
+	bool HaveErrors();											//Retorna 0 - não ha cruzamento 1 - ha cruzamento
 	void MountDyn();												//Montagens - Newmark
 	//Funções internas
-	void FillNodes(int e_element1, int e_element2);				//Preenche as variáveis dos nós com valores atualizados
-	int FindMinimumParameters(int i, int j);					//Determina csi1 e csi2 do ponto de mínima distância
-	void EvaluateParameters(int i, int j);						//Calcula parâmetros em função de csi_1 e csi_2
+	void FillNodes(int e_element1, int e_element2);				//Preenche as variaveis dos nós com valores atualizados
+	int FindMinimumParameters(int i, int j);					//Determina csi1 e csi2 do ponto de minima distancia
+	void EvaluateParameters(int i, int j);						//Calcula parametros em função de csi_1 e csi_2
 	void CalculateLengthsAndTangents();							//Calcula o comprimento dos elementos //Calcula os vetores t1 e t2 dos elementos
-	void PlotContactStatus(int i, int j);						//Plota características do contato, independente de ter convergido ou não
-	//Variáveis internas:
-	int n_elements1;											//Número de elementos da line region correspondente ao contato
-	int n_elements2;											//Número de elementos da line region correspondente ao contato
+	void PlotContactStatus(int i, int j);						//Plota caracteristicas do contato, independente de ter convergido ou não
+	//Variaveis internas:
+	int n_elements1;											//Numero de elementos da line region correspondente ao contato
+	int n_elements2;											//Numero de elementos da line region correspondente ao contato
 	int temp_element1;
 	int temp_element2;
 	int temp_node;
 	double error;
 	double tol_NR;												//Tolerência NR
-	int max_it;													//Número máximo de iterações
-	double tol_ortho;											//Tolerância de erro à ortogonalidade
+	int max_it;													//Numero maximo de iterações
+	double tol_ortho;											//Tolerancia de erro a ortogonalidade
 	double dot_test;
 	double gt1, gt2;
 	double l1, l2;
@@ -68,14 +68,14 @@ public:
 	double Fat2;
 	double delta_lambda, delta_lambda_1, delta_lambda_2;
 	double d;
-	double N_1_1, N_3_1, dN_1_1, dN_3_1, ddN_1_1, ddN_3_1;		//Variáveis relacionadas às funções de forma do elemento 1
-	double N_1_2, N_3_2, dN_1_2, dN_3_2, ddN_1_2, ddN_3_2;		//Variáveis relacionadas às funções de forma do elemento 2
+	double N_1_1, N_3_1, dN_1_1, dN_3_1, ddN_1_1, ddN_3_1;		//Variaveis relacionadas as funções de forma do elemento 1
+	double N_1_2, N_3_2, dN_1_2, dN_3_2, ddN_1_2, ddN_3_2;		//Variaveis relacionadas as funções de forma do elemento 2
 	double D_;
 	double dot11;
 	double dot22;
 	double dot12;
-	Matrix* mean_position1;										//Posição da média aritmética dos nós de cada elemento - calculado para realizar o pinball search
-	Matrix* mean_position2;										//Posição da média aritmética dos nós de cada elemento - calculado para realizar o pinball search
+	Matrix* mean_position1;										//Posição da media aritmetica dos nós de cada elemento - calculado para realizar o pinball search
+	Matrix* mean_position2;										//Posição da media aritmetica dos nós de cada elemento - calculado para realizar o pinball search
 	Matrix* gte;
 	Matrix* node_1_1;											//Coordenadas do nó 1 - elemento 1
 	Matrix* node_3_1;											//Coordenadas do nó 3 - elemento 1
@@ -87,8 +87,8 @@ public:
 	Matrix* N2;
 	Matrix* dN2;
 	Matrix* ddN2;
-	Matrix* x1;													//Posições nodais em um único vetor:
-	Matrix* x2;													//Posições nodais em um único vetor:
+	Matrix* x1;													//Posições nodais em um unico vetor:
+	Matrix* x2;													//Posições nodais em um unico vetor:
 	Matrix* z1;
 	Matrix* z2;
 	Matrix* t1ext;
@@ -134,8 +134,8 @@ public:
 	Matrix* E2;
 	Matrix* ST;													//Contribuições da parte do atrito ao operador tangente
 	Matrix* STb;												//Contribuições da parte do atrito ao operador tangente
-	Matrix* R;													//Resíduo
-	Matrix* A;													//Matriz Jacobiana - que tb. é a matriz A, uma vez convergido o NR
+	Matrix* R;													//Residuo
+	Matrix* A;													//Matriz Jacobiana - que tb. e a matriz A, uma vez convergido o NR
 	Matrix* B;
 	Matrix* C;
 	Matrix* D;
@@ -145,7 +145,7 @@ public:
 	Matrix* t1;													//Direções tangenciais dos elementos 1 e 2
 	Matrix* t2;
 	Matrix* delta_csi;
-	//Variáveis dependentes do número de elementos
+	//Variaveis dependentes do numero de elementos
 	Matrix ***last_dif_pos;
 	Matrix ***c_stiffness;										//Matriz de rigidez
 	Matrix ***c_loading;										//Vetor de esforços externos
@@ -173,7 +173,7 @@ public:
 	double** csi_2;
 	double** factor_1;
 	double** factor_2;
-	//Variáveis para verificação da função Band
+	//Variaveis para verificação da função Band
 	int temp_band_free;
 	int temp_band_fixed;
 	int lowest_free_global_DOF;

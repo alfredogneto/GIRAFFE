@@ -15,7 +15,7 @@
 #include "ShellLoad.h"
 
 #include"Database.h"
-//Variáveis globais
+//Variaveis globais
 extern
 Database db;
 #define PI 3.1415926535897932384626433832795
@@ -70,7 +70,7 @@ Shell_1::Shell_1()
 	sprintf(type_name, "Shell_1");
 
 	//Alocações de memória
-	//Cada variável carregará a informação para seu ponto de Gauss (3 pontos de Gauss)
+	//Cada variavel carregara a informação para seu ponto de Gauss (3 pontos de Gauss)
 	N1u = new double[3];
 	N2u = new double[3];
 	N3u = new double[3];
@@ -183,7 +183,7 @@ Shell_1::Shell_1()
 		m_r2_global[i] = new Matrix(3);				//momento em er2
 	}
 
-	//Variáveis para integração com 6 pontos de Gauss (precisão de polinômios de ordem 4)
+	//Variaveis para integração com 6 pontos de Gauss (precisão de polinômios de ordem 4)
 	N1u4 = new double[6];
 	N2u4 = new double[6];
 	N3u4 = new double[6];
@@ -258,7 +258,7 @@ Shell_1::Shell_1()
 	k_1 = Matrix(3, 1);
 	k_2 = Matrix(3, 1);
 
-	//Variáveis internas para uso na dinâmica
+	//Variaveis internas para uso na dinamica
 	alpha_dot = new Matrix*[3];
 	Xi_dot = new Matrix*[3];
 	Mip = new Matrix*[3];
@@ -473,7 +473,7 @@ Shell_1::~Shell_1()
 
 	delete tempkin;
 
-	//Variáveis internas para uso na dinâmica
+	//Variaveis internas para uso na dinamica
 	//Loop nos pontos de Gauss
 	for (int i = 0; i < 3; i++)
 	{
@@ -632,7 +632,7 @@ void Shell_1::WriteResults(FILE *f)
 	zeros(&e_2);
 	zeros(&k_1);
 	zeros(&k_2);
-	//Percorre os pontos de Gauss e calcula um único vetor de resultados, por elemento (média)
+	//Percorre os pontos de Gauss e calcula um unico vetor de resultados, por elemento (media)
 	for (int gauss = 0; gauss < 3; gauss++)
 	{
 		n_1 = n_1 + (1.0 / 3.0)*(*n_r1[gauss]);
@@ -672,7 +672,7 @@ void Shell_1::WriteVTK_XMLBase(std::vector<float> *float_vector)
 	zeros(&n_2);
 	zeros(&m_1);
 	zeros(&m_2);
-	//Percorre os pontos de Gauss e calcula um único vetor de resultados, por elemento (média)
+	//Percorre os pontos de Gauss e calcula um unico vetor de resultados, por elemento (media)
 	for (int gauss = 0; gauss < 3; gauss++)
 	{
 		n_1 = n_1 + (1.0 / 3.0)*(*n_r1[gauss]);
@@ -707,7 +707,7 @@ void Shell_1::WriteVTK_XMLBase(std::vector<float> *float_vector)
 }
 void Shell_1::WriteVTK_XMLRender(FILE *f)
 {
-	//vetores para escrita no formato binário - usando a função 'enconde'
+	//vetores para escrita no formato binario - usando a função 'enconde'
 	std::vector<float> float_vector;
 	std::vector<int> int_vector;
 
@@ -868,7 +868,7 @@ void Shell_1::WriteMonitor(FILE *f, bool first_record, double time)
 	zeros(&e_2);
 	zeros(&k_1);
 	zeros(&k_2);
-	//Percorre os pontos de Gauss e calcula um único vetor de resultados, por elemento (média)
+	//Percorre os pontos de Gauss e calcula um unico vetor de resultados, por elemento (media)
 	for (int gauss = 0; gauss < 3; gauss++)
 	{
 		n_1 = n_1 + 1.0 / 3.0*(*n_r1[gauss]);
@@ -997,7 +997,7 @@ void Shell_1::Mount()
 		*alpha_delta_x1[gauss] = (*transform3)*(*alpha_delta_x1[gauss]);	//TO LOCAL
 		*alpha_delta_x2[gauss] = (*transform3)*(*alpha_delta_x2[gauss]);	//TO LOCAL
 		
-		//Cálculo de tensores de rotação e outros
+		//Calculo de tensores de rotação e outros
 		double alpha_escalar_delta = norm(*alpha_delta[gauss]);																//Valor escalar do parametro alpha
 		Matrix A_delta = skew(*alpha_delta[gauss]);																			//Matriz A_delta
 		double g = 4.0 / (4.0 + alpha_escalar_delta*alpha_escalar_delta);													//função g(alpha) - em algumas ref. tb. chamado de h(alpha)
@@ -1009,8 +1009,8 @@ void Shell_1::Mount()
 		Matrix Xi_delta_x2 = -0.5*g*(dot(*alpha_delta[gauss], *alpha_delta_x2[gauss])*(*Xi_delta[gauss]) - A_delta_x2);		//Derivada do tensor Xi em x2
 		Matrix z_x1 = *u_delta_x1[gauss] + (*z_x1_i[gauss]);																//Vetor derivada de z em x1 (calculada em i+1)
 		Matrix z_x2 = *u_delta_x2[gauss] + (*z_x2_i[gauss]);																//Vetor derivada de z em x2 (calculada em i+1)
-		Matrix Z_x1 = skew(z_x1);																							//Tensor anti-simétrico, cuja axial é z_x1
-		Matrix Z_x2 = skew(z_x2);																							//Tensor anti-simétrico, cuja axial é z_x2
+		Matrix Z_x1 = skew(z_x1);																							//Tensor anti-simetrico, cuja axial e z_x1
+		Matrix Z_x2 = skew(z_x2);																							//Tensor anti-simetrico, cuja axial e z_x2
 		Matrix Qtransp = transp((*Q_delta[gauss])*(*Q_i[gauss]));															//Q transposta (i+1)
 
 		//Deformações retro-rotacionadas
@@ -1019,7 +1019,7 @@ void Shell_1::Mount()
 		*kappa_r1[gauss] = transp(*Q_i[gauss])*transp(*Xi_delta[gauss])*(*alpha_delta_x1[gauss]) + *kappa_r1_i[gauss];
 		*kappa_r2[gauss] = transp(*Q_i[gauss])*transp(*Xi_delta[gauss])*(*alpha_delta_x2[gauss]) + *kappa_r2_i[gauss];
 		
-		//Variáveis a serem calculadas na integração na espessura:
+		//Variaveis a serem calculadas na integração na espessura:
 		Matrix gamma_r1(3);			//Deformações em er1
 		Matrix gamma_r2(3);			//Deformações em er2
 		zeros(n_r1[gauss]);				//força em er1
@@ -1279,7 +1279,7 @@ void Shell_1::Mount()
 		Matrix m_1 = ((*Q_delta[gauss])*(*Q_i[gauss])) * (*m_r1[gauss]);
 		Matrix m_2 = ((*Q_delta[gauss])*(*Q_i[gauss])) * (*m_r2[gauss]);
 		
-		//Variáveis auxiliares para montagem de G
+		//Variaveis auxiliares para montagem de G
 		Matrix V_alpha_Z_x1_n1 = V(*alpha_delta[gauss], Z_x1*n_1, alpha_escalar_delta);
 		Matrix V_alpha_Z_x2_n2 = V(*alpha_delta[gauss], Z_x2*n_2, alpha_escalar_delta);
 		Matrix V_alpha_m1 = V(*alpha_delta[gauss], m_1, alpha_escalar_delta);
@@ -1301,7 +1301,7 @@ void Shell_1::Mount()
 		Matrix G_alpha_alpha_1 = +1.0*(transp(*Xi_delta[gauss])) * (Z_x1* skew(n_1)) * (*Xi_delta[gauss]) - 1.0*V_alpha_Z_x1_n1 + dV_1_dalpha_m1 - transp(Xi_delta_x1) * (skew(m_1) * (*Xi_delta[gauss]));
 		Matrix G_alpha_alpha_2 = +1.0*(transp(*Xi_delta[gauss])) * (Z_x2* skew(n_2)) * (*Xi_delta[gauss]) - 1.0*V_alpha_Z_x2_n2 + dV_2_dalpha_m2 - transp(Xi_delta_x2) * (skew(m_2) * (*Xi_delta[gauss]));
 		
-		//Cálculo da matriz G
+		//Calculo da matriz G
 		Matrix G(15, 15);
 		for (int i = 0; i < 3; i++)
 		{
@@ -1318,7 +1318,7 @@ void Shell_1::Mount()
 				G(i + 12, j + 12) = G_alpha_alpha_1(i, j) + G_alpha_alpha_2(i, j);
 			}
 		}
-		//Matrix de rigidez - constribuição geométrica
+		//Matrix de rigidez - constribuição geometrica
 		(*stiffness) = (*stiffness) + alpha1*(transp(*deltaN[gauss]))*((G)*(*deltaN[gauss]));
 		//Vetor de esforços internos
 		(*i_loading) = (*i_loading) + alpha1*(transp(*deltaN[gauss]) * transp(Psi) * sigma_r);
@@ -1342,7 +1342,7 @@ void Shell_1::MountFieldLoads()
 			load_multiplier = 1.0;
 			l_factor = db.environment->bool_g.GetLinearFactorAtCurrentTime();
 
-			//Fator multiplicativo para o carregamento (contém o fator, rho e a espessura das casca) = fator * peso por unidade de área
+			//Fator multiplicativo para o carregamento (contem o fator, rho e a espessura das casca) = fator * peso por unidade de area
 			mult = l_factor*load_multiplier*(db.materials[material - 1]->rho)*db.shell_sections[section-1]->thickness;
 			Matrix q_weight(6);
 			q_weight(0, 0) = mult*db.environment->G(0, 0);
@@ -1359,7 +1359,7 @@ void Shell_1::MountFieldLoads()
 			load_multiplier = 1.0;
 			l_factor = db.environment->bool_g.GetLinearFactorAtCurrentTime();
 
-			//Fator multiplicativo para o carregamento (contém o fator, rho e a espessura das casca) = fator * peso por unidade de área
+			//Fator multiplicativo para o carregamento (contem o fator, rho e a espessura das casca) = fator * peso por unidade de area
 			if (composite_shell == false)	
 				mult = l_factor * load_multiplier*(db.materials[material - 1]->rho)*db.shell_sections[section - 1]->thickness;
 			else
@@ -1397,7 +1397,7 @@ void Shell_1::MountShellSpecialLoads(int l_number)
 	bool area_update = ptr->area_update;
 	mult = 1.0;
 	
-	//Esforço externo generalizado por unidade de área de referência
+	//Esforço externo generalizado por unidade de area de referência
 	Matrix q_pres(6);
 	//Direções tangentes
 	Matrix t1_p(3);
@@ -1426,7 +1426,7 @@ void Shell_1::MountShellSpecialLoads(int l_number)
 		//Direções tangentes
 		t1_p = *e1r + (*N4_u_x1[gauss])*pu_ip;
 		t2_p = *e2r + (*N4_u_x2[gauss])*pu_ip;
-		//Direção normal - já normalizada
+		//Direção normal - ja normalizada
 		n_p = (1.0 / norm(cross(t1_p, t2_p)))*cross(t1_p, t2_p);
 		//Carregamento
 		q_pres(0, 0) = -mult*pressure*n_p(0, 0);
@@ -1478,7 +1478,7 @@ void Shell_1::TransformMatrix()
 	//Preenche a matriz de transformação de coordenadas
 	for (int i = 0; i<27; i = i + 3)
 	{
-		//Preenche também a matriz transform3
+		//Preenche tambem a matriz transform3
 		if (i == 0)
 		{
 			(*transform3)(0, 0) = dot(*e1r, e1);
@@ -1512,7 +1512,7 @@ void Shell_1::TransformMatrix()
 //Preenche a contribuição do elemento nas matrizes globais
 void Shell_1::MountGlobal()
 {
-	//Variáveis temporárias para salvar a indexação global dos graus de liberdade
+	//Variaveis temporarias para salvar a indexação global dos graus de liberdade
 	int GL_global_1 = 0;
 	int GL_global_2 = 0;
 	double anterior = 0;
@@ -1646,7 +1646,7 @@ void Shell_1::MountGlobal()
 		}//segundo loop
 	}//primeiro loop
 }
-//Salva variáveis nos pontos de Gauss úteis para descrição lagrangiana atualizada
+//Salva variaveis nos pontos de Gauss uteis para descrição lagrangiana atualizada
 void Shell_1::SaveLagrange()
 {
 	//Loop nos pontos de Gauss
@@ -1662,7 +1662,7 @@ void Shell_1::SaveLagrange()
 		(*z_x2_i[gauss]) = *u_delta_x2[gauss] + *z_x2_i[gauss];
 	}
 }
-//Pré-cálculo de variáveis que é feito uma única vez no início
+//Pre-calculo de variaveis que e feito uma unica vez no inicio
 void Shell_1::PreCalc()
 {
 	Matrix xp(3);		//Posição do ponto de integração
@@ -1693,10 +1693,10 @@ void Shell_1::PreCalc()
 	if (typeid(*db.shell_sections[section - 1]) == typeid(ShellSectionComposite))
 	{
 		composite_shell = true;
-		//Material - cálculo das propriedades do material compósito			
+		//Material - calculo das propriedades do material compósito			
 		ShellSectionComposite* shell_section = static_cast<ShellSectionComposite*>(db.shell_sections[section - 1]);
-		int n_lam = shell_section->n_laminas; //Número de lâminas do compósito
-		//Matriz com os dados de cálculo da matriz ABD (identificador, espessura e ângulo)
+		int n_lam = shell_section->n_laminas; //Numero de laminas do compósito
+		//Matriz com os dados de calculo da matriz ABD (identificador, espessura e angulo)
 		Lamina *db_lam = shell_section->db_laminas;
 
 		//Elementos da Matriz ABD de um laminado compósito
@@ -1765,7 +1765,7 @@ void Shell_1::PreCalc()
 					E2_comp = E2;
 			}
 
-			//Cálculo da Matriz Q
+			//Calculo da Matriz Q
 			double Q11 = E1 / (1 - nu12 * nu21);
 			double Q22 = E2 / (1 - nu12 * nu21);
 			double Q12 = (E1*nu21) / (1 - nu12 * nu21);
@@ -1773,7 +1773,7 @@ void Shell_1::PreCalc()
 			double Q55 = G12;
 			double Q44 = G23;
 
-			//Cálculo da Matriz Q Rotacionada
+			//Calculo da Matriz Q Rotacionada
 			double m = cos(db_lam[i].angle * PI / 180);
 			double n = sin(db_lam[i].angle * PI / 180);
 
@@ -1797,7 +1797,7 @@ void Shell_1::PreCalc()
 			double Qyzyz = n2 * Q55 + m2 * Q44;
 			double Qxzyz = m * n*(Q55 - Q44);
 
-			//Coordenada z para cada lâmina
+			//Coordenada z para cada lamina
 
 
 			if (i == 0) {
@@ -1814,7 +1814,7 @@ void Shell_1::PreCalc()
 			double CB = (pow(hf, 2) - pow(hi, 2)) / 2;
 			double CD = (pow(hf, 3) - pow(hi, 3)) / 3;
 
-			//Cáclulo da Matriz ABD
+			//Caclulo da Matriz ABD
 			Axx += Qxx * CA;
 			Ayy += Qyy * CA;
 			Axy += Qxy * CA;
@@ -1964,13 +1964,13 @@ void Shell_1::PreCalc()
 		(*D_comp)(0 + ni, 1 + nj) = -Dys;
 		(*D_comp)(1 + ni, 1 + nj) = Dss;
 
-		////Material - cálculo das constantes para material compósito
+		////Material - calculo das constantes para material compósito
 		//stiff_drill = E_comp * thick_comp*thick_comp*thick_comp;	//Rigidez ao drilling
 		stiff_drill_comp1 = E1_comp * thick_comp*thick_comp*thick_comp;
 		stiff_drill_comp2 = E2_comp * thick_comp*thick_comp*thick_comp;
 		coef1 = thick_comp * rho_comp;
 		coef2 = (1.0 / 12.0)*thick_comp*thick_comp*thick_comp*rho_comp;
-		coef3 = rho_comp * thick_comp*area / (3 * PI);		//rotação de drilling, por unidade de área
+		coef3 = rho_comp * thick_comp*area / (3 * PI);		//rotação de drilling, por unidade de area
 	}
 
 
@@ -1981,9 +1981,9 @@ void Shell_1::PreCalc()
 		//*e3r = (1.0 / norm(cross(x2 - x1, x3 - x1)))*cross(x2 - x1, x3 - x1);
 		//*e2r = cross(*e3r,*e1r);
 
-		//Criação de um sistema local - primeiro é definido o e3r (normal à casca)
+		//Criação de um sistema local - primeiro e definido o e3r (normal a casca)
 		*e3r = (1.0 / norm(cross(x2 - x1, x3 - x1)))*cross(x2 - x1, x3 - x1);
-		//O vetor e1r é a projeção do x global no plano da casca. Se for projeção nula, será a projeção do y global no plano da casca
+		//O vetor e1r e a projeção do x global no plano da casca. Se for projeção nula, sera a projeção do y global no plano da casca
 		Matrix eg(3);
 		double eps = 1e-4;
 		eg(0, 0) = 1.0;	//X
@@ -2012,7 +2012,7 @@ void Shell_1::PreCalc()
 
 	if (composite_shell == false)
 	{
-		//Material - cálculo das constantes de Lamé
+		//Material - calculo das constantes de Lame
 		Hooke* hooke = static_cast<Hooke*>(db.materials[material - 1]);
 		double E = hooke->E;
 		double nu = hooke->nu;
@@ -2021,11 +2021,11 @@ void Shell_1::PreCalc()
 		stiff_drill = E * db.shell_sections[section - 1]->thickness*db.shell_sections[section - 1]->thickness*db.shell_sections[section - 1]->thickness;	//Rigidez ao drilling
 		coef1 = db.shell_sections[section - 1]->thickness*hooke->rho;
 		coef2 = (1.0 / 12.0)*db.shell_sections[section - 1]->thickness*db.shell_sections[section - 1]->thickness*db.shell_sections[section - 1]->thickness*hooke->rho;
-		coef3 = hooke->rho*db.shell_sections[section - 1]->thickness*area / (3 * PI);		//rotação de drilling, por unidade de área
+		coef3 = hooke->rho*db.shell_sections[section - 1]->thickness*area / (3 * PI);		//rotação de drilling, por unidade de area
 	}
 
 	
-	//Percorre pontos de Gauss para salvar algumas matrizes/vetores de interesse nos cálculos do elemento
+	//Percorre pontos de Gauss para salvar algumas matrizes/vetores de interesse nos calculos do elemento
 	for (int gauss = 0; gauss < 3; gauss++)
 	{
 		//Ponto localizado sobre o nó 4
@@ -2037,7 +2037,7 @@ void Shell_1::PreCalc()
 		//Ponto localizado sobre o nó 6
 		if (gauss == 2)
 			xp = x6;
-		//Cálculo das funções de forma e de suas derivadas
+		//Calculo das funções de forma e de suas derivadas
 		A1 = 0.5 * norm(cross(x2 - xp, x3 - xp));
 		A2 = 0.5 * norm(cross(x3 - xp, x1 - xp));
 		A3 = 0.5 * norm(cross(x1 - xp, x2 - xp));
@@ -2180,7 +2180,7 @@ void Shell_1::PreCalc()
 		(*deltaN[gauss])(14, 2 + 24) = N6a[gauss];
 	}
 
-	//Percorre pontos de Gauss para salvar algumas matrizes/vetores de interesse nos cálculos do elemento
+	//Percorre pontos de Gauss para salvar algumas matrizes/vetores de interesse nos calculos do elemento
 	double c1, c2, c3;
 	for (int gauss = 0; gauss < 6; gauss++)
 	{
@@ -2234,7 +2234,7 @@ void Shell_1::PreCalc()
 			w4[gauss] = area * 0.223381589678011;
 		}
 		//xp = c1*x1 + c2*x2 + c3*x3;
-		//Cálculo das funções de forma
+		//Calculo das funções de forma
 		//A1 = 0.5 * norm(cross(x2 - xp, x3 - xp));
 		//A2 = 0.5 * norm(cross(x3 - xp, x1 - xp));
 		//A3 = 0.5 * norm(cross(x1 - xp, x2 - xp));
@@ -2353,7 +2353,7 @@ void Shell_1::PreCalc()
 		(*N4_u_x2[gauss])(2, 2 + 15) = N6u4_x2[gauss];
 	}
 
-	//Inicialização de variáveis acumuladas nos pontos de Gauss (Lagrangiano atualizado)
+	//Inicialização de variaveis acumuladas nos pontos de Gauss (Lagrangiano atualizado)
 	for (int gauss = 0; gauss < 3; gauss++)
 	{
 		*z_x1_i[gauss] = *e1rlocal;
@@ -2364,7 +2364,7 @@ void Shell_1::PreCalc()
 	alpha1 = area / 3.0; //peso dos pontos de integração com 3 pontos
 }
 
-//Monta a matriz de massa para análise modal
+//Monta a matriz de massa para analise modal
 void Shell_1::MountMassModal()
 {
 	zeros(mass_modal);
@@ -2383,7 +2383,7 @@ void Shell_1::MountMassModal()
 									(db.nodes[nodes[4] - 1]->copy_coordinates[5])* N5a4[gauss] +
 									(db.nodes[nodes[5] - 1]->copy_coordinates[5])* N6a4[gauss];
 		*alpha_i4[gauss] = (*transform3)*(*alpha_i4[gauss]);					//TO LOCAL
-		//Cálculo do integrando no ponto de Gauss
+		//Calculo do integrando no ponto de Gauss
 		EvaluateMassModal(temp_v, alpha_i4[gauss]->getMatrix(), &coef1, &coef2, &coef3, e3rlocal->getMatrix(), pDdT);
 		//Transformando o operador tangente em Matrix
 		DdT->PtrToMatrix(pDdT, 6);
@@ -2394,7 +2394,7 @@ void Shell_1::MountMassModal()
 	(*mass_modal) = (transp(*transform)*(*mass_modal))*(*transform);
 }
 
-//Monta a matriz de amortecimento para realização da análise modal
+//Monta a matriz de amortecimento para realização da analise modal
 void Shell_1::MountDampingModal()
 {
 	zeros(mass_modal);
@@ -2412,7 +2412,7 @@ void Shell_1::MountMass()
 	//Loop nos pontos de Gauss
 	for (int gauss = 0; gauss < 3; gauss++)
 	{
-		//Calculando as variáveis necessárias para obter o valor do integrando							
+		//Calculando as variaveis necessarias para obter o valor do integrando							
 		(omega_i)(0, 0) = (db.nodes[nodes[3] - 1]->copy_vel[3])* N4a[gauss] +
 			(db.nodes[nodes[4] - 1]->copy_vel[3])* N5a[gauss] +
 			(db.nodes[nodes[5] - 1]->copy_vel[3])* N6a[gauss];
@@ -2480,7 +2480,7 @@ void Shell_1::MountMass()
 		if (typeid(*db.solution[db.current_solution_number - 1]) == typeid(Dynamic))
 		{
 			Dynamic* ptr_sol = static_cast<Dynamic*>(db.solution[db.current_solution_number - 1]);
-			//Cálculo do integrando no ponto de Gauss
+			//Calculo do integrando no ponto de Gauss
 			EvaluateInertialContributions(temp_v, &ptr_sol->a1, &ptr_sol->a2, &ptr_sol->a3, &ptr_sol->a4,
 				&ptr_sol->a5, &ptr_sol->a6, alpha_i[gauss]->getMatrix(), alpha_delta[gauss]->getMatrix(),
 				u_i[gauss]->getMatrix(), u_delta[gauss]->getMatrix(), omega_i.getMatrix(), domega_i.getMatrix(), du_i.getMatrix(), ddu_i.getMatrix(), e3rlocal->getMatrix(), &coef1, &coef2, dT->getMatrix(), pDdT);
@@ -2511,7 +2511,7 @@ void Shell_1::MountDamping(bool update_rayleigh)
 		}
 		(*damping) = (*damping) + ptr_sol->a4*(*rayleigh_damping);											//Atualizando a matriz de amortecimento - inclusão do efeito de Rayleigh
 
-		//Cálculo dos esforços de amortecimento - utilização de informação das velocidades nos GL do elemento
+		//Calculo dos esforços de amortecimento - utilização de informação das velocidades nos GL do elemento
 		for (int node = 0; node<6; node++)
 		{
 			//Percorre os 3 GL por nó
@@ -2540,7 +2540,7 @@ void Shell_1::MountDyn()
 	(*stiffness) = (*stiffness) + (*mass) + (*damping);
 }
 
-//Montagens para análise modal - inserção da matriz de massa e amortecimento na matriz de rigidez para posterior montagem global
+//Montagens para analise modal - inserção da matriz de massa e amortecimento na matriz de rigidez para posterior montagem global
 void Shell_1::MountDynModal()
 {
 	(*stiffness) = (*mass_modal) + (*damping_modal);
@@ -2564,7 +2564,7 @@ void Shell_1::Zeros()
 	potential_gravitational_energy = 0.0;
 }
 
-//Calcula as contribuições inerciais para a análise dinâmica - inclui todas as contribuições para a forma fraca e para o operador tangente
+//Calcula as contribuições inerciais para a analise dinamica - inclui todas as contribuições para a forma fraca e para o operador tangente
 void Shell_1::EvaluateInertialContributions(double* v, double(*a1)
 	, double(*a2), double(*a3), double(*a4), double(*a5), double(*a6)
 	, double* alphai, double* alphad, double* ui, double* ud, double* omegai

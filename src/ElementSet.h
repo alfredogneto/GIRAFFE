@@ -7,13 +7,13 @@ public:
 	ElementSet();
 	~ElementSet();
 
-	int n_el;			//número de elementos
-	int* el_list;		//lista de superfícies
-	int number;			//número de referência
+	int n_el;			//numero de elementos
+	int* el_list;		//lista de superficies
+	int number;			//numero de referência
 
 	
-	bool sequence;		//true se é do tipo sequence
-	bool list;			//true se é do tipo list
+	bool sequence;		//true se e do tipo sequence
+	bool list;			//true se e do tipo list
 
 	//Para o caso de sequence
 	int initial;

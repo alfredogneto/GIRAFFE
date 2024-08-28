@@ -3,7 +3,7 @@
 #include "SSContactData.h"
 #include "SurfacePair.h"
 #include "Matrix.h"
-//Tipos de pares de superfície:
+//Tipos de pares de superficie:
 #include "FlexibleSECylinder_1_FlexibleSECylinder_1.h"
 #include "FlexibleArcExtrusion_1_RigidArcRevolution_1.h"
 #include "RigidNURBS_1_RigidNURBS_1.h"
@@ -21,7 +21,7 @@
 #include "FlexibleTriangularSurface_2.h"
 
 #include"Database.h"
-//Variáveis globais
+//Variaveis globais
 extern
 Database db;
 #define PI 3.1415926535897932384626433832795
@@ -44,7 +44,7 @@ SSSS::SSSS()
 	number_pointwise_interactions = 1;	
 	write_report = false;
 	
-	//Abaixo as variáveis que dependem do número de elementos para serem alocadas - Alocação feita na função Alloc, quando chamada durante o PreCalc
+	//Abaixo as variaveis que dependem do numero de elementos para serem alocadas - Alocação feita na função Alloc, quando chamada durante o PreCalc
 	typeOK1 = NULL;
 	typeOK2 = NULL;
 	activate = NULL;
@@ -91,7 +91,7 @@ void SSSS::Alloc()
 		{
 			cd[i][j] = new SSContactData();
 			cd[i][j]->n_solutions = number_pointwise_interactions;
-			//Alocação de cada um dos cd[i][j] será feita de acordo com a proximidade de contato - função Pinball
+			//Alocação de cada um dos cd[i][j] sera feita de acordo com a proximidade de contato - função Pinball
 		}
 	}
 
@@ -122,7 +122,7 @@ void SSSS::Alloc()
 		{
 			activate[i][j] = false;
 			for (int k = 0; k < number_pointwise_interactions; k++)
-				alloc_control[i][j][k] = false;	//Não há alocação no início
+				alloc_control[i][j][k] = false;	//Não ha alocação no inicio
 		}
 	}
 	for (int j = 0; j < number_surfaces1; j++)
@@ -165,7 +165,7 @@ void SSSS::Alloc()
 		
 }
 
-//Alocação específica para o contato surface1_index, surface2_index
+//Alocação especifica para o contato surface1_index, surface2_index
 void SSSS::AllocSpecific(int surface1_index, int surface2_index, int sol_index)
 {
 	//Caso não esteja ainda alocado, realiza a alocação
@@ -183,7 +183,7 @@ void SSSS::AllocSpecific(int surface1_index, int surface2_index, int sol_index)
 	}
 }
 
-//Liberação específica para o surface1_index, surface2_index
+//Liberação especifica para o surface1_index, surface2_index
 void SSSS::FreeSpecific(int surface1_index, int surface2_index, int sol_index)
 {
 	//Caso esteja alocado, realiza a desalocação
@@ -310,7 +310,7 @@ SSSS::~SSSS()
 
 void SSSS::WriteVTK_XMLRender(FILE *f)
 {
-	//Plota superfícies
+	//Plota superficies
 	int temp_surf1 = 0;
 	for (int j = 0; j < number_surfaces1; j++)
 	{
@@ -331,7 +331,7 @@ void SSSS::WriteVTK_XMLForces(FILE *f)
 	//Plotagem de forças de contato
 	if (db.post_files->WriteContactForces_flag == true)
 	{
-		//vetores para escrita no formato binário - usando a função 'enconde'
+		//vetores para escrita no formato binario - usando a função 'enconde'
 		std::vector<float> float_vector;
 		std::vector<int> int_vector;
 		//Verificação dos pontos a serem plotados
@@ -759,21 +759,21 @@ void SSSS::Mount()
 			int const tempsurf2 = db.surface_sets[n_SS2 - 1]->surf_list[surf2_index];
 			if (activate[surf1_index][surf2_index] == true && surf_pair[surf1_index][surf2_index] != NULL)
 			{	
-				//Solução do problema de mínima distância
+				//Solução do problema de minima distancia
 				surf_pair[surf1_index][surf2_index]->SolveLCP(cd[surf1_index][surf2_index]);
-				//Varredura nos possíveis pontos de interação pointwise
+				//Varredura nos possiveis pontos de interação pointwise
 				for (int sol_index = 0; sol_index < number_pointwise_interactions; sol_index++)
 				{
-					//Se não for uma raiz repetida (já computada anteriormente)
+					//Se não for uma raiz repetida (ja computada anteriormente)
 					if (cd[surf1_index][surf2_index]->repeated[sol_index] == false)
 					{
 						if (cd[surf1_index][surf2_index]->return_value[sol_index] == 0 || cd[surf1_index][surf2_index]->return_value[sol_index] == 4)
 							EvaluateNormalGap(surf1_index, surf2_index, sol_index);
 						else
-							cd[surf1_index][surf2_index]->g_n[sol_index] = 1.0;	//valor para indicar que não há contato
+							cd[surf1_index][surf2_index]->g_n[sol_index] = 1.0;	//valor para indicar que não ha contato
 						/*if (cd[surf1_index][surf2_index]->return_value[sol_index] == 0)
 							ReportContact(surf1_index, surf2_index, sol_index);*/
-						//Se houver penetração e o range de coordenadas convectivas for válido monta a contribuição do contato na forma fraca e operador tangente
+						//Se houver penetração e o range de coordenadas convectivas for valido monta a contribuição do contato na forma fraca e operador tangente
 						if (cd[surf1_index][surf2_index]->g_n[sol_index] < -pen_tol && (cd[surf1_index][surf2_index]->return_value[sol_index] == 0 || cd[surf1_index][surf2_index]->return_value[sol_index] == 4))
 						{
 							//Aloca espaço para salvar a matriz de rigidez e vetor de esforços
@@ -807,24 +807,24 @@ void SSSS::MountDyn()
 //Preenche a contribuição do contato nas matrizes globais
 void SSSS::MountGlobal()
 {
-	//Variáveis temporárias para salvar a indexação global dos graus de liberdade a serem setados na matriz de rigidez global
+	//Variaveis temporarias para salvar a indexação global dos graus de liberdade a serem setados na matriz de rigidez global
 	int GL_global_1 = 0;
 	int GL_global_2 = 0;
 	double anterior = 0;
 	int tempsurf1, tempsurf2;
 	for (int surf1_index = 0; surf1_index < number_surfaces1; surf1_index++)
 	{
-		//Superfície 1
+		//Superficie 1
 		tempsurf1 = db.surface_sets[n_SS1 - 1]->surf_list[surf1_index];
 		for (int surf2_index = 0; surf2_index < number_surfaces2; surf2_index++)
 		{
 			if (activate[surf1_index][surf2_index] == true && surf_pair[surf1_index][surf2_index] != NULL)
 			{
-				//Superfície 2
+				//Superficie 2
 				tempsurf2 = db.surface_sets[n_SS2 - 1]->surf_list[surf2_index];
 				for (int sol_index = 0; sol_index < number_pointwise_interactions; sol_index++)
 				{
-					//Se não for uma raiz repetida (já computada anteriormente)
+					//Se não for uma raiz repetida (ja computada anteriormente)
 					if (cd[surf1_index][surf2_index]->repeated[sol_index] == false)
 					{
 						/*if (cd[surf1_index][surf2_index]->return_value[sol_index] == 0 || cd[surf1_index][surf2_index]->return_value[sol_index] == 4)
@@ -838,9 +838,9 @@ void SSSS::MountGlobal()
 							{
 								
 								if (i < DOFs_surfaces1[surf1_index])
-									GL_global_1 = *db.surfaces[tempsurf1 - 1]->GLs[i];									//GLs da superfície 1
+									GL_global_1 = *db.surfaces[tempsurf1 - 1]->GLs[i];									//GLs da superficie 1
 								else
-									GL_global_1 = *db.surfaces[tempsurf2 - 1]->GLs[i - DOFs_surfaces1[surf1_index]];		//GLs da superfície 2
+									GL_global_1 = *db.surfaces[tempsurf2 - 1]->GLs[i - DOFs_surfaces1[surf1_index]];		//GLs da superficie 2
 								//Caso o grau de liberdade seja livre:
 								if (GL_global_1 > 0)
 								{
@@ -851,7 +851,7 @@ void SSSS::MountGlobal()
 								}
 								else
 								{
-									if (GL_global_1 != 0)//se o GL é ativo
+									if (GL_global_1 != 0)//se o GL e ativo
 									{
 										anterior = db.global_P_B(-GL_global_1 - 1, 0);
 										db.global_P_B(-GL_global_1 - 1, 0) = anterior + (*i_loading[surf1_index][surf2_index][sol_index])(i, 0);
@@ -861,9 +861,9 @@ void SSSS::MountGlobal()
 								for (int j = 0; j < (DOFs_surfaces1[surf1_index] + DOFs_surfaces2[surf2_index]); j++)
 								{
 									if (j < DOFs_surfaces1[surf1_index])
-										GL_global_2 = *db.surfaces[tempsurf1 - 1]->GLs[j];									//GLs da superfície 1
+										GL_global_2 = *db.surfaces[tempsurf1 - 1]->GLs[j];									//GLs da superficie 1
 									else
-										GL_global_2 = *db.surfaces[tempsurf2 - 1]->GLs[j - DOFs_surfaces1[surf1_index]];		//GLs da superfície 2
+										GL_global_2 = *db.surfaces[tempsurf2 - 1]->GLs[j - DOFs_surfaces1[surf1_index]];		//GLs da superficie 2
 
 									//Caso os graus de liberdade sejam ambos livres (Matriz Kaa)
 									if (GL_global_1 > 0 && GL_global_2 > 0)
@@ -893,16 +893,16 @@ void SSSS::Band(int* band_fixed, int* band_free)
 	//NOT IMPLEMENTED
 }
 
-//Pré-cálculo de variáveis que é feito uma única vez no início
+//Pre-calculo de variaveis que e feito uma unica vez no inicio
 void SSSS::PreCalc()
 {
 	number_surfaces1 = db.surface_sets[n_SS1 - 1]->n_surf;
 	number_surfaces2 = db.surface_sets[n_SS2 - 1]->n_surf;
 	int temp_surf = 0;
 	
-	//Neste ponto já foi chamado o PreCalc() das Surfaces. Com isso já há informação de degeneração calculada em cada uma delas.
+	//Neste ponto ja foi chamado o PreCalc() das Surfaces. Com isso ja ha informação de degeneração calculada em cada uma delas.
 
-	//Setando os número de interações pontuais por par de superfície - de acordo com o número de degenerações presentes
+	//Setando os numero de interações pontuais por par de superficie - de acordo com o numero de degenerações presentes
 	int n1, n2;
 	for (int i = 0; i < number_surfaces1; i++)
 	{
@@ -916,7 +916,7 @@ void SSSS::PreCalc()
 		}
 	}
 	
-	Alloc();	//Alocação dinâmica
+	Alloc();	//Alocação dinamica
 	
 	for (int j = 0; j < number_surfaces1; j++)
 	{
@@ -928,17 +928,17 @@ void SSSS::PreCalc()
 		temp_surf = db.surface_sets[n_SS2 - 1]->surf_list[j];
 		DOFs_surfaces2[j] = db.surfaces[temp_surf - 1]->nDOFs;
 	}
-	//Atribui e aloca pares de superfícies
+	//Atribui e aloca pares de superficies
 	SetPairs();
 }
 
-//checagem inicial do contato  - início de cada incremento
+//checagem inicial do contato  - inicio de cada incremento
 void SSSS::BeginStepCheck()
 {
 	for (int surf1_index = 0; surf1_index < number_surfaces1; surf1_index++)
 	for (int surf2_index = 0; surf2_index < number_surfaces2; surf2_index++)
 	{
-		//Se o contato for ativo - realiza estudo de degeneração do início do step
+		//Se o contato for ativo - realiza estudo de degeneração do inicio do step
 		if (activate[surf1_index][surf2_index] == true)
 			surf_pair[surf1_index][surf2_index]->BeginStepCheck(cd[surf1_index][surf2_index]);
 	}
@@ -961,9 +961,9 @@ void SSSS::PinballCheck()
 			for (int surf2_index = 0; surf2_index < number_surfaces2; surf2_index++)
 			{
 				int tempsurf2 = db.surface_sets[n_SS2 - 1]->surf_list[surf2_index];
-				//Atualiza informações com os últimos deslocamentos ocorridos - prepara parametrização da superfície para montagem do contato
+				//Atualiza informações com os ultimos deslocamentos ocorridos - prepara parametrização da superficie para montagem do contato
 				db.surfaces[tempsurf2 - 1]->CenterPoint(&center2);
-				//Verifica se é o mesmo ID de superfície
+				//Verifica se e o mesmo ID de superficie
 				if (tempsurf1 == tempsurf2)
 					activate[surf1_index][surf2_index] = false;					//DESATIVA
 				else
@@ -971,7 +971,7 @@ void SSSS::PinballCheck()
 					if (norm(center1 - center2) <= pinball)
 					{
 						activate[surf1_index][surf2_index] = true;					//Near to contact
-						cd[surf1_index][surf2_index]->Alloc();						//Aloca - caso não haja pré-alocação, atribui valores iniciais a todas as variáveis
+						cd[surf1_index][surf2_index]->Alloc();						//Aloca - caso não haja pre-alocação, atribui valores iniciais a todas as variaveis
 						surf_pair[surf1_index][surf2_index]->Alloc(cd[surf1_index][surf2_index]);
 					}
 					else
@@ -988,7 +988,7 @@ void SSSS::PinballCheck()
 		}
 	}
 }
-//Salva variáveis para descrição lagrangiana atualizada
+//Salva variaveis para descrição lagrangiana atualizada
 void SSSS::SaveLagrange()
 {
 	for (int surf1_index = 0; surf1_index < number_surfaces1; surf1_index++)
@@ -1000,9 +1000,9 @@ void SSSS::SaveLagrange()
 				for (int sol_index = 0; sol_index < number_pointwise_interactions; sol_index++)
 				{
 					//Zera o gap tangencial se:
-					//1 - gn for positivo (não há contato)
-					//2 - copy_gn for positivo (é a primeira ocorrência de contato - não há como acumular gap tangencial pois o contato acaba de começar)
-					//3 - return value é 2 - contato não estabelecido - e não é strong candidate, mas pode ocorrer em próximos instantes
+					//1 - gn for positivo (não ha contato)
+					//2 - copy_gn for positivo (e a primeira ocorrência de contato - não ha como acumular gap tangencial pois o contato acaba de começar)
+					//3 - return value e 2 - contato não estabelecido - e não e strong candidate, mas pode ocorrer em próximos instantes
 					if (cd[surf1_index][surf2_index]->g_n[sol_index] >= pen_tol || cd[surf1_index][surf2_index]->copy_g_n[sol_index] >= pen_tol || cd[surf1_index][surf2_index]->return_value[sol_index] == 2)
 					{
 						zeros(cd[surf1_index][surf2_index]->g_t[sol_index]);
@@ -1027,7 +1027,7 @@ void SSSS::SaveLagrange()
 	}
 }
 
-//Pode ser inserido algum critério impeditivo de convergência aqui
+//Pode ser inserido algum criterio impeditivo de convergência aqui
 bool SSSS::HaveErrors()
 {
 	for (int i = 0; i < number_surfaces1; i++)
@@ -1037,7 +1037,7 @@ bool SSSS::HaveErrors()
 			if (activate[i][j] == true && surf_pair[i][j] != NULL)
 			{
 				//ReportContact(i, j, 0);
-				//A função abaixo é encarregada de checar de acordo com a conveniência do par de superfícies as condições para cut-back
+				//A função abaixo e encarregada de checar de acordo com a conveniência do par de superficies as condições para cut-back
 				if (surf_pair[i][j]->EndStepCheck(cd[i][j]) == true)
 					return true;
 			}
@@ -1054,7 +1054,7 @@ void SSSS::EvaluateNormalGap(int surf1_index, int surf2_index, int sol_index)
 	Matrix temp_conv(4);
 	for (int co = 0; co < 4; co++)
 		temp_conv(co, 0) = cd[surf1_index][surf2_index]->convective[sol_index][co];
-	//Cálculo da função gap (escalar)
+	//Calculo da função gap (escalar)
 	Matrix GammaA(3);
 	Matrix GammaB(3);
 	db.surfaces[tempsurf1 - 1]->SurfacePoint(temp_conv(0, 0), temp_conv(1, 0), GammaA);
@@ -1170,7 +1170,7 @@ void SSSS::ReportContact(int surf1_index, int surf2_index, int sol_index)
 	db.myprintf("Friction force: %.6e\n", norm(*cd[surf1_index][surf2_index]->copy_g_t[sol_index])*ept);
 }
 
-//Atribui pares de superfícies, de acordo com varredura feita entre os surface sets 1 e 2
+//Atribui pares de superficies, de acordo com varredura feita entre os surface sets 1 e 2
 void SSSS::SetPairs()
 { 
 	int temp_ID_1, temp_ID_2;
@@ -1244,7 +1244,7 @@ void SSSS::SetPairs()
 			{
 				db.myprintf("Warning! No Surface Pair exists for surfaces %d and %d in contact SSSS %d. This pair is ignored during analysis.", temp_ID_1, temp_ID_2, number);
 			}
-			//Acrescentar aqui outros possíveis pares de superfícies
+			//Acrescentar aqui outros possiveis pares de superficies
 			////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 			surf_pair[i][j]->write_report = write_report;
 			surf_pair[i][j]->write_report_diverged = write_report_diverged;

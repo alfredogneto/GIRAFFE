@@ -20,19 +20,19 @@ public:
 	void Mount();									//Monta elementos
 	void MountMass();								//Monta a matriz de massa
 	void MountAddedMass();							//Monta a matriz de massa adicional
-	void MountAddedMassModal();						//Monta a matriz de massa adicional para análise modal
-	void MountMassModal();							//Monta a matriz de massa para realização da análise modal
-	void MountDampingModal();						//Monta a matriz de amortecimento para realização da análise modal
+	void MountAddedMassModal();						//Monta a matriz de massa adicional para analise modal
+	void MountMassModal();							//Monta a matriz de massa para realização da analise modal
+	void MountDampingModal();						//Monta a matriz de amortecimento para realização da analise modal
 	void MountElementLoads();						//Monta carregamentos associados ao elemento
 	void MountDamping(bool update_rayleigh);		//Monta a matriz de amortecimento
 	void TransformMatrix();							//Monta matriz de transformação de coordenadas
 	void MountGlobal();								//Preenche a contribuição do elemento nas matrizes globais
 	void MountSeaCurrentLoading();					//Monta carregamento de correnteza/amortecimento hidro (Morison)
-	void SaveLagrange();							//Salva variáveis nos pontos de Gauss úteis para descrição lagrangiana atualizada
+	void SaveLagrange();							//Salva variaveis nos pontos de Gauss uteis para descrição lagrangiana atualizada
 	
-	void PreCalc();									//Pré-cálculo de variáveis que é feito uma única vez no início
+	void PreCalc();									//Pre-calculo de variaveis que e feito uma unica vez no inicio
 	void MountDyn();								//Montagens - Newmark
-	void MountDynModal();							//Montagens para análise modal - inserção da matriz de massa e amortecimento na matriz de rigidez para posterior montagem global
+	void MountDynModal();							//Montagens para analise modal - inserção da matriz de massa e amortecimento na matriz de rigidez para posterior montagem global
 	void Zeros();									//Limpa as matrizes internas do elemento
 
 	Matrix I3;
@@ -81,7 +81,7 @@ public:
 	int pipe_sec;
 	double rho_len;
 
-	//Variáveis para cálculo de steps
+	//Variaveis para calculo de steps
 	int t1, t2;
 	double load_multiplier, l_factor, mult;
 
@@ -89,12 +89,12 @@ public:
 	double* N2;
 	Matrix** N;		//Matriz das funções de forma
 
-	//Variáveis para funções geradas no AceGen
-	double C1t;							//variáveis auxiliares para cálculo do Morison
+	//Variaveis para funções geradas no AceGen
+	double C1t;							//variaveis auxiliares para calculo do Morison
 	double C1n;
-	double rho_adt;						//variáveis auxiliares para cálculo da massa adicional
+	double rho_adt;						//variaveis auxiliares para calculo da massa adicional
 	double rho_adn;
-	double temp_v[2000];				//variável temporária para cálculos internos
+	double temp_v[2000];				//variavel temporaria para calculos internos
 	void EvaluateMorisonContributions(double* v, double(*a4), double
 		(*a5), double(*a6), double(*C1t), double(*C1n), double* dUinf, double* xA, double* xB
 		, double* uA, double* uB, double* ud, double* dui, double* ddui

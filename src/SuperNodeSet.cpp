@@ -1,7 +1,7 @@
 #include "SuperNodeSet.h"
 
 #include"Database.h"
-//Variáveis globais
+//Variaveis globais
 extern
 Database db;
 
@@ -56,7 +56,7 @@ bool SuperNodeSet::Read(FILE *f)
 		list = true;
 		for (int i = 0; i < n_super_nodes; i++)
 		{
-			fscanf(f, "%s", s);//Leitura do número do nó
+			fscanf(f, "%s", s);//Leitura do numero do nó
 			super_node_list[i] = atoi(s);
 		}
 	}

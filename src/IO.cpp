@@ -106,7 +106,7 @@
 #include "TranslationalJoint.h"
 #include "NodalConstraintDOF.h"
 
-//Partículas
+//Particulas
 #include "Particle.h"
 #include "Sphere.h"
 #include "Polyhedron.h"
@@ -334,7 +334,7 @@ bool IO::ReadFile(int argc, char* argv[])
 			read = false;
 			db.elements_exist = true;
 		}
-		///////////////////////////Leitura das partículas////////////////////////////
+		///////////////////////////Leitura das particulas////////////////////////////
 		if (!strcmp(s, "Particles") && read == true)
 		{
 			if (!ReadParticles(f))
@@ -390,7 +390,7 @@ bool IO::ReadFile(int argc, char* argv[])
 			read = false;
 			db.CS_exist = true;
 		}
-		///////////////////////////Leitura das propriedades de corpo rígido/////////////////////
+		///////////////////////////Leitura das propriedades de corpo rigido/////////////////////
 		if (!strcmp(s, "RigidBodyData") && read == true)
 		{
 			if (!ReadRigidBodyData(f))
@@ -542,7 +542,7 @@ bool IO::ReadFile(int argc, char* argv[])
 			read = false;
 			db.section_details_exist = true;
 		}
-		///////////////////////////Leitura dos dados aerodinâmicos//////////////////
+		///////////////////////////Leitura dos dados aerodinamicos//////////////////
 		if (!strcmp(s, "AerodynamicData") && read == true)
 		{
 			if (!ReadAerodynamicData(f))
@@ -663,7 +663,7 @@ bool IO::ReadFile(int argc, char* argv[])
 		//Se read == true nesse ponto, trata-se de palavra chave não conhecida
 		if (read == true)
 		{
-			//Chama leitura de possível comentário no input file - retorna true se houve leitura de comentário - false se não houve
+			//Chama leitura de possivel comentario no input file - retorna true se houve leitura de comentario - false se não houve
 			read = ReadComment(f, s, 10000);
 			if (read == false)
 			{
@@ -673,7 +673,7 @@ bool IO::ReadFile(int argc, char* argv[])
 			
 		}
 		else
-			strcpy(last_key, s);//Copia a palavra chave para saber qual foi a última lida
+			strcpy(last_key, s);//Copia a palavra chave para saber qual foi a ultima lida
 		
 	}
 	fclose(f);
@@ -684,37 +684,37 @@ bool IO::ReadFile(int argc, char* argv[])
 	return true;
 }
 
-//Lê comentários - retorna o stream no ponto após leitura de comentário
+//Lê comentarios - retorna o stream no ponto após leitura de comentario
 bool ReadComment(FILE *f, char* s, int dim_char)
 {
 	bool read = false;
-	///////////////////////////Comentário///////////////////////////////////////
-	if (s[0] == '/' && s[1] == '/')//linha de comentário
+	///////////////////////////Comentario///////////////////////////////////////
+	if (s[0] == '/' && s[1] == '/')//linha de comentario
 	{
-		//Leitura até encontrar o caracter de fim de linha
+		//Leitura ate encontrar o caracter de fim de linha
 		while (s[0] != '\n')
 			fscanf(f, "%c", s);
 		read = true;
 	}
-	if (s[0] == '/' && s[1] == '*')//bloco de comentário
+	if (s[0] == '/' && s[1] == '*')//bloco de comentario
 	{
-		//Leitura até encontrar o fim do comentário
+		//Leitura ate encontrar o fim do comentario
 		char c1[1];
 		char c2[1];
 		bool exit = false;
 		//Busca pelo fim do bloco em duas fases
-		//1) No próprio texto já lido salvo em "s"
+		//1) No próprio texto ja lido salvo em "s"
 		for (int i = 2; i < 999; i++)
 		{
 			if (s[i] == '*' && s[i + 1] == '/')
 				exit = true;
 		}
-		//2) Fora do próprio texto já lido. Busca de caracter em caracter até encontrar o fim do comentário
+		//2) Fora do próprio texto ja lido. Busca de caracter em caracter ate encontrar o fim do comentario
 		while (exit == false)
 		{
 			//Leitura do primeiro caracter
 			fscanf(f, "%c", c1);
-			//Se encontrou o primeiro caracter da saída do comentário - tenta verificar o segundo caracter para confirmar saída
+			//Se encontrou o primeiro caracter da saida do comentario - tenta verificar o segundo caracter para confirmar saida
 			if (c1[0] == '*')
 			{
 				//Salva a posição (stream) - antes da leitura do segundo caractere
@@ -732,10 +732,10 @@ bool ReadComment(FILE *f, char* s, int dim_char)
 	return read;
 }
 
-//Tenta ler comentários. Retorna o stream no ponto em que a próxima leitura não é um comentário
+//Tenta ler comentarios. Retorna o stream no ponto em que a próxima leitura não e um comentario
 void TryComment(FILE *f)
 {
-	bool comment = true;//flag que indica que leu comentário na última tentativa
+	bool comment = true;//flag que indica que leu comentario na ultima tentativa
 	char s[10000];
 	while (comment == true)
 	{
@@ -746,7 +746,7 @@ void TryComment(FILE *f)
 		fscanf(f, "%s", s);
 		comment = ReadComment(f, s, 10000);
 		if (comment == false)
-			fsetpos(f, &pos);//volta à posição original do stream - não leu comentário
+			fsetpos(f, &pos);//volta a posição original do stream - não leu comentario
 	}
 	
 }
@@ -904,18 +904,18 @@ bool IO::ReadSolutions(FILE *f)
 			if (!db.solution[i]->Read(f))
 			{
 				printf("Error reading Solution %d.\n", i + 1);
-				db.number_solutions = i + 1;	//altera o número de instâncias alocadas - evita erro no destrutor
+				db.number_solutions = i + 1;	//altera o numero de instancias alocadas - evita erro no destrutor
 				return false;
 			}
 		}
 		else
 		{
 			printf("Error reading Solution %d or %d.\n", i, i + 1);
-			db.number_solutions = i;	//altera o número de instâncias alocadas - evita erro no destrutor
+			db.number_solutions = i;	//altera o numero de instancias alocadas - evita erro no destrutor
 			return false;
 		}
 	}
-	db.EvaluateStartEndTimes();	//Preenche dados de start e end time das soluções - é importante fazer esse preenchimento aqui e não no PreCalc(), pois a função de verificar erros é chamada na sequência imediata, antes da PreCalc()
+	db.EvaluateStartEndTimes();	//Preenche dados de start e end time das soluções - e importante fazer esse preenchimento aqui e não no PreCalc(), pois a função de verificar erros e chamada na sequência imediata, antes da PreCalc()
 
 	return true;
 }
@@ -935,7 +935,7 @@ bool IO::ReadNodes(FILE *f)
 		if (!db.nodes[i]->Read(f))						//Leitura dos dados do nó
 		{
 			printf("Error reading Node %d.\n",i+1);
-			db.number_nodes = i + 1;	//altera o número de instâncias alocadas - evita erro no destrutor
+			db.number_nodes = i + 1;	//altera o numero de instancias alocadas - evita erro no destrutor
 			return false;
 		}
 	}
@@ -957,7 +957,7 @@ bool IO::ReadPoints(FILE *f)
 		if (!db.points[i]->Read(f))		//Leitura dos dados do ponto
 		{
 			printf("Error reading Point %d.\n", i + 1);
-			db.number_points = i + 1;	//altera o número de instâncias alocadas - evita erro no destrutor
+			db.number_points = i + 1;	//altera o numero de instancias alocadas - evita erro no destrutor
 			return false;
 		}
 	}
@@ -979,7 +979,7 @@ bool IO::ReadArcs(FILE *f)
 		if (!db.arcs[i]->Read(f))		//Leitura dos dados do ponto
 		{
 			printf("Error reading Arc %d.\n", i + 1);
-			db.number_arcs = i + 1;	//altera o número de instâncias alocadas - evita erro no destrutor
+			db.number_arcs = i + 1;	//altera o numero de instancias alocadas - evita erro no destrutor
 			return false;
 		}
 	}
@@ -1059,14 +1059,14 @@ bool IO::ReadElements(FILE *f)
 			if (!db.elements[i]->Read(f))
 			{
 				printf("Error reading Element %d.\n", i + 1);
-				db.number_elements = i + 1;	//altera o número de instâncias alocadas - evita erro no destrutor
+				db.number_elements = i + 1;	//altera o numero de instancias alocadas - evita erro no destrutor
 				return false;
 			}
 		}
 		else
 		{
 			printf("Error reading Element %d or %d.\n", i, i + 1);
-			db.number_elements = i;	//altera o número de instâncias alocadas - evita erro no destrutor
+			db.number_elements = i;	//altera o numero de instancias alocadas - evita erro no destrutor
 			return false;
 		}
 	}
@@ -1087,28 +1087,28 @@ bool IO::ReadParticles(FILE *f)
 		TryComment(f);
 		particle_OK = false;
 		fscanf(f, "%s", s);
-		//Alocação da partícula "Sphere"
+		//Alocação da particula "Sphere"
 		if (!strcmp(s, "Sphere"))
 		{
 			db.particles[i] = new Sphere();
 			particle_OK = true;
 		}
 
-		//Alocação da partícula "Polyhedron"
+		//Alocação da particula "Polyhedron"
 		if (!strcmp(s, "Polyhedron"))
 		{
 			db.particles[i] = new Polyhedron();
 			particle_OK = true;
 		}
 
-		//Alocação da partícula "NURBS"
+		//Alocação da particula "NURBS"
 		if (!strcmp(s, "NURBSParticle"))
 		{
 			db.particles[i] = new NURBSParticle();
 			particle_OK = true;
 		}
 
-		//Alocação da partícula "VEMPolyhedron"
+		//Alocação da particula "VEMPolyhedron"
 		if (!strcmp(s, "VEMPolyhedron"))
 		{
 			db.particles[i] = new VEMPolyhedron();
@@ -1121,14 +1121,14 @@ bool IO::ReadParticles(FILE *f)
 			if (!db.particles[i]->Read(f))
 			{
 				printf("Error reading Particle %d.\n", i + 1);
-				db.number_particles = i + 1;	//altera o número de instâncias alocadas - evita erro no destrutor
+				db.number_particles = i + 1;	//altera o numero de instancias alocadas - evita erro no destrutor
 				return false;
 			}
 		}
 		else
 		{
 			printf("Error reading Particle %d or %d.\n", i, i + 1);
-			db.number_particles = i;	//altera o número de instâncias alocadas - evita erro no destrutor
+			db.number_particles = i;	//altera o numero de instancias alocadas - evita erro no destrutor
 			return false;
 		}
 	}
@@ -1151,7 +1151,7 @@ bool IO::ReadInitialConditions(FILE *f)
 		if (!db.IC[i]->Read(f))
 		{
 			printf("Error reading Initial Condition %d.\n", i + 1);
-			db.number_IC = i + 1;	//altera o número de instâncias alocadas - evita erro no destrutor
+			db.number_IC = i + 1;	//altera o numero de instancias alocadas - evita erro no destrutor
 			return false;
 		}
 	}
@@ -1197,14 +1197,14 @@ bool IO::ReadMaterials(FILE *f)
 			if (!db.materials[i]->Read(f))
 			{
 				printf("Error reading Material %d.\n", i + 1);
-				db.number_materials = i + 1;	//altera o número de instâncias alocadas - evita erro no destrutor
+				db.number_materials = i + 1;	//altera o numero de instancias alocadas - evita erro no destrutor
 				return false;
 			}
 		}
 		else
 		{
 			printf("Error reading Material %d or %d.\n",i, i + 1);
-			db.number_materials = i;	//altera o número de instâncias alocadas - evita erro no destrutor
+			db.number_materials = i;	//altera o numero de instancias alocadas - evita erro no destrutor
 			return false;
 		}
 	}
@@ -1266,14 +1266,14 @@ bool IO::ReadSections(FILE *f)
 			if (!db.sections[i]->Read(f))
 			{
 				printf("Error reading Section %d.\n", i + 1);
-				db.number_sections = i + 1;	//altera o número de instâncias alocadas - evita erro no destrutor
+				db.number_sections = i + 1;	//altera o numero de instancias alocadas - evita erro no destrutor
 				return false;
 			}
 		}
 		else
 		{
 			printf("Error reading Section %d or %d.\n",i, i + 1);
-			db.number_sections = i;	//altera o número de instâncias alocadas - evita erro no destrutor
+			db.number_sections = i;	//altera o numero de instancias alocadas - evita erro no destrutor
 			return false;
 		}
 	}
@@ -1295,7 +1295,7 @@ bool IO::ReadPipeSections(FILE *f)
 		if (!db.pipe_sections[i]->Read(f))
 		{
 			printf("Error reading Pipe Section %d.\n", i + 1);
-			db.number_pipe_sections = i + 1;	//altera o número de instâncias alocadas - evita erro no destrutor
+			db.number_pipe_sections = i + 1;	//altera o numero de instancias alocadas - evita erro no destrutor
 			return false;
 		}
 	}
@@ -1333,14 +1333,14 @@ bool IO::ReadShellSections(FILE *f)
 			if (!db.shell_sections[i]->Read(f))
 			{
 				printf("Error reading Shell Section %d.\n", i + 1);
-				db.number_shell_sections = i + 1;	//altera o número de instâncias alocadas - evita erro no destrutor
+				db.number_shell_sections = i + 1;	//altera o numero de instancias alocadas - evita erro no destrutor
 				return false;
 			}
 		}
 		else
 		{
 			printf("Error reading Shell Section %d or %d.\n", i, i + 1);
-			db.number_shell_sections = i;	//altera o número de instâncias alocadas - evita erro no destrutor
+			db.number_shell_sections = i;	//altera o numero de instancias alocadas - evita erro no destrutor
 			return false;
 		}
 	}
@@ -1362,7 +1362,7 @@ bool IO::ReadCoordinateSystems(FILE *f)
 		if (!db.CS[i]->Read(f))
 		{
 			printf("Error reading CS %d.\n", i + 1);
-			db.number_CS = i + 1;	//altera o número de instâncias alocadas - evita erro no destrutor
+			db.number_CS = i + 1;	//altera o numero de instancias alocadas - evita erro no destrutor
 			return false;
 		}
 	}
@@ -1385,7 +1385,7 @@ bool IO::ReadRigidBodyData(FILE *f)
 		if (!db.RB_data[i]->Read(f))
 		{
 			printf("Error reading Rigid Body Data %d.\n", i + 1);
-			db.number_RB_data = i + 1;	//altera o número de instâncias alocadas - evita erro no destrutor
+			db.number_RB_data = i + 1;	//altera o numero de instancias alocadas - evita erro no destrutor
 			return false;
 		}
 	}
@@ -1454,14 +1454,14 @@ bool IO::ReadAnalyticalSurfaces(FILE *f)
 			if (!db.analytical_surfaces[i]->Read(f))
 			{
 				printf("Error reading Analytical Surface %d.\n", i + 1);
-				db.number_analytical_surfaces = i + 1;	//altera o número de instâncias alocadas - evita erro no destrutor
+				db.number_analytical_surfaces = i + 1;	//altera o numero de instancias alocadas - evita erro no destrutor
 				return false;
 			}
 		}
 		else
 		{
 			printf("Error reading Analytical Surface %d or %d.\n",i, i + 1);
-			db.number_analytical_surfaces = i;	//altera o número de instâncias alocadas - evita erro no destrutor
+			db.number_analytical_surfaces = i;	//altera o numero de instancias alocadas - evita erro no destrutor
 			return false;
 		}
 		
@@ -1534,14 +1534,14 @@ bool IO::ReadSurfaces(FILE *f)
 			if (!db.surfaces[i]->Read(f))
 			{
 				printf("Error reading Surface %d.\n", i + 1);
-				db.number_surfaces = i + 1;	//altera o número de instâncias alocadas - evita erro no destrutor
+				db.number_surfaces = i + 1;	//altera o numero de instancias alocadas - evita erro no destrutor
 				return false;
 			}
 		}
 		else
 		{
 			printf("Error reading Surface %d or %d.\n", i, i + 1);
-			db.number_surfaces = i;	//altera o número de instâncias alocadas - evita erro no destrutor
+			db.number_surfaces = i;	//altera o numero de instancias alocadas - evita erro no destrutor
 			return false;
 		}
 
@@ -1564,7 +1564,7 @@ bool IO::ReadSplines(FILE *f)
 		if (!db.splines[i]->Read(f))						//Leitura dos dados do nó
 		{
 			printf("Error reading Spline %d.\n", i + 1);
-			db.number_splines = i + 1;	//altera o número de instâncias alocadas - evita erro no destrutor
+			db.number_splines = i + 1;	//altera o numero de instancias alocadas - evita erro no destrutor
 			return false;
 		}
 	}
@@ -1589,7 +1589,7 @@ bool IO::ReadLineRegions(FILE *f)
 		if (!db.line_regions[i]->Read(f))
 		{
 			printf("Error reading Line Region %d.\n", i + 1);
-			db.number_line_regions = i + 1;	//altera o número de instâncias alocadas - evita erro no destrutor
+			db.number_line_regions = i + 1;	//altera o numero de instancias alocadas - evita erro no destrutor
 			return false;
 		}
 	}
@@ -1613,7 +1613,7 @@ bool IO::ReadSurfaceRegions(FILE *f)
 		if (!db.surface_regions[i]->Read(f))
 		{
 			printf("Error reading Surface Region %d.\n", i + 1);
-			db.number_surface_regions = i + 1;	//altera o número de instâncias alocadas - evita erro no destrutor
+			db.number_surface_regions = i + 1;	//altera o numero de instancias alocadas - evita erro no destrutor
 			return false;
 		}
 	}
@@ -1671,14 +1671,14 @@ bool IO::ReadContacts(FILE *f)
 			if (!db.contacts[i]->Read(f))
 			{
 				printf("Error reading Contact %d.\n", i + 1);
-				db.number_contacts = i + 1;	//altera o número de instâncias alocadas - evita erro no destrutor
+				db.number_contacts = i + 1;	//altera o numero de instancias alocadas - evita erro no destrutor
 				return false;
 			}
 		}
 		else
 		{
 			printf("Error reading Contact %d or %d.\n",i, i + 1);
-			db.number_contacts = i;	//altera o número de instâncias alocadas - evita erro no destrutor
+			db.number_contacts = i;	//altera o numero de instancias alocadas - evita erro no destrutor
 			return false;
 		}
 		
@@ -1704,7 +1704,7 @@ bool IO::ReadNodeSets(FILE *f)
 		if (!db.node_sets[i]->Read(f))
 		{
 			printf("Error reading Node Set %d.\n", i + 1);
-			db.number_node_sets = i + 1;	//altera o número de instâncias alocadas - evita erro no destrutor
+			db.number_node_sets = i + 1;	//altera o numero de instancias alocadas - evita erro no destrutor
 			return false;
 		}
 	}
@@ -1728,7 +1728,7 @@ bool IO::ReadSuperNodeSets(FILE *f)
 		if (!db.super_node_sets[i]->Read(f))
 		{
 			printf("Error reading Super Node Set %d.\n", i + 1);
-			db.number_node_sets = i + 1;	//altera o número de instâncias alocadas - evita erro no destrutor
+			db.number_node_sets = i + 1;	//altera o numero de instancias alocadas - evita erro no destrutor
 			return false;
 		}
 	}
@@ -1751,7 +1751,7 @@ bool IO::ReadSurfaceSets(FILE *f)
 		if (!db.surface_sets[i]->Read(f))
 		{
 			printf("Error reading Surface Set %d.\n", i + 1);
-			db.number_surface_sets = i + 1;	//altera o número de instâncias alocadas - evita erro no destrutor
+			db.number_surface_sets = i + 1;	//altera o numero de instancias alocadas - evita erro no destrutor
 			return false;
 		}
 	}
@@ -1774,7 +1774,7 @@ bool IO::ReadElementSets(FILE *f)
 		if (!db.element_sets[i]->Read(f))
 		{
 			printf("Error reading Element Set %d.\n", i + 1);
-			db.number_element_sets = i + 1;	//altera o número de instâncias alocadas - evita erro no destrutor
+			db.number_element_sets = i + 1;	//altera o numero de instancias alocadas - evita erro no destrutor
 			return false;
 		}
 	}
@@ -1832,14 +1832,14 @@ bool IO::ReadLoads(FILE *f)
 			if (!db.loads[i]->Read(f))
 			{
 				printf("Error reading Load %d.\n", i + 1);
-				db.number_loads = i + 1;			//altera o número de instâncias alocadas - evita erro no destrutor
+				db.number_loads = i + 1;			//altera o numero de instancias alocadas - evita erro no destrutor
 				return false;
 			}
 		}
 		else
 		{
 			printf("Error reading Load %d or %d.\n", i, i + 1);
-			db.number_loads = i;					//altera o número de instâncias alocadas - evita erro no destrutor
+			db.number_loads = i;					//altera o numero de instancias alocadas - evita erro no destrutor
 			return false;
 		}
 	}
@@ -1879,14 +1879,14 @@ bool IO::ReadDisplacements(FILE *f)
 			if (!db.displacements[i]->Read(f))
 			{
 				printf("Error reading Displacement %d.\n", i + 1);
-				db.number_displacements = i + 1;			//altera o número de instâncias alocadas - evita erro no destrutor
+				db.number_displacements = i + 1;			//altera o numero de instancias alocadas - evita erro no destrutor
 				return false;
 			}
 		}
 		else
 		{
 			printf("Error reading Displacement %d or %d.\n", i, i + 1);
-			db.number_displacements = i;					//altera o número de instâncias alocadas - evita erro no destrutor
+			db.number_displacements = i;					//altera o numero de instancias alocadas - evita erro no destrutor
 			return false;
 		}
 	}
@@ -1927,14 +1927,14 @@ bool IO::ReadConstraints(FILE *f)
 			if (!db.constraints[i]->Read(f))
 			{
 				printf("Error reading Constraint %d.\n", i + 1);
-				db.number_constraints = i + 1;	//altera o número de instâncias alocadas - evita erro no destrutor
+				db.number_constraints = i + 1;	//altera o numero de instancias alocadas - evita erro no destrutor
 				return false;
 			}
 		}
 		else
 		{
 			printf("Error reading Constraint %d or %d.\n", i, i + 1);
-			db.number_constraints = i;	//altera o número de instâncias alocadas - evita erro no destrutor
+			db.number_constraints = i;	//altera o numero de instancias alocadas - evita erro no destrutor
 			return false;
 		}
 	}
@@ -2005,14 +2005,14 @@ bool IO::ReadSpecialConstraints(FILE *f)
 			if (!db.special_constraints[i]->Read(f))
 			{
 				printf("Error reading Special Constraint %d.\n", i + 1);
-				db.number_special_constraints = i + 1;	//altera o número de instâncias alocadas - evita erro no destrutor
+				db.number_special_constraints = i + 1;	//altera o numero de instancias alocadas - evita erro no destrutor
 				return false;
 			}
 		}
 		else
 		{
 			printf("Error reading Special Constraint %d or %d.\n", i, i + 1);
-			db.number_special_constraints = i;	//altera o número de instâncias alocadas - evita erro no destrutor
+			db.number_special_constraints = i;	//altera o numero de instancias alocadas - evita erro no destrutor
 			return false;
 		}
 	}
@@ -2049,14 +2049,14 @@ bool IO::ReadSectionDetails(FILE *f)
 			if (!db.section_details[i]->Read(f))
 			{
 				printf("Error reading Section Details %d.\n", i + 1);
-				db.number_section_details = i + 1;	//altera o número de instâncias alocadas - evita erro no destrutor
+				db.number_section_details = i + 1;	//altera o numero de instancias alocadas - evita erro no destrutor
 				return false;
 			}
 		}
 		else
 		{
 			printf("Error reading Section Details %d or %d.\n", i, i + 1);
-			db.number_section_details = i;	//altera o número de instâncias alocadas - evita erro no destrutor
+			db.number_section_details = i;	//altera o numero de instancias alocadas - evita erro no destrutor
 			return false;
 		}
 
@@ -2080,7 +2080,7 @@ bool IO::ReadAerodynamicData(FILE *f)
 		if (!db.aerodynamic_data[i]->Read(f))		//Leitura dos dados do aerodynamicdata
 		{
 			printf("Error reading AerodynamicData %d.\n", i + 1);
-			db.number_aerodynamicdata = i + 1;	//altera o número de instâncias alocadas - evita erro no destrutor
+			db.number_aerodynamicdata = i + 1;	//altera o numero de instancias alocadas - evita erro no destrutor
 			return false;
 		}
 	}
@@ -2119,14 +2119,14 @@ bool IO::ReadCADData(FILE *f)
 			if (!db.cad_data[i]->Read(f))
 			{
 				printf("Error reading CADData %d.\n", i + 1);
-				db.number_cad_data = i + 1;	//altera o número de instâncias alocadas - evita erro no destrutor
+				db.number_cad_data = i + 1;	//altera o numero de instancias alocadas - evita erro no destrutor
 				return false;
 			}
 		}
 		else
 		{
 			printf("Error reading CADData %d or %d.\n", i, i + 1);
-			db.number_cad_data = i;	//altera o número de instâncias alocadas - evita erro no destrutor
+			db.number_cad_data = i;	//altera o numero de instancias alocadas - evita erro no destrutor
 			return false;
 		}
 	}
@@ -2164,14 +2164,14 @@ bool IO::ReadContactInterfaces(FILE *f)
 			if (!db.contactinterfaces[i]->Read(f))
 			{
 				printf("Error reading ContactInterface %d.\n", i + 1);
-				db.number_contactinterfaces = i + 1;	//altera o número de instâncias alocadas - evita erro no destrutor
+				db.number_contactinterfaces = i + 1;	//altera o numero de instancias alocadas - evita erro no destrutor
 				return false;
 			}
 		}
 		else
 		{
 			printf("Error reading ContactInterface %d or %d.\n", i, i + 1);
-			db.number_contactinterfaces = i;	//altera o número de instâncias alocadas - evita erro no destrutor
+			db.number_contactinterfaces = i;	//altera o numero de instancias alocadas - evita erro no destrutor
 			return false;
 		}
 	}
@@ -2216,14 +2216,14 @@ bool IO::ReadGeometries(FILE *f)
 			if (!db.geometries[i]->Read(f))
 			{
 				printf("Error reading Geometry %d.\n", i + 1);
-				db.number_geometries = i + 1;	//altera o número de instâncias alocadas - evita erro no destrutor
+				db.number_geometries = i + 1;	//altera o numero de instancias alocadas - evita erro no destrutor
 				return false;
 			}
 		}
 		else
 		{
 			printf("Error reading Geometry %d or %d.\n", i, i + 1);
-			db.number_geometries = i;	//altera o número de instâncias alocadas - evita erro no destrutor
+			db.number_geometries = i;	//altera o numero de instancias alocadas - evita erro no destrutor
 			return false;
 		}
 	}
@@ -2245,7 +2245,7 @@ bool IO::ReadBodyGeometries(FILE *f)
 		if (!db.body_geometries[i]->Read(f))			//Leitura dos dados
 		{
 			printf("Error reading BodyGeometry %d.\n", i + 1);
-			db.number_body_geometries = i + 1;					//altera o número de instâncias alocadas - evita erro no destrutor
+			db.number_body_geometries = i + 1;					//altera o numero de instancias alocadas - evita erro no destrutor
 			return false;
 		}
 	}
@@ -2277,14 +2277,14 @@ bool IO::ReadBoundaries(FILE *f)
 			if (!db.boundaries[i]->Read(f))
 			{
 				printf("Error reading Boundary %d.\n", i + 1);
-				db.number_boundaries = i + 1;	//altera o número de instâncias alocadas - evita erro no destrutor
+				db.number_boundaries = i + 1;	//altera o numero de instancias alocadas - evita erro no destrutor
 				return false;
 			}
 		}
 		else
 		{
 			printf("Error reading Boundary %d or %d.\n", i, i + 1);
-			db.number_boundaries = i;	//altera o número de instâncias alocadas - evita erro no destrutor
+			db.number_boundaries = i;	//altera o numero de instancias alocadas - evita erro no destrutor
 			return false;
 		}
 	}
@@ -2399,7 +2399,7 @@ bool IO::ReadSuperNodes(FILE *f)
 		if (!db.super_nodes[i]->Read(f))						//Leitura dos dados do super node
 		{
 			printf("Error reading Super Node %d.\n", i + 1);
-			db.number_super_nodes = i + 1;	//altera o número de instâncias alocadas - evita erro no destrutor
+			db.number_super_nodes = i + 1;	//altera o numero de instancias alocadas - evita erro no destrutor
 			return false;
 		}
 	}
@@ -2447,7 +2447,7 @@ void IO::WriteElements(FILE *f)
 }
 void IO::WriteParticles(FILE *f)
 {
-	///////////////////////////Escrita das partículas///////////////////////////
+	///////////////////////////Escrita das particulas///////////////////////////
 	fprintf(f, "\nParticles\t%d\n", db.number_particles);
 	for (int i = 0; i < db.number_particles; i++)
 		db.particles[i]->Write(f);			//Escrita dos dados

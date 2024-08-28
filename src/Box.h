@@ -17,7 +17,7 @@ public:
 
 	double Get_Diagonal_Size();
 
-	void SetVertices(double* e_x, double* e_y, double* e_z);					//seta vértices e prepara retorno de máximos e mínimos
+	void SetVertices(double* e_x, double* e_y, double* e_z);					//seta vertices e prepara retorno de maximos e minimos
 
 protected:
 	//Coordinates of 8 vertices of box
@@ -25,7 +25,7 @@ protected:
 	double y[8];
 	double z[8];
 
-	double center[3];	//Coordenadas do centro geometrico dos 8 vértices do bounding box
+	double center[3];	//Coordenadas do centro geometrico dos 8 vertices do bounding box
 
 	double xmax, ymax, zmax, xmin, ymin, zmin;
 };

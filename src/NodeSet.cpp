@@ -4,7 +4,7 @@
 #include "Matrix.h"
 
 #include"Database.h"
-//Variáveis globais
+//Variaveis globais
 extern
 Database db;
 
@@ -59,7 +59,7 @@ bool NodeSet::Read(FILE *f)
 		list = true;
 		for (int i = 0; i < n_nodes; i++)
 		{
-			fscanf(f, "%s", s);//Leitura do número do nó
+			fscanf(f, "%s", s);//Leitura do numero do nó
 			node_list[i] = atoi(s);
 		}
 	}
@@ -107,7 +107,7 @@ void NodeSet::Write(FILE *f)
 
 void NodeSet::WriteMonitor(FILE *f, bool first_record, double time)
 {
-	//Variáveis do NodeSet para Monitor
+	//Variaveis do NodeSet para Monitor
 	Matrix coordinates(3);
 	Matrix rot_euler(3);
 	Matrix force(3);
@@ -116,7 +116,7 @@ void NodeSet::WriteMonitor(FILE *f, bool first_record, double time)
 	Matrix temp_coordinates(3);
 	Matrix temp_force(3);
 	//Percorre todos os nós de dentro do "set", salvando alguns resultados
-	//Cálculo do ângulo de rotação
+	//Calculo do angulo de rotação
 	int current_node;
 	Node *tempnode;
 	
@@ -133,7 +133,7 @@ void NodeSet::WriteMonitor(FILE *f, bool first_record, double time)
 		rot_euler(1, 0) = rot_euler(1, 0) + tempnode->copy_rot_euler[1];
 		rot_euler(2, 0) = rot_euler(2, 0) + tempnode->copy_rot_euler[2];
 	}
-	//Posição média dos nós da lista - esse será o pólo para o momento a ser transportado no monitor
+	//Posição media dos nós da lista - esse sera o pólo para o momento a ser transportado no monitor
 	coordinates = (1.0 / n_nodes)*coordinates;
 	rot_euler = (1.0 / n_nodes)*rot_euler;
 
@@ -158,7 +158,7 @@ void NodeSet::WriteMonitor(FILE *f, bool first_record, double time)
 			if (tempnode->GLs[j] > 0 && tempnode->active_GL[j] == 1)	//Se o grau de liberdade for livre e ativo
 				(*tempnode->load)(j, 0) = db.global_I_A(+tempnode->GLs[j] - 1, 0);
 		}
-		//Conversão do pseudo-momento para momento (parâmetros de rotação de Rodrigues)
+		//Conversão do pseudo-momento para momento (parametros de rotação de Rodrigues)
 		for (int j = 0; j < 3; j++)
 			(*tempnode->moment)(j, 0) = (*tempnode->load)(j + 3, 0);
 		//Calculando o operador Xi
@@ -179,7 +179,7 @@ void NodeSet::WriteMonitor(FILE *f, bool first_record, double time)
 			
 		//Atualização com contribuição do momento do nó atual
 		//Transporte
-		temp_vec = cross(temp_coordinates - coordinates, temp_force);	//binário de transporte
+		temp_vec = cross(temp_coordinates - coordinates, temp_force);	//binario de transporte
 		for (int j = 0; j < 3; j++)
 			moment(j, 0) = moment(j, 0) + (*tempnode->load)(j + 3, 0) + temp_vec(j,0);
 

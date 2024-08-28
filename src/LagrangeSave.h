@@ -7,7 +7,7 @@ public:
 	LagrangeSave(void);
 	~LagrangeSave(void);
 
-	//Variáveis salvas nos pontos de Gauss do elementos de viga (para serem utilizadas posteriormente sem necessidade de interpolação
+	//Variaveis salvas nos pontos de Gauss do elementos de viga (para serem utilizadas posteriormente sem necessidade de interpolação
 	Matrix** Q_i;					//Tensor rotação no instante i
 	Matrix** alpha_i;				//Vetor rotação no instante i 
 	Matrix** d_alpha_i;				//Derivada temporal do vetor rotação no instante i

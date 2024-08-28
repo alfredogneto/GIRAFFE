@@ -10,12 +10,12 @@ public:
 	BodyGeometry();
 	~BodyGeometry();
 
-	int n_items;			//número de items
+	int n_items;			//numero de items
 	int* list_items;		//lista 
-	int number;				//número de referência
+	int number;				//numero de referência
 
-	bool sequence;			//true se é do tipo sequence
-	bool list;				//true se é do tipo list
+	bool sequence;			//true se e do tipo sequence
+	bool list;				//true se e do tipo list
 
 	//Para o caso de sequence
 	int initial;
@@ -34,7 +34,7 @@ public:
 	void PreCalc();
 	void UpdateVariables();
 	void UpdateBoundingVolumes();				//Updates bounding volumes
-	void SaveLagrange();						//Salva variáveis
+	void SaveLagrange();						//Salva variaveis
 
 	double mass;								//Massa do Body - para computar contact damping
 };

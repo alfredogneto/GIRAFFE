@@ -6,7 +6,7 @@
 #include "Node.h"
 #include "CADData.h"
 #include"Database.h"
-//Variáveis globais
+//Variaveis globais
 extern
 Database db;
 #define PI 3.1415926535897932384626433832795
@@ -49,7 +49,7 @@ bool RigidBodyData::Read(FILE *f)
 	}
 	else
 		return false;
-	//Tensor de inércia
+	//Tensor de inercia
 	fscanf(f, "%s", s);
 	if (!strcmp(s, "J11"))
 	{
@@ -147,7 +147,7 @@ void RigidBodyData::PreCalc()
 	
 }
 
-//Plota corpo rígido - formato XML VTK - recebe o número do nó que é o pólo e o sistema de coordenadas de referência (que é atualizado de acordo com rotações sofridas pelo nó)
+//Plota corpo rigido - formato XML VTK - recebe o numero do nó que e o pólo e o sistema de coordenadas de referência (que e atualizado de acordo com rotações sofridas pelo nó)
 void RigidBodyData::WriteVTK_XMLRender(FILE *f, int pole_node, int cs)
 {
 	if (CAD_entered == true)
@@ -169,14 +169,14 @@ void RigidBodyData::WriteVTK_XMLRender(FILE *f, int pole_node, int cs)
 		I3(0, 0) = 1.0;
 		I3(1, 1) = 1.0;
 		I3(2, 2) = 1.0;
-		//Cálculo do Q_alpha - rotação do slave node
+		//Calculo do Q_alpha - rotação do slave node
 		alpha(0, 0) = db.nodes[pole_node - 1]->copy_coordinates[3];
 		alpha(1, 0) = db.nodes[pole_node - 1]->copy_coordinates[4];
 		alpha(2, 0) = db.nodes[pole_node - 1]->copy_coordinates[5];
 		double alpha_escalar = norm(alpha);
 		double g = 4.0 / (4.0 + alpha_escalar * alpha_escalar);
 		Q_alpha = I3 + g * (skew(alpha) + 0.5*skew(alpha)*skew(alpha));
-		Q = Q_alpha * Q;	//Aplicar o operador Q para escrever os pontos no sistema de coordenadas global - rotação de corpo rígido - entrar com vetor de pontos no sistema local
+		Q = Q_alpha * Q;	//Aplicar o operador Q para escrever os pontos no sistema de coordenadas global - rotação de corpo rigido - entrar com vetor de pontos no sistema local
 		Matrix xO(3);
 		xO(0, 0) = db.nodes[pole_node - 1]->copy_coordinates[0];
 		xO(1, 0) = db.nodes[pole_node - 1]->copy_coordinates[1];

@@ -11,14 +11,14 @@ public:
 	~ArcCirc();
 	bool Read(FILE *f);					//Leitura
 	void Write(FILE *f);				//Gravação
-	void PreCalc();						//Pré-cálculo
+	void PreCalc();						//Pre-calculo
 
 	int number;							//ID do arco
-	Matrix i_point;					//ponto de início do arco - plano xy
+	Matrix i_point;					//ponto de inicio do arco - plano xy
 	Matrix f_point;					//ponto de fim do arco - plano xy
 	Matrix c_point;					//ponto de centro de curvatura do arco - plano xy
 
-	//variáveis internas
+	//variaveis internas
 	double theta_i;
 	double theta_f;
 	double radius;

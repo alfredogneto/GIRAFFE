@@ -12,7 +12,7 @@
 
 #include"Database.h"
 #include "IO.h"
-//Variáveis globais
+//Variaveis globais
 extern
 Database db;
 
@@ -284,7 +284,7 @@ void Monitor::StartMonitor()
 		strcat(name, "monitors/");
 		_mkdir(name);
 		char number[20];
-		_itoa(node, number, 10);	//Converte o número inteiro para char, a fim de escrever o arquivo de resultados com o nome desejado
+		_itoa(node, number, 10);	//Converte o numero inteiro para char, a fim de escrever o arquivo de resultados com o nome desejado
 		strcat(name, "monitor_node_");
 		strcat(name, number);
 		strcat(name, ".txt");
@@ -300,7 +300,7 @@ void Monitor::StartMonitor()
 		strcat(name, "monitors/");
 		_mkdir(name);
 		char number[20];
-		_itoa(element, number, 10);	//Converte o número inteiro para char, a fim de escrever o arquivo de resultados com o nome desejado
+		_itoa(element, number, 10);	//Converte o numero inteiro para char, a fim de escrever o arquivo de resultados com o nome desejado
 		strcat(name, "monitor_element_");
 		strcat(name, number);
 		strcat(name, ".txt");
@@ -316,7 +316,7 @@ void Monitor::StartMonitor()
 		strcat(name, "monitors/");
 		_mkdir(name);
 		char number[20];
-		_itoa(contact, number, 10);	//Converte o número inteiro para char, a fim de escrever o arquivo de resultados com o nome desejado
+		_itoa(contact, number, 10);	//Converte o numero inteiro para char, a fim de escrever o arquivo de resultados com o nome desejado
 		strcat(name, "monitor_contact_");
 		strcat(name, number);
 		strcat(name, ".txt");
@@ -332,7 +332,7 @@ void Monitor::StartMonitor()
 		strcat(name, "monitors/");
 		_mkdir(name);
 		char number[20];
-		_itoa(set, number, 10);	//Converte o número inteiro para char, a fim de escrever o arquivo de resultados com o nome desejado
+		_itoa(set, number, 10);	//Converte o numero inteiro para char, a fim de escrever o arquivo de resultados com o nome desejado
 		strcat(name, "monitor_nodeset_");
 		strcat(name, number);
 		strcat(name, ".txt");
@@ -340,7 +340,7 @@ void Monitor::StartMonitor()
 		//fprintf(f_node_sets[i], "NODESET\t%d\n", set);
 	}
 
-	//Abre os arquivos das partículas
+	//Abre os arquivos das particulas
 	for (int i = 0; i < particles.size(); i++)
 	{
 		int particle = particles[i];
@@ -348,7 +348,7 @@ void Monitor::StartMonitor()
 		strcat(name, "monitors/");
 		_mkdir(name);
 		char number[20];
-		_itoa(particle, number, 10);	//Converte o número inteiro para char, a fim de escrever o arquivo de resultados com o nome desejado
+		_itoa(particle, number, 10);	//Converte o numero inteiro para char, a fim de escrever o arquivo de resultados com o nome desejado
 		strcat(name, "monitor_particle_");
 		strcat(name, number);
 		strcat(name, ".txt");
@@ -372,7 +372,7 @@ void Monitor::StartMonitor()
 		strcat(name, "monitors/");
 		_mkdir(name);
 		char number[20];
-		_itoa(sc, number, 10);	//Converte o número inteiro para char, a fim de escrever o arquivo de resultados com o nome desejado
+		_itoa(sc, number, 10);	//Converte o numero inteiro para char, a fim de escrever o arquivo de resultados com o nome desejado
 		strcat(name, "monitor_special_constraint_");
 		strcat(name, number);
 		strcat(name, ".txt");
@@ -464,7 +464,7 @@ void Monitor::UpdateGlobalMonitor(double time)
 	//Informações a serem salvas
 	fprintf(f_global[0], "%.6e\t",time);
 
-	//Energia cinética, momento linear e momento angular das partículas
+	//Energia cinetica, momento linear e momento angular das particulas
 	double kin = 0;
 	double strain = 0;
 	double grav = 0;

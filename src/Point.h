@@ -11,7 +11,7 @@ public:
 	//[1] Y - coordenada do ponto
 	//[2] Z - coordenada do ponto
 	Matrix coordinates;			//Coordenadas do ponto
-	int number;	//Número do ponto
+	int number;	//Numero do ponto
 	bool Read(FILE *f);
 	void Write(FILE *f);
 };

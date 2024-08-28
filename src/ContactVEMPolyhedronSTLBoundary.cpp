@@ -13,7 +13,7 @@
 #include "SuperNode.h"
 
 #include "Database.h"
-//Variáveis globais
+//Variaveis globais
 extern
 Database db;
 
@@ -254,7 +254,7 @@ void ContactVEMPolyhedronSTLBoundary::MountGlobalExplicit()
 
 void ContactVEMPolyhedronSTLBoundary::MountGlobal()
 {
-	//Variáveis temporárias para salvar a indexação global dos graus de liberdade a serem setados na matriz de rigidez global
+	//Variaveis temporarias para salvar a indexação global dos graus de liberdade a serem setados na matriz de rigidez global
 	int GL_global_1 = 0;
 	int GL_global_2 = 0;
 	double anterior = 0;

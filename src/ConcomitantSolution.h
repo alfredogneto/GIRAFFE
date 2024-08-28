@@ -20,7 +20,7 @@ public:
 	int sample;
 
 protected:
-	//variáveis internas
+	//variaveis internas
 	BoolTable	bool_concomitant;
 	Solution* sol;
 	FILE *f_output;

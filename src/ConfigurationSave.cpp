@@ -9,7 +9,7 @@
 
 #include"Database.h"
 #include"IO.h"
-//Variáveis globais
+//Variaveis globais
 extern Database db;
 extern IO io;
 
@@ -89,7 +89,7 @@ void ConfigurationSave::ExportConfiguration(double time)
 			db.boundaries[i]->WriteModifyingParameters(f, db.boundaries[i]->material, db.boundaries[i]->node, db.boundaries[i]->number, db.boundaries[i]->number + 1);					//Escrita dos dados 
 		}
 	}
-	//Geração de partículas
+	//Geração de particulas
 	if (db.particles_exist == true)
 	{
 		fprintf(f, "\nParticles\t%d\n", db.number_particles);

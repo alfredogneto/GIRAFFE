@@ -8,7 +8,7 @@
 #include "Encoding.h"
 #include "IO.h"
 #include"Database.h"
-//Variáveis globais
+//Variaveis globais
 extern
 Database db;
 
@@ -37,8 +37,8 @@ NodalFollowerLoad::NodalFollowerLoad()
 	I(1, 1) = 1.0;
 	I(2, 2) = 1.0;
 
-	n_nodes_f = new int[3];			//número de nós para divisão de forças - 3 componentes
-	n_nodes_m = new int[3];			//número de nós para divisão de momentos - 3 componentes
+	n_nodes_f = new int[3];			//numero de nós para divisão de forças - 3 componentes
+	n_nodes_m = new int[3];			//numero de nós para divisão de momentos - 3 componentes
 	mult_f = new double[3];			//multiplicador para os esforços de força
 	mult_m = new double[3];			//multiplicador para os esforços de momento
 }
@@ -140,7 +140,7 @@ void NodalFollowerLoad::Write(FILE *f)
 	}
 }
 
-//Realiza pré-cálculos do esforço seguidor
+//Realiza pre-calculos do esforço seguidor
 void NodalFollowerLoad::PreCalc()
 {
 	n_nodes_copy = db.node_sets[node_set - 1]->n_nodes;
@@ -150,7 +150,7 @@ void NodalFollowerLoad::PreCalc()
 		q[i] = new Matrix(6);
 }
 
-//Atualiza dados necessários e que sejam dependentes de DOFs ativos/inativos - chamado no início de cada solution step
+//Atualiza dados necessarios e que sejam dependentes de DOFs ativos/inativos - chamado no inicio de cada solution step
 void NodalFollowerLoad::UpdateforSolutionStep()
 {
 	int node;
@@ -168,9 +168,9 @@ void NodalFollowerLoad::UpdateforSolutionStep()
 		node = db.node_sets[node_set - 1]->node_list[i];
 		for (int j = 0; j < 3; j++)
 		{
-			if (db.nodes[node - 1]->active_GL[j] != 0)	//se o GL em questão é ativo
+			if (db.nodes[node - 1]->active_GL[j] != 0)	//se o GL em questão e ativo
 				n_nodes_f[j]++;
-			if (db.nodes[node - 1]->active_GL[j + 3] != 0)	//se o GL em questão é ativo
+			if (db.nodes[node - 1]->active_GL[j + 3] != 0)	//se o GL em questão e ativo
 				n_nodes_m[j]++;
 		}
 	}
@@ -198,7 +198,7 @@ void NodalFollowerLoad::EvaluateExplicit(double t)
 		alpha_escalar = norm(*db.nodes[node-1]->alpha);
 		A = skew(alpha);
 		g = 4.0 / (4.0 + alpha_escalar * alpha_escalar);
-		//Cálculo da matriz de rotação Q
+		//Calculo da matriz de rotação Q
 		Q = I + g * (A + 0.5*(A*A));
 		
 		//Evaluating input data at current time
@@ -266,7 +266,7 @@ void NodalFollowerLoad::Mount()
 		alpha_escalar = norm(alpha);
 		A = skew(alpha);
 		g = 4.0 / (4.0 + alpha_escalar*alpha_escalar);
-		//Cálculo da matriz de rotação Q
+		//Calculo da matriz de rotação Q
 		Q = I + g*(A + 0.5*(A*A));
 		//Calculando o operador Xi	
 		Xi = g*(I + 0.5*A);
@@ -326,7 +326,7 @@ void NodalFollowerLoad::Mount()
 
 void NodalFollowerLoad::WriteVTK_XML(FILE *f)
 {
-	//vetores para escrita no formato binário - usando a função 'enconde'
+	//vetores para escrita no formato binario - usando a função 'enconde'
 	std::vector<float> float_vector;
 	std::vector<int> int_vector;
 	int count = db.node_sets[node_set - 1]->n_nodes;

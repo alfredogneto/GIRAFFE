@@ -124,7 +124,7 @@ Database::Database()
 	solver_options = new SolverOptions();
 	execution_data = new ExecutionData();
 
-	//Variáveis booleanas de controle
+	//Variaveis booleanas de controle
 	solution_exist = false;
 	nodes_exist = false;
 	super_nodes_exist = false;
@@ -175,7 +175,7 @@ Database::Database()
 	n_GL_free = 0;
 	n_GL_fixed = 0;
 	
-	last_converged_time = 0.0;				//Último instante convergido
+	last_converged_time = 0.0;				//ultimo instante convergido
 	current_time_step = 0.0;				//Incremento de tempo atual
 	current_solution_number = 0;			//Atual solution
 	current_iteration_number = 0;
@@ -486,7 +486,7 @@ int Database::myprintf(const char* format, ...)
 	return ret_status;
 }
 
-//Imprime na tela o conteúdo do ponteiro ptr (matriz de duas dimensões)
+//Imprime na tela o conteudo do ponteiro ptr (matriz de duas dimensões)
 void Database::PrintPtr(double* ptr, int lines)
 {
 	myprintf("\n");
@@ -500,7 +500,7 @@ void Database::PrintPtr(double* ptr, int lines)
 	}
 	myprintf("\n");
 }
-//Imprime na tela o conteúdo do ponteiro ptr (matriz de duas dimensões)
+//Imprime na tela o conteudo do ponteiro ptr (matriz de duas dimensões)
 void Database::PrintPtr(double** ptr, int lines, int columns)
 {
 	myprintf("\n");
@@ -518,7 +518,7 @@ void Database::PrintPtr(double** ptr, int lines, int columns)
 	myprintf("\n");
 }
 
-//Calcula uma dimensão característica da geometria do modelo - de todos os nós existentes - com base em suas posições atuais
+//Calcula uma dimensão caracteristica da geometria do modelo - de todos os nós existentes - com base em suas posições atuais
 double Database::EvaluateBoundingBoxDiag()
 {
 	//Verify bounding box size
@@ -547,7 +547,7 @@ double Database::EvaluateBoundingBoxDiag()
 	//calcula a diagonal do bounding box e retorna
 	return sqrt((max_x - min_x)*(max_x - min_x) + (max_y - min_y)*(max_y - min_y) + (max_z - min_z)*(max_z - min_z));
 }
-//Realiza pré-cálculo em todos os elementos
+//Realiza pre-calculo em todos os elementos
 void Database::PreCalc()
 {
 #pragma omp for

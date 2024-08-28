@@ -12,7 +12,7 @@ public:
 	FlexibleSECylinder_1_FlexibleTriangularSurface_2();
 	~FlexibleSECylinder_1_FlexibleTriangularSurface_2();
 
-	//Chute inicial para coordenadas convectivas do par de superfícies
+	//Chute inicial para coordenadas convectivas do par de superficies
 	void InitialGuess(SSContactData* c_data);
 	
 	void ContactSS(bool *stick, bool *stickupdated, bool *previouscontact, double* Rc, double** Kc, double** invH, double* convective, double* copy_convective, double* gti, double* gtpupdated, double* epsn, double* epsn0, double* epst, double* cn, double* ct, double* mus, double* mud, double* fn, double* ft);
@@ -28,7 +28,7 @@ public:
 
 	void EvaluateDOFsVariables();									//Evaluates the necessary DOFs variables to be used as input to AceGen routines
 	//AceGen Variables or Pointers
-	FlexibleSECylinder_1* surf1;			//Ponteiro para a superfície 1
+	FlexibleSECylinder_1* surf1;			//Ponteiro para a superficie 1
 	double* aA;
 	double* bA;
 	double* eA;
@@ -40,7 +40,7 @@ public:
 	double* xBAi;
 	double QAAi[3][3];
 	double QBAi[3][3];
-	FlexibleTriangularSurface_2* surf2;		//Ponteiro para a superfície 2
+	FlexibleTriangularSurface_2* surf2;		//Ponteiro para a superficie 2
 	double* dB;
 	double* duiB;
 	double* dduiB;

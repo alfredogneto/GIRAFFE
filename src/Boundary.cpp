@@ -4,7 +4,7 @@
 #include "Matrix.h"
 #include "BoundingVolume.h"
 #include "Database.h"
-//Variáveis globais
+//Variaveis globais
 extern
 Database db;
 

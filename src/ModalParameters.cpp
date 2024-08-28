@@ -73,7 +73,7 @@ bool ModalParameters::Read(FILE *f)
 	else
 		return false;
 	
-	//Palavras chaves opcionais (análise modal concomitante)
+	//Palavras chaves opcionais (analise modal concomitante)
 	
 	fpos_t pos;
 	fgetpos(f, &pos);

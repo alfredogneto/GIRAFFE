@@ -3,7 +3,7 @@
 
 
 #include"Database.h"
-//Variáveis globais
+//Variaveis globais
 extern
 Database db;
 
@@ -58,7 +58,7 @@ bool SurfaceSet::Read(FILE *f)
 		list = true;
 		for (int i = 0; i < n_surf; i++)
 		{
-			fscanf(f, "%s", s);//Leitura do número do nó
+			fscanf(f, "%s", s);//Leitura do numero do nó
 			surf_list[i] = atoi(s);
 		}
 	}

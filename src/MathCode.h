@@ -1,7 +1,7 @@
 #pragma once
 #include <stdio.h>
 #include <string>
-#include "exprtk.hpp"
+#include <exprtk.hpp>
 
 class MathCode
 {

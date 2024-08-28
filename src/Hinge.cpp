@@ -6,7 +6,7 @@
 #include "Dynamic.h"
 
 #include"Database.h"
-//Variáveis globais
+//Variaveis globais
 extern
 Database db;
 
@@ -14,7 +14,7 @@ Database db;
 
 Hinge::Hinge()
 {
-	n_GL = 5;						//Dois graus de liberdade (esse vínculo possui 5 multiplicadores de lagrange)
+	n_GL = 5;						//Dois graus de liberdade (esse vinculo possui 5 multiplicadores de lagrange)
 	active_lambda = new int[n_GL];
 	lambda = new double[n_GL];
 	copy_lambda = new double[n_GL];
@@ -54,17 +54,17 @@ Hinge::Hinge()
 	//As contribuições estão divididas em duas partes:
 	//Parte 1 - exatamente a mesma contribuição do Same Displacement
 	//Parte 2 - restrições das rotações
-	//Matriz de rigidez tangente e vetor resíduo
+	//Matriz de rigidez tangente e vetor residuo
 	stiffness1 = new Matrix(9, 9);
 	residual1 = new Matrix(9, 1);
-	//Matriz de rigidez tangente e vetor resíduo
+	//Matriz de rigidez tangente e vetor residuo
 	stiffness2 = new double*[8];
 	for (int i = 0; i < 8; i++)
 		stiffness2[i] = new double[8];
 	residual2 = new double[8];
 	temp_lambda = new double[2];
 
-	//Matriz de rigidez tangente e vetor resíduo - contribuição da mola (spring)
+	//Matriz de rigidez tangente e vetor residuo - contribuição da mola (spring)
 	stiffness_spring = new double*[6];
 	for (int i = 0; i < 6; i++)
 		stiffness_spring[i] = new double[6];
@@ -244,16 +244,16 @@ void Hinge::WriteVTK_XMLRender(FILE *f)
 	//if (data.post_files->WriteSpecialConstraints_flag == true)
 	//{
 	//	int i, offsets;			            /*numero de pontos*/
-	//	int tamanho, n;						/*tamanho do vetor - número de repartições do cilindro*/
+	//	int tamanho, n;						/*tamanho do vetor - numero de repartições do cilindro*/
 	//	double xa, ya, za, xb, yb, zb;       /*pontos extremidade do vetor da intercecção*/
-	//	double x1, y1, z1, x2, y2, z2;       /*pontos de cada uma das superfícies*/
+	//	double x1, y1, z1, x2, y2, z2;       /*pontos de cada uma das superficies*/
 	//	double *x, *y, *z;					/*pontos*/
 	//	double d, R, r;                      /*Comprimento da intercecção e raio*/
-	//	double alfa, beta, teta;             /*ângulos rotação nos eixos x e y - mudança de coordenadas*/
+	//	double alfa, beta, teta;             /*angulos rotação nos eixos x e y - mudança de coordenadas*/
 	//	double *xg, *yg, *zg;				/*pontos no sistema global*/
 	//	double dA, dB, tA1, tA2, tB1, tB2;
 	//	double xa1, ya1, za1, xa2, ya2, za2, xb1, yb1, zb1, xb2, yb2, zb2;
-	//	double xv1, yv1, zv1, xv2, yv2, zv2, xv3, yv3, zv3, xv4, yv4, zv4;           /*vértices placas*/
+	//	double xv1, yv1, zv1, xv2, yv2, zv2, xv3, yv3, zv3, xv4, yv4, zv4;           /*vertices placas*/
 	//	double xv5, yv5, zv5, xv6, yv6, zv6, xv7, yv7, zv7, xv8, yv8, zv8;
 	//	double xv9, yv9, zv9, xv10, yv10, zv10, xv11, yv11, zv11, xv12, yv12, zv12;
 	//	double xv13, yv13, zv13, xv14, yv14, zv14, xv15, yv15, zv15, xv16, yv16, zv16;
@@ -262,24 +262,24 @@ void Hinge::WriteVTK_XMLRender(FILE *f)
 
 	//	for (int i = 0; i < 3; i++)
 	//	{
-	//		alphaiA(i, 0) = data.nodes[node_A - 1]->copy_coordinates[i + 3];	//vetor rotação acumulada (do início) do nó A
-	//		alphaiB(i, 0) = data.nodes[node_B - 1]->copy_coordinates[i + 3];	//vetor rotação acumulada (do início) do nó B
+	//		alphaiA(i, 0) = data.nodes[node_A - 1]->copy_coordinates[i + 3];	//vetor rotação acumulada (do inicio) do nó A
+	//		alphaiB(i, 0) = data.nodes[node_B - 1]->copy_coordinates[i + 3];	//vetor rotação acumulada (do inicio) do nó B
 	//	}
 
 	//	alpha_escalar_i = norm(alphaiA);
 	//	A = skew(alphaiA);
 	//	g = 4.0 / (4.0 + alpha_escalar_i*alpha_escalar_i);
 	//	QA = I3 + g*(A + 0.5*(A*A));
-	//	ei1A = QA*(*data.CS[cs - 1]->E1);	//Eixo e1 no início do incremento
-	//	ei2A = QA*(*data.CS[cs - 1]->E2);	//Eixo e2 no início do incremento
-	//	ei3A = QA*(*data.CS[cs - 1]->E3);	//Eixo e2 no início do incremento
+	//	ei1A = QA*(*data.CS[cs - 1]->E1);	//Eixo e1 no inicio do incremento
+	//	ei2A = QA*(*data.CS[cs - 1]->E2);	//Eixo e2 no inicio do incremento
+	//	ei3A = QA*(*data.CS[cs - 1]->E3);	//Eixo e2 no inicio do incremento
 
 	//	alpha_escalar_i = norm(alphaiB);
 	//	A = skew(alphaiB);
 	//	g = 4.0 / (4.0 + alpha_escalar_i*alpha_escalar_i);
 	//	QB = I3 + g*(A + 0.5*(A*A));
-	//	ei1B = QB*(*data.CS[cs - 1]->E1);	//Eixo e1 no início do incremento
-	//	ei2B = QB*(*data.CS[cs - 1]->E2);	//Eixo e2 no início do incremento
+	//	ei1B = QB*(*data.CS[cs - 1]->E1);	//Eixo e1 no inicio do incremento
+	//	ei2B = QB*(*data.CS[cs - 1]->E2);	//Eixo e2 no inicio do incremento
 	//	double len = EvaluateBoundingBoxDiag() / data.number_nodes;
 	//	xa = data.nodes[node_A - 1]->copy_coordinates[0] - ei3A(0, 0)*len;
 	//	ya = data.nodes[node_A - 1]->copy_coordinates[1] - ei3A(1, 0)*len;
@@ -355,7 +355,7 @@ void Hinge::WriteVTK_XMLRender(FILE *f)
 	//	}
 
 
-	//	/*Plano ortogonal a AB em A*/ /*Geometria Analítica, Paulo Boulos, Ex resolvido 17-8*/
+	//	/*Plano ortogonal a AB em A*/ /*Geometria Analitica, Paulo Boulos, Ex resolvido 17-8*/
 	//	dA = -((xb - xa)*xa + (yb - ya)*ya + (zb - za)*za);
 
 	//	tA1 = (-dA - ((xb - xa)*x1 + (yb - ya)*y1 + (zb - za)*z1)) / ((xb - xa)*(xb - xa) + (yb - ya)*(yb - ya) + (zb - za)*(zb - za));
@@ -381,12 +381,12 @@ void Hinge::WriteVTK_XMLRender(FILE *f)
 	//	yb2 = tB2*(yb - ya) + y2;
 	//	zb2 = tB2*(zb - za) + z2;
 
-	//	/*Placa - vértices A B B1 A1*/
+	//	/*Placa - vertices A B B1 A1*/
 	//	a = ((z1 - za)*(yb - ya) - (zb - za)*(y1 - ya));
 	//	b = ((zb - za)*(x1 - xa) - (xb - xa)*(z1 - za));
 	//	c = ((xb - xa)*(y1 - ya) - (yb - ya)*(x1 - xa));
 
-	//	/*Placa - vértices A B*/
+	//	/*Placa - vertices A B*/
 
 	//	xv1 = xa + r*a / sqrt(a*a + b*b + c*c);
 	//	yv1 = ya + r*b / sqrt(a*a + b*b + c*c);
@@ -404,7 +404,7 @@ void Hinge::WriteVTK_XMLRender(FILE *f)
 	//	yv4 = yb - r*b / sqrt(a*a + b*b + c*c);
 	//	zv4 = zb - r*c / sqrt(a*a + b*b + c*c);
 
-	//	/*Placa - vértices B1 A1*/
+	//	/*Placa - vertices B1 A1*/
 
 	//	xv5 = xa1 + r*a / sqrt(a*a + b*b + c*c);
 	//	yv5 = ya1 + r*b / sqrt(a*a + b*b + c*c);
@@ -422,8 +422,8 @@ void Hinge::WriteVTK_XMLRender(FILE *f)
 	//	yv8 = yb1 - r*b / sqrt(a*a + b*b + c*c);
 	//	zv8 = zb1 - r*c / sqrt(a*a + b*b + c*c);
 
-	//	/*Placa - vértices A B B2 A2*/
-	//	/*Placa - vértices A B*/
+	//	/*Placa - vertices A B B2 A2*/
+	//	/*Placa - vertices A B*/
 	//	a = ((z2 - za)*(yb - ya) - (zb - za)*(y2 - ya));
 	//	b = ((zb - za)*(x2 - xa) - (xb - xa)*(z2 - za));
 	//	c = ((xb - xa)*(y2 - ya) - (yb - ya)*(x2 - xa));
@@ -444,7 +444,7 @@ void Hinge::WriteVTK_XMLRender(FILE *f)
 	//	yv16 = yb - r*b / sqrt(a*a + b*b + c*c);
 	//	zv16 = zb - r*c / sqrt(a*a + b*b + c*c);
 
-	//	/*Placa - vértices B2 A2*/
+	//	/*Placa - vertices B2 A2*/
 	//	xv9 = xa2 + r*a / sqrt(a*a + b*b + c*c);
 	//	yv9 = ya2 + r*b / sqrt(a*a + b*b + c*c);
 	//	zv9 = za2 + r*c / sqrt(a*a + b*b + c*c);
@@ -620,19 +620,19 @@ bool Hinge::Check()
 	return true;
 }
 
-//Montagem dos resíduos e rigidez tangente
+//Montagem dos residuos e rigidez tangente
 void Hinge::Mount()
 {
 	ClearContributions();
-	//Nesse vínculo a rigidez tangente da parte 1 não se modifica nunca. É montada no PreCalc()
-	//Montagem do resíduo da parte 1:
+	//Nesse vinculo a rigidez tangente da parte 1 não se modifica nunca. e montada no PreCalc()
+	//Montagem do residuo da parte 1:
 	if (active_lambda[0] == 1 && active_lambda[1] == 1 && active_lambda[2] == 1)
 	{
 		for (int i = 0; i < 3; i++)
 			r1(i, 0) = (db.nodes[node_A - 1]->copy_coordinates[i] - db.nodes[node_A - 1]->ref_coordinates[i] + db.nodes[node_A - 1]->displacements[i]) -
 			(db.nodes[node_B - 1]->copy_coordinates[i] - db.nodes[node_B - 1]->ref_coordinates[i] + db.nodes[node_B - 1]->displacements[i]);
 
-		//Atualização do vetor de resíduos
+		//Atualização do vetor de residuos
 		(*residual1)(0, 0) = lambda[0];
 		(*residual1)(1, 0) = lambda[1];
 		(*residual1)(2, 0) = lambda[2];
@@ -646,28 +646,28 @@ void Hinge::Mount()
 		(*residual1)(8, 0) = r1(2, 0);
 	}
 	
-	//Montagem da rigidez tangente e resíduo da parte 2:
+	//Montagem da rigidez tangente e residuo da parte 2:
 	if (active_lambda[3] == 1 && active_lambda[4] == 1)
 	{
 		for (int i = 0; i < 3; i++)
 		{
 			alphaA(i, 0) = db.nodes[node_A - 1]->displacements[i + 3];		//vetor rotação (atual) do nó A
 			alphaB(i, 0) = db.nodes[node_B - 1]->displacements[i + 3];		//vetor rotação (atual) do nó B
-			alphaiA(i, 0) = db.nodes[node_A - 1]->copy_coordinates[i + 3];	//vetor rotação acumulada (do início) do nó A
-			alphaiB(i, 0) = db.nodes[node_B - 1]->copy_coordinates[i + 3];	//vetor rotação acumulada (do início) do nó B
+			alphaiA(i, 0) = db.nodes[node_A - 1]->copy_coordinates[i + 3];	//vetor rotação acumulada (do inicio) do nó A
+			alphaiB(i, 0) = db.nodes[node_B - 1]->copy_coordinates[i + 3];	//vetor rotação acumulada (do inicio) do nó B
 		}
 		alpha_escalar_i = norm(alphaiA);
 		A = skew(alphaiA);
 		g = 4.0 / (4.0 + alpha_escalar_i*alpha_escalar_i);
 		QA = I3 + g*(A + 0.5*(A*A));
-		ei3A = QA*(*db.CS[cs - 1]->E3);	//Eixo e3 no início do incremento
+		ei3A = QA*(*db.CS[cs - 1]->E3);	//Eixo e3 no inicio do incremento
 
 		alpha_escalar_i = norm(alphaiB);
 		A = skew(alphaiB);
 		g = 4.0 / (4.0 + alpha_escalar_i*alpha_escalar_i);
 		QB = I3 + g*(A + 0.5*(A*A));
-		ei1B = QB*(*db.CS[cs - 1]->E1);	//Eixo e1 no início do incremento
-		ei2B = QB*(*db.CS[cs - 1]->E2);	//Eixo e2 no início do incremento
+		ei1B = QB*(*db.CS[cs - 1]->E1);	//Eixo e1 no inicio do incremento
+		ei2B = QB*(*db.CS[cs - 1]->E2);	//Eixo e2 no inicio do incremento
 
 		//printf("cos theta = %lf\n", dot(ei1A, ei1B));
 
@@ -676,8 +676,8 @@ void Hinge::Mount()
 		EvaluateHingeContribution2(temp_v, residual2, stiffness2, alphaA.getMatrix(), alphaB.getMatrix(), ei3A.getMatrix(), ei1B.getMatrix(), ei2B.getMatrix(), temp_lambda);
 
 		//Contribuição do mola de torção (spring)
-		ei1A = QA*(*db.CS[cs - 1]->E1);	//Eixo e1 no início do incremento
-		ei2A = QA*(*db.CS[cs - 1]->E2);	//Eixo e2 no início do incremento
+		ei1A = QA*(*db.CS[cs - 1]->E1);	//Eixo e1 no inicio do incremento
+		ei2A = QA*(*db.CS[cs - 1]->E2);	//Eixo e2 no inicio do incremento
 		EvaluateTorsionSpring(temp_v, residual_spring, stiffness_spring, alphaA.getMatrix(), alphaB.getMatrix(), ei1A.getMatrix(), ei1B.getMatrix(), ei3A.getMatrix(), &stiffc, &thetai, &thetad);
 
 		for (int i = 0; i < 3; i++)
@@ -698,7 +698,7 @@ void Hinge::Mount()
 //Preenche a contribuição do elemento nas matrizes globais
 void Hinge::MountGlobal()
 {
-	//Variáveis temporárias para salvar a indexação global dos graus de liberdade a serem setados na matriz de rigidez global
+	//Variaveis temporarias para salvar a indexação global dos graus de liberdade a serem setados na matriz de rigidez global
 	int GL_global_1 = 0;
 	int GL_global_2 = 0;
 	double anterior = 0;
@@ -1013,7 +1013,7 @@ void Hinge::ComputeVelAccel()
 	
 }
 
-//Pré-cálculo de variáveis que é feito uma única vez no início
+//Pre-calculo de variaveis que e feito uma unica vez no inicio
 void Hinge::PreCalc()
 {
 	for (int i = 0; i < 3; i++)
@@ -1027,7 +1027,7 @@ void Hinge::PreCalc()
 		}
 	}
 
-	//Zerando contribuição dos resíduos e rigidez 2
+	//Zerando contribuição dos residuos e rigidez 2
 	for (int i = 0; i < 8; i++)
 	{
 		residual2[i] = 0.0;
@@ -1037,7 +1037,7 @@ void Hinge::PreCalc()
 		}
 	}
 
-	//Zerando contribuição dos resíduos e rigidez spring
+	//Zerando contribuição dos residuos e rigidez spring
 	for (int i = 0; i < 6; i++)
 	{
 		residual_spring[i] = 0.0;
@@ -1048,13 +1048,13 @@ void Hinge::PreCalc()
 	}
 }
 
-//Salvando variáveis da configuração convergida
+//Salvando variaveis da configuração convergida
 void Hinge::SaveLagrange()
 {
 	for (int i = 0; i < n_GL; i++)
 		copy_lambda[i] = lambda[i];
 	//PrintPtr(lambda, 5);
-	thetai = thetai + thetad;//Incremento da rotação para cálculo do momento da mola de torção
+	thetai = thetai + thetad;//Incremento da rotação para calculo do momento da mola de torção
 }
 
 //Checa quais multiplicadores de lagrange serão ativados,de acordo com a ativação dos GLs dos nós dos quais a special constraint participa
@@ -1083,7 +1083,7 @@ void Hinge::ActivateDOFs()
 		active_lambda[4] = 0;
 	}
 }
-//Calcula contribuições do resíduo e operador tangente - gerado no AceGen
+//Calcula contribuições do residuo e operador tangente - gerado no AceGen
 void Hinge::EvaluateHingeContribution(double *v, double *residual
 	, double **stiffness, double *alphaA, double *alphaB, double *ei3A
 	, double *ei1B, double *ei2B, double *lambda)
@@ -1508,7 +1508,7 @@ void Hinge::EvaluateHingeContribution(double *v, double *residual
 	};
 };
 
-//Calcula contribuições do resíduo e operador tangente - gerado no AceGen (sem usar SMSD)
+//Calcula contribuições do residuo e operador tangente - gerado no AceGen (sem usar SMSD)
 void Hinge::EvaluateHingeContribution2(double *v, double *residual
 	, double **stiffness, double *alphaA, double *alphaB, double *ei3A
 	, double *ei1B, double *ei2B, double *lambda)

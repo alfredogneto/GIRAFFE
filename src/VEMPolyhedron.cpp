@@ -17,7 +17,7 @@
 #include "Encoding.h"
 #include "Dynamic.h"
 #include"Database.h"
-//Variáveis globais
+//Variaveis globais
 extern
 Database db;
 
@@ -73,7 +73,7 @@ VEMPolyhedron::VEMPolyhedron()
 	domainData = NULL;														//Domain data
 	elementData = NULL;														//Element data
 	
-	type_name = new char[20];//Nome do tipo da partícula
+	type_name = new char[20];//Nome do tipo da particula
 	sprintf(type_name, "VEMPolyhedron");
 
 	I3 = new Matrix(3, 3);
@@ -834,7 +834,7 @@ void VEMPolyhedron::WriteVTK_XMLRender(FILE *f)
 
 	//Opens DataArray
 	fprintf(f, "\t\t\t\t<DataArray Name=\"ParticleData\" type=\"Int32\" NumberOfComponents=\"%d\" format=\"binary\">\n", 4);
-	//Imprime os dados da partícula
+	//Imprime os dados da particula
 	vint.clear();
 	for (int i = 0; i < ptr_cad->n_faces; i++)
 	{
@@ -996,7 +996,7 @@ void VEMPolyhedron::UpdateVariables()
 
 void VEMPolyhedron::MountGlobal()
 {
-	//Variáveis temporárias para salvar a indexação global dos graus de liberdade a serem setados na matriz de rigidez global
+	//Variaveis temporarias para salvar a indexação global dos graus de liberdade a serem setados na matriz de rigidez global
 	int GL_global_1 = 0;
 	int GL_global_2 = 0;
 	double anterior = 0;
@@ -2775,7 +2775,7 @@ void VEMPolyhedron::MountFieldLoading()
 	
 }
 
-//Calcula contribuições de inércia
+//Calcula contribuições de inercia
 void VEMPolyhedron::InertialContributions()
 {
 	//CAD pointer

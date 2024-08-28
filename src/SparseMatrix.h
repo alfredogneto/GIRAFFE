@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Eigen\SparseCore"
+#include <Eigen\SparseCore>
 #include "Matrix.h"
 //#include <unsupported/Eigen/SparseExtra>
 
@@ -8,7 +8,7 @@ class SparseMatrix
 {
 public:
 	SparseMatrix();												//Construtor padrão
-	SparseMatrix(int rows, int cols, int non_null_estimative);	//Construtor paramétrico
+	SparseMatrix(int rows, int cols, int non_null_estimative);	//Construtor parametrico
 	SparseMatrix(SparseMatrix &copied);							//Construtor de cópia
 	~SparseMatrix();
 	void Clear();												//Zera coeficientes da matriz
@@ -19,9 +19,9 @@ public:
 	Eigen::SparseMatrix<double,1,int> m_matrix;					//matriz esparsa da biblioteca Eigen - RowMajor
 	typedef Eigen::Triplet<double> T;							//cria typedef para a estrutura de triplets do Eigen
 	std::vector<T> tripletList;									//cria vector de triplets (tripletList)
-	bool mounted;												//Indica que a matriz está montada - conteúdo da tripletList foi transferido para a matriz, de fato
-	int rows;													//Número de linhas
-	int cols;													//Número de colunas
+	bool mounted;												//Indica que a matriz esta montada - conteudo da tripletList foi transferido para a matriz, de fato
+	int rows;													//Numero de linhas
+	int cols;													//Numero de colunas
 	int non_null_estimative;									//Estimativa de coeficientes não nulos
 
 	void WriteMatrix(char* name);																				//Função de escrita da matriz em arquivo de texto

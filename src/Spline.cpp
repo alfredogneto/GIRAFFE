@@ -8,7 +8,7 @@
 #include "Encoding.h"
 #include "Dynamic.h"
 #include "Database.h"
-//Variáveis globais
+//Variaveis globais
 extern
 Database db;
 #define PI 3.1415926535897932384626433832795
@@ -116,11 +116,11 @@ void Spline::Write(FILE *f)
 
 void Spline::PreCalc()
 {
-	//Número de nós do nodeset
+	//Numero de nós do nodeset
 	size_nodeset = db.node_sets[nodeset - 1]->n_nodes;
 	//Lista de nós do nodeset
 	nodeset_list = db.node_sets[nodeset - 1]->node_list;
-	//Número de elementos de spline (segmentos/trechos)
+	//Numero de elementos de spline (segmentos/trechos)
 	size_sp_elements = db.node_sets[nodeset - 1]->n_nodes - 2;
 
 	//Vetor de elementos de spline
@@ -132,7 +132,7 @@ void Spline::PreCalc()
 		sp_elements_list[i] = i;
 	}
 
-	//Criando o knot vector entre 0 e 1 de acordo com o número de pontos do nodeset
+	//Criando o knot vector entre 0 e 1 de acordo com o numero de pontos do nodeset
 	knot = new double[size_nodeset + 3];
 	knot[0] = 0;
 	knot[1] = 0;
@@ -145,7 +145,7 @@ void Spline::PreCalc()
 	knot[size_nodeset + 1] = 1;
 	knot[size_nodeset + 2] = 1;
 
-	//Definindo as variáveis de cada elemento da spline
+	//Definindo as variaveis de cada elemento da spline
 	for (int i = 0; i < size_sp_elements; i++) {
 
 		*sp_element[i]->radius = radius;
@@ -443,7 +443,7 @@ void Spline::CalculateSplineTangentNormal()
 			*x_sp_tangent[j * 3 + 2] = *x_sp_tangent[j * 3];
 
 			//Normal
-			Matrix unit(3); //Ponto arbitrário
+			Matrix unit(3); //Ponto arbitrario
 			unit(0, 0) = 1;
 			unit(1, 0) = 1;
 			unit(2, 0) = 1;
@@ -503,15 +503,15 @@ void Spline::WriteVTK_XML_SplineMesh(FILE *f) {
 	if (db.post_files->WriteSpline_flag == true)
 	{
 		CalculateSpline();
-		//vetores para escrita no formato binário - usando a função 'enconde'
+		//vetores para escrita no formato binario - usando a função 'enconde'
 		std::vector<float> float_vector;
 		std::vector<int> int_vector;
 		Matrix* vec_P;
 		vec_P = new Matrix(3);
 
-		//Número de pontos a serem gerados
+		//Numero de pontos a serem gerados
 		int n_points = size_sp_nodes;
-		//Número de células a serem geradas
+		//Numero de celulas a serem geradas
 		int n_cells = (size_sp_nodes - 1) / 2;
 		//Opens Piece
 		fprintf(f, "\t\t<Piece NumberOfPoints=\"%d\" NumberOfCells=\"%d\">\n", n_points, n_cells);
@@ -598,16 +598,16 @@ void Spline::WriteVTK_XML_SplineRender(FILE * f)
 		int n_circ = 16;
 		double theta = 0;
 
-		//vetores para escrita no formato binário - usando a função 'enconde'
+		//vetores para escrita no formato binario - usando a função 'enconde'
 		std::vector<float> float_vector;
 		std::vector<int> int_vector;
 
 		Matrix vec_x(3);
 		Matrix vec_P(3);
 		Matrix vec_P_radius(3);
-		//Número de pontos a serem gerados
+		//Numero de pontos a serem gerados
 		int n_points = size_sp_elements * 40;
-		//Número de células a serem geradas
+		//Numero de celulas a serem geradas
 		int n_cells = size_sp_elements * 8;
 		//Opens Piece
 		fprintf(f, "\t\t<Piece NumberOfPoints=\"%d\" NumberOfCells=\"%d\">\n", n_points, n_cells);
@@ -624,15 +624,15 @@ void Spline::WriteVTK_XML_SplineRender(FILE * f)
 			int i_aux = i / 3;
 			vec_x = *x_sp_Ai[i - i_aux];
 			if ((i + 2) % 3 == 0) {
-				//Pontos intermediários do trecho de spline
-				for (int point = 0; point < n_circ; point = point + 2)//Percorre os nós que descrevem o perímetro da ST
+				//Pontos intermediarios do trecho de spline
+				for (int point = 0; point < n_circ; point = point + 2)//Percorre os nós que descrevem o perimetro da ST
 				{
 					//Atualização do angulo theta
 					theta = 2 * (2 * PI) / n_circ;
 					//Rotação da normal a spline pela fórmula de rodrigues em torno da tangente
 					vec_P_radius = vec_P_radius * cos(theta) + cross(*x_sp_tangent[i], vec_P_radius)*sin(theta) + *x_sp_tangent[i] * dot(*x_sp_tangent[i], vec_P_radius)*(1 - cos(theta));
 
-					//Posição de cada ponto P da spline junto ao ponto da superfície
+					//Posição de cada ponto P da spline junto ao ponto da superficie
 					vec_P(0, 0) = vec_x(0, 0) + vec_P_radius(0, 0);
 					vec_P(1, 0) = vec_x(1, 0) + vec_P_radius(1, 0);
 					vec_P(2, 0) = vec_x(2, 0) + vec_P_radius(2, 0);
@@ -645,14 +645,14 @@ void Spline::WriteVTK_XML_SplineRender(FILE * f)
 			else
 			{
 				//Ponto inicial ou final do trecho de spline
-				for (int point = 0; point < n_circ; point++)//Percorre os nós que descrevem o perímetro da ST
+				for (int point = 0; point < n_circ; point++)//Percorre os nós que descrevem o perimetro da ST
 				{
 					//Atualização do angulo theta
 					theta = (2 * PI) / n_circ;
 					//Rotação da normal a spline pela fórmula de rodrigues em torno da tangente
 					vec_P_radius = vec_P_radius * cos(theta) + cross(*x_sp_tangent[i], vec_P_radius)*sin(theta) + *x_sp_tangent[i] * dot(*x_sp_tangent[i], vec_P_radius)*(1 - cos(theta));
 
-					//Posição de cada ponto P da spline junto ao ponto da superfície
+					//Posição de cada ponto P da spline junto ao ponto da superficie
 					vec_P(0, 0) = vec_x(0, 0) + vec_P_radius(0, 0);
 					vec_P(1, 0) = vec_x(1, 0) + vec_P_radius(1, 0);
 					vec_P(2, 0) = vec_x(2, 0) + vec_P_radius(2, 0);

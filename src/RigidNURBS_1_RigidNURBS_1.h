@@ -10,7 +10,7 @@ public:
 	RigidNURBS_1_RigidNURBS_1();
 	~RigidNURBS_1_RigidNURBS_1();
 
-	//Chute inicial para coordenadas convectivas do par de superfícies
+	//Chute inicial para coordenadas convectivas do par de superficies
 	void InitialGuess(SSContactData* c_data);
 	
 	void ContactSS(bool *stick, bool *stickupdated, bool *previouscontact, double* Rc, double** Kc, double** invH, double* convective, double* copy_convective, double* gti, double* gtpupdated, double* epsn, double* epsn0, double* epst, double* cn, double* ct, double* mus, double* mud, double* fn, double* ft);

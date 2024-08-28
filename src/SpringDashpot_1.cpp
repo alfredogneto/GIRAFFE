@@ -8,7 +8,7 @@
 
 #define PI 3.1415926535897932384626433832795
 
-//Variáveis globais
+//Variaveis globais
 extern
 Database db;
 
@@ -60,7 +60,7 @@ SpringDashpot_1::SpringDashpot_1()
 	c_stiffness = Matrix(6, 6);									//Matriz de rigidez
 	c_damping = Matrix(6, 6);									//Matriz de amortecimento
 	c_damping_modal = Matrix(6, 6);								//Matriz de amortecimento
-	c_stiffness_force = Matrix(6, 1);							//Vetor de esforços elásticos
+	c_stiffness_force = Matrix(6, 1);							//Vetor de esforços elasticos
 	c_damping_force = Matrix(6, 1);								//Vetor de esforços de amortecimento
 	I3 = Matrix(3, 3);
 	I3(0, 0) = 1.0;
@@ -72,9 +72,9 @@ SpringDashpot_1::SpringDashpot_1()
 	xd1 = Matrix(3, 1);
 	xd2 = Matrix(3, 1);
 
-	z1z2 = Matrix(3, 1);		//distância atual entre nós
+	z1z2 = Matrix(3, 1);		//distancia atual entre nós
 	n = Matrix(3, 1);			//direção normal da mola
-	last_n = Matrix(3, 1);		//última direção normal convergida da mola
+	last_n = Matrix(3, 1);		//ultima direção normal convergida da mola
 	first_evaluation = true;
 	non = Matrix(3, 3);
 	f = 0.0;
@@ -185,15 +185,15 @@ void SpringDashpot_1::WriteVTK_XMLBase(std::vector<float> *float_vector)
 }
 void SpringDashpot_1::WriteVTK_XMLRender(FILE *f)
 {
-	//vetores para escrita no formato binário - usando a função 'enconde'
+	//vetores para escrita no formato binario - usando a função 'enconde'
 	std::vector<float> float_vector;
 	std::vector<int> int_vector;
 
 	//Plotagem da mola, se a rigidez não for nula
 	if (k != 0.0)
 	{
-		int n;								/*número de espiras*/
-		float r, L, l;						/*raio da espira, comprimento da mola sem as extremidades e distância entre espiras*/
+		int n;								/*numero de espiras*/
+		float r, L, l;						/*raio da espira, comprimento da mola sem as extremidades e distancia entre espiras*/
 		float xa, ya, za, xb, yb, zb;       /*Pontos das extremidades*/
 		float d;                            /*Comprimento total*/
 		float D;                            /*Comprimento total da mola relaxada*/
@@ -201,13 +201,13 @@ void SpringDashpot_1::WriteVTK_XMLRender(FILE *f)
 		int numpontos, i, offsets;			/*numero de pontos DAS ESPIRAS*/
 		int tamanho;						/*tamanho dos vetores*/
 		float *x, *y, *z;					/*pontos das espiras*/
-		double teta;						/*ângulo em rad*/
+		double teta;						/*angulo em rad*/
 		float c_i;							/*comprimento das extremidades*/
-		float *ro;							/*distância do ponto à origem - mudança de coordenadas*/
-		float alfa, beta;                   /*ângulos rotação nos eixos x e y - mudança de coordenadas*/
+		float *ro;							/*distancia do ponto a origem - mudança de coordenadas*/
+		float alfa, beta;                   /*angulos rotação nos eixos x e y - mudança de coordenadas*/
 		float *xg, *yg, *zg;				/*pontos das espiras no sistema global*/
 
-		//Atribuição de parâmetros:
+		//Atribuição de parametros:
 		n = 10;
 		xa = (float)db.nodes[nodes[0] - 1]->copy_coordinates[0];
 		ya = (float)db.nodes[nodes[0] - 1]->copy_coordinates[1];
@@ -412,11 +412,11 @@ void SpringDashpot_1::WriteVTK_XMLRender(FILE *f)
 		int numpontos, i, offsets;			/*numero de pontos dos cilindros*/
 		int tamanho;						/*tamanho dos vetores*/
 		float *x, *y, *z;					/*pontos das espiras*/
-		double teta;						/*ângulo em rad*/
+		double teta;						/*angulo em rad*/
 		float c_i;							/*comprimento das extremidades*/
 		float dp;							/*comprimento cilindro de maior raio*/
-		float *ro;							/*distância do ponto à origem - mudança de coordenadas*/
-		float alfa, beta;                   /*ângulos rotação nos eixos x e y - mudança de coordenadas*/
+		float *ro;							/*distancia do ponto a origem - mudança de coordenadas*/
+		float alfa, beta;                   /*angulos rotação nos eixos x e y - mudança de coordenadas*/
 		float *xg, *yg, *zg;				/*pontos das espiras no sistema global*/
 
 		//Atrubuição dos Parêmetros
@@ -706,13 +706,13 @@ void SpringDashpot_1::Mount()
 		z2(ind, 0) = db.nodes[nodes[1] - 1]->copy_coordinates[ind] + db.nodes[nodes[1] - 1]->displacements[ind];	//Posição do nó 2
 	}
 	
-	//Cálculo da distância entre os pontos
+	//Calculo da distancia entre os pontos
 	z1z2 = z1 - z2;
 	//Direção normal
 	n = (1.0 / norm(z1z2))*z1z2;
 	double norm_z1z2 = norm(z1z2);
 
-	//Cálculo do gap - quando não houver inversão de pontos ou for a primeira vez que calcula (até convergir algum passo do modelo)
+	//Calculo do gap - quando não houver inversão de pontos ou for a primeira vez que calcula (ate convergir algum passo do modelo)
 	if (dot(last_n, n) >= 0.0 || first_evaluation == true)
 	{
 		gn = norm_z1z2 - initial_distance;
@@ -833,14 +833,14 @@ void SpringDashpot_1::MountGlobal()
 		}
 	}
 }
-//Salva variáveis nos pontos de Gauss úteis para descrição lagrangiana atualizada
+//Salva variaveis nos pontos de Gauss uteis para descrição lagrangiana atualizada
 void SpringDashpot_1::SaveLagrange()
 {
 	//Salva a direção convergida da mola (para checar inversões no passo posterior)
 	last_n = n;
 	first_evaluation = false;
 }
-//Pré-cálculo de variáveis que é feito uma única vez no início
+//Pre-calculo de variaveis que e feito uma unica vez no inicio
 void SpringDashpot_1::PreCalc()
 {
 	z1(0, 0) = db.nodes[nodes[0] - 1]->ref_coordinates[0];
@@ -867,7 +867,7 @@ void SpringDashpot_1::MountMassModal()
 	//DOES NOTHING
 }
 
-//Monta a matriz de amortecimento para realização da análise modal
+//Monta a matriz de amortecimento para realização da analise modal
 void SpringDashpot_1::MountDampingModal()
 {
 	Zeros();
@@ -883,13 +883,13 @@ void SpringDashpot_1::MountDamping(bool update_rayleigh)
 //Montagens - Newmark
 void SpringDashpot_1::MountDyn()
 {
-	//Modificações da dinâmica
+	//Modificações da dinamica
 	c_stiffness = c_stiffness + c_damping;
-	//Modificações da dinâmica nos esforços - presença das forças de amortecimento
+	//Modificações da dinamica nos esforços - presença das forças de amortecimento
 	c_stiffness_force = c_stiffness_force + c_damping_force;
 }
 
-//Montagens para análise modal - inserção da matriz de massa e amortecimento na matriz de rigidez para posterior montagem global
+//Montagens para analise modal - inserção da matriz de massa e amortecimento na matriz de rigidez para posterior montagem global
 void SpringDashpot_1::MountDynModal()
 {
 	c_stiffness = c_damping_modal;

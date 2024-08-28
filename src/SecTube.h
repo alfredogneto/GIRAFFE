@@ -11,6 +11,6 @@ public:
 	bool Read(FILE *f);
 	void Write(FILE *f);
 	void PreCalc();
-	double De, Di;		//diâmetros
+	double De, Di;		//diametros
 };
 

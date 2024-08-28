@@ -7,7 +7,7 @@
 #include "SSContactData.h"
 
 #include"Database.h"
-//Variáveis globais
+//Variaveis globais
 extern
 Database db; 
 
@@ -25,8 +25,8 @@ FlexibleSECylinder_1_FlexibleSECylinder_1::~FlexibleSECylinder_1_FlexibleSECylin
 
 void FlexibleSECylinder_1_FlexibleSECylinder_1::InitializeConvectiveRange()
 {
-	FlexibleSECylinder_1* surf1;		//Ponteiro para a superfície 1
-	FlexibleSECylinder_1* surf2;		//Ponteiro para a superfície 2
+	FlexibleSECylinder_1* surf1;		//Ponteiro para a superficie 1
+	FlexibleSECylinder_1* surf2;		//Ponteiro para a superficie 2
 	surf1 = static_cast<FlexibleSECylinder_1*>(db.surfaces[surf1_ID - 1]);
 	surf2 = static_cast<FlexibleSECylinder_1*>(db.surfaces[surf2_ID - 1]);
 
@@ -97,15 +97,15 @@ int FlexibleSECylinder_1_FlexibleSECylinder_1::VerifyConvectiveRange(Matrix& mc)
 	//4 - Fora do range fisico da superficie - proximo
 	//2 - Fora do range fisico da superficie - distante
 
-	//Se está no range local de interesse - domínio físico da superfície
+	//Se esta no range local de interesse - dominio fisico da superficie
 	if (abs(mc(0, 0)) <= 1.0 && abs(mc(2, 0)) <= 1.0)
-		return_value = 0;	//Houve convergência, está no range físico - forte candidato a contato
+		return_value = 0;	//Houve convergência, esta no range fisico - forte candidato a contato
 	else
 	{
 		if (abs(mc(0, 0)) <= (1.00+perc*2) && abs(mc(2, 0)) <= (1.0+perc*2))
-			return_value = 4;	//Houve convergência, está no range físico - forte candidato a contato
+			return_value = 4;	//Houve convergência, esta no range fisico - forte candidato a contato
 		else
-			return_value = 2;	//Houve convergência, mas não está no range físico - deve ser monitorado com cuidado - possivelmente superfície vizinha
+			return_value = 2;	//Houve convergência, mas não esta no range fisico - deve ser monitorado com cuidado - possivelmente superficie vizinha
 	}
 	return return_value;
 }
@@ -113,10 +113,10 @@ int FlexibleSECylinder_1_FlexibleSECylinder_1::VerifyConvectiveRange(Matrix& mc)
 //Calcula e rotorna o gap (com sinal)
 double FlexibleSECylinder_1_FlexibleSECylinder_1::Gap(Matrix& mc, bool fixed_normals, Matrix& nA, Matrix& nB)
 {
-	double v[2000];		//variável temporária - AceGen
-	///////////////////////////////Ponteiros e variáveis para facilitar acesso//////////////////////////////////////////
-	FlexibleSECylinder_1* surf1;		//Ponteiro para a superfície 1
-	FlexibleSECylinder_1* surf2;		//Ponteiro para a superfície 2
+	double v[2000];		//variavel temporaria - AceGen
+	///////////////////////////////Ponteiros e variaveis para facilitar acesso//////////////////////////////////////////
+	FlexibleSECylinder_1* surf1;		//Ponteiro para a superficie 1
+	FlexibleSECylinder_1* surf2;		//Ponteiro para a superficie 2
 	double* aA;
 	double* aB;
 	double* bA;
@@ -170,7 +170,7 @@ double FlexibleSECylinder_1_FlexibleSECylinder_1::Gap(Matrix& mc, bool fixed_nor
 		QABi[i] = new double[3];
 		QBBi[i] = new double[3];
 	}
-	//Salvando variáveis locais para montagem de superfícies
+	//Salvando variaveis locais para montagem de superficies
 	surf1->Q_AAi->MatrixToPtr(QAAi, 3);
 	surf1->Q_BAi->MatrixToPtr(QBAi, 3);
 	surf2->Q_AAi->MatrixToPtr(QABi, 3);
@@ -376,10 +376,10 @@ double FlexibleSECylinder_1_FlexibleSECylinder_1::Gap(Matrix& mc, bool fixed_nor
 //Calcula o Gradiente do gap
 void FlexibleSECylinder_1_FlexibleSECylinder_1::GradientGap(Matrix& mc, Matrix& mGra, bool fixed_normals, Matrix& nA, Matrix& nB)
 {
-	double v[2000];		//variável temporária - AceGen
-	///////////////////////////////Ponteiros e variáveis para facilitar acesso//////////////////////////////////////////
-	FlexibleSECylinder_1* surf1;		//Ponteiro para a superfície 1
-	FlexibleSECylinder_1* surf2;		//Ponteiro para a superfície 2
+	double v[2000];		//variavel temporaria - AceGen
+	///////////////////////////////Ponteiros e variaveis para facilitar acesso//////////////////////////////////////////
+	FlexibleSECylinder_1* surf1;		//Ponteiro para a superficie 1
+	FlexibleSECylinder_1* surf2;		//Ponteiro para a superficie 2
 	double* aA;
 	double* aB;
 	double* bA;
@@ -434,7 +434,7 @@ void FlexibleSECylinder_1_FlexibleSECylinder_1::GradientGap(Matrix& mc, Matrix& 
 		QABi[i] = new double[3];
 		QBBi[i] = new double[3];
 	}
-	//Salvando variáveis locais para montagem de superfícies
+	//Salvando variaveis locais para montagem de superficies
 	surf1->Q_AAi->MatrixToPtr(QAAi, 3);
 	surf1->Q_BAi->MatrixToPtr(QBAi, 3);
 	surf2->Q_AAi->MatrixToPtr(QABi, 3);
@@ -445,11 +445,11 @@ void FlexibleSECylinder_1_FlexibleSECylinder_1::GradientGap(Matrix& mc, Matrix& 
 	double Gra[4];
 	//Pontos de singularidade - função phi
 	double test1 = 2 * c[1] / PI;
-	test1 = abs(test1 - int(test1));//testa o quão próximo de inteiro é esse número
+	test1 = abs(test1 - int(test1));//testa o quão próximo de inteiro e esse numero
 	if (test1 < tol_small_1)
 		c[1] += tol_small_1;
 	double test3 = 2 * c[3] / PI;
-	test3 = abs(test3 - int(test3));//testa o quão próximo de inteiro é esse número
+	test3 = abs(test3 - int(test3));//testa o quão próximo de inteiro e esse numero
 	if (test3 < tol_small_1)
 		c[3] += tol_small_1;
 
@@ -791,10 +791,10 @@ void FlexibleSECylinder_1_FlexibleSECylinder_1::GradientGap(Matrix& mc, Matrix& 
 //Calcula a Hessiana do gap
 void FlexibleSECylinder_1_FlexibleSECylinder_1::HessianGap(Matrix& mc, Matrix& mHes, bool fixed_normals, Matrix& nA, Matrix& nB)
 {
-	double v[2000];		//variável temporária - AceGen
-	///////////////////////////////Ponteiros e variáveis para facilitar acesso//////////////////////////////////////////
-	FlexibleSECylinder_1* surf1;		//Ponteiro para a superfície 1
-	FlexibleSECylinder_1* surf2;		//Ponteiro para a superfície 2
+	double v[2000];		//variavel temporaria - AceGen
+	///////////////////////////////Ponteiros e variaveis para facilitar acesso//////////////////////////////////////////
+	FlexibleSECylinder_1* surf1;		//Ponteiro para a superficie 1
+	FlexibleSECylinder_1* surf2;		//Ponteiro para a superficie 2
 	double* aA;
 	double* aB;
 	double* bA;
@@ -849,7 +849,7 @@ void FlexibleSECylinder_1_FlexibleSECylinder_1::HessianGap(Matrix& mc, Matrix& m
 		QABi[i] = new double[3];
 		QBBi[i] = new double[3];
 	}
-	//Salvando variáveis locais para montagem de superfícies
+	//Salvando variaveis locais para montagem de superficies
 	surf1->Q_AAi->MatrixToPtr(QAAi, 3);
 	surf1->Q_BAi->MatrixToPtr(QBAi, 3);
 	surf2->Q_AAi->MatrixToPtr(QABi, 3);
@@ -861,11 +861,11 @@ void FlexibleSECylinder_1_FlexibleSECylinder_1::HessianGap(Matrix& mc, Matrix& m
 	double Hes[4][4];
 	//Pontos de singularidade - função phi
 	double test1 = 2 * c[1] / PI;
-	test1 = abs(test1 - int(test1));//testa o quão próximo de inteiro é esse número
+	test1 = abs(test1 - int(test1));//testa o quão próximo de inteiro e esse numero
 	if (test1 < tol_small_1)
 		c[1] += tol_small_1;
 	double test3 = 2 * c[3] / PI;
-	test3 = abs(test3 - int(test3));//testa o quão próximo de inteiro é esse número
+	test3 = abs(test3 - int(test3));//testa o quão próximo de inteiro e esse numero
 	if (test3 < tol_small_1)
 		c[3] += tol_small_1;
 	
@@ -1527,12 +1527,12 @@ void FlexibleSECylinder_1_FlexibleSECylinder_1::HessianGap(Matrix& mc, Matrix& m
 	delete[] QBBi;
 }
 
-//Chute inicial para coordenadas convectivas do par de superfícies
+//Chute inicial para coordenadas convectivas do par de superficies
 void FlexibleSECylinder_1_FlexibleSECylinder_1::InitialGuess(SSContactData* c_data)
 {
-	///////////////////////////////Ponteiros e variáveis para facilitar acesso//////////////////////////////////////////
-	FlexibleSECylinder_1* surf1;		//Ponteiro para a superfície 1
-	FlexibleSECylinder_1* surf2;		//Ponteiro para a superfície 2
+	///////////////////////////////Ponteiros e variaveis para facilitar acesso//////////////////////////////////////////
+	FlexibleSECylinder_1* surf1;		//Ponteiro para a superficie 1
+	FlexibleSECylinder_1* surf2;		//Ponteiro para a superficie 2
 	surf1 = static_cast<FlexibleSECylinder_1*>(db.surfaces[surf1_ID - 1]);
 	surf2 = static_cast<FlexibleSECylinder_1*>(db.surfaces[surf2_ID - 1]);
 	//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -1560,7 +1560,7 @@ void FlexibleSECylinder_1_FlexibleSECylinder_1::InitialGuess(SSContactData* c_da
 	//Se não houver paralelismo
 	if (abs(dot(tA, tA)*dot(tB, tB) - dot(tA, tB)*dot(tA, tB)) > tol_ortho)
 	{
-		//Estimativa dos csi's com base na configuração atual - considerando-se que são elementos retilíneos (baseado em Wriggers e Zavarise, 1997)
+		//Estimativa dos csi's com base na configuração atual - considerando-se que são elementos retilineos (baseado em Wriggers e Zavarise, 1997)
 		csi_A = dot(bA - bB, (1.0 / (dot(tA, tA)*dot(tB, tB) - dot(tA, tB)*dot(tA, tB)))*(tB*dot(tA, tB) - tA*dot(tB, tB)));
 		csi_B = -1.0*dot(bA - bB, (1.0 / (dot(tA, tA)*dot(tB, tB) - dot(tA, tB)*dot(tA, tB)))*(tA*dot(tA, tB) - tB*dot(tA, tA)));
 	}
@@ -1571,7 +1571,7 @@ void FlexibleSECylinder_1_FlexibleSECylinder_1::InitialGuess(SSContactData* c_da
 		Matrix temp_xAB = *surf2->x_AAi + uAB;
 		Matrix temp_xBB = *surf2->x_BAi + uBB;
 		bool inverted = false;
-		//Se a orientação tangente relativa das barras é oposta, inverte os nós da barra B
+		//Se a orientação tangente relativa das barras e oposta, inverte os nós da barra B
 		if (dot(tA, tB) < 0)
 		{
 			temp_xAB = *surf2->x_BAi + uBB;
@@ -1702,9 +1702,9 @@ void FlexibleSECylinder_1_FlexibleSECylinder_1::InitialGuess(SSContactData* c_da
 //Calcula a função objetivo para um conjunto de coordenadas convectivas - Phase 1
 double FlexibleSECylinder_1_FlexibleSECylinder_1::ObjectivePhase1(Matrix& mc)
 {
-	///////////////////////////////Ponteiros e variáveis para facilitar acesso//////////////////////////////////////////
-	FlexibleSECylinder_1* surf1;		//Ponteiro para a superfície 1
-	FlexibleSECylinder_1* surf2;		//Ponteiro para a superfície 2
+	///////////////////////////////Ponteiros e variaveis para facilitar acesso//////////////////////////////////////////
+	FlexibleSECylinder_1* surf1;		//Ponteiro para a superficie 1
+	FlexibleSECylinder_1* surf2;		//Ponteiro para a superficie 2
 	double* aA;
 	double* aB;
 	double* bA;
@@ -1759,7 +1759,7 @@ double FlexibleSECylinder_1_FlexibleSECylinder_1::ObjectivePhase1(Matrix& mc)
 		QABi[i] = new double[3];
 		QBBi[i] = new double[3];
 	}
-	//Salvando variáveis locais para montagem de superfícies
+	//Salvando variaveis locais para montagem de superficies
 	surf1->Q_AAi->MatrixToPtr(QAAi, 3);
 	surf1->Q_BAi->MatrixToPtr(QBAi, 3);
 	surf2->Q_AAi->MatrixToPtr(QABi, 3);
@@ -1902,9 +1902,9 @@ double FlexibleSECylinder_1_FlexibleSECylinder_1::ObjectivePhase1(Matrix& mc)
 //Calcula o Gradiente da função objetivo - Phase 1
 void FlexibleSECylinder_1_FlexibleSECylinder_1::GradientPhase1(Matrix& mc, Matrix& mGra)
 {
-	///////////////////////////////Ponteiros e variáveis para facilitar acesso//////////////////////////////////////////
-	FlexibleSECylinder_1* surf1;		//Ponteiro para a superfície 1
-	FlexibleSECylinder_1* surf2;		//Ponteiro para a superfície 2
+	///////////////////////////////Ponteiros e variaveis para facilitar acesso//////////////////////////////////////////
+	FlexibleSECylinder_1* surf1;		//Ponteiro para a superficie 1
+	FlexibleSECylinder_1* surf2;		//Ponteiro para a superficie 2
 	double* aA;
 	double* aB;
 	double* bA;
@@ -1959,7 +1959,7 @@ void FlexibleSECylinder_1_FlexibleSECylinder_1::GradientPhase1(Matrix& mc, Matri
 		QABi[i] = new double[3];
 		QBBi[i] = new double[3];
 	}
-	//Salvando variáveis locais para montagem de superfícies
+	//Salvando variaveis locais para montagem de superficies
 	surf1->Q_AAi->MatrixToPtr(QAAi, 3);
 	surf1->Q_BAi->MatrixToPtr(QBAi, 3);
 	surf2->Q_AAi->MatrixToPtr(QABi, 3);
@@ -2158,9 +2158,9 @@ void FlexibleSECylinder_1_FlexibleSECylinder_1::GradientPhase1(Matrix& mc, Matri
 //Calcula a Hessiana da função objetivo - Phase 1
 void FlexibleSECylinder_1_FlexibleSECylinder_1::HessianPhase1(Matrix& mc, Matrix& mHes)
 {
-	///////////////////////////////Ponteiros e variáveis para facilitar acesso//////////////////////////////////////////
-	FlexibleSECylinder_1* surf1;		//Ponteiro para a superfície 1
-	FlexibleSECylinder_1* surf2;		//Ponteiro para a superfície 2
+	///////////////////////////////Ponteiros e variaveis para facilitar acesso//////////////////////////////////////////
+	FlexibleSECylinder_1* surf1;		//Ponteiro para a superficie 1
+	FlexibleSECylinder_1* surf2;		//Ponteiro para a superficie 2
 	double* aA;
 	double* aB;
 	double* bA;
@@ -2215,7 +2215,7 @@ void FlexibleSECylinder_1_FlexibleSECylinder_1::HessianPhase1(Matrix& mc, Matrix
 		QABi[i] = new double[3];
 		QBBi[i] = new double[3];
 	}
-	//Salvando variáveis locais para montagem de superfícies
+	//Salvando variaveis locais para montagem de superficies
 	surf1->Q_AAi->MatrixToPtr(QAAi, 3);
 	surf1->Q_BAi->MatrixToPtr(QBAi, 3);
 	surf2->Q_AAi->MatrixToPtr(QABi, 3);
@@ -2228,11 +2228,11 @@ void FlexibleSECylinder_1_FlexibleSECylinder_1::HessianPhase1(Matrix& mc, Matrix
 	double Hes[4][4];
 	//Pontos de singularidade - função phi
 	double test1 = 2 * c[1] / PI;
-	test1 = abs(test1 - int(test1));//testa o quão próximo de inteiro é esse número
+	test1 = abs(test1 - int(test1));//testa o quão próximo de inteiro e esse numero
 	if (test1 < tol_small_1)
 		c[1] += tol_small_1;
 	double test3 = 2 * c[3] / PI;
-	test3 = abs(test3 - int(test3));//testa o quão próximo de inteiro é esse número
+	test3 = abs(test3 - int(test3));//testa o quão próximo de inteiro e esse numero
 	if (test3 < tol_small_1)
 		c[3] += tol_small_1;
 	
@@ -2498,7 +2498,7 @@ void FlexibleSECylinder_1_FlexibleSECylinder_1::HessianPhase1(Matrix& mc, Matrix
 
 void FlexibleSECylinder_1_FlexibleSECylinder_1::ContactSS(bool *stick, bool *stickupdated, bool *previouscontact, double* Rc, double** Kc, double** invH, double* convective, double* copy_convective, double* gti, double* gtpupdated, double* epsn, double* epsn0, double* epst, double* cn, double* ct, double* mus, double* mud, double* fn, double* ft)
 {
-	double v[30000];		//variável temporária - AceGen
+	double v[30000];		//variavel temporaria - AceGen
 	//Zerando matrizes e vetores
 	for (int i = 0; i < 24; i++)
 	{
@@ -2506,9 +2506,9 @@ void FlexibleSECylinder_1_FlexibleSECylinder_1::ContactSS(bool *stick, bool *sti
 		for (int j = 0; j < 24; j++)
 			Kc[i][j] = 0.0;
 	}
-	///////////////////////////////Ponteiros e variáveis para facilitar acesso//////////////////////////////////////////
-	FlexibleSECylinder_1* surf1;		//Ponteiro para a superfície 1
-	FlexibleSECylinder_1* surf2;		//Ponteiro para a superfície 2
+	///////////////////////////////Ponteiros e variaveis para facilitar acesso//////////////////////////////////////////
+	FlexibleSECylinder_1* surf1;		//Ponteiro para a superficie 1
+	FlexibleSECylinder_1* surf2;		//Ponteiro para a superficie 2
 	double* aA;
 	double* aB;
 	double* bA;
@@ -2563,7 +2563,7 @@ void FlexibleSECylinder_1_FlexibleSECylinder_1::ContactSS(bool *stick, bool *sti
 		QABi[i] = new double[3];
 		QBBi[i] = new double[3];
 	}
-	//Salvando variáveis locais para montagem de superfícies
+	//Salvando variaveis locais para montagem de superficies
 	surf1->Q_AAi->MatrixToPtr(QAAi, 3);
 	surf1->Q_BAi->MatrixToPtr(QBAi, 3);
 	surf2->Q_AAi->MatrixToPtr(QABi, 3);

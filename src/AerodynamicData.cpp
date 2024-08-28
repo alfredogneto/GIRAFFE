@@ -45,12 +45,12 @@ bool AerodynamicData::Read(FILE *f)
 		}
 		else
 			return false;
-		//Salva a posi��o (stream)
+		//Salva a posicao (stream)
 		fpos_t pos;
 		fgetpos(f, &pos);
 		fscanf(f, "%s", s);
 		if (strcmp(s, "(Alpha/CD)"))
-			fsetpos(f, &pos);	//volta � posi��o anterior
+			fsetpos(f, &pos);	//volta a posicao anterior
 		//Aloca��o e leitura da tabela
 		CD = new Table(np, 1);
 		CD->Read(f);
@@ -69,13 +69,13 @@ bool AerodynamicData::Read(FILE *f)
 		}
 		else
 			return false;
-		//Salva a posi��o (stream)
+		//Salva a posicao (stream)
 		fpos_t pos;
 		fgetpos(f, &pos);
 		fscanf(f, "%s", s);
 		if (strcmp(s, "(Alpha/CL)"))
-			fsetpos(f, &pos);	//volta � posi��o anterior
-		//Aloca��o e leitura da tabela
+			fsetpos(f, &pos);	//volta a posicao anterior
+		//Alocacao e leitura da tabela
 		CL = new Table(np, 1);
 		CL->Read(f);
 	}
@@ -93,13 +93,13 @@ bool AerodynamicData::Read(FILE *f)
 		}
 		else
 			return false;
-		//Salva a posi��o (stream)
+		//Salva a posicao (stream)
 		fpos_t pos;
 		fgetpos(f, &pos);
 		fscanf(f, "%s", s);
 		if (strcmp(s, "(Alpha/CM)"))
-			fsetpos(f, &pos);	//volta � posi��o anterior
-		//Aloca��o e leitura da tabela
+			fsetpos(f, &pos);	//volta a posicao anterior
+		//Alocacao e leitura da tabela
 		CM = new Table(np, 1);
 		CM->Read(f);
 	}

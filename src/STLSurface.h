@@ -20,10 +20,10 @@ public:
 
 	vector<float> coord_float;										//Coordenadas dos pontos do arquivo stl (CAD)
 	vector<double> coord_double;									//Coordenadas dos pontos do arquivo stl (CAD)
-	int n_CAD_points;												//Número de pontos do arquivo stl (CAD)
+	int n_CAD_points;												//Numero de pontos do arquivo stl (CAD)
 
 	bool Read(FILE *f);												//Leitura do arquivo de entrada
-	void Write(FILE *f);											//Escrita do arquivo de saída
+	void Write(FILE *f);											//Escrita do arquivo de saida
 	void PreCalc();													//PreCalc
 
 	bool ReadCADFile();												//Leitura do arquivo de CAD

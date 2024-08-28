@@ -16,7 +16,7 @@ public:
 	void Write(FILE *f);					//Writes output file
 	void WriteVTK_XML(FILE *f);				//Writes VTK XML data for post-processing
 	void PreCalc();							//Pre-calculus
-	void UpdateforSolutionStep();			//Atualiza dados necessários e que sejam dependentes de DOFs ativos/inativos - chamado no início de cada solution step
+	void UpdateforSolutionStep();			//Atualiza dados necessarios e que sejam dependentes de DOFs ativos/inativos - chamado no inicio de cada solution step
 	void Mount();
 	bool Check();							//Checking inconsistencies
 

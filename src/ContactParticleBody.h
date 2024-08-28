@@ -59,20 +59,20 @@ public:
 	virtual int VerifyConvectiveRange(Matrix& mc) = 0;							//Verifica range de coordenadas convectivas
 	virtual void InitializeConvectiveRange() = 0;								//Initialize range of validity of convective coordinates
 
-	bool FindMinimumSolution(SSContactData* c_data, Matrix* solution, int &return_info);								//Otimização - determinação de mínimo
-	bool FindMinimumSolutionDegenerated(SSContactData* c_data, Matrix* P_0, Matrix* solution);						//Otimização - determinação de mínimo
+	bool FindMinimumSolution(SSContactData* c_data, Matrix* solution, int &return_info);								//Otimização - determinação de minimo
+	bool FindMinimumSolutionDegenerated(SSContactData* c_data, Matrix* P_0, Matrix* solution);						//Otimização - determinação de minimo
 	//bool FindSaddleSolution(SSContactData* c_data, Matrix* solution, int &return_info, bool return_gap);				//Otimização - determinação de sela
 	//bool FindSaddleSolutionDegenerated(SSContactData* c_data, Matrix* P_0, Matrix* solution, bool return_gap);		//Otimização - determinação de sela
-	//bool FindMinimumGapDegenerated(SSContactData* c_data, Matrix* P_0, Matrix* solution, int &return_info, bool fixed_normals, Matrix& nA, Matrix& nB);			//Otimização - determinação de mínimo do gap com sinal
+	//bool FindMinimumGapDegenerated(SSContactData* c_data, Matrix* P_0, Matrix* solution, int &return_info, bool fixed_normals, Matrix& nA, Matrix& nB);			//Otimização - determinação de minimo do gap com sinal
 	int CharacterizeCriticalPoint(Matrix* solution);
 	int CharacterizeCriticalPointDegenerated(Matrix* solution, Matrix* P_0, bool print = false);
 	void DefaultValues();
-	double tol_small_1;		//Critério para número muito pequeno - resíduo != 0
-	double tol_eig;			//Critério para autovalor baixo
+	double tol_small_1;		//Criterio para numero muito pequeno - residuo != 0
+	double tol_eig;			//Criterio para autovalor baixo
 	double tol_convective;	//Criterio para maximo erro nas coordenadas convectivas
 	double tol_ascent;
-	int max_it_1;			//Número máximo de iterações para otimização - phase 1
-	int max_it_2;			//Número máximo de iterações para otimização - phase 2
+	int max_it_1;			//Numero maximo de iterações para otimização - phase 1
+	int max_it_2;			//Numero maximo de iterações para otimização - phase 2
 
 	virtual void MountGlobal() = 0;
 	virtual void MountGlobalExplicit() = 0;
@@ -116,8 +116,8 @@ public:
 	double*dB_zero;
 
 	Matrix* convective_range;	//Matrix que guarda os ranges de coordenadas convectivas validas para as superficies
-	Matrix* convective_max;		//Matrix que guarda os valores máximos de coordenadas convectivas
-	Matrix* convective_min;		//Matrix que guarda os valores mínimos de coordenadas convectivas
+	Matrix* convective_max;		//Matrix que guarda os valores maximos de coordenadas convectivas
+	Matrix* convective_min;		//Matrix que guarda os valores minimos de coordenadas convectivas
 	double minimum_convective_range;
 
 	bool invalid;

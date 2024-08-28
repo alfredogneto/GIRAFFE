@@ -8,7 +8,7 @@
 #include "Geometry.h"
 #include"Database.h"
 
-//Variáveis globais
+//Variaveis globais
 extern
 Database db;
 
@@ -372,7 +372,7 @@ void Verlet::RefreshVerletTables()
 																	final_sample = Nsampling;
 															}
 
-															//Atualização do ponteiro. Obs: o último apontara NULL, mas não entrará no loop (sai antes)
+															//Atualização do ponteiro. Obs: o ultimo apontara NULL, mas não entrara no loop (sai antes)
 															ptr_subbv = ptr_subbv->next;
 														}
 													}
@@ -386,7 +386,7 @@ void Verlet::RefreshVerletTables()
 											final_sample = Nsampling;
 									}
 								}
-								//Atualização do ponteiro. Obs: o último apontara NULL, mas não entrará no loop (sai antes)
+								//Atualização do ponteiro. Obs: o ultimo apontara NULL, mas não entrara no loop (sai antes)
 								ptr_bv = ptr_bv->next;
 							}
 						}
@@ -455,7 +455,7 @@ void Verlet::RefreshVerletTables()
 																final_sample = Nsampling;
 														}
 
-														//Atualização do ponteiro. Obs: o último apontara NULL, mas não entrará no loop (sai antes)
+														//Atualização do ponteiro. Obs: o ultimo apontara NULL, mas não entrara no loop (sai antes)
 														ptr_subbv = ptr_subbv->next;
 													}
 												}
@@ -468,7 +468,7 @@ void Verlet::RefreshVerletTables()
 									if (final_sample > Nsampling)
 										final_sample = Nsampling;
 								}
-								//Atualização do ponteiro. Obs: o último apontara NULL, mas não entrará no loop (sai antes)
+								//Atualização do ponteiro. Obs: o ultimo apontara NULL, mas não entrara no loop (sai antes)
 								ptr_bv = ptr_bv->next;
 							}
 						}
@@ -542,7 +542,7 @@ void Verlet::RefreshVerletTables()
 																	final_sample = Nsampling;
 															}
 
-															//Atualização do ponteiro. Obs: o último apontara NULL, mas não entrará no loop (sai antes)
+															//Atualização do ponteiro. Obs: o ultimo apontara NULL, mas não entrara no loop (sai antes)
 															ptr_subbv = ptr_subbv->next;
 														}
 													}
@@ -557,7 +557,7 @@ void Verlet::RefreshVerletTables()
 									}
 								}
 
-								//Atualização do ponteiro. Obs: o último apontara NULL, mas não entrará no loop (sai antes)
+								//Atualização do ponteiro. Obs: o ultimo apontara NULL, mas não entrara no loop (sai antes)
 								ptr_bv = ptr_bv->next;
 							}
 						}
@@ -628,7 +628,7 @@ void Verlet::RefreshVerletTables()
 																final_sample = Nsampling;
 														}
 
-														//Atualização do ponteiro. Obs: o último apontara NULL, mas não entrará no loop (sai antes)
+														//Atualização do ponteiro. Obs: o ultimo apontara NULL, mas não entrara no loop (sai antes)
 														ptr_subbv = ptr_subbv->next;
 													}
 												}
@@ -641,7 +641,7 @@ void Verlet::RefreshVerletTables()
 									if (final_sample > Nsampling)
 										final_sample = Nsampling;
 								}
-								//Atualização do ponteiro. Obs: o último apontara NULL, mas não entrará no loop (sai antes)
+								//Atualização do ponteiro. Obs: o ultimo apontara NULL, mas não entrara no loop (sai antes)
 								ptr_bv = ptr_bv->next;
 							}
 						}

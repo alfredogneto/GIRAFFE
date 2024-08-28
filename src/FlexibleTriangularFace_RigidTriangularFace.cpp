@@ -14,7 +14,7 @@
 #include "TimeStepControlData.h"
 
 #include"Database.h"
-//Variáveis globais
+//Variaveis globais
 extern
 Database db;
 #define PI 3.1415926535897932384626433832795
@@ -735,7 +735,7 @@ void FlexibleTriangularFace_RigidTriangularFace::PreCalc()
 
 void FlexibleTriangularFace_RigidTriangularFace::EvaluateNormalGap()
 {
-	//Cálculo da função gap (escalar)
+	//Calculo da função gap (escalar)
 	SurfacePoints();
 	//Gap vetorial
 	*cd->g[0] = *GammaA - *GammaB;
@@ -11070,7 +11070,7 @@ void FlexibleTriangularFace_RigidTriangularFace::PredictorTimeStep(double kin)
 			vOB(i, 0) = db.nodes[node_B - 1]->copy_vel[i];
 			dalphaB(i, 0) = db.nodes[node_B - 1]->copy_vel[i + 3];
 		}
-		//Obs: Xi é I3 nesse caso - acaba de salvar a configuração e o alpha avaliado em torno desse valor é nulo.
+		//Obs: Xi e I3 nesse caso - acaba de salvar a configuração e o alpha avaliado em torno desse valor e nulo.
 		Matrix omega_B = dalphaB;
 		VP_B = vOB + cross(omega_B, P_B);
 

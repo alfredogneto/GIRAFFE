@@ -21,7 +21,7 @@
 #include "InitialCondition.h"
 
 #include "Database.h"
-//Variáveis globais
+//Variaveis globais
 extern
 Database db;
 
@@ -58,14 +58,14 @@ void Solution::SetGlobalDOFs()
 			{
 				GL_free++;//global
 				db.nodes[i]->GLs[j] = GL_free;//numeração do GL global
-				db.nodes[i]->n_GL_free++;//incrementa o número de gls livres do nó
+				db.nodes[i]->n_GL_free++;//incrementa o numero de gls livres do nó
 			}
 			//se o GL for fixo e ativo
 			if (db.nodes[i]->constraints[j] == 1 && db.nodes[i]->active_GL[j] == 1)
 			{
 				GL_fixed--;//global
 				db.nodes[i]->GLs[j] = GL_fixed;//numeração do GL global
-				db.nodes[i]->n_GL_fixed++;//incrementa o número de gls fixos do nó
+				db.nodes[i]->n_GL_fixed++;//incrementa o numero de gls fixos do nó
 			}
 		}
 	}
@@ -151,7 +151,7 @@ void Solution::DOFsActive()
 			}
 		}
 	}
-	//Percorre partículas para ativar DOFs de acordo com a necessidade, para cada nó envolvido
+	//Percorre particulas para ativar DOFs de acordo com a necessidade, para cada nó envolvido
 	for (int i = 0; i < db.number_particles; i++)
 	{
 		temp_node = db.particles[i]->node;
@@ -163,10 +163,10 @@ void Solution::DOFsActive()
 					db.nodes[temp_node - 1]->active_GL[k] = 1;
 			}
 		}
-		//No caso de partículas associadas a super nodes, não há necessidade de ativar ou desativar. 
-		//No futuro pode ser modificado, introduzindo BoolTable na partícula e ativando-a de acordo com o step, se for o caso
+		//No caso de particulas associadas a super nodes, não ha necessidade de ativar ou desativar. 
+		//No futuro pode ser modificado, introduzindo BoolTable na particula e ativando-a de acordo com o step, se for o caso
 	}
-	//Percorre superfícies
+	//Percorre superficies
 	for (int i = 0; i < db.number_surfaces; i++)
 	{
 		if (db.surfaces[i]->pilot_is_used == true)
@@ -288,7 +288,7 @@ void Solution::MountSpecialConstraints()
 void Solution::MountContacts()
 {
 	high_resolution_clock::time_point t_last = high_resolution_clock::now();
-	//Montagem das superfícies de contato - FillNodes()
+	//Montagem das superficies de contato - FillNodes()
 #pragma omp parallel
 	{
 #pragma omp for
@@ -325,7 +325,7 @@ void Solution::MountGlobal()
 	//Montagem da matriz global, passando por cada um dos elementos existentes na malha
 	for (int i = 0; i < db.number_elements; i++)
 		db.elements[i]->MountGlobal();
-	//Montagem da matriz global, passando por cada uma das partículas existentes
+	//Montagem da matriz global, passando por cada uma das particulas existentes
 	for (int i = 0; i < db.number_particles; i++)
 		db.particles[i]->MountGlobal();
 	//Para cada par de contato monta contribuições na matriz global
@@ -445,7 +445,7 @@ void Solution::SaveConfiguration()
 #pragma omp parallel
 	{
 #pragma omp for
-		//Salvando variáveis de interesse de cada elemento, referentes à descrição lagrangiana atualizada - valores nos pontos de Gauss
+		//Salvando variaveis de interesse de cada elemento, referentes a descrição lagrangiana atualizada - valores nos pontos de Gauss
 		for (int i = 0; i < db.number_elements; i++)
 		{
 			db.elements[i]->SaveLagrange();
@@ -455,7 +455,7 @@ void Solution::SaveConfiguration()
 #pragma omp parallel
 	{
 #pragma omp for
-		//Salvando variáveis de interesse de cada contato, referentes à descrição lagrangiana atualizada
+		//Salvando variaveis de interesse de cada contato, referentes a descrição lagrangiana atualizada
 		for (int i = 0; i < db.number_contacts; i++)
 		{
 			if (db.contacts[i]->bool_table.GetAt(db.current_solution_number - 1))
@@ -466,7 +466,7 @@ void Solution::SaveConfiguration()
 #pragma omp parallel
 	{
 #pragma omp for
-		//Salvando variáveis de interesse de cada elemento, referentes à descrição lagrangiana atualizada - valores nos pontos de Gauss
+		//Salvando variaveis de interesse de cada elemento, referentes a descrição lagrangiana atualizada - valores nos pontos de Gauss
 		for (int i = 0; i < db.number_surfaces; i++)
 		{
 			db.surfaces[i]->SaveConfiguration();
@@ -483,7 +483,7 @@ void Solution::SaveConfiguration()
 #pragma omp parallel
 	{
 #pragma omp for
-		//Salvando variáveis de interesse de cada contato, referentes à descrição lagrangiana atualizada
+		//Salvando variaveis de interesse de cada contato, referentes a descrição lagrangiana atualizada
 		for (int i = 0; i < db.number_particles; i++)
 		{
 			db.particles[i]->SaveLagrange();
@@ -493,7 +493,7 @@ void Solution::SaveConfiguration()
 #pragma omp parallel
 	{
 #pragma omp for
-		//Salvando variáveis de interesse de cada contato, referentes à descrição lagrangiana atualizada
+		//Salvando variaveis de interesse de cada contato, referentes a descrição lagrangiana atualizada
 		for (int i = 0; i < db.number_boundaries; i++)
 		{
 			db.boundaries[i]->SaveLagrange();
@@ -503,7 +503,7 @@ void Solution::SaveConfiguration()
 #pragma omp parallel
 	{
 #pragma omp for
-		//Salvando variáveis de interesse de cada body_contact_boundary
+		//Salvando variaveis de interesse de cada body_contact_boundary
 		for (int i = 0; i < db.number_body_geometries; i++)
 		{
 			db.body_geometries[i]->SaveLagrange();
@@ -513,7 +513,7 @@ void Solution::SaveConfiguration()
 #pragma omp parallel
 	{
 #pragma omp for
-		//Salvando variáveis de interesse de cada special constraint
+		//Salvando variaveis de interesse de cada special constraint
 		for (int i = 0; i < db.number_special_constraints; i++)
 		{
 			if (db.special_constraints[i]->bool_table.GetAt(db.current_solution_number - 1))
@@ -527,7 +527,7 @@ void Solution::SaveConfiguration()
 
 }
 
-//Restaura a última configuração que convergiu
+//Restaura a ultima configuração que convergiu
 void Solution::RestoreConfiguration()
 {
 	//Zera todos os deslocamentos dos nós, para que na próxima iteração, o chute inicial seja esse (Lag. Atualizado)
@@ -553,7 +553,7 @@ void Solution::RestoreConfiguration()
 		
 	}
 
-	//Multiplicadores de lagrange das special constraints - restaurando o último valor convergido
+	//Multiplicadores de lagrange das special constraints - restaurando o ultimo valor convergido
 	for (int i = 0; i < db.number_special_constraints; i++)
 	{
 		for (int j = 0; j < db.special_constraints[i]->n_GL; j++)
@@ -634,7 +634,7 @@ void Solution::SetGlobalSize()
 	db.global_X_B.setColumns(1);
 	db.global_X_B.alloc();
 
-	//Vetores para avaliação de critérios de parada
+	//Vetores para avaliação de criterios de parada
 	/*db.global_ABS_P_A.setLines(db.n_GL_free);
 	db.global_ABS_P_A.setColumns(1);
 	db.global_ABS_P_A.alloc();
@@ -667,7 +667,7 @@ void Solution::PinballCheck()
 	}
 }
 
-//checagem inicial de início de step para contatos
+//checagem inicial de inicio de step para contatos
 void Solution::BeginStepCheck()
 {
 	if (db.contacts_exist == true)
@@ -692,7 +692,7 @@ void Solution::BeginStepCheck()
 			}
 		}
 
-//		//Montagem das superfícies de contato - FillNodes()
+//		//Montagem das superficies de contato - FillNodes()
 //#pragma omp parallel
 //		{
 //#pragma omp for
@@ -757,7 +757,7 @@ void Solution::MountDyn()
 		cout << "MountDyn duration:\t" << duration / 1e6 << " sec." << "\n";
 }
 
-//Verifica erros que impedem avança da análise, mesmo em caso de convergência
+//Verifica erros que impedem avança da analise, mesmo em caso de convergência
 bool Solution::HaveErrors()
 {
 	//Updating bounding boxes of surfaces
@@ -793,12 +793,12 @@ bool Solution::HaveErrors()
 	return false;
 }
 
-//Zera variáveis iterativas para chute inicial nulo
+//Zera variaveis iterativas para chute inicial nulo
 void Solution::Zeros()
 {
 	for (int i = 0; i < db.number_nodes; i++)
 	{
-		//Zera deslocamentos e rotações para o início da próxima iteração
+		//Zera deslocamentos e rotações para o inicio da próxima iteração
 		for (int j = 0; j < 6; j++)
 			db.nodes[i]->displacements[j] = 0.0;
 		//Explicit
@@ -812,12 +812,12 @@ void Solution::Zeros()
 	}
 }
 
-//Zera velocidades e acelerações para realização de análise estática (seguida da dinâmica)
+//Zera velocidades e acelerações para realização de analise estatica (seguida da dinamica)
 void Solution::ZerosVelAccel()
 {
 	for (int i = 0; i < db.number_nodes; i++)
 	{
-		//Zera deslocamentos e rotações para o início da próxima iteração
+		//Zera deslocamentos e rotações para o inicio da próxima iteração
 		for (int j = 0; j < 6; j++)
 		{
 			db.nodes[i]->copy_vel[j] = 0.0;
@@ -872,7 +872,7 @@ void Solution::ComputeInitialConditions(bool zero_IC)
 	}
 	for (int i = 0; i < db.number_IC; i++)
 		db.IC[i]->ComputeInitialCondition();
-	//Computa velocidade e aceleracao devido à imposição de restrições (salva na variavel vel e accel)
+	//Computa velocidade e aceleracao devido a imposição de restrições (salva na variavel vel e accel)
 	for (int i = 0; i < db.number_special_constraints; i++)
 	{
 		db.special_constraints[i]->ComputeVelAccel();

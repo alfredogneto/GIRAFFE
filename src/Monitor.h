@@ -39,7 +39,7 @@ public:
 
 	int sample;
 
-	bool first_record;	//Flag que indica que é a primeira vez que a função UpdateMonitor é chamada (para gravar cabeçalhos nos arquivos)
+	bool first_record;	//Flag que indica que e a primeira vez que a função UpdateMonitor e chamada (para gravar cabeçalhos nos arquivos)
 	bool contact_special_output;
 	bool print_times;
 
