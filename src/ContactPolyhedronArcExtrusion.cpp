@@ -1200,7 +1200,7 @@ void ContactPolyhedronArcExtrusion::HessianPhase1(Matrix& mc, Matrix& mHes)
 	cBi[1] = cd->copy_convective[0][3];
 
 	//ACEGEN
-	int i255, i264, b301, b313;
+	int i255, i264, b313;
 	v[355] = -0.5e0;
 	v[356] = -0.5e0;
 	v[357] = 0e0;
@@ -1560,9 +1560,9 @@ void ContactPolyhedronArcExtrusion::MountLocalContributions()
 	double v026; double v027; double v03; double v04; double v05; double v06; double v07;
 	double v08; double v09;
 	int i1148, i1256, i1618, i2433, i4369, i4801, i6418, i6419, i6420, i6421, i6422, i6423
-		, i6427, i6428, i6429, b4, b5, b6, b414, b415, b942, b943, b975, b1030, b1039, b1040, b1048
-		, b1049, b1050, b1051, b1054, b1055, b1063, b1064, b1077, b1078, b1079, b1080, b1096, b1113
-		, b1114, b1126, b1153, b1157, b1158, b1162, b1370, b1374, b1375, b1383, b1623, b1624, b1625
+		, i6427, i6428, i6429, b4, b5, b6, b414, b942, b1039, b1048
+		, b1050, b1063, b1079, b1113
+		, b1153, b1157, b1158, b1162, b1370, b1374, b1375, b1383, b1623, b1624, b1625
 		, b1626, b1713, b1714, b1718, b1722, b1723, b1737, b1738, b1966, b2006, b2059, b2895, b2953
 		, b2999, b3445, b3449, b3451, b3452, b3457, b3458, b3484, b3485, b3486, b3502, b3633, b3634
 		, b3644, b3648, b3652, b3666, b3667, b3783, b3814, b3883, b4381, b4382, b4390, b4391, b4395

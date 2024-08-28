@@ -1002,8 +1002,8 @@ void SPSP::PinballCheck()
 				db.splines[n_SP1 - 1]->sp_element[tempsurf1]->CenterPoint(&center1, &r1);
 				db.splines[n_SP2 - 1]->sp_element[tempsurf2]->CenterPoint(&center2, &r2);
 
-				float rrpinball_square = (r1 + r2 + pinball) * (r1 + r2 + pinball);
-				float dist_cc_square = dot(center1 - center2, center1 - center2);
+				float rrpinball_square = (float)( (r1 + r2 + pinball) * (r1 + r2 + pinball));
+				float dist_cc_square = (float)( dot(center1 - center2, center1 - center2));
 
 				if (dist_cc_square <= rrpinball_square)
 				{

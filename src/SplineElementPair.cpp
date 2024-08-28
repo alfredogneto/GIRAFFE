@@ -1128,7 +1128,7 @@ bool SplineElementPair::FindMinimumSolutionDegenerated(SPContactData* c_data, Ma
 	double error = tol_ortho + 1.0;
 	//Initial guess report
 	if (write_report)
-		fprintf(f_TR_report[seq_number], "%d\t%.12e\t%.12e\t%.12e\t%.12e\t%.6e\t%.6e\t%.6e\t%c\t%.6e\t%.6e\t%.6e\n", it, xk(0, 0), xk(1, 0), ob, error, Deltak, c, rhok, actual_reduction, predicted_reduction);
+		fprintf(f_TR_report[seq_number], "%d\t%.12e\t%.12e\t%.6e\t%.6e\t%.6e\t%c\t%.6e\t%.6e\t%.6e\n", it, xk(0, 0), xk(1, 0), ob, error, Deltak, c, rhok, actual_reduction, predicted_reduction);
 	/////////////////////////////////////////////////////BEGIN///////////////////////////////////////////////
 	while ((error > tol_ortho || norm((*P_0) * pk) > tol_convective) && it <= max_it)
 	{
@@ -1314,7 +1314,7 @@ void SplineElementPair::WriteConvectiveRange()
 		strcat(name, pair_name);		//nome do arquivo
 		strcat(name, ".txt");			//criando arquivo
 		f_TR_report[seq_number] = fopen(name, "a");
-		fprintf(f_TR_report[seq_number], "ConvectiveRange:\nMin\t%.6e\tMax\t%.6e\tRange\t%.6e\nMin\t%.6e\tMax\t%.6e\tRange\t%.6e\nMin\t%.6e\tMax\t%.6e\tRange\t%.6e\nMin\t%.6e\tMax\t%.6e\tRange\t%.6e\n",
+		fprintf(f_TR_report[seq_number], "ConvectiveRange:\nMin\t%.6e\tMax\t%.6e\tRange\t%.6e\nMin\t%.6e\tMax\t%.6e\tRange\t%.6e\n",
 			convective_min(0, 0), convective_max(0, 0), convective_range(0, 0),
 			convective_min(1, 0), convective_max(1, 0), convective_range(1, 0)/*,
 		convective_min(2, 0), convective_max(2, 0), convective_range(2, 0),

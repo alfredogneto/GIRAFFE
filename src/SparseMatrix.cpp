@@ -102,7 +102,7 @@ Matrix sparsesystem(SparseMatrix &A, Matrix &b, int *info_fail,int processors,in
 	int*		ia = A.m_matrix.outerIndexPtr();			//Índice dos valores "outer" da matriz
 	int*		ja = A.m_matrix.innerIndexPtr();			//Índice do primeiro valor da linha da matriz
 
-	int			n = A.m_matrix.rows();						//Número de linhas da matriz
+	int			n = (int)A.m_matrix.rows();						//Número de linhas da matriz
 	int			nnz = ia[n];								//Número de valores na matriz
 	Matrix		x(n);										//Matriz de retorno - solução
 	if (n == 0)
@@ -176,7 +176,7 @@ Matrix operator * (SparseMatrix &matrix1, Matrix &matrix2)
 	}
 	else
 	{
-		Matrix return_m(matrix1.m_matrix.rows(), 1);
+		Matrix return_m((long)matrix1.m_matrix.rows(), 1);
 
 		double*		a = matrix1.m_matrix.valuePtr();					//Valores da matriz
 		int*		ia = matrix1.m_matrix.outerIndexPtr();			//Índice dos valores das colunas da matriz
@@ -236,16 +236,16 @@ void SparseMatrix::WriteMatrix(char* name)
 {
 	FILE *f = fopen(name, "w");
 	//Loop para percorrer as linhas
-	fprintf(f, "rows\t%d\n",m_matrix.rows());
-	fprintf(f, "columns\t%d\n",m_matrix.cols());
+	fprintf(f, "rows\t%d\n",(int)m_matrix.rows());
+	fprintf(f, "columns\t%d\n",(int)m_matrix.cols());
 	fprintf(f, "row\t");
 	fprintf(f, "column\t");
 	fprintf(f, "value\n");
 	for (int k = 0; k<m_matrix.outerSize(); ++k)
 	for (Eigen::SparseMatrix<double, 1, int>::InnerIterator it(m_matrix, k); it; ++it)
 	{
-		fprintf(f, "%d\t", it.row() + 1);
-		fprintf(f, "%d\t", it.col() + 1);
+		fprintf(f, "%d\t", (int) it.row() + 1);
+		fprintf(f, "%d\t", (int) it.col() + 1);
 		fprintf(f, "%.20e\n", it.value());
 	}
 	fclose(f);

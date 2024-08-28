@@ -210,8 +210,8 @@ void FlexibleSECylinder_1_FlexibleTriangularSurface_2::ContactSS(bool *stick, bo
 	int i1238, i1310, i1640, i1946, i2931, i2997, i3453, i3454, i3455, i3456, i3457, i3458
 		, i3523, i3524, i3525, i3526, i3527, i3528, i3533, i3534, i3535, i3536, i3537, i3538, i3539
 		, i3540, i3541, i3542, i3543, i3544, i3545, i3546, i3547, i3548, i3549, i3550, i3559, i3560
-		, i3561, i3562, i3563, i3564, i3723, i3724, i3725, i3726, i3727, i3728, b1016, b1017, b1049
-		, b1167, b1168, b1169, b1185, b1202, b1203, b1215, b1516, b1645, b1646, b1647, b1688, b1737
+		, i3561, i3562, i3563, i3564, i3723, i3724, i3725, i3726, i3727, i3728, b1016
+		, b1168, b1202, b1645, b1646, b1647, b1688, b1737
 		, b2238, b2283, b2354, b2355, b2372, b2593, b2630;
 	v[3475] = -((*a4)*(*ct));
 	v[1518] = cos(cp[1]);
@@ -7298,7 +7298,6 @@ double FlexibleSECylinder_1_FlexibleTriangularSurface_2::Gap(Matrix& mc, bool fi
 	double* normalB = nB.getMatrix();
 	double Ob;
 
-	int b358;
 	v[266] = sin(cp[1]);
 	v[221] = cos(cp[1]);
 	v[227] = fabs(v[266]);
@@ -7472,7 +7471,7 @@ void FlexibleSECylinder_1_FlexibleTriangularSurface_2::GradientGap(Matrix& mc, M
 	double* normalB = nB.getMatrix();
 	double* Gra = mGra.getMatrix();
 	 
-	int i704, b358;
+	int i704;
 	v[360] = sin(cp[1]);
 	v[321] = cos(cp[1]);
 	v[267] = _copysign(1.e0, v[360]);
@@ -7764,7 +7763,7 @@ void FlexibleSECylinder_1_FlexibleTriangularSurface_2::HessianGap(Matrix& mc, Ma
 	double* normalB = nB.getMatrix();
 	double Hes[4][4];
 
-	int i702, b358;
+	int i702;
 	v[360] = sin(cp[1]);
 	v[321] = cos(cp[1]);
 	v[267] = _copysign(1.e0, v[360]);

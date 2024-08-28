@@ -701,7 +701,7 @@ void ContactArcExtrusionArcRevolution::HessianPhase1(Matrix& mc, Matrix& mHes)
 	double Hes[4][4];
 
 	//ACEGEN
-	int i246, i254, i295, b287, b297;
+	int i246, i254, i295, b297;
 	v[215] = cos(c[2]);
 	v[294] = v[215] ;
 	v[210] = sin(c[2]);
@@ -910,7 +910,6 @@ double ContactArcExtrusionArcRevolution::Gap(Matrix& mc, bool fixed_normals, Mat
 	double* normalB = nB.getMatrix();
 
 	//ACEGEN
-	int b237;
 	v[215] = cos(c[2]);
 	v[210] = sin(c[2]);
 	v[250] = v[210] ;
@@ -1056,7 +1055,7 @@ void ContactArcExtrusionArcRevolution::GradientGap(Matrix& mc, Matrix& mGra, boo
 	double* normalB = nB.getMatrix();
 
 	//ACEGEN
-	int i246, i312, i313, b237, b248;
+	int i246, i312, i313, b248;
 	v[215] = cos(c[2]);
 	v[317] = -(v[215] );
 	v[210] = sin(c[2]);
@@ -1296,7 +1295,7 @@ void ContactArcExtrusionArcRevolution::HessianGap(Matrix& mc, Matrix& mHes, bool
 	double* normalB = nB.getMatrix();
 
 	//ACEGEN
-	int i246, i302, i438, i441, i450, b237, b248, b361, b421, b462;
+	int i246, i302, i438, i441, i450, b248, b361, b462;
 	v[215] = cos(c[2]);
 	v[210] = sin(c[2]);
 	v[93] = Power(dA[3], 2);
@@ -1797,9 +1796,9 @@ void ContactArcExtrusionArcRevolution::MountLocalContributions()
 	double v07; double v08; double v09;
 	int i1149, i1284, i1687, i2526, i4521, i5016, i6660, i6661, i6662, i6663, i6664, i6665
 		, i6673, i6674, i6675, i6957, i6958, i6959, i6960, i6961, i6962, i6963, i6990, i6991, i7003
-		, i7004, b4, b5, b6, b382, b418, b419, b941, b942, b974, b1031, b1040, b1041, b1049, b1050
-		, b1051, b1052, b1055, b1056, b1064, b1065, b1078, b1079, b1080, b1081, b1097, b1114, b1115
-		, b1127, b1157, b1161, b1162, b1166, b1168, b1413, b1427, b1431, b1432, b1440, b1444, b1692
+		, i7004, b4, b5, b6, b418, b941, b1040, b1049
+		, b1051, b1064, b1080, b1114
+		, b1157, b1161, b1162, b1166, b1168, b1413, b1427, b1431, b1432, b1440, b1444, b1692
 		, b1693, b1694, b1695, b1782, b1783, b1787, b1791, b1792, b1806, b1807, b2033, b2073, b2126
 		, b2133, b3008, b3022, b3083, b3129, b3583, b3587, b3589, b3590, b3595, b3596, b3622, b3623
 		, b3624, b3640, b3771, b3772, b3782, b3786, b3790, b3804, b3805, b3921, b3952, b4021, b4022

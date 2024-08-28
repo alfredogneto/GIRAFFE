@@ -283,7 +283,7 @@ void SECylinder::Write(FILE *f)
 		sprintf(s, "NormalInterior");
 	else
 		sprintf(s, "NormalExterior");
-	fprintf(f, "SECylinder\t%d\tMaterial\t%d\tA\t%.6e\tB\t%.6e\tN\t%.6e\tCSA\t%d\tCSB\t%d\t%s\tNodes\t%d\t%d\n", number, material, a, b, n, csA, csB, s, nodes[0], nodes[1]);
+	fprintf(f, "SECylinder\t%d\tMaterial\t%d\tA\t%.6e\tB\t%.6e\tN\t%.6e\tCSA\t%d\tCSB\t%d\t%s\tNodes\t%d\t%d\n", number, material, *a, *b, *n, csA, csB, s, nodes[0], nodes[1]);
 	//PS: degeneration info is not printed
 }
 
