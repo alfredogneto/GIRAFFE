@@ -42,15 +42,15 @@ In summary, **Giraffe** installation requires the following steps:
 git clone https://github.com/alfredogneto/GIRAFFE.git
 ```
   3. Install [Intel oneMKL](https://www.intel.com/content/www/us/en/developer/tools/oneapi/onemkl-download.html) library.
-  4. Run the here provided batch files in the sequence. Please, wait for the conclusion of the first batch file before run the second one. Next, we describe what each file does:
+  4. Run the provided `install_dependencies.bat` file, the following is a description of what it does:
   
   `install_dependencies.bat`: creates a `/dependencies` folder, clones [exprtk](https://github.com/ArashPartow/exprtk.git), [Eigen](https://gitlab.com/libeigen/eigen.git) and [vcpkg](https://github.com/microsoft/vcpkg.git), such as installs the last one. Afer, it installs [arpack-ng](https://github.com/opencollab/arpack-ng.git). Creates environment variables for **GIRAFFE** execution. All variables are created in the user's profile and are based in the folder where Giraffe is located on your computer.
 
-  `build.bat`: builds and compiles **Giraffe** for [Microsoft Visual Studio](https://visualstudio.microsoft.com/) (Release mode by default).
+  5. After `install_dependencies.bat` finishes, manually add the following entries to the **user** environment variable `Path`: `%GIRAFFE_PATH%` and `%MKL_PATH%`.  This can be done, for example, using the procedure described [here](https://www.java.com/en/download/help/path.html). Obs: If you want to add these paths to the **system** version of `Path`, you have to copy the variables into the system scope too.
   
-  5. The last step is to manually add to the environment variable `Path` of your operational system the following paths: `%GIRAFFE_PATH%` and `%MKL_PATH%`. This can be done, for example, using the procedure described [here](https://www.java.com/en/download/help/path.html). PS: you can add these paths either to system variables or to variables for the user. Both work fine. Take care not to overwrite some of the available paths defined in your system/user, to avoid problems.
+  6. The last step is to run `build.bat`.
 
-After finishing all the steps, you will find the [Microsoft Visual Studio](https://visualstudio.microsoft.com/) project created in the folder `/build`, such as other files generated automatically during installation.
+   `build.bat`: sets up the project files for [Microsoft Visual Studio](https://visualstudio.microsoft.com/) and builds **Giraffe** (Release mode by default). Both the project files and executable can be found in `./build` and `./build/Release` respectively.
 
 # Executing 
 
