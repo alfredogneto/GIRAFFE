@@ -1,7 +1,17 @@
 #include "ContactPolyhedronSTLBoundary.h"
-#include "Database.h"
 
-//Variáveis globais
+#include "Polyhedron.h"
+#include "STLBoundary.h"
+#include "STLSurface.h"
+#include "TriangularFace.h"
+#include "Matrix.h"
+#include "RigidTriangularFace_RigidTriangularFace.h"
+#include "GeneralContactSearch.h"
+#include "SurfacePairGeneralContact.h"
+#include "Node.h"
+
+#include "Database.h"
+//Variaveis globais
 extern
 Database db;
 
@@ -241,8 +251,8 @@ void ContactPolyhedronSTLBoundary::FinalProcessSurfacePairsExplicit(double t)
 
 void ContactPolyhedronSTLBoundary::MountGlobalExplicit()
 {
-	//Variáveis temporárias para salvar a indexação global dos graus de liberdade a serem setados na matriz de rigidez global
-	//Obs: aqui os contatos são subtraídos pois no explícito já está isolada a aceleração e aqui entram como se fosse forças externas, sendo necessária a inversão do sinal
+	//Variaveis temporarias para salvar a indexação global dos graus de liberdade a serem setados na matriz de rigidez global
+	//Obs: aqui os contatos são subtraidos pois no explicito ja esta isolada a aceleração e aqui entram como se fosse forças externas, sendo necessaria a inversão do sinal
 	int GL_global_1 = 0;
 	double anterior = 0;
 	for (int c = 0; c < contact_pairs.size(); c++)
@@ -269,7 +279,7 @@ void ContactPolyhedronSTLBoundary::MountGlobalExplicit()
 					}
 					else
 					{
-						if (GL_global_1 != 0)//se o GL é ativo
+						if (GL_global_1 != 0)//se o GL e ativo
 						{
 							anterior = db.global_P_B(-GL_global_1 - 1, 0);
 							db.global_P_B(-GL_global_1 - 1, 0) = anterior - contact_pairs[c]->Rc[i];
@@ -283,7 +293,7 @@ void ContactPolyhedronSTLBoundary::MountGlobalExplicit()
 
 void ContactPolyhedronSTLBoundary::MountGlobal()
 {
-	//Variáveis temporárias para salvar a indexação global dos graus de liberdade a serem setados na matriz de rigidez global
+	//Variaveis temporarias para salvar a indexação global dos graus de liberdade a serem setados na matriz de rigidez global
 	int GL_global_1 = 0;
 	int GL_global_2 = 0;
 	double anterior = 0;
@@ -309,7 +319,7 @@ void ContactPolyhedronSTLBoundary::MountGlobal()
 					}
 					else
 					{
-						if (GL_global_1 != 0)//se o GL é ativo
+						if (GL_global_1 != 0)//se o GL e ativo
 						{
 							anterior = db.global_P_B(-GL_global_1 - 1, 0);
 							db.global_P_B(-GL_global_1 - 1, 0) = anterior + contact_pairs[c]->Rc[i];

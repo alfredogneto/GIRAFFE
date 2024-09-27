@@ -1,16 +1,15 @@
 #pragma once
-#include "SSContactData.h"
-#include "Surface.h"
 #include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
+#include "Matrix.h"
+
+class SSContactData;
 
 class SurfacePair
 {
 public:
 	SurfacePair();
 	virtual ~SurfacePair();
-	//Chute inicial para coordenadas convectivas do par de superfícies
+	//Chute inicial para coordenadas convectivas do par de superficies
 	virtual void InitialGuess(SSContactData* c_data) = 0;				
 	//Single function for both contributions
 	virtual void ContactSS(bool *stick, bool *stickupdated, bool *previouscontact, double* Rc, double** Kc, double** invH, double* convective, double* copy_convective, double* gti, double* gtpupdated, double* epsn, double* epsn0, double* epst, double* cn, double* ct, double* mus, double* mud, double* fn, double* ft) = 0;
@@ -26,17 +25,17 @@ public:
 	virtual void InitializeConvectiveRange() = 0;								//Initialize range of validity of convective coordinates
 	
 	void WriteConvectiveRange();						//Escreve convective range no report
-	void PreCalc();																										//Pré cálculo
+	void PreCalc();																										//Pre calculo
 	void Alloc(SSContactData* c_data);																				//Aloca memória
 	void Free();																										//Libera memória											
-	void DefaultValues();																								//Valores Default de tolerâncias e outras variáveis
+	void DefaultValues();																								//Valores Default de tolerancias e outras variaveis
 	
 	void EvaluateInvertedHessian(SSContactData* c_data);																//Calcula a inversa da Hessiana
-	bool FindMinimumSolution(SSContactData* c_data, Matrix* solution, int &return_info);								//Otimização - determinação de mínimo
-	bool FindMinimumSolutionDegenerated(SSContactData* c_data, Matrix* P_0, Matrix* solution);						//Otimização - determinação de mínimo
+	bool FindMinimumSolution(SSContactData* c_data, Matrix* solution, int &return_info);								//Otimização - determinação de minimo
+	bool FindMinimumSolutionDegenerated(SSContactData* c_data, Matrix* P_0, Matrix* solution);						//Otimização - determinação de minimo
 	bool FindSaddleSolution(SSContactData* c_data, Matrix* solution, int &return_info, bool return_gap);				//Otimização - determinação de sela
 	bool FindSaddleSolutionDegenerated(SSContactData* c_data, Matrix* P_0, Matrix* solution, bool return_gap);		//Otimização - determinação de sela
-	bool FindMinimumGapDegenerated(SSContactData* c_data, Matrix* P_0, Matrix* solution, int &return_info, bool fixed_normals, Matrix& nA, Matrix& nB);			//Otimização - determinação de mínimo do gap com sinal
+	bool FindMinimumGapDegenerated(SSContactData* c_data, Matrix* P_0, Matrix* solution, int &return_info, bool fixed_normals, Matrix& nA, Matrix& nB);			//Otimização - determinação de minimo do gap com sinal
 	
 	void BeginStepCheck(SSContactData* c_data);					
 	bool EndStepCheck(SSContactData* c_data);
@@ -46,31 +45,31 @@ public:
 	int CharacterizeCriticalPointDegenerated(Matrix* solution, Matrix* P_0, bool print = false);
 	void AutomaticDegenerationProcedure();																				//Performs automatic degeneration according to eigenvalues of Hessian
 	
-	//Variáveis internas
-	int surf1_ID;			//ID da superfície 1
-	int surf2_ID;			//ID da superfície 2
-	bool inverted;			//Indica que há inversão dos tipos de superfície (não se aplica quando o par é formado por superfícies de mesmo tipo)
+	//Variaveis internas
+	int surf1_ID;			//ID da superficie 1
+	int surf2_ID;			//ID da superficie 2
+	bool inverted;			//Indica que ha inversão dos tipos de superficie (não se aplica quando o par e formado por superficies de mesmo tipo)
 	bool alloc_control;
 	Matrix** cNR1;			//Solução da phase 1
 	Matrix** cNR2;			//Solução da phase 2
-	Matrix** cdeg;			//Solução degenerada no início do incremento
+	Matrix** cdeg;			//Solução degenerada no inicio do incremento
 	
-	double tol_small_1;		//Critério para número muito pequeno - resíduo != 0
-	double tol_eig;			//Critério para autovalor baixo
+	double tol_small_1;		//Criterio para numero muito pequeno - residuo != 0
+	double tol_eig;			//Criterio para autovalor baixo
 	double tol_convective;	//Criterio para maximo erro nas coordenadas convectivas
 	double tol_ascent;
 	int seq_number;
 
-	int max_it_1;			//Número máximo de iterações para otimização - phase 1
-	int max_it_2;			//Número máximo de iterações para otimização - phase 2
+	int max_it_1;			//Numero maximo de iterações para otimização - phase 1
+	int max_it_2;			//Numero maximo de iterações para otimização - phase 2
 
 	bool* flag_degenerated;	//Flag que indica ocorrência de degeneração
-	int n_pointwise;		//Número de interações pointwise (atribuído no construtor)
+	int n_pointwise;		//Numero de interações pointwise (atribuido no construtor)
 	
 	double perc;			//Percentual de coordenada convectiva para considerar longe ou perto do range (afeta return value da funcao ConvectiveRange)
 	Matrix convective_range;//Matrix que guarda os ranges de coordenadas convectivas validas para as superficies
-	Matrix convective_max;	//Matrix que guarda os valores máximos de coordenadas convectivas
-	Matrix convective_min;	//Matrix que guarda os valores mínimos de coordenadas convectivas
+	Matrix convective_max;	//Matrix que guarda os valores maximos de coordenadas convectivas
+	Matrix convective_min;	//Matrix que guarda os valores minimos de coordenadas convectivas
 	double minimum_convective_range;	
 	//TR report
 	FILE **f_TR_report;

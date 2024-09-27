@@ -1,15 +1,12 @@
 //Collision Detection Functions
 
-#include <typeinfo>
-#include <float.h> 
-
-#include "BoundingVolume.h"
-
-#include "BoundingSphere.h"
-#include "BoundingCylinder.h"
-#include "BoundingTriangularBox.h"
-#include "BoundingBoxAxesOriented.h"
-#include "BoundingBoxAxesAligned.h"
+class BoundingVolume;
+class BoundingSphere;
+class BoundingCylinder;
+class BoundingTriangularBox;
+class BoundingBoxAxesOriented;
+class BoundingBoxAxesAligned;
+class MatrixFloat;
 
 bool CollisionDetection(BoundingVolume* bv_1, BoundingVolume* bv_2);
 

@@ -1,9 +1,11 @@
 #include "Particle.h"
 #include"Database.h"
 
-//Variáveis globais
+//Variaveis globais
 extern
 Database db;
+
+#define PI 3.1415926535897932384626433832795
 
 Particle::Particle()
 {
@@ -13,7 +15,7 @@ Particle::~Particle()
 {
 }
 
-//Escreve no monitor da partícula
+//Escreve no monitor da particula
 void Particle::WriteMonitor(FILE *f, bool first_record, double time)
 {
 	//Cabeçalho

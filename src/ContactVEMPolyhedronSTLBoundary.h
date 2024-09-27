@@ -1,9 +1,10 @@
 #pragma once
 #include "ContactParticleBoundary.h"
-#include "VEMPolyhedron.h"
-#include "STLBoundary.h"
-#include "STLSurface.h"
-#include "TriangularFace.h"
+
+class VEMPolyhedron;
+class STLBoundary;
+class STLSurface;
+class TriangularFace;
 
 class ContactVEMPolyhedronSTLBoundary :
 	public ContactParticleBoundary

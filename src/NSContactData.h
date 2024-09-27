@@ -1,6 +1,7 @@
-#include "Matrix.h"
-
 #pragma once
+
+class Matrix;
+
 class NSContactData
 {
 public:
@@ -25,9 +26,9 @@ public:
 	Matrix** t1_i;
 	Matrix** t2_i;
 	Matrix** n_i;
-	bool alloced;								//Booleana que indica se está ou não alocado - controle de alocação
+	bool alloced;								//Booleana que indica se esta ou não alocado - controle de alocação
 	
-	void CheckRepeated(double tol_coordinate_value);	//Checa repetição de raízes e salva a informação na matriz 'repeated'
+	void CheckRepeated(double tol_coordinate_value);	//Checa repetição de raizes e salva a informação na matriz 'repeated'
 	void Plot();
 	void Alloc();										//Aloca matrizes
 	void Free();										//Desaloca matrizes

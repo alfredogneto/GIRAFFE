@@ -1,5 +1,7 @@
 #pragma once
 #include "Element.h"
+#include "Matrix.h"
+
 class SpringDashpot_1 :
 	public Element
 {
@@ -16,19 +18,19 @@ public:
 	void Mount();			//Monta elementos
 	void MountElementLoads();			//Monta carregamentos associados ao elemento
 	void MountMass();					//Monta a matriz de massa
-	void MountMassModal();				//Monta a matriz de massa para realização da análise modal
+	void MountMassModal();				//Monta a matriz de massa para realização da analise modal
 	void MountDamping(bool update_rayleigh);				//Monta a matriz de amortecimento
-	void MountDampingModal();			//Monta a matriz de amortecimento para realização da análise modal
+	void MountDampingModal();			//Monta a matriz de amortecimento para realização da analise modal
 	void MountDyn();					//Montagens - Newmark
-	void MountDynModal();				//Montagens para análise modal - inserção da matriz de massa e amortecimento na matriz de rigidez para posterior montagem global
+	void MountDynModal();				//Montagens para analise modal - inserção da matriz de massa e amortecimento na matriz de rigidez para posterior montagem global
 	void TransformMatrix();	//Monta matriz de transformação de coordenadas
 	void MountGlobal();		//Preenche a contribuição do elemento nas matrizes globais
 
-	void SaveLagrange();	//Salva variáveis nos pontos de Gauss úteis para descrição lagrangiana atualizada
-	void PreCalc();		//Pré-cálculo de variáveis que é feito uma única vez no início
+	void SaveLagrange();	//Salva variaveis nos pontos de Gauss uteis para descrição lagrangiana atualizada
+	void PreCalc();		//Pre-calculo de variaveis que e feito uma unica vez no inicio
 	void Zeros();			//Zera matrizes locais do elemento
 
-	//Variáveis do elemento
+	//Variaveis do elemento
 	double k;	//Stiffness
 	double c;	//Damping
 	double initial_distance;
@@ -38,10 +40,10 @@ public:
 	Matrix c_stiffness;									//Matriz de rigidez
 	Matrix c_damping;									//Matriz de amortecimento
 	Matrix c_damping_modal;									//Matriz de amortecimento
-	Matrix c_stiffness_force;							//Vetor de esforços elásticos
+	Matrix c_stiffness_force;							//Vetor de esforços elasticos
 	Matrix c_damping_force;								//Vetor de esforços de amortecimento
 	Matrix I3;
-	Matrix z1z2;	//distância atual entre nós
+	Matrix z1z2;	//distancia atual entre nós
 	Matrix n;		//direção normal da mola
 	
 	Matrix non;
@@ -54,7 +56,7 @@ public:
 	double elastic_force;
 	double damping_force;
 
-	Matrix last_n;	//última direção normal convergida da mola
+	Matrix last_n;	//ultima direção normal convergida da mola
 	bool first_evaluation;
 };
 

@@ -1,5 +1,6 @@
 #pragma once
 #include "SectionDetails.h"
+
 class SolidSection :
 	public SectionDetails
 {
@@ -13,7 +14,7 @@ public:
 	void WriteVTK_XMLRender(FILE *f, Beam_1* elem);
 
 	int n_points;
-	double** points;													//Contém coordenadas dos pontos que formam a ST
+	double** points;													//Contem coordenadas dos pontos que formam a ST
 	
 };
 

@@ -4,7 +4,26 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 
-//Variáveis globais
+#include "Static.h"
+#include "Dynamic.h"
+#include "ExplicitDynamic.h"
+#include "Modal.h"
+#include "Element.h"
+#include "RigidBody_1.h"
+#include "Particle.h"
+#include "Contact.h"
+#include "Boundary.h"
+#include "Geometry.h"
+#include "GeneralContactSearch.h"
+#include "Node.h"
+#include "Encoding.h"
+#include "Sphere.h"
+#include "Spline.h"
+#include "SpecialConstraint.h"
+#include "Constraint.h"
+#include "Load.h"
+
+//Variaveis globais
 extern
 Database db;
 
@@ -633,10 +652,10 @@ void PostFiles::WriteVTK_XMLRender(int sol_index, double time, int index, int pa
 	sprintf(analysis, "solution_%d", sol_index);
 	strcat(name, analysis);
 	strcat(name, "/");
-	_mkdir(name);	//cria a pasta com o tipo de análise em questão
+	_mkdir(name);	//cria a pasta com o tipo de analise em questão
 	char number[20];
 	char number2[50];
-	_itoa(index - 1, number, 10);	//Converte o número inteiro para char, a fim de escrever o arquivo de resultados com o nome desejado
+	_itoa(index - 1, number, 10);	//Converte o numero inteiro para char, a fim de escrever o arquivo de resultados com o nome desejado
 	sprintf(number2, "%lf", time);	//Converte o time para char
 	strcat(name, analysis);
 	strcat(name, "_rendermesh_");
@@ -644,7 +663,7 @@ void PostFiles::WriteVTK_XMLRender(int sol_index, double time, int index, int pa
 	if (part != 0)
 	{
 		strcat(name, "_part_");
-		_itoa(part, number2, 10);	//Converte o número inteiro para char, a fim de escrever o arquivo de resultados com o nome desejado
+		_itoa(part, number2, 10);	//Converte o numero inteiro para char, a fim de escrever o arquivo de resultados com o nome desejado
 		strcat(name, number2);
 	}
 	strcat(name, ".vtu");
@@ -670,7 +689,7 @@ void PostFiles::WriteVTK_XMLRender(int sol_index, double time, int index, int pa
 	fprintf(f_VTK, "<VTKFile type=\"UnstructuredGrid\" version=\"1.0\" byte_order=\"LittleEndian\" header_type=\"UInt64\">\n");
 	fprintf(f_VTK, "<!--INPUT: %s - TIME = %.10f-->\n", db.file_name, time);
 	fprintf(f_VTK, "\t<UnstructuredGrid>\n");
-	//Conteúdo das Pieces que irão estar no arquivo .vtu
+	//Conteudo das Pieces que irão estar no arquivo .vtu
 	for (int ele = 0; ele < db.number_elements; ele++)
 	{
 		if (typeid(*db.elements[ele]) != typeid(RigidBody_1))
@@ -693,10 +712,10 @@ void PostFiles::WriteVTK_XMLRBParticles(int sol_index, double time, int index)
 	sprintf(analysis, "solution_%d", sol_index);
 	strcat(name, analysis);
 	strcat(name, "/");
-	_mkdir(name);	//cria a pasta com o tipo de análise em questão
+	_mkdir(name);	//cria a pasta com o tipo de analise em questão
 	char number[20];
 	char number2[50];
-	_itoa(index - 1, number, 10);	//Converte o número inteiro para char, a fim de escrever o arquivo de resultados com o nome desejado
+	_itoa(index - 1, number, 10);	//Converte o numero inteiro para char, a fim de escrever o arquivo de resultados com o nome desejado
 	sprintf(number2, "%lf", time);	//Converte o time para char
 	strcat(name, analysis);
 	strcat(name, "_rb_particles_");
@@ -718,7 +737,7 @@ void PostFiles::WriteVTK_XMLRBParticles(int sol_index, double time, int index)
 	fprintf(f_VTK, "<VTKFile type=\"UnstructuredGrid\" version=\"1.0\" byte_order=\"LittleEndian\" header_type=\"UInt64\">\n");
 	fprintf(f_VTK, "<!--INPUT: %s - TIME = %.10f-->\n", db.file_name, time);
 	fprintf(f_VTK, "\t<UnstructuredGrid>\n");
-	//Conteúdo das Pieces que irão estar no arquivo .vtu
+	//Conteudo das Pieces que irão estar no arquivo .vtu
 	if (db.post_files->WriteRenderRigidBodies_flag == true)
 	{
 		for (int ele = 0; ele < db.number_elements; ele++)
@@ -729,7 +748,7 @@ void PostFiles::WriteVTK_XMLRBParticles(int sol_index, double time, int index)
 	}
 	if (db.post_files->WriteRenderParticles_flag == true)
 	{
-		//Conteúdo das Pieces que irão estar no arquivo .vtu
+		//Conteudo das Pieces que irão estar no arquivo .vtu
 		for (int ele = 0; ele < db.number_particles; ele++)
 			db.particles[ele]->WriteVTK_XMLRender(f_VTK);
 	}
@@ -749,10 +768,10 @@ void PostFiles::WriteVTK_XMLContact(int sol_index, double time, int index)
 	sprintf(analysis, "solution_%d", sol_index);
 	strcat(name, analysis);
 	strcat(name, "/");
-	_mkdir(name);	//cria a pasta com o tipo de análise em questão
+	_mkdir(name);	//cria a pasta com o tipo de analise em questão
 	char number[20];
 	char number2[50];
-	_itoa(index - 1, number, 10);	//Converte o número inteiro para char, a fim de escrever o arquivo de resultados com o nome desejado
+	_itoa(index - 1, number, 10);	//Converte o numero inteiro para char, a fim de escrever o arquivo de resultados com o nome desejado
 	sprintf(number2, "%lf", time);	//Converte o time para char
 	strcat(name, analysis);
 	strcat(name, "_contactsurfaces_");
@@ -774,18 +793,18 @@ void PostFiles::WriteVTK_XMLContact(int sol_index, double time, int index)
 	fprintf(f_VTK, "<VTKFile type=\"UnstructuredGrid\" version=\"1.0\" byte_order=\"LittleEndian\" header_type=\"UInt64\">\n");
 	fprintf(f_VTK, "<!--INPUT: %s - TIME = %.10f-->\n", db.file_name, time);
 	fprintf(f_VTK, "\t<UnstructuredGrid>\n");
-	//Conteúdo das Pieces que irão estar no arquivo .vtu
+	//Conteudo das Pieces que irão estar no arquivo .vtu
 	for (int conta = 0; conta < db.number_contacts; conta++)
 		db.contacts[conta]->WriteVTK_XMLRender(f_VTK);
 	if (WriteRigidContactSurfaces_flag)
 	{
-		//Conteúdo das Pieces que irão estar no arquivo .vtu
+		//Conteudo das Pieces que irão estar no arquivo .vtu
 		for (int surf = 0; surf < db.number_boundaries; surf++)
 			db.boundaries[surf]->WriteVTK_XMLRender(f_VTK);
 	}
 	if (WriteFlexibleContactSurfaces_flag)
 	{
-		//Conteúdo das Geometries que irão estar no arquivo .vtu
+		//Conteudo das Geometries que irão estar no arquivo .vtu
 		for (int geom = 0; geom < db.number_geometries; geom++)
 			db.geometries[geom]->WriteVTK_XMLRender(f_VTK);
 	}
@@ -807,10 +826,10 @@ void PostFiles::WriteVTK_XMLContactForces(int sol_index, double time, int index)
 	sprintf(analysis, "solution_%d", sol_index);
 	strcat(name, analysis);
 	strcat(name, "/");
-	_mkdir(name);	//cria a pasta com o tipo de análise em questão
+	_mkdir(name);	//cria a pasta com o tipo de analise em questão
 	char number[20];
 	char number2[50];
-	_itoa(index - 1, number, 10);	//Converte o número inteiro para char, a fim de escrever o arquivo de resultados com o nome desejado
+	_itoa(index - 1, number, 10);	//Converte o numero inteiro para char, a fim de escrever o arquivo de resultados com o nome desejado
 	sprintf(number2, "%lf", time);	//Converte o time para char
 	strcat(name, analysis);
 	strcat(name, "_contactforces_");
@@ -832,7 +851,7 @@ void PostFiles::WriteVTK_XMLContactForces(int sol_index, double time, int index)
 	fprintf(f_VTK, "<VTKFile type=\"UnstructuredGrid\" version=\"1.0\" byte_order=\"LittleEndian\" header_type=\"UInt64\">\n");
 	fprintf(f_VTK, "<!--INPUT: %s - TIME = %.10f-->\n", db.file_name, time);
 	fprintf(f_VTK, "\t<UnstructuredGrid>\n");
-	//Conteúdo das Pieces que irão estar no arquivo .vtu
+	//Conteudo das Pieces que irão estar no arquivo .vtu
 	for (int conta = 0; conta < db.number_contacts; conta++)
 		if (db.contacts[conta]->bool_table.GetAt(db.current_solution_number - 1))
 			db.contacts[conta]->WriteVTK_XMLForces(f_VTK);
@@ -862,14 +881,14 @@ void PostFiles::WriteVTK_XMLBase(int sol_index, double time, int index, int part
 	_mkdir(name);
 	char number[20];
 	char number2[20];
-	_itoa(index - 1, number, 10);	//Converte o número inteiro para char, a fim de escrever o arquivo de resultados com o nome desejado
+	_itoa(index - 1, number, 10);	//Converte o numero inteiro para char, a fim de escrever o arquivo de resultados com o nome desejado
 	strcat(name, analysis);
 	strcat(name, "_mesh_");
 	strcat(name, number);
 	if (part != 0)
 	{
 		strcat(name, "_part_");
-		_itoa(part, number2, 10);	//Converte o número inteiro para char, a fim de escrever o arquivo de resultados com o nome desejado
+		_itoa(part, number2, 10);	//Converte o numero inteiro para char, a fim de escrever o arquivo de resultados com o nome desejado
 		strcat(name, number2);
 	}
 	strcat(name, ".vtu");
@@ -886,13 +905,13 @@ void PostFiles::WriteVTK_XMLBase(int sol_index, double time, int index, int part
 	strcat(name, ".vtu");
 	//Atualiza pvd
 	fprintf(f_mesh_pvd[sol_index - 1], "\t\t<DataSet timestep=\"%.10f\" group=\"\" part=\"%d\" name=\"Part %d\" file=\"%s\"/>\n", time, part, part, name);
-	//Somente atualiza o pvd do whole solution se part for 0 (ou seja, se não for análise multi-part (modal, por exemplo))
+	//Somente atualiza o pvd do whole solution se part for 0 (ou seja, se não for analise multi-part (modal, por exemplo))
 	if (part == 0)
 		fprintf(f_mesh_pvd[db.number_solutions], "\t\t<DataSet timestep=\"%.10f\" group=\"\" part=\"0\" file=\"%s\"/>\n", time, name);
 	
 	double tempx, tempy, tempz;
 	
-	//vetores para escrita no formato binário - usando a função 'enconde'
+	//vetores para escrita no formato binario - usando a função 'enconde'
 	std::vector<float> float_vector;
 	std::vector<int> int_vector;
 	
@@ -1188,10 +1207,10 @@ void PostFiles::WriteVTK_XMLSpline(int sol_index, double time, int index)
 	sprintf(analysis, "solution_%d", sol_index);
 	strcat(name, analysis);
 	strcat(name, "/");
-	_mkdir(name);	//cria a pasta com o tipo de análise em questão
+	_mkdir(name);	//cria a pasta com o tipo de analise em questão
 	char number[20];
 	char number2[50];
-	_itoa(index - 1, number, 10);	//Converte o número inteiro para char, a fim de escrever o arquivo de resultados com o nome desejado
+	_itoa(index - 1, number, 10);	//Converte o numero inteiro para char, a fim de escrever o arquivo de resultados com o nome desejado
 	sprintf(number2, "%lf", time);	//Converte o time para char
 	strcat(name, analysis);
 	strcat(name, "_spline_");
@@ -1206,7 +1225,7 @@ void PostFiles::WriteVTK_XMLSpline(int sol_index, double time, int index)
 	strcat(name, ".vtu");
 	//Atualiza pvd	
 	fprintf(f_spline_pvd[sol_index - 1], "\t\t<DataSet timestep=\"%.10f\" group=\"\" part=\"%d\" name=\"Part %d\" file=\"%s\"/>\n", time, 0, 0, name);
-	//Somente atualiza o pvd do whole solution se part for 0 (ou seja, se não for análise multi-part (modal, por exemplo))
+	//Somente atualiza o pvd do whole solution se part for 0 (ou seja, se não for analise multi-part (modal, por exemplo))
 	fprintf(f_spline_pvd[db.number_solutions], "\t\t<DataSet timestep=\"%.10f\" group=\"\" part=\"0\" file=\"%s\"/>\n", time, name);
 
 	//Cabeçalho do arquivo VTK
@@ -1214,7 +1233,7 @@ void PostFiles::WriteVTK_XMLSpline(int sol_index, double time, int index)
 	fprintf(f_VTK, "<VTKFile type=\"UnstructuredGrid\" version=\"1.0\" byte_order=\"LittleEndian\" header_type=\"UInt64\">\n");
 	fprintf(f_VTK, "<!--INPUT: %s - TIME = %.10f-->\n", db.file_name, time);
 	fprintf(f_VTK, "\t<UnstructuredGrid>\n");
-	//Conteúdo das Pieces que irão estar no arquivo .vtu
+	//Conteudo das Pieces que irão estar no arquivo .vtu
 	for (int ele = 0; ele < db.number_splines; ele++)
 	{
 		db.splines[ele]->WriteVTK_XML_SplineMesh(f_VTK);
@@ -1236,10 +1255,10 @@ void PostFiles::WriteVTK_XMLRenderSpline(int sol_index, double time, int index)
 	sprintf(analysis, "solution_%d", sol_index);
 	strcat(name, analysis);
 	strcat(name, "/");
-	_mkdir(name);	//cria a pasta com o tipo de análise em questão
+	_mkdir(name);	//cria a pasta com o tipo de analise em questão
 	char number[20];
 	char number2[50];
-	_itoa(index - 1, number, 10);	//Converte o número inteiro para char, a fim de escrever o arquivo de resultados com o nome desejado
+	_itoa(index - 1, number, 10);	//Converte o numero inteiro para char, a fim de escrever o arquivo de resultados com o nome desejado
 	sprintf(number2, "%lf", time);	//Converte o time para char
 	strcat(name, analysis);
 	strcat(name, "_renderspline_");
@@ -1254,7 +1273,7 @@ void PostFiles::WriteVTK_XMLRenderSpline(int sol_index, double time, int index)
 	strcat(name, ".vtu");
 	//Atualiza pvd	
 	fprintf(f_renderspline_pvd[sol_index - 1], "\t\t<DataSet timestep=\"%.10f\" group=\"\" part=\"%d\" name=\"Part %d\" file=\"%s\"/>\n", time, 0, 0, name);
-	//Somente atualiza o pvd do whole solution se part for 0 (ou seja, se não for análise multi-part (modal, por exemplo))
+	//Somente atualiza o pvd do whole solution se part for 0 (ou seja, se não for analise multi-part (modal, por exemplo))
 	fprintf(f_renderspline_pvd[db.number_solutions], "\t\t<DataSet timestep=\"%.10f\" group=\"\" part=\"0\" file=\"%s\"/>\n", time, name);
 
 	//Cabeçalho do arquivo VTK
@@ -1262,7 +1281,7 @@ void PostFiles::WriteVTK_XMLRenderSpline(int sol_index, double time, int index)
 	fprintf(f_VTK, "<VTKFile type=\"UnstructuredGrid\" version=\"1.0\" byte_order=\"LittleEndian\" header_type=\"UInt64\">\n");
 	fprintf(f_VTK, "<!--INPUT: %s - TIME = %.10f-->\n", db.file_name, time);
 	fprintf(f_VTK, "\t<UnstructuredGrid>\n");
-	//Conteúdo das Pieces que irão estar no arquivo .vtu
+	//Conteudo das Pieces que irão estar no arquivo .vtu
 	for (int ele = 0; ele < db.number_splines; ele++)
 	{
 		db.splines[ele]->WriteVTK_XML_SplineRender(f_VTK);
@@ -1284,10 +1303,10 @@ void PostFiles::WriteVTK_XMLSymbols(int sol_index, double time, int index)
 	sprintf(analysis, "solution_%d", sol_index);
 	strcat(name, analysis);
 	strcat(name, "/");
-	_mkdir(name);	//cria a pasta com o tipo de análise em questão
+	_mkdir(name);	//cria a pasta com o tipo de analise em questão
 	char number[20];
 	char number2[50];
-	_itoa(index - 1, number, 10);	//Converte o número inteiro para char, a fim de escrever o arquivo de resultados com o nome desejado
+	_itoa(index - 1, number, 10);	//Converte o numero inteiro para char, a fim de escrever o arquivo de resultados com o nome desejado
 	sprintf(number2, "%lf", time);	//Converte o time para char
 	strcat(name, analysis);
 	strcat(name, "_symbols_");
@@ -1309,7 +1328,7 @@ void PostFiles::WriteVTK_XMLSymbols(int sol_index, double time, int index)
 	fprintf(f_VTK, "<VTKFile type=\"UnstructuredGrid\" version=\"1.0\" byte_order=\"LittleEndian\" header_type=\"UInt64\">\n");
 	fprintf(f_VTK, "<!--INPUT: %s - TIME = %.10f-->\n", db.file_name, time);
 	fprintf(f_VTK, "\t<UnstructuredGrid>\n");
-	//Conteúdo das Pieces que irão estar no arquivo .vtu
+	//Conteudo das Pieces que irão estar no arquivo .vtu
 	for (int i = 0; i < db.number_special_constraints; i++)
 		db.special_constraints[i]->WriteVTK_XMLRender(f_VTK);
 	fprintf(f_VTK, "\t</UnstructuredGrid>\n");
@@ -1329,10 +1348,10 @@ void PostFiles::WriteVTK_XMLConstraints(int sol_index, double time, int index)
 	sprintf(analysis, "solution_%d", sol_index);
 	strcat(name, analysis);
 	strcat(name, "/");
-	_mkdir(name);	//cria a pasta com o tipo de análise em questão
+	_mkdir(name);	//cria a pasta com o tipo de analise em questão
 	char number[20];
 	char number2[50];
-	_itoa(index - 1, number, 10);	//Converte o número inteiro para char, a fim de escrever o arquivo de resultados com o nome desejado
+	_itoa(index - 1, number, 10);	//Converte o numero inteiro para char, a fim de escrever o arquivo de resultados com o nome desejado
 	sprintf(number2, "%lf", time);	//Converte o time para char
 	strcat(name, analysis);
 	strcat(name, "_constraints_");
@@ -1354,7 +1373,7 @@ void PostFiles::WriteVTK_XMLConstraints(int sol_index, double time, int index)
 	fprintf(f_VTK, "<VTKFile type=\"UnstructuredGrid\" version=\"1.0\" byte_order=\"LittleEndian\" header_type=\"UInt64\">\n");
 	fprintf(f_VTK, "<!--INPUT: %s - TIME = %.10f-->\n", db.file_name, time);
 	fprintf(f_VTK, "\t<UnstructuredGrid>\n");
-	//Conteúdo das Pieces que irão estar no arquivo .vtu
+	//Conteudo das Pieces que irão estar no arquivo .vtu
 	for (int i = 0; i < db.number_constraints; i++)
 		db.constraints[i]->WriteVTK_XML(f_VTK);
 	fprintf(f_VTK, "\t</UnstructuredGrid>\n");
@@ -1374,10 +1393,10 @@ void PostFiles::WriteVTK_XMLForces(int sol_index, double time, int index)
 	sprintf(analysis, "solution_%d", sol_index);
 	strcat(name, analysis);
 	strcat(name, "/");
-	_mkdir(name);	//cria a pasta com o tipo de análise em questão
+	_mkdir(name);	//cria a pasta com o tipo de analise em questão
 	char number[20];
 	char number2[50];
-	_itoa(index - 1, number, 10);	//Converte o número inteiro para char, a fim de escrever o arquivo de resultados com o nome desejado
+	_itoa(index - 1, number, 10);	//Converte o numero inteiro para char, a fim de escrever o arquivo de resultados com o nome desejado
 	sprintf(number2, "%lf", time);	//Converte o time para char
 	strcat(name, analysis);
 	strcat(name, "_forces_");
@@ -1399,7 +1418,7 @@ void PostFiles::WriteVTK_XMLForces(int sol_index, double time, int index)
 	fprintf(f_VTK, "<VTKFile type=\"UnstructuredGrid\" version=\"1.0\" byte_order=\"LittleEndian\" header_type=\"UInt64\">\n");
 	fprintf(f_VTK, "<!--INPUT: %s - TIME = %.10f-->\n", db.file_name, time);
 	fprintf(f_VTK, "\t<UnstructuredGrid>\n");
-	//Conteúdo das Pieces que irão estar no arquivo .vtu
+	//Conteudo das Pieces que irão estar no arquivo .vtu
 	for (int i = 0; i < db.number_loads; i++)
 		db.loads[i]->WriteVTK_XML(f_VTK);
 	fprintf(f_VTK, "\t</UnstructuredGrid>\n");
@@ -1421,10 +1440,10 @@ void PostFiles::WriteConfigurationResults(int sol_index, double time, int index)
 	sprintf(analysis, "solution_%d", sol_index);
 	strcat(name, analysis);
 	strcat(name, "/");
-	_mkdir(name);	//cria a pasta com o tipo de análise em questão
+	_mkdir(name);	//cria a pasta com o tipo de analise em questão
 	char number[20];
 	char number2[50];
-	_itoa(index - 1, number, 10);	//Converte o número inteiro para char, a fim de escrever o arquivo de resultados com o nome desejado
+	_itoa(index - 1, number, 10);	//Converte o numero inteiro para char, a fim de escrever o arquivo de resultados com o nome desejado
 	sprintf(number2, "%lf", time);	//Converte o time para char
 	strcat(name, analysis);
 	strcat(name, "_configuration_");
@@ -1446,7 +1465,7 @@ void PostFiles::WriteConfigurationResults(int sol_index, double time, int index)
 void PostFiles::WriteSingleVertexPart(FILE *f)
 {
 	//Creates a single null contact force at origin - to avoid bugs in paraview visualization
-	//vetores para escrita no formato binário - usando a função 'enconde'
+	//vetores para escrita no formato binario - usando a função 'enconde'
 	std::vector<float> float_vector;
 	float_vector.clear();
 	float_vector.push_back(0.0);

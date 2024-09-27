@@ -1,8 +1,17 @@
 #include "ArcExtrusion.h"
 
-#include"Database.h"
+#include "BoundingCylinder.h"
+#include "MatrixFloat.h"
+#include "ArcCirc.h"
+#include "Node.h"
+#include "CoordinateSystem.h"
+#include "Encoding.h"
+#include "PostFiles.h"
+#include "Interface_1.h"
+#include "GeneralContactSearch.h"
 
-//Variáveis globais
+#include"Database.h"
+//Variaveis globais
 extern
 Database db;
 
@@ -49,7 +58,7 @@ void ArcExtrusion::AllocSpecific()
 	sprintf(type_name, "ArcExtrusion");
 	bv_offset = 0.0f;
 
-	//Variáveis para calcular estado atual (nas funcoes de bounding volume)
+	//Variaveis para calcular estado atual (nas funcoes de bounding volume)
 	xAf = new MatrixFloat(3);
 	xBf = new MatrixFloat(3);
 
@@ -273,7 +282,7 @@ void ArcExtrusion::PreCalc()
 	Matrix e2l = *db.CS[cs - 1]->E2;
 	Matrix e3l = *db.CS[cs - 1]->E3;
 
-	//Salva a matriz de transformação de coordenadas (para orientar o plano da ST de acordo com a orientação de referência da superfície)
+	//Salva a matriz de transformação de coordenadas (para orientar o plano da ST de acordo com a orientação de referência da superficie)
 	(*Q0)(0, 0) = dot(e1g, e1l);
 	(*Q0)(0, 1) = dot(e1g, e2l);
 	(*Q0)(0, 2) = dot(e1g, e3l);
@@ -440,7 +449,7 @@ void ArcExtrusion::WriteVTK_XMLRender(FILE *f)
 	{
 		int n_circ = 24;
 
-		//Número de pontos a serem gerados
+		//Numero de pontos a serem gerados
 		int n_points = n_circ + 1;
 		double** points;
 		points = new double*[n_points];
@@ -462,14 +471,14 @@ void ArcExtrusion::WriteVTK_XMLRender(FILE *f)
 			theta += dtheta;
 		}
 
-		//vetores para escrita no formato binário - usando a função 'enconde'
+		//vetores para escrita no formato binario - usando a função 'enconde'
 		std::vector<float> float_vector;
 		std::vector<int> int_vector;
 
 		Matrix vec_P(3);
-		//Número de pontos a serem gerados
+		//Numero de pontos a serem gerados
 		n_points = n_circ * 2;
-		//Número de células a serem geradas
+		//Numero de celulas a serem geradas
 		int n_cells = n_circ;
 		//Opens Piece
 		fprintf(f, "\t\t<Piece NumberOfPoints=\"%d\" NumberOfCells=\"%d\">\n", n_points, n_cells);
@@ -481,7 +490,7 @@ void ArcExtrusion::WriteVTK_XMLRender(FILE *f)
 		//Preenchendo as coordenadas dos pontos
 		for (int i = 0; i < 2; i++)//percorrendo os 2 nós das extremidades
 		{
-			for (int point = 0; point < n_circ; point++)//Percorre os nós que descrevem o perímetro da ST
+			for (int point = 0; point < n_circ; point++)//Percorre os nós que descrevem o perimetro da ST
 			{
 				//Posição de cada ponto P no plano xy (referência)
 				vec_P(0, 0) = points[point][0];

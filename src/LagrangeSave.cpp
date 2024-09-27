@@ -1,13 +1,14 @@
 #include "LagrangeSave.h"
 
+#include "Matrix.h"
 #include"Database.h"
-//Variáveis globais
+//Variaveis globais
 extern
 Database db;
 
 LagrangeSave::LagrangeSave(void)
 {
-	//Variáveis salvas
+	//Variaveis salvas
 	Q_i = new Matrix*[2];					//Tensor rotação no instante i
 	Q_i[0] = new Matrix(3, 3);
 	Q_i[1] = new Matrix(3, 3);
@@ -36,7 +37,7 @@ LagrangeSave::LagrangeSave(void)
 	dz_i[0] = new Matrix(3);
 	dz_i[1] = new Matrix(3);
 
-	//Inicialização de valores nas variáveis
+	//Inicialização de valores nas variaveis
 	(*(Q_i[0]))(0, 0) = 1.0;
 	(*(Q_i[0]))(1, 1) = 1.0;
 	(*(Q_i[0]))(2, 2) = 1.0;
@@ -45,7 +46,7 @@ LagrangeSave::LagrangeSave(void)
 	(*(Q_i[1]))(1, 1) = 1.0;
 	(*(Q_i[1]))(2, 2) = 1.0;
 
-	(*dz_i[0])(2, 0) = 1.0;		//Sempre será esse valor (sistema local)
+	(*dz_i[0])(2, 0) = 1.0;		//Sempre sera esse valor (sistema local)
 	(*dz_i[1])(2, 0) = 1.0;
 
 	(*d_alpha_i[0])(0, 0) = 0;

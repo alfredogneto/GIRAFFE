@@ -1,9 +1,11 @@
 #pragma once
 #include "ContactParticleBoundary.h"
-#include "Polyhedron.h"
-#include "STLBoundary.h"
-#include "STLSurface.h"
-#include "TriangularFace.h"
+
+class Polyhedron;
+class STLBoundary;
+class STLSurface;
+class TriangularFace;
+class Matrix;
 
 class ContactPolyhedronSTLBoundary :
 	public ContactParticleBoundary

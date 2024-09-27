@@ -1,5 +1,8 @@
 #pragma once
 #include "Geometry.h"
+
+class MatrixFloat;
+
 class ArcExtrusion :
 	public Geometry
 {
@@ -20,7 +23,7 @@ public:
 
 	void UpdateVariables();
 	void UpdateBoundingVolumes();				//Updates bounding volumes
-	void SaveLagrange();						//Salva variáveis
+	void SaveLagrange();						//Salva variaveis
 
 	//Variables - ArcExtrusion
 	int arc_ID;													//ID do arco a ser extrudado
@@ -36,14 +39,14 @@ public:
 	float BVradius;
 	MatrixFloat* x_local;
 	
-	//Variáveis para escolha do lado concavo ou convexo
+	//Variaveis para escolha do lado concavo ou convexo
 	bool flag_normal_int;									//Flag para indicar uso de normal interior/exterior
 
-	//Variáveis para calcular estado atual (nas funcoes de bounding volume)
+	//Variaveis para calcular estado atual (nas funcoes de bounding volume)
 	MatrixFloat* xAf;
 	MatrixFloat* xBf;
 
-	//Variáveis para calcular estado atual (nas funcoes de contato)
+	//Variaveis para calcular estado atual (nas funcoes de contato)
 	Matrix* x_Ai;
 	Matrix* x_Ap;
 	Matrix* x_Bi;

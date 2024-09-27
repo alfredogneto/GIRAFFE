@@ -1,8 +1,16 @@
 #include "Mass_1.h"
+
+#include "Node.h"
+#include "Encoding.h"
+#include "Environment.h"
+#include "Material.h"
+#include "Dynamic.h"
+
 #include"Database.h"
-//Variáveis globais
+//Variaveis globais
 extern
 Database db;
+#define PI 3.1415926535897932384626433832795
 
 Mass_1::Mass_1()
 {
@@ -129,7 +137,7 @@ void Mass_1::WriteVTK_XMLBase(std::vector<float> *float_vector)
 
 void Mass_1::WriteVTK_XMLRender(FILE *f)
 {
-	//vetores para escrita no formato binário - usando a função 'enconde'
+	//vetores para escrita no formato binario - usando a função 'enconde'
 	std::vector<float> float_vector;
 	std::vector<int> int_vector;
 
@@ -318,12 +326,12 @@ void Mass_1::MountGlobal()
 		}
 	}
 }
-//Salva variáveis nos pontos de Gauss úteis para descrição lagrangiana atualizada
+//Salva variaveis nos pontos de Gauss uteis para descrição lagrangiana atualizada
 void Mass_1::SaveLagrange()
 {
 	//DOES NOTHING
 }
-//Pré-cálculo de variáveis que é feito uma única vez no início
+//Pre-calculo de variaveis que e feito uma unica vez no inicio
 void Mass_1::PreCalc()
 {
 	//Tenta tomar como referência algum material existente no modelo
@@ -350,7 +358,7 @@ void Mass_1::MountMassModal()
 	c_mass = m*I3;
 }
 
-//Monta a matriz de amortecimento para realização da análise modal
+//Monta a matriz de amortecimento para realização da analise modal
 void Mass_1::MountDampingModal()
 {
 	Zeros();
@@ -368,9 +376,9 @@ void Mass_1::MountDyn()
 	Matrix accel(3);
 	for (int ind = 0; ind < 3; ind++)
 		accel(ind, 0) = db.nodes[nodes[0] - 1]->accel[ind];
-	//Modificações da dinâmica nos esforços - presença das forças de inércia
+	//Modificações da dinamica nos esforços - presença das forças de inercia
 	c_loading = c_loading + c_mass*accel;
-	//Modificações da dinâmica na matriz de rigidez:
+	//Modificações da dinamica na matriz de rigidez:
 	Dynamic* ptr_sol = static_cast<Dynamic*>(db.solution[db.current_solution_number - 1]);
 	c_mass = ptr_sol->a1*c_mass;
 }
@@ -383,7 +391,7 @@ void Mass_1::Zeros()
 	strain_energy = 0.0;
 	potential_gravitational_energy = 0.0;
 }
-//Montagens para análise modal - inserção da matriz de massa e amortecimento na matriz de rigidez para posterior montagem global
+//Montagens para analise modal - inserção da matriz de massa e amortecimento na matriz de rigidez para posterior montagem global
 void Mass_1::MountDynModal()
 {
 	//DOES NOTHING

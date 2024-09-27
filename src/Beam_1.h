@@ -1,6 +1,7 @@
 #pragma once
 #include "Element.h"
-#include "LagrangeSave.h"
+
+class LagrangeSave;
 
 class Beam_1 :
 	public Element
@@ -18,28 +19,28 @@ public:
 	void Mount();						//Monta elementos
 	void MountElementLoads();			//Monta carregamentos associados ao elemento
 	void MountMass();					//Monta a matriz de massa
-	void MountMassModal();				//Monta a matriz de massa para realização da análise modal
-	void MountDampingModal();			//Monta a matriz de amortecimento para realização da análise modal
+	void MountMassModal();				//Monta a matriz de massa para realização da analise modal
+	void MountDampingModal();			//Monta a matriz de amortecimento para realização da analise modal
 	void MountDamping(bool update_rayleigh);				//Monta a matriz de amortecimento
 	void MountDyn() ;					//Montagens - Newmark
-	void MountDynModal();				//Montagens para análise modal - inserção da matriz de massa e amortecimento na matriz de rigidez para posterior montagem global
+	void MountDynModal();				//Montagens para analise modal - inserção da matriz de massa e amortecimento na matriz de rigidez para posterior montagem global
 	void MountFieldLoading();			//Monta carregamentos de campo
 	void TransformMatrix();				//Monta matriz de transformação de coordenadas
 	void MountGlobal();					//Preenche a contribuição do elemento nas matrizes globais
-	void SaveLagrange();				//Salva variáveis nos pontos de Gauss úteis para descrição lagrangiana atualizada
-	void PreCalc();						//Pré-cálculo de variáveis que é feito uma única vez no início
+	void SaveLagrange();				//Salva variaveis nos pontos de Gauss uteis para descrição lagrangiana atualizada
+	void PreCalc();						//Pre-calculo de variaveis que e feito uma unica vez no inicio
 	double CalculateLength();			//Calcula o comprimento indeformado
-	void Zeros();						//Zera algumas matrizes utilizadas nos cálculos
+	void Zeros();						//Zera algumas matrizes utilizadas nos calculos
 	void EvaluateMassModal(double* v, double* alphai, double** Jr, double** Mr, double* br, double** matrixm);
 
-	//Calcula as contribuições inerciais para a análise dinâmica - inclui todas as contribuições para a forma fraca e para o operador tangente
+	//Calcula as contribuições inerciais para a analise dinamica - inclui todas as contribuições para a forma fraca e para o operador tangente
 	void EvaluateInertialContributions(double* v, double(*a1)
 		, double(*a2), double(*a3), double(*a4), double(*a5), double(*a6)
 		, double* alphai, double* alphad, double* ui, double* ud, double* omegai
 		, double* domegai, double* dui, double* ddui, double** Jr, double** Mr
 		, double* br, double* dT, double** DdT);
-	//Variáveis para funçõa gerada no AceGen
-	double temp_v[2000];				//variável temporária para cálculos internos
+	//Variaveis para funçõa gerada no AceGen
+	double temp_v[2000];				//variavel temporaria para calculos internos
 	double** pJr;						//Ponteiro double** - conversão de matriz
 	double** pMr;						//Ponteiro double** - conversão de matriz
 	Matrix *br;
@@ -48,7 +49,7 @@ public:
 	double** pDdT;
 	double* tempkin;
 	
-	double alpha1;						//Peso do método de quadratura Gaussiana
+	double alpha1;						//Peso do metodo de quadratura Gaussiana
 	double length;						//Comprimento indeformado do elemento
 	double jacobian;					//Jacobiano 
 	double alpha_escalar_delta;
@@ -59,8 +60,8 @@ public:
 	double* dN1;
 	double* dN2;
 	double* dN3;	
-	double* csi;						//Coordenada natural do elemento isoparamétrico em cada ponto de Gauss
-	//Variáveis salvas em cada ponto de Gauss para posterior pós-processamento e facilidade ao lidar com Lag. Atualizado
+	double* csi;						//Coordenada natural do elemento isoparametrico em cada ponto de Gauss
+	//Variaveis salvas em cada ponto de Gauss para posterior pós-processamento e facilidade ao lidar com Lag. Atualizado
 	Matrix** N;							//Matriz das funções de forma
 	Matrix** deltaN;					//Matriz com as derivadas das funções de forma e com as funções de forma
 	Matrix** alpha_delta;	
@@ -91,12 +92,12 @@ public:
 	Matrix* B2temp;
 	Matrix* stiffness;								//Matriz de rigidez
 	Matrix* constitutive_stiffness;					//Matriz de rigidez constitutiva
-	Matrix* geometric_stiffness;					//Matriz de rigidez geométrica
+	Matrix* geometric_stiffness;					//Matriz de rigidez geometrica
 	Matrix* loading_stiffness;						//Matriz de rigidez de carregamento
 	Matrix* mass;									//Matriz de massa
-	Matrix* mass_modal;								//Matriz de massa para análise modal
+	Matrix* mass_modal;								//Matriz de massa para analise modal
 	Matrix* damping;								//Matriz de amortecimento
-	Matrix* damping_modal;							//Matriz de amortecimento para análise modal
+	Matrix* damping_modal;							//Matriz de amortecimento para analise modal
 	Matrix* rayleigh_damping;						//Matriz de amortecimento inicial do problema
 	Matrix* i_loading;								//Vetor de esforços internos
 	Matrix* e_loading;								//Vetor de esforços externos
@@ -115,9 +116,9 @@ public:
 	Matrix* G_alpha_d_alpha_transp;
 	Matrix* B;
 	Matrix* G;
-	LagrangeSave* lag_save;							//Para salvar as variáveis devidas quando há convergência (acesso através da função SaveLagrange())
+	LagrangeSave* lag_save;							//Para salvar as variaveis devidas quando ha convergência (acesso atraves da função SaveLagrange())
 
-	//Variáveis internas para uso na dinâmica
+	//Variaveis internas para uso na dinamica
 	Matrix** alpha_dot;
 	Matrix** Xi_dot;
 	Matrix* Mr;
@@ -127,7 +128,7 @@ public:
 	Matrix** M;
 	Matrix** Md1;
 
-	//Variáveis para cálculo de steps
+	//Variaveis para calculo de steps
 	int t1, t2;
 	double load_multiplier, l_factor, mult;
 

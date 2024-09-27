@@ -1,5 +1,6 @@
 #include "MatrixFloat.h"
-#include <float.h>    
+#include <mkl.h>
+#include <float.h>
 #define PI 3.1415926535897932384626433832795
 
 //Construtor Padrão
@@ -9,7 +10,7 @@ MatrixFloat::MatrixFloat(void)
 	m_alloced_lines = 0;
 	m_lines = 1;
 	m_columns = 1;
-	//Inicializa a matriz como null e tenta alocá-la
+	//Inicializa a matriz como null e tenta aloca-la
 	m_matrix = NULL;
 	if(!alloc())
 		printf("Nao foi possivel alocar matriz! \n");
@@ -21,19 +22,19 @@ MatrixFloat::MatrixFloat(long lines)
 	m_alloced_lines = 0;
 	m_lines = lines;
 	m_columns = 1;
-	//Inicializa a matriz como null e tenta alocá-la
+	//Inicializa a matriz como null e tenta aloca-la
 	m_matrix = NULL;
 	if(!alloc())
 		printf("Nao foi possivel alocar matriz! \n");
 }
-//Construtor Paramétrico
+//Construtor Parametrico
 MatrixFloat::MatrixFloat(long lines, long columns)
 {
 	m_lines_deleted = true;
 	m_alloced_lines = 0;
 	m_lines = lines;
 	m_columns = columns;
-	//Inicializa a matriz como null e tenta alocá-la
+	//Inicializa a matriz como null e tenta aloca-la
 	m_matrix = NULL;
 	if(!alloc())
 		printf("Nao foi possivel alocar matriz! \n");
@@ -41,14 +42,14 @@ MatrixFloat::MatrixFloat(long lines, long columns)
 //Construtor de cópia
 MatrixFloat::MatrixFloat(const MatrixFloat &copied)
 {
-	//Verifica dimensões da matriz - se necessário, faz re-alocação
+	//Verifica dimensões da matriz - se necessario, faz re-alocação
 	//if (copied.m_alloced_lines != m_alloced_lines)
 	//{
 		m_alloced_lines = 0;
 		m_lines = copied.m_lines;
 		m_columns = copied.m_columns;
 		m_lines_deleted = true;
-		//Inicializa a matriz como null e tenta alocá-la
+		//Inicializa a matriz como null e tenta aloca-la
 		m_matrix = NULL;
 		if(!alloc())
 			printf("Nao foi possivel alocar matriz! \n");
@@ -63,22 +64,22 @@ MatrixFloat::~MatrixFloat(void)
 	flush();
 }
 
-//Retorna o número de linhas da matriz
+//Retorna o numero de linhas da matriz
 long MatrixFloat::getLines()
 {
 	return this->m_lines;
 }
-//Retorna o número de colunas da matriz 
+//Retorna o numero de colunas da matriz 
 long MatrixFloat::getColumns()
 {
 	return this->m_columns;
 }
-//Define o número de linhas da matriz
+//Define o numero de linhas da matriz
 void MatrixFloat::setLines(long value)
 {
 	m_lines = value;
 }
-//Define o número de colunas da matriz
+//Define o numero de colunas da matriz
 void MatrixFloat::setColumns(long value)
 {
 	m_columns = value;
@@ -102,7 +103,7 @@ void MatrixFloat::print()
 	}
 	printf("\n");
 }
-//Imprime a matriz em um arquivo de texto, cujo nome está no char s
+//Imprime a matriz em um arquivo de texto, cujo nome esta no char s
 void MatrixFloat::fprint(char* s)
 {
 	FILE *file1 = fopen(s,"w");
@@ -144,7 +145,7 @@ bool MatrixFloat::alloc()
 bool MatrixFloat::flush()
 {
 	//Percorre as linhas
-	//Se há linhas para desalocar
+	//Se ha linhas para desalocar
 	if (this->m_lines_deleted == false)
 	{
 		if (m_matrix)
@@ -166,15 +167,15 @@ void MatrixFloat::clear()
 //Operador Soma
 MatrixFloat operator + (MatrixFloat &matrix1, MatrixFloat &matrix2)
 {
-	//Verifica se as dimensões das matrizes são compatíveis
+	//Verifica se as dimensões das matrizes são compativeis
 	if((matrix1.getLines() != matrix2.getLines()) || (matrix1.getColumns() != matrix2.getColumns()))
 	{
-		//Mensagem de erro - Dimensões Incompatíveis
+		//Mensagem de erro - Dimensões Incompativeis
 		printf("Matrizes devem possuir a mesma dimensao! \n");
 		//Retorna vazio
 		return NULL;
 	}
-	//Caso as dimensões sejam compatíveis
+	//Caso as dimensões sejam compativeis
 	else
 	{
 		//Cria uma matriz de retorno
@@ -191,15 +192,15 @@ MatrixFloat operator + (MatrixFloat &matrix1, MatrixFloat &matrix2)
 //Operador Soma
 MatrixFloat operator + (Matrix &matrix1, MatrixFloat &matrix2)			
 {
-	//Verifica se as dimensões das matrizes são compatíveis
+	//Verifica se as dimensões das matrizes são compativeis
 	if ((matrix1.getLines() != matrix2.getLines()) || (matrix1.getColumns() != matrix2.getColumns()))
 	{
-		//Mensagem de erro - Dimensões Incompatíveis
+		//Mensagem de erro - Dimensões Incompativeis
 		printf("Matrizes devem possuir a mesma dimensao! \n");
 		//Retorna vazio
 		return NULL;
 	}
-	//Caso as dimensões sejam compatíveis
+	//Caso as dimensões sejam compativeis
 	else
 	{
 		//Cria uma matriz de retorno
@@ -217,15 +218,15 @@ MatrixFloat operator + (Matrix &matrix1, MatrixFloat &matrix2)
 //Operador Subtração
 MatrixFloat operator - (MatrixFloat &matrix1, MatrixFloat &matrix2)
 {
-	//Verifica se as dimensões das matrizes são compatíveis
+	//Verifica se as dimensões das matrizes são compativeis
 	if((matrix1.getLines() != matrix2.getLines()) || (matrix1.getColumns() != matrix2.getColumns()))
 	{
-		//Mensagem de erro - Dimensões Incompatíveis
+		//Mensagem de erro - Dimensões Incompativeis
 		printf("Matrizes devem possuir a mesma dimensao! \n");
 		//Retorna vazio
 		return NULL;
 	}
-	//Caso as dimensões sejam compatíveis
+	//Caso as dimensões sejam compativeis
 	else
 	{
 		//Cria uma matriz de retorno
@@ -332,7 +333,7 @@ MatrixFloat operator * (float escalar, MatrixFloat &matrix1)
 //Operador Multiplicacao por escalar
 MatrixFloat operator * (MatrixFloat &matrix1, float escalar)
 {
-	//Retorna a função anterior, já que esta operação é comutativa
+	//Retorna a função anterior, ja que esta operação e comutativa
 	return escalar*matrix1;
 }
 //Verificação de igualdade
@@ -358,7 +359,7 @@ bool operator != (MatrixFloat &matrix1, MatrixFloat &matrix2)
 //Operador de Atribuição	
 MatrixFloat &MatrixFloat::operator = (MatrixFloat const &matrix1)
 {
-	//Verifica dimensões da matriz - se necessário, faz re-alocação
+	//Verifica dimensões da matriz - se necessario, faz re-alocação
 	if (matrix1.m_alloced_lines != m_alloced_lines)
 	{
 		this->flush();
@@ -366,7 +367,7 @@ MatrixFloat &MatrixFloat::operator = (MatrixFloat const &matrix1)
 		m_lines = matrix1.m_lines;
 		m_columns = matrix1.m_columns;
 		m_lines_deleted = matrix1.m_lines_deleted;
-		//Inicializa a matriz como null e tenta alocá-la
+		//Inicializa a matriz como null e tenta aloca-la
 		m_matrix = NULL;
 		if(!alloc())
 			printf("Nao foi possivel alocar matriz! \n");
@@ -382,7 +383,7 @@ MatrixFloat &MatrixFloat::operator = (MatrixFloat const &matrix1)
 //Operador de Atribuição 2
 MatrixFloat &MatrixFloat::operator = (Matrix const &matrix1)
 {
-	//Verifica dimensões da matriz - se necessário, faz re-alocação
+	//Verifica dimensões da matriz - se necessario, faz re-alocação
 	if (matrix1.m_alloced_lines != m_alloced_lines)
 	{
 		this->flush();
@@ -390,7 +391,7 @@ MatrixFloat &MatrixFloat::operator = (Matrix const &matrix1)
 		m_lines = matrix1.m_lines;
 		m_columns = matrix1.m_columns;
 		m_lines_deleted = matrix1.m_lines_deleted;
-		//Inicializa a matriz como null e tenta alocá-la
+		//Inicializa a matriz como null e tenta aloca-la
 		m_matrix = NULL;
 		if (!alloc())
 			printf("Nao foi possivel alocar matriz! \n");
@@ -406,7 +407,7 @@ MatrixFloat &MatrixFloat::operator = (Matrix const &matrix1)
 //Retorno do valor na posição especificada
 float &MatrixFloat::operator() (long line, long column)
 {
-	//Verifica se a posição é válida
+	//Verifica se a posição e valida
 	if(line > this->m_lines-1 || column > this->m_columns-1 || line < 0 || column < 0)
 	{
 		printf("Not valid position accessed in matrix! (%d,%d)\n",line,column);

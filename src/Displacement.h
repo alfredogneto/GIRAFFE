@@ -1,17 +1,11 @@
 #pragma once
 #include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <math.h>
-#include "Table.h"
-#include "Matrix.h"
-#include "MathCode.h"
 
 class Displacement
 {
 public:
-	Displacement();
-	virtual ~Displacement();
+	Displacement() {}
+	virtual ~Displacement() {}
 
 	virtual bool Read(FILE *f) = 0;						//Reads input file
 	virtual void Write(FILE *f) = 0;					//Writes output file

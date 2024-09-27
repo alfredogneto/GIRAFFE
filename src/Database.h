@@ -1,187 +1,193 @@
 #pragma once
-#include "Node.h"
-#include "SuperNode.h"
-#include "PipeSection.h"
-#include "RigidBodyData.h"
-#include "CoordinateSystem.h"
-#include "Environment.h"
+#include "Matrix.h"
+#include "SparseMatrix.h"
 
-#include "Monitor.h"
-#include "PostFiles.h"
-#include "SolverOptions.h"
+class Node;
+class SuperNode;
+class PipeSection;
+class RigidBodyData;
+class CoordinateSystem;
+class Environment;
 
-#include "NodeSet.h"
-#include "SurfaceSet.h"
-#include "ElementSet.h"
-#include "SuperNodeSet.h"
+class Monitor;
+class PostFiles;
+class SolverOptions;
 
-#include "InitialCondition.h"
-#include "ConvergenceCriteria.h"
+class NodeSet;
+class SurfaceSet;
+class ElementSet;
+class SuperNodeSet;
 
-#include "AnalyticalSurface.h"
-#include "Plane.h"
-#include "LineRegion.h"
-#include "SurfaceRegion.h"
+class InitialCondition;
+class ConvergenceCriteria;
+
+class AnalyticalSurface;
+class Plane;
+class LineRegion;
+class SurfaceRegion;
 
 //Elementos
-#include "Element.h"
-#include "Beam_1.h"
-#include "Pipe_1.h"
-#include "Shell_1.h"
-#include "Solid_1.h"
-#include "SpringDashpot_1.h"
-#include "Mass_1.h"
-#include "RigidBody_1.h"
-#include "Truss_1.h"
-#include "TwoNodeConnector_1.h"
+class Element;
+class Beam_1;
+class Pipe_1;
+class Shell_1;
+class Solid_1;
+class SpringDashpot_1;
+class Mass_1;
+class RigidBody_1;
+class Truss_1;
+class TwoNodeConnector_1;
 
 //Materiais
-#include "Material.h"
-#include "Hooke.h"
-#include "ElasticPlasticIsoHardening.h"
-#include "Orthotropic.h"
+class Material;
+class Hooke;
+class ElasticPlasticIsoHardening;
+class Orthotropic;
 
 //Point & Curves
-#include "Point.h"
-#include "ArcCirc.h"
+class Point;
+class ArcCirc;
 
 //Surfaces
-#include "Surface.h"
-#include "RigidTriangularSurface_1.h"
-#include "RigidOscillatorySurface_1.h"
-#include "FlexibleTriangularSurface_2.h"
-#include "FlexibleSECylinder_1.h"
-#include "FlexibleArcExtrusion_1.h"
-#include "RigidArcRevolution_1.h"
-#include "RigidNURBS_1.h"
+class Surface;
+class RigidTriangularSurface_1;
+class RigidOscillatorySurface_1;
+class FlexibleTriangularSurface_2;
+class FlexibleSECylinder_1;
+class FlexibleArcExtrusion_1;
+class RigidArcRevolution_1;
+class RigidNURBS_1;
 
 //Geometries
-#include "Geometry.h"
-#include "SECylinder.h"
-#include "ArcExtrusion.h"
-#include "ArcRevolution.h"
+class Geometry;
+class SECylinder;
+class ArcExtrusion;
+class ArcRevolution;
 
 //BodyGeometry
-#include "BodyGeometry.h"
+class BodyGeometry;
 
 //Splines
-#include "Spline.h"
+class Spline;
+class SplineElement;
 
 //Contatos
-#include "Contact.h"
-#include "LRLR.h"
-#include "GeneralPLR.h"
-#include "NSSS.h"
-#include "SSSS.h"
-#include "SPSP.h"
+class Contact;
+class LRLR;
+class GeneralPLR;
+class NSSS;
+class SSSS;
+class SPSP;
 
 //GeneralContactSearch
-#include "GeneralContactSearch.h"
+class GeneralContactSearch;
 
 //Seções transversais
-#include "Section.h"
-#include "SecGeneral.h"
-#include "SecRectangle.h"
-#include "SecSuperEllipse.h"
-#include "SecTube.h"
-#include "SecUserDefined.h"
-#include "SecHelicalFiber.h"
+class Section;
+class SecGeneral;
+class SecRectangle;
+class SecSuperEllipse;
+class SecTube;
+class SecUserDefined;
+class SecHelicalFiber;
 
 //Shell sections
-#include "ShellSection.h"
-#include "ShellSectionHomogeneous.h"
-#include "ShellSectionComposite.h"
+class ShellSection;
+class ShellSectionHomogeneous;
+class ShellSectionComposite;
 
 //Special constraints
-#include "SpecialConstraint.h"
-#include "SameDisplacement.h"
-#include "Hinge.h"
-#include "UniversalJoint.h"
-#include "SameRotation.h"
-#include "RigidNodeSet.h"
-#include "TranslationalJoint.h"
-#include "NodalConstraintDOF.h"
+class SpecialConstraint;
+class SameDisplacement;
+class Hinge;
+class UniversalJoint;
+class SameRotation;
+class RigidNodeSet;
+class TranslationalJoint;
+class NodalConstraintDOF;
 
-//Partículas
-#include "Particle.h"
-#include "Sphere.h"
-#include "Polyhedron.h"
-#include "NURBSParticle.h"
-#include "VEMPolyhedron.h"
+//Particulas
+class Particle;
+class Sphere;
+class Polyhedron;
+class NURBSParticle;
+class VEMPolyhedron;
 
 //Boundaries
-#include "Boundary.h"
-#include "STLBoundary.h"
+class Boundary;
+class STLBoundary;
 
 //Surface pairs (for general contact search)
-#include "SurfacePairGeneralContact.h"
-#include "RigidTriangularFace_RigidTriangularFace.h"
-#include "FlexibleTriangularFace_FlexibleTriangularFace.h"
-#include "FlexibleTriangularFace_RigidTriangularFace.h"
+class SurfacePairGeneralContact;
+class RigidTriangularFace_RigidTriangularFace;
+class FlexibleTriangularFace_FlexibleTriangularFace;
+class FlexibleTriangularFace_RigidTriangularFace;
 
 //Section details
-#include "SectionDetails.h"
-#include "SolidSection.h"
-#include "MultiCellSection.h"
+class SectionDetails;
+class SolidSection;
+class MultiCellSection;
 
 //AerodynamicData
-#include "AerodynamicData.h"
-#include "BEM.h"
+class AerodynamicData;
+class BEM;
 
 //Solutions
-#include "Solution.h"
-#include "Static.h"
-#include "Dynamic.h"
-#include "Modal.h"
-#include "ConcomitantSolution.h"
-#include "ExplicitDynamic.h"
+class Solution;
+class Static;
+class Dynamic;
+class Modal;
+class ConcomitantSolution;
+class ExplicitDynamic;
 
 //Loads
-#include "Load.h"
-#include "NodalLoad.h"
-#include "NodalFollowerLoad.h"
-#include "ShellLoad.h"
-#include "PipeLoad.h"
-#include "SuperNodalLoad.h"
+class Load;
+class NodalLoad;
+class NodalFollowerLoad;
+class ShellLoad;
+class PipeLoad;
+class SuperNodalLoad;
 
 //Deslocamentos prescritos
-#include "Displacement.h"
-#include "NodalDisplacement.h"
-#include "DisplacementField.h"
+class Displacement;
+class NodalDisplacement;
+class DisplacementField;
 
 //Constraints
-#include "Constraint.h"
-#include "NodalConstraint.h"
-#include "SuperNodalConstraint.h"
+class Constraint;
+class NodalConstraint;
+class SuperNodalConstraint;
 
 //PSY
-#include "PSYCoupling.h"
+class PSYCoupling;
 
 //CADData
-#include "CADData.h"
-#include "STLSurface.h"
-#include "NURBSSurface.h"
+class CADData;
+class STLSurface;
+class NURBSSurface;
 
 //ContactInterfaces
-#include "ContactInterface.h"
-#include "Interface_0.h"
-#include "Interface_1.h"
+class ContactInterface;
+class Interface_0;
+class Interface_1;
 
 //BoundingVolumes
-#include "BoundingVolume.h"
-#include "BoundingSphere.h"
-#include "BoundingCylinder.h"
-#include "BoundingTriangularBox.h"
-#include "BoundingBoxAxesAligned.h"
-#include "BoundingBoxAxesOriented.h"
+class BoundingVolume;
+class BoundingSphere;
+class BoundingCylinder;
+class BoundingTriangularBox;
+class BoundingBoxAxesAligned;
+class BoundingBoxAxesOriented;
 
-#include "Encoding.h"
-#include "ExecutionData.h"
-#include "ConfigurationSave.h"
+class Encoding;
+class ExecutionData;
+class ConfigurationSave;
+
+
 
 //OPENMP
-#include <omp.h>
-#include <process.h>
+//#include <omp.h>
+//#include <process.h>
 
 class Database
 {
@@ -191,35 +197,35 @@ public:
 
 	//Methods
 	int myprintf(const char* format, ...);
-	void PrintPtr(double** ptr, int lines, int columns);				//Imprime na tela o conteúdo do ponteiro ptr (matriz de duas dimensões)
-	void PrintPtr(double* ptr, int lines);								//Imprime na tela o conteúdo do ponteiro ptr (matriz de uma dimensão)
-	double EvaluateBoundingBoxDiag();	//Calcula uma dimensão característica da geometria do modelo - de todos os nós existentes - com base em suas posições atuais
-	void PreCalc();						//Realiza pré-cálculo
-	void EvaluateStartEndTimes();		//Raliza pré-cálculo de start times com base na sequencia de solutions
+	void PrintPtr(double** ptr, int lines, int columns);				//Imprime na tela o conteudo do ponteiro ptr (matriz de duas dimensões)
+	void PrintPtr(double* ptr, int lines);								//Imprime na tela o conteudo do ponteiro ptr (matriz de uma dimensão)
+	double EvaluateBoundingBoxDiag();	//Calcula uma dimensão caracteristica da geometria do modelo - de todos os nós existentes - com base em suas posições atuais
+	void PreCalc();						//Realiza pre-calculo
+	void EvaluateStartEndTimes();		//Raliza pre-calculo de start times com base na sequencia de solutions
 
 	//Variables and objects
 	char file_name[1000];			//Nome do job
 	char folder_name[1000];			//Pasta em que estão sendo salvos arquivos da simulação
 
-	int number_solutions;			//Número de soluções
+	int number_solutions;			//Numero de soluções
 	Solution** solution;			//Vetor de soluções
 
-	int number_nodes;				//Número de nós
+	int number_nodes;				//Numero de nós
 	Node** nodes;					//Vetor de nós
 
-	int number_points;				//Número de pontos
+	int number_points;				//Numero de pontos
 	Point** points;					//Vetor de pontos
 
-	int number_arcs;				//Número de arcos
+	int number_arcs;				//Numero de arcos
 	ArcCirc** arcs;					//Vetor de arcos
 
-	int number_elements;			//Número de elementos
+	int number_elements;			//Numero de elementos
 	Element** elements;				//Vetor de elementos
 
-	int number_particles;			//Número de partículas
-	Particle** particles;			//Vetor de partículas
+	int number_particles;			//Numero de particulas
+	Particle** particles;			//Vetor de particulas
 
-	int number_IC;					//Número de condições iniciais
+	int number_IC;					//Numero de condições iniciais
 	InitialCondition** IC;			//Vetor de condições iniciais
 
 	int number_materials;			
@@ -247,12 +253,12 @@ public:
 	SolverOptions* solver_options;			//SolverOptions
 
 	int number_analytical_surfaces;
-	AnalyticalSurface** analytical_surfaces;		//Vetor de superfícies analíticas
+	AnalyticalSurface** analytical_surfaces;		//Vetor de superficies analiticas
 
 	int number_surfaces;
-	Surface** surfaces;								//Vetor de superfícies
+	Surface** surfaces;								//Vetor de superficies
 
-	int number_splines;								//Número de splines
+	int number_splines;								//Numero de splines
 	Spline** splines;								//Vetor de splines
 
 	int number_line_regions;
@@ -292,24 +298,24 @@ public:
 	SectionDetails** section_details;				//Vetor de section_details
 
 	int number_aerodynamicdata;
-	AerodynamicData** aerodynamic_data;				//Vetor de dados aerodinâmicos
+	AerodynamicData** aerodynamic_data;				//Vetor de dados aerodinamicos
 
-	int number_cad_data;							//Número de CADs
+	int number_cad_data;							//Numero de CADs
 	CADData** cad_data;								//Vetor de CADs
 
-	int number_contactinterfaces;					//Número de interfaces de contato
+	int number_contactinterfaces;					//Numero de interfaces de contato
 	ContactInterface** contactinterfaces;			//Vetor de interfaces de contato
 
 	int number_boundaries;
 	Boundary** boundaries;							//Vetor de boundaries
 
-	int number_super_nodes;							//Número de super nós
+	int number_super_nodes;							//Numero de super nós
 	SuperNode** super_nodes;						//Vetor de super nós
 
-	int number_body_geometries;						//Número de body contact boundaries
+	int number_body_geometries;						//Numero de body contact boundaries
 	BodyGeometry** body_geometries;					//Vetor de body contact boundaries
 
-	int number_geometries;							//Número de geometries
+	int number_geometries;							//Numero de geometries
 	Geometry** geometries;							//Vetor de geometries
 
 	BEM* bem;										//Blade element momentum method
@@ -324,7 +330,7 @@ public:
 	PostFiles* post_files;							//Pós processamento (arquivos)
 	ExecutionData* execution_data;					//Dados de execução do GIRAFFE
 
-	//Variáveis booleanas de controle
+	//Variaveis booleanas de controle
 	bool solution_exist;
 	bool nodes_exist;
 	bool super_nodes_exist;
@@ -372,10 +378,10 @@ public:
 	bool flag_nGL_changed;		//Flag - indica que houve mudança nos graus de liberdade
 	int n_GL_free;				//GLs livres
 	int n_GL_fixed;				//GLs prescritos
-	int number_GLs_node;		//Número de GLs por nó
+	int number_GLs_node;		//Numero de GLs por nó
 
-	//Variáveis para execução do programa
-	double last_converged_time;				//Último instante convergido
+	//Variaveis para execução do programa
+	double last_converged_time;				//ultimo instante convergido
 	double current_time_step;				//Incremento de tempo atual
 	int current_solution_number;			//Atual solution
 	int current_iteration_number;			//Iteration
@@ -390,10 +396,10 @@ public:
 	SparseMatrix global_stiffness_AB;		//Matriz de rigidez global
 	SparseMatrix global_stiffness_BA;		//Matriz de rigidez global
 
-	SparseMatrix global_mass_AA;			//Matriz de massa global - utilizada somente quando há análise modal		
-	SparseMatrix global_damping_AA;			//Matriz de amrotecimento global - utilizada somente quando há análise modal
+	SparseMatrix global_mass_AA;			//Matriz de massa global - utilizada somente quando ha analise modal		
+	SparseMatrix global_damping_AA;			//Matriz de amrotecimento global - utilizada somente quando ha analise modal
 
-	Matrix global_P_A;				//Esforço desbalanceado global (após a resolução do sistema linear, também armazena os deslocamentos generalizados)
+	Matrix global_P_A;				//Esforço desbalanceado global (após a resolução do sistema linear, tambem armazena os deslocamentos generalizados)
 	Matrix global_I_A;				//Esforços internos globais - gl livres
 	Matrix global_P_B;				//Esforços internos globais - gl fixos
 	Matrix global_X_B;				//Vetor de deslocamentos impostos nos GL do sistema
@@ -403,7 +409,7 @@ public:
 	//Matrix global_ABS_P_B;			//Vetor para avaliação do valor absoluto do "fluxo" prescrito em cada DOF
 	//Matrix global_COUNT_ABS_P_B;	//Vetor que conta quantas contribuições foram colocadas em cada DOF
 
-	//Info para saída de resultados de elementos - número de resultados por elemento
+	//Info para saida de resultados de elementos - numero de resultados por elemento
 	int n_element_results;
 
 	FILE* console_output;	//Stream para salvar o console_output para um arquivo de texto

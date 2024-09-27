@@ -1,7 +1,6 @@
 #pragma once
+#include <stdio.h>
 #include <vector>
-#include <string>
-#include <ctype.h>
 using namespace std;
 
 class BoolTable

@@ -1,6 +1,10 @@
 #pragma once
 #include "Displacement.h"
 #include "BoolTable.h"
+#include "Matrix.h"
+
+class Table;
+class MathCode;
 
 //using namespace exprtk;
 

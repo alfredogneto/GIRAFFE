@@ -1,5 +1,5 @@
 #include "Hooke.h"
-
+#include <string>
 
 Hooke::Hooke()
 {

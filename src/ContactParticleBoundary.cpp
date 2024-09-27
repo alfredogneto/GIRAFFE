@@ -1,7 +1,19 @@
 #include "ContactParticleBoundary.h"
-#include "Database.h"
 
-//Variáveis globais
+#include "Matrix.h"
+#include "SurfacePairGeneralContact.h"
+#include "Particle.h"
+#include "BoundingSphere.h"
+#include "BoundingCylinder.h"
+#include "BoundingTriangularBox.h"
+#include "Encoding.h"
+#include "Dynamic.h"
+#include "Boundary.h"
+#include "SSContactData.h"
+#include "TimeStepControlData.h"
+
+#include "Database.h"
+//Variaveis globais
 extern
 Database db;
 
@@ -48,9 +60,9 @@ void ContactParticleBoundary::SaveConfiguration()
 		if (contact_pairs[i]->GetActive())
 		{
 			//Zera o gap tangencial se:
-			//1 - gn for positivo (não há contato)
-			//2 - copy_gn for positivo (é a primeira ocorrência de contato - não há como acumular gap tangencial pois o contato acaba de começar)
-			//3 - return value é 2 - contato não estabelecido - e não é strong candidate, mas pode ocorrer em próximos instantes
+			//1 - gn for positivo (não ha contato)
+			//2 - copy_gn for positivo (e a primeira ocorrência de contato - não ha como acumular gap tangencial pois o contato acaba de começar)
+			//3 - return value e 2 - contato não estabelecido - e não e strong candidate, mas pode ocorrer em próximos instantes
 			if (contact_pairs[i]->eligible == false)
 			{
 				zeros(contact_pairs[i]->cd->g_t[0]);
@@ -162,7 +174,7 @@ bool ContactParticleBoundary::NightOwlContact()
 
 void ContactParticleBoundary::WriteVTK_XMLForces(FILE *f)
 {
-	//vetores para escrita no formato binário - usando a função 'enconde'
+	//vetores para escrita no formato binario - usando a função 'enconde'
 	std::vector<float> float_vector;
 	std::vector<int> int_vector;
 

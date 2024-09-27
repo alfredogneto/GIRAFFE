@@ -1,11 +1,8 @@
 #pragma once
 #include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include "Matrix.h"
-#include <math.h>
 #include "BoolTable.h"
-#include "Solution.h"
+
+class Solution;
 
 class ConcomitantSolution
 {
@@ -23,7 +20,7 @@ public:
 	int sample;
 
 protected:
-	//variáveis internas
+	//variaveis internas
 	BoolTable	bool_concomitant;
 	Solution* sol;
 	FILE *f_output;

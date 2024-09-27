@@ -1,12 +1,6 @@
 #pragma once
-#include "mkl.h"
-#include "mkl_blas.h"
-#include "mkl_types.h"
-#include "mkl_lapack.h"
-#include "mkl_dss.h"
-#include "stdio.h"
+#include <stdio.h>
 #include <cmath>
-#include "arpack.h"
 
 class Matrix
 {
@@ -14,37 +8,37 @@ public:
 	//Constructors and Destrutor
 	Matrix(void);													//Construtor Padrão
 	Matrix(long lines);												//Construtor de matriz coluna
-	Matrix(long lines, long columns);								//Construtor Paramétrico
+	Matrix(long lines, long columns);								//Construtor Parametrico
 	Matrix(const Matrix &copied);									//Construtor de cópia
 	~Matrix(void);													//Destrutor Padrão
 
 	//Gets and Sets
-	long getLines();												//Retorna o número de linhas da matriz
-	long getColumns();												//Retorna o número de colunas da matriz 
+	long getLines();												//Retorna o numero de linhas da matriz
+	long getColumns();												//Retorna o numero de colunas da matriz 
 
-	void setLines(long value);										//Define o número de linhas da matriz 
-	void setColumns(long value);									//Define o número de colunas da matriz 
+	void setLines(long value);										//Define o numero de linhas da matriz 
+	void setColumns(long value);									//Define o numero de colunas da matriz 
 	double* getMatrix();											//Retorna o endereço de uma matriz
 	
 	//General Functions
 	void print();													//Imprime a matriz no console
-	void fprint(char* s);											//Imprime a matriz em um arquivo de texto, cujo nome está no char s
+	void fprint(char* s);											//Imprime a matriz em um arquivo de texto, cujo nome esta no char s
 	bool alloc();													//Aloca a matriz
 	bool flush();													//Libera a memória ocupada pela matriz
 	void clear();													//Zera a matriz, mantando as dimensões atuais
 
 	//Operators
 	void MatrixToPtr(double** ptr, int order);						//Salva ponteiro double** em ptr
-	void PtrToMatrix(double** ptr, int order);						//Salva na matrix o conteúdo do double**
-	void PtrToMatrix(double** ptr, int lines, int columns);			//Salva na matrix o conteúdo do double**
+	void PtrToMatrix(double** ptr, int order);						//Salva na matrix o conteudo do double**
+	void PtrToMatrix(double** ptr, int lines, int columns);			//Salva na matrix o conteudo do double**
 	double &operator() (long line, long column);					//Retorno do valor na posição especificada
 	Matrix &operator = (Matrix const &matrix1);						//Operador de Atribuição
 
 	///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	double*  m_matrix;												//Matriz unidimensional
-	long     m_lines;												//Número de linhas
-	long     m_columns;												//Número de colunas
-	long	 m_alloced_lines;										//Número de linhas atualmente alocadas
+	long     m_lines;												//Numero de linhas
+	long     m_columns;												//Numero de colunas
+	long	 m_alloced_lines;										//Numero de linhas atualmente alocadas
 	bool	 m_lines_deleted;										//Flag que indica se as linhas foram desalocadas				
 };
 
@@ -72,15 +66,15 @@ Matrix invert5x5(Matrix &matrix);									//Inverte uma matriz 5x5
 Matrix invert6x6(Matrix &matrix);									//Inverte uma matriz 6x6	
 Matrix invert(Matrix &matrix);										//Inverte uma matriz de 2x2 a 6x6 escolhendo automaticamente a função correta
 
-int fulleigen1(Matrix &A, Matrix &P, Matrix &D, double abstol);		//Calcula os autovalores e autovetores de uma matriz simétrica
-int fulleigen2(Matrix &A, Matrix &P, Matrix &D);					//Calcula os autovalores e autovetores de uma matriz simétrica
-double mineigen(Matrix &A, Matrix &P, Matrix &D, double abstol);	//Calcula o menor autovalor de uma matriz simétrica
+int fulleigen1(Matrix &A, Matrix &P, Matrix &D, double abstol);		//Calcula os autovalores e autovetores de uma matriz simetrica
+int fulleigen2(Matrix &A, Matrix &P, Matrix &D);					//Calcula os autovalores e autovetores de uma matriz simetrica
+double mineigen(Matrix &A, Matrix &P, Matrix &D, double abstol);	//Calcula o menor autovalor de uma matriz simetrica
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-Matrix V(Matrix x, Matrix t, double alpha_escalar);					//Função para o cálculo do operador V (para montagem da matriz de rigidez geométrica)
-Matrix d_V(Matrix x, Matrix d_x, Matrix t, double alpha_escalar);	//Função para o cálculo do operador d_V (para montagem da matriz de rigidez geométrica)
+Matrix V(Matrix x, Matrix t, double alpha_escalar);					//Função para o calculo do operador V (para montagem da matriz de rigidez geometrica)
+Matrix d_V(Matrix x, Matrix d_x, Matrix t, double alpha_escalar);	//Função para o calculo do operador d_V (para montagem da matriz de rigidez geometrica)
 
-double ArcReduction(double arc);									//Calcula redução à primeira volta [-pi,pi]
-double ArcReduction2p(double arc);									//Calcula redução à primeira volta [0,2*pi]
+double ArcReduction(double arc);									//Calcula redução a primeira volta [-pi,pi]
+double ArcReduction2p(double arc);									//Calcula redução a primeira volta [0,2*pi]
 //Funções para conversar com o Mathematica
 Matrix List(double a, double b, double c);							//Retorna um vetor com esses componentes a,b,c
 double Power(double a, double b);

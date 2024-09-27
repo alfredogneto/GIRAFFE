@@ -1,5 +1,5 @@
 #include "ShellSectionHomogeneous.h"
-
+#include <string>
 
 ShellSectionHomogeneous::ShellSectionHomogeneous()
 {

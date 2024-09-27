@@ -1,12 +1,14 @@
 #include "SolverOptions.h"
+#include <mkl.h>
+
 #include"Database.h"
-//Variáveis globais
+//Variaveis globais
 extern
 Database db;
 
 SolverOptions::SolverOptions()
 {
-	processors = 1;						//Número de processadores - processamento paralelo - PARDISO
+	processors = 1;						//Numero de processadores - processamento paralelo - PARDISO
 	solver = 0;							//Tipo de solver - 0 diretor 1 iterativo - PARDISO
 }
 

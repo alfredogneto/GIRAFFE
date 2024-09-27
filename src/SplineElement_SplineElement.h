@@ -1,6 +1,5 @@
 #pragma once
 #include "SplineElementPair.h"
-#include "Spline.h"
 
 class SplineElement_SplineElement :
 	public SplineElementPair
@@ -8,7 +7,7 @@ class SplineElement_SplineElement :
 public:
 	SplineElement_SplineElement();
 	~SplineElement_SplineElement();
-	//Chute inicial para coordenadas convectivas do par de superfícies
+	//Chute inicial para coordenadas convectivas do par de superficies
 	void InitialGuess(SPContactData* c_data);
 				
 	double ObjectivePhase1(Matrix& mc);								//Calcula a função objetivo para um conjunto de coordenadas convectivas - Phase 1

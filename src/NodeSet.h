@@ -1,22 +1,19 @@
 #pragma once
 #include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include "Matrix.h"
-#include <math.h>
+
 class NodeSet
 {
 public:
 	NodeSet();
 	~NodeSet();
 
-	int n_nodes;		//número de nós
+	int n_nodes;		//numero de nós
 	int* node_list;		//lista de nós
-	int number;			//número de referência
+	int number;			//numero de referência
 
 	
-	bool sequence;		//true se é do tipo sequence
-	bool list;			//true se é do tipo list
+	bool sequence;		//true se e do tipo sequence
+	bool list;			//true se e do tipo list
 
 	//Para o caso de sequence
 	int initial;

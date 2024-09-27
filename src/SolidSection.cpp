@@ -1,8 +1,15 @@
 #include "SolidSection.h"
 
+
+#include "Beam_1.h"
+#include "Encoding.h"
+#include "Node.h"
+#include "Section.h"
+#include "PostFiles.h"
+
 #include"Database.h"
 
-//Variáveis globais
+//Variaveis globais
 extern
 Database db;
 
@@ -127,7 +134,7 @@ void SolidSection::Write(FILE *f)
 
 void SolidSection::WriteVTK_XMLRender(FILE *f, Beam_1* elem)
 {
-	//vetores para escrita no formato binário - usando a função 'enconde'
+	//vetores para escrita no formato binario - usando a função 'enconde'
 	std::vector<float> float_vector;
 	std::vector<int> int_vector;
 	
@@ -136,9 +143,9 @@ void SolidSection::WriteVTK_XMLRender(FILE *f, Beam_1* elem)
 	double alpha_escalar;
 	Matrix A;
 	Matrix vec_P(3);
-	//Número de pontos a serem gerados
+	//Numero de pontos a serem gerados
 	int n_p = elem->n_nodes*n_points;
-	//Número de células a serem geradas - laterais + duas "tampas"
+	//Numero de celulas a serem geradas - laterais + duas "tampas"
 	int n_cells = n_points*(elem->n_nodes - 1) + 2;
 	//Opens Piece
 	fprintf(f, "\t\t<Piece NumberOfPoints=\"%d\" NumberOfCells=\"%d\">\n", n_p, n_cells);
@@ -160,7 +167,7 @@ void SolidSection::WriteVTK_XMLRender(FILE *f, Beam_1* elem)
 		Q = *elem->I3 + g*(A + 0.5*A*A);
 		Q = Q*transp(*elem->transform3);//Matriz de transformação para trazer o vetor da ST do plano xy para o plano atual em que ela se encontra
 
-		//Percorre os nós que descrevem o perímetro da ST
+		//Percorre os nós que descrevem o perimetro da ST
 		for (int point = 0; point < n_points; point++)
 		{
 			//Posição de cada ponto P no plano xy (referência)
@@ -190,7 +197,7 @@ void SolidSection::WriteVTK_XMLRender(FILE *f, Beam_1* elem)
 	int_vector.clear();
 	for (int index = 0; index < n_points; index++)
 	{
-		//Células com os pontos do perímetro
+		//Celulas com os pontos do perimetro
 		if (index != n_points-1)
 		{
 			nodes[0] = index;
@@ -203,7 +210,7 @@ void SolidSection::WriteVTK_XMLRender(FILE *f, Beam_1* elem)
 			nodes[6] = index + 2*n_points + 1;
 			nodes[7] = index + n_points + 1;
 		}
-		//última célula do perímetro (relacionada com a numeração da primeira - para fechar a figura)
+		//ultima celula do perimetro (relacionada com a numeração da primeira - para fechar a figura)
 		else
 		{
 			nodes[0] = index;
@@ -226,7 +233,7 @@ void SolidSection::WriteVTK_XMLRender(FILE *f, Beam_1* elem)
 		int_vector.push_back(nodes[6]);
 		int_vector.push_back(nodes[7]);
 	}
-	//Células com os pontos das tampas
+	//Celulas com os pontos das tampas
 	for (int index = 0; index < n_points; index++)
 		int_vector.push_back(index);
 	int_vector.push_back(0);

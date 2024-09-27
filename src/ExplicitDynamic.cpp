@@ -1,12 +1,29 @@
 #include "ExplicitDynamic.h"
+#include <iostream>
+using namespace std;
+#include <chrono>
+using namespace std::chrono;
+
+#include "Matrix.h"
+#include "ConcomitantSolution.h"
+#include "PostFiles.h"
+#include "Monitor.h"
+#include "GeneralContactSearch.h"
+#include "ConfigurationSave.h"
+#include "Node.h"
+#include "Particle.h"
+#include "Load.h"
+#include "Displacement.h"
+#include "Boundary.h"
+
 #include"Database.h"
-//Variáveis globais
+//Variaveis globais
 extern
 Database db;
 
 ExplicitDynamic::ExplicitDynamic()
 {
-	file_index = 1;								//Número do arquivo para salvar resultados
+	file_index = 1;								//Numero do arquivo para salvar resultados
 	zero_IC_flag = false;
 	solution_number = 0;
 
@@ -180,7 +197,7 @@ bool ExplicitDynamic::Solve()
 	//Atualiza monitor - somente se for o primeira solution
 	if (db.monitor_exist == true && solution_number == 1)
 		db.monitor->UpdateMonitor(db.last_converged_time);
-	//Atualiza análise concomitante
+	//Atualiza analise concomitante
 	if (db.concomitant_solution_exist == true)
 		db.concomitant_solution->UpdateConcomitantSolution(db.last_converged_time);
 	WriteResults();								//salvando resultados
@@ -190,7 +207,7 @@ bool ExplicitDynamic::Solve()
 	time_t tt;
 	tt = system_clock::to_time_t(today);
 	db.myprintf("\nSolution step %d started at %s\n", solution_number, ctime(&tt));
-	DOFsActive();								//Para cada nó ativa DOFs - também opera sobre multiplicadores de Lagrange de SpecialConstraints
+	DOFsActive();								//Para cada nó ativa DOFs - tambem opera sobre multiplicadores de Lagrange de SpecialConstraints
 	SetGlobalDOFs();							//Numeração de graus de liberdade
 	SetGlobalSizeExplicit();					//Calcula o tamanho de contribuições globais - com base nos GLs livres e fixos
 
@@ -215,10 +232,10 @@ bool ExplicitDynamic::Solve()
 	////////////////////////////////////////////////////////////////////////////////
 	while (time < end_time  && aborted == false)
 	{
-		//Setando variáveis no database
+		//Setando variaveis no database
 		db.last_converged_time = time;
 		time += time_step;	//Incremento do time step, de acordo com a progressão da solução
-		if (time > end_time)//Se já estiver além do último instante de interesse	
+		if (time > end_time)//Se ja estiver alem do ultimo instante de interesse	
 		{
 			time = end_time;
 			time_step = end_time - db.last_converged_time;
@@ -232,7 +249,7 @@ bool ExplicitDynamic::Solve()
 		if (!strcmp(method, "RungeKutta4"))
 			RungeKutta4();
 		
-		//Teste para avaliar que o time step está muito pequeno - ABORT SIMULATION
+		//Teste para avaliar que o time step esta muito pequeno - ABORT SIMULATION
 		if (time_step < min_time_step && time != end_time)
 		{
 			db.myprintf("\nAborting simulation. Step size is too small!\n\n");
@@ -247,7 +264,7 @@ bool ExplicitDynamic::Solve()
 			steps_control++;
 			SaveConfiguration();	//Salva configuração convergida
 			
-			//Análise da facilidade de convergência:
+			//Analise da facilidade de convergência:
 			if (steps_computed >= steps_to_increase)
 			{
 				time_step = time_step * inc_factor;
@@ -264,7 +281,7 @@ bool ExplicitDynamic::Solve()
 				//Atualiza monitor
 				if (db.monitor_exist == true && (steps_control%db.monitor->sample == 0 || time == end_time))
 					db.monitor->UpdateMonitor(time);
-				//Atualiza análise concomitante
+				//Atualiza analise concomitante
 				if (db.concomitant_solution_exist == true && (steps_control%db.concomitant_solution->sample == 0 || time == end_time))
 					db.concomitant_solution->UpdateConcomitantSolution(time);
 				//Atualiza configuration save
@@ -275,7 +292,7 @@ bool ExplicitDynamic::Solve()
 		/////////////////////////////////RETOMANDO CONFIGURAÇÃO/////////////////////////////////
 		else
 		{
-			RestoreConfiguration();	//Restaura a última configuração que convergiu
+			RestoreConfiguration();	//Restaura a ultima configuração que convergiu
 			//Modificação do loading factor increment:
 			time -= time_step;
 			time_step = time_step / 2.0;	 //Bissecção

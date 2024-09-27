@@ -1,6 +1,6 @@
 #pragma once
 #include "Displacement.h"
-#include "BoolTable.h"
+#include "Matrix.h"
 
 
 class DisplacementField :
@@ -16,8 +16,8 @@ public:
 	void PreCalc();							//Pre-calculus
 	void Mount();
 	bool Check();							//Checking inconsistencies
-	void Alloc();							//Alocação dinâmica de variáveis
-	void Free();							//Desalocação dinâmica de variáveis
+	void Alloc();							//Alocação dinamica de variaveis
+	void Free();							//Desalocação dinamica de variaveis
 
 	//Variables
 	bool alloced;							//Controle de alocação de memória

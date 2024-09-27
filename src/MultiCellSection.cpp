@@ -1,4 +1,5 @@
 #include "MultiCellSection.h"
+#include <string>
 
 MultiCellSection::MultiCellSection()
 {

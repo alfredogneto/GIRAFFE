@@ -1,12 +1,4 @@
 #pragma once
-#include "mkl.h"
-#include "mkl_blas.h"
-#include "mkl_types.h"
-#include "mkl_lapack.h"
-#include "mkl_dss.h"
-#include "stdio.h"
-#include <cmath>
-#include "arpack.h"
 #include "Matrix.h"
 
 class MatrixFloat
@@ -15,21 +7,21 @@ public:
 	//Constructors and Destrutor
 	MatrixFloat(void);													//Construtor Padrão
 	MatrixFloat(long lines);											//Construtor de matriz coluna
-	MatrixFloat(long lines, long columns);								//Construtor Paramétrico
+	MatrixFloat(long lines, long columns);								//Construtor Parametrico
 	MatrixFloat(const MatrixFloat &copied);									//Construtor de cópia
 	~MatrixFloat(void);													//Destrutor Padrão
 
 	//Gets and Sets
-	long getLines();												//Retorna o número de linhas da matriz
-	long getColumns();												//Retorna o número de colunas da matriz 
+	long getLines();												//Retorna o numero de linhas da matriz
+	long getColumns();												//Retorna o numero de colunas da matriz 
 
-	void setLines(long value);										//Define o número de linhas da matriz 
-	void setColumns(long value);									//Define o número de colunas da matriz 
+	void setLines(long value);										//Define o numero de linhas da matriz 
+	void setColumns(long value);									//Define o numero de colunas da matriz 
 	float* getMatrix();												//Retorna o endereço de uma matriz
 	
 	//General Functions
 	void print();													//Imprime a matriz no console
-	void fprint(char* s);											//Imprime a matriz em um arquivo de texto, cujo nome está no char s
+	void fprint(char* s);											//Imprime a matriz em um arquivo de texto, cujo nome esta no char s
 	bool alloc();													//Aloca a matriz
 	bool flush();													//Libera a memória ocupada pela matriz
 	void clear();													//Zera a matriz, mantando as dimensões atuais
@@ -41,9 +33,9 @@ public:
 
 	///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	float*  m_matrix;												//Matriz unidimensional
-	long     m_lines;												//Número de linhas
-	long     m_columns;												//Número de colunas
-	long	 m_alloced_lines;										//Número de linhas atualmente alocadas
+	long     m_lines;												//Numero de linhas
+	long     m_columns;												//Numero de colunas
+	long	 m_alloced_lines;										//Numero de linhas atualmente alocadas
 	bool	 m_lines_deleted;										//Flag que indica se as linhas foram desalocadas				
 };
 

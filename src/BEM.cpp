@@ -1,7 +1,13 @@
 #include "BEM.h"
-#include"Database.h"
 
-//Variáveis globais
+//#include <stdlib.h>
+#include <string.h>
+//#include "Matrix.h"
+//#include <math.h>
+
+
+#include"Database.h"
+//Variaveis globais
 extern
 Database db;
 

@@ -1,7 +1,10 @@
 #include "BodyGeometry.h"
 
+#include "Geometry.h"
+#include "BoundingBoxAxesAligned.h"
+#include "GeneralContactSearch.h"
 #include"Database.h"
-//Variáveis globais
+//Variaveis globais
 extern
 Database db;
 
@@ -77,7 +80,7 @@ bool BodyGeometry::Read(FILE *f)
 		list = true;
 		for (int i = 0; i < n_items; i++)
 		{
-			fscanf(f, "%s", s);//Leitura do número do nó
+			fscanf(f, "%s", s);//Leitura do numero do nó
 			list_items[i] = atoi(s);
 		}
 	}
@@ -156,9 +159,9 @@ void BodyGeometry::PreCalc()
 		db.geometries[list_items[i] - 1]->bv->associated_type = 'G';
 		db.geometries[list_items[i] - 1]->bv->associated_ID = number;
 		db.geometries[list_items[i] - 1]->bv->associated_sub_ID = i;//zero-based
-		//calcula máximo offset por parâmetro de tamanho, raio e/ou espessura
-		//avaliado por varredura de BV's de geometries, coletando informações - salva na variável max_offset - 
-		//OBS: já inclui o inc_len_factor
+		//calcula maximo offset por parametro de tamanho, raio e/ou espessura
+		//avaliado por varredura de BV's de geometries, coletando informações - salva na variavel max_offset - 
+		//OBS: ja inclui o inc_len_factor
 		if (db.geometries[list_items[i] - 1]->bv_offset > max_offset)
 			max_offset = db.geometries[list_items[i] - 1]->bv_offset;
 	}

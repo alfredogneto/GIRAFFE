@@ -1,9 +1,7 @@
 #pragma once
 #include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
 #include "Matrix.h"
-#include <math.h>
+
 class Node
 {
 public:
@@ -17,14 +15,14 @@ public:
 	//[5] RZ - coordenada do nó
 
 	double* ref_coordinates;	//Coordenadas do nó na configuração de referência
-	double* copy_coordinates;	//Coordenadas do nó na configuração de cópia (última convergida)
-	double* copy_rot_euler;		//Coordenadas de rotação (Euler) do nó na configuração de cópia (última convergida)
+	double* copy_coordinates;	//Coordenadas do nó na configuração de cópia (ultima convergida)
+	double* copy_rot_euler;		//Coordenadas de rotação (Euler) do nó na configuração de cópia (ultima convergida)
 	//double* rot_axes;
-	double* displacements;		//Deslocamentos do nó em relação à última cópia de coordenadas
+	double* displacements;		//Deslocamentos do nó em relação a ultima cópia de coordenadas
 	double* vel;				//Velocidades
-	double* copy_vel;			//Velocidades (cópia da última convergida)
+	double* copy_vel;			//Velocidades (cópia da ultima convergida)
 	double* accel;				//Acelerações
-	double* copy_accel;			//Acelerações (cópia da última convergida)
+	double* copy_accel;			//Acelerações (cópia da ultima convergida)
 
 	int* constraints;
 	//[0] Constraint em X - restrição do nó
@@ -38,7 +36,7 @@ public:
 	//Possui numerações dos graus de liberdade do nó:
 	//Positivo - GL livre
 	//Negativo - GL prescrito
-	//Não há valor ZERO, tanto os GL livres, como prescritos iniciam sua numeração do número UM
+	//Não ha valor ZERO, tanto os GL livres, como prescritos iniciam sua numeração do numero UM
 	/*
 	[0] X  -  GL do nó
 	[1] Y  -  GL do nó
@@ -46,7 +44,7 @@ public:
 	[3] RX  -  GL do nó
 	[4] RY  -  GL do nó
 	[5] RZ  -  GL do nó
-	[6]... - outros graus de liberdade possíveis
+	[6]... - outros graus de liberdade possiveis
 	*/
 	int* active_GL;
 	//Possui informações da utilização do GL
@@ -57,7 +55,7 @@ public:
 	int n_GL_free;
 	int n_GL_fixed;
 
-	int number;	//Número do nó - diretamente relacionado com a indexação do vetor de nós do database - informação redundante para facilitar possíveis verificações
+	int number;	//Numero do nó - diretamente relacionado com a indexação do vetor de nós do database - informação redundante para facilitar possiveis verificações
 
 	bool Read(FILE *f);
 	void Write(FILE *f);
@@ -70,9 +68,9 @@ public:
 	void ZeroIC();
 	Matrix InvXi(Matrix& alpha);
 
-	int nGL;	//Número de graus de liberdade presentes no nó
+	int nGL;	//Numero de graus de liberdade presentes no nó
 
-	//Variáveis internas para conversão de rotação e cálculos do monitor
+	//Variaveis internas para conversão de rotação e calculos do monitor
 	double theta;
 	Matrix* rot_euler;
 	Matrix* rot_rodrigues;
@@ -96,7 +94,7 @@ public:
 	Matrix* alpha_v;
 	Matrix* theta_v;
 
-	//Variáveis locais
+	//Variaveis locais
 	Matrix alpha_1;
 	Matrix alpha_2;
 	Matrix alpha_3;

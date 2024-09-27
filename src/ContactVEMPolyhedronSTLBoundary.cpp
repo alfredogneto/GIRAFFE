@@ -1,7 +1,19 @@
 #include "ContactVEMPolyhedronSTLBoundary.h"
-#include "Database.h"
 
-//Variáveis globais
+#include "VEMPolyhedron.h"
+#include "STLBoundary.h"
+#include "STLSurface.h"
+#include "TriangularFace.h"
+#include "Matrix.h"
+#include "FlexibleTriangularFace_RigidTriangularFace.h"
+#include "SurfacePairGeneralContact.h"
+#include "GeneralContactSearch.h"
+#include "SSContactData.h"
+#include "Node.h"
+#include "SuperNode.h"
+
+#include "Database.h"
+//Variaveis globais
 extern
 Database db;
 
@@ -242,7 +254,7 @@ void ContactVEMPolyhedronSTLBoundary::MountGlobalExplicit()
 
 void ContactVEMPolyhedronSTLBoundary::MountGlobal()
 {
-	//Variáveis temporárias para salvar a indexação global dos graus de liberdade a serem setados na matriz de rigidez global
+	//Variaveis temporarias para salvar a indexação global dos graus de liberdade a serem setados na matriz de rigidez global
 	int GL_global_1 = 0;
 	int GL_global_2 = 0;
 	double anterior = 0;

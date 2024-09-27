@@ -1,5 +1,6 @@
 #include "AerodynamicData.h"
-
+#include <string>
+#include "Table.h"
 
 AerodynamicData::AerodynamicData()
 {
@@ -44,13 +45,13 @@ bool AerodynamicData::Read(FILE *f)
 		}
 		else
 			return false;
-		//Salva a posição (stream)
+		//Salva a posicao (stream)
 		fpos_t pos;
 		fgetpos(f, &pos);
 		fscanf(f, "%s", s);
 		if (strcmp(s, "(Alpha/CD)"))
-			fsetpos(f, &pos);	//volta à posição anterior
-		//Alocação e leitura da tabela
+			fsetpos(f, &pos);	//volta a posicao anterior
+		//Alocaï¿½ï¿½o e leitura da tabela
 		CD = new Table(np, 1);
 		CD->Read(f);
 	}
@@ -68,13 +69,13 @@ bool AerodynamicData::Read(FILE *f)
 		}
 		else
 			return false;
-		//Salva a posição (stream)
+		//Salva a posicao (stream)
 		fpos_t pos;
 		fgetpos(f, &pos);
 		fscanf(f, "%s", s);
 		if (strcmp(s, "(Alpha/CL)"))
-			fsetpos(f, &pos);	//volta à posição anterior
-		//Alocação e leitura da tabela
+			fsetpos(f, &pos);	//volta a posicao anterior
+		//Alocacao e leitura da tabela
 		CL = new Table(np, 1);
 		CL->Read(f);
 	}
@@ -92,13 +93,13 @@ bool AerodynamicData::Read(FILE *f)
 		}
 		else
 			return false;
-		//Salva a posição (stream)
+		//Salva a posicao (stream)
 		fpos_t pos;
 		fgetpos(f, &pos);
 		fscanf(f, "%s", s);
 		if (strcmp(s, "(Alpha/CM)"))
-			fsetpos(f, &pos);	//volta à posição anterior
-		//Alocação e leitura da tabela
+			fsetpos(f, &pos);	//volta a posicao anterior
+		//Alocacao e leitura da tabela
 		CM = new Table(np, 1);
 		CM->Read(f);
 	}

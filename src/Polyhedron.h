@@ -1,5 +1,8 @@
 #pragma once
 #include "Particle.h"
+
+class MatrixFloat;
+
 class Polyhedron :
 	public Particle
 {
@@ -41,10 +44,10 @@ public:
 	MatrixFloat* x0f;
 	MatrixFloat* Q0f;
 
-	//Variáveis para calcular estado atual (nas funcoes de contato)
+	//Variaveis para calcular estado atual (nas funcoes de contato)
 	Matrix* Qip;
 	Matrix* x0ip;
-	//Variáveis para calcular estado anterior (nas funcoes de contato)
+	//Variaveis para calcular estado anterior (nas funcoes de contato)
 	Matrix* Qi;
 	Matrix* x0i;
 
@@ -54,20 +57,20 @@ public:
 
 	//Rigid body variables
 
-	Matrix* mJr;													//Tensor de inércia - formato Matrix
+	Matrix* mJr;													//Tensor de inercia - formato Matrix
 	Matrix* mbr;													//Vetor br - formato Matrix
 
-	Matrix* mJrlocal;												//Tensor de inércia - sistema local
+	Matrix* mJrlocal;												//Tensor de inercia - sistema local
 	Matrix* mbrlocal;												//Vetor br - sistema local
 
 	double mass;													//Massa
-	double** Jr;													//Tensor de inércia - formato double**
+	double** Jr;													//Tensor de inercia - formato double**
 	double* br;														//Vetor br - formato double*
 	double** DdT;													//Operador tangente
-	double* dT;														//Resíduo
+	double* dT;														//Residuo
 	double** Ddfield;												//Carregamento de campo linearizado
-	double* dfield;													//Resíduo carregamento de campo
-	//Variáveis cinemáticas
+	double* dfield;													//Residuo carregamento de campo
+	//Variaveis cinematicas
 	double alphai[3];
 	double ud[3];
 	double alphad[3];

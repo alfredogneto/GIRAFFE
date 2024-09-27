@@ -1,5 +1,6 @@
 #pragma once
-#include "BoundingVolume.h"
+
+class BoundingVolume;
 
 class LinkedCells
 {

@@ -1,7 +1,10 @@
 #include "InitialCondition.h"
-#include"Database.h"
 
-//Variáveis globais
+#include "Node.h"
+#include "SuperNode.h"
+
+#include"Database.h"
+//Variaveis globais
 extern
 Database db;
 

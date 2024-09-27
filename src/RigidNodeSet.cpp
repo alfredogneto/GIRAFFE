@@ -1,7 +1,12 @@
 #include "RigidNodeSet.h"
-#include"Database.h"
 
-//Variáveis globais
+#include "NodeSet.h"
+#include "SameRotation.h"
+#include "PostFiles.h"
+#include "Node.h"
+#include "InitialCondition.h"
+#include"Database.h"
+//Variaveis globais
 extern
 Database db;
 
@@ -71,7 +76,7 @@ bool RigidNodeSet::Read(FILE *f)
 {
 	char s[1000];
 	fscanf(f, "%s", s);
-	number = atoi(s);	//número
+	number = atoi(s);	//numero
 	fscanf(f, "%s", s);
 	if (!strcmp(s, "PilotNode"))
 	{
@@ -146,7 +151,7 @@ void RigidNodeSet::WriteVTK_XMLRender(FILE *f)
 		
 		int i, offsets;			            /*numero de pontos*/
 		int tamanho = n_nodes_set+1;		/*tamanho dos vetores*/
-		int m = tamanho;                    /*número de vértices*/
+		int m = tamanho;                    /*numero de vertices*/
 		float *x, *y, *z;					/*pontos*/
 
 		x = new float[tamanho];
@@ -245,7 +250,7 @@ bool RigidNodeSet::Check()
 	return true;
 }
 
-//Montagem dos resíduos e rigidez tangente
+//Montagem dos residuos e rigidez tangente
 void RigidNodeSet::Mount()
 {
 	Matrix r(3);
@@ -278,8 +283,8 @@ void RigidNodeSet::Mount()
 		
 	for (int ei = 0; ei < n_nodes_set; ei++)
 	{
-		//Nesse vínculo a rigidez tangente não se modifica nunca. É montada no PreCalc()
-		//Se o vínculo estiver ativo, realiza a montagem
+		//Nesse vinculo a rigidez tangente não se modifica nunca. e montada no PreCalc()
+		//Se o vinculo estiver ativo, realiza a montagem
 		if (active_lambda[ei * 3 + 0 + n_nodes_set * 3] == 1 && active_lambda[ei * 3 + 1 + n_nodes_set * 3] == 1 && active_lambda[ei * 3 + 2 + n_nodes_set * 3] == 1)
 		{
 			for (int i = 0; i < 3; i++)
@@ -316,7 +321,7 @@ void RigidNodeSet::Mount()
 			//Parte 2 - Rotações
 			for (int i = 0; i < 3; i++)
 				r(i, 0) = db.nodes[pilot_node - 1]->displacements[i + 3] - db.nodes[db.node_sets[node_set_ID - 1]->node_list[ei] - 1]->displacements[i + 3];
-			//Atualização do vetor de resíduos
+			//Atualização do vetor de residuos
 			(*residual2[ei])(0, 0) = lambda[ei * 3 + 0];
 			(*residual2[ei])(1, 0) = lambda[ei * 3 + 1];
 			(*residual2[ei])(2, 0) = lambda[ei * 3 + 2];
@@ -343,7 +348,7 @@ void RigidNodeSet::Mount()
 //Preenche a contribuição do elemento nas matrizes globais
 void RigidNodeSet::MountGlobal()
 {
-	//Variáveis temporárias para salvar a indexação global dos graus de liberdade a serem setados na matriz de rigidez global
+	//Variaveis temporarias para salvar a indexação global dos graus de liberdade a serem setados na matriz de rigidez global
 	int GL_global_1 = 0;
 	int GL_global_2 = 0;
 	double anterior = 0;
@@ -351,7 +356,7 @@ void RigidNodeSet::MountGlobal()
 	//Parte 1 - Deslocamentos do NodeSet e rotação do Pilot Node
 	for (int ei = 0; ei < n_nodes_set; ei++)
 	{
-		//Se o vínculo estiver ativo, realiza a montagem
+		//Se o vinculo estiver ativo, realiza a montagem
 		if (active_lambda[ei * 3 + 0 + n_nodes_set * 3] == 1 && active_lambda[ei * 3 + 1 + n_nodes_set * 3] == 1 && active_lambda[ei * 3 + 2 + n_nodes_set * 3] == 1)
 		{
 			for (int i = 0; i < 12; i++)
@@ -435,7 +440,7 @@ void RigidNodeSet::MountGlobal()
 	//Parte 2 - rotações
 	for (int ei = 0; ei < n_nodes_set; ei++)
 	{
-		//Se o vínculo estiver ativo, realiza a montagem
+		//Se o vinculo estiver ativo, realiza a montagem
 		if (active_lambda[ei * 3 + 0] == 1 && active_lambda[ei * 3 + 1] == 1 && active_lambda[ei * 3 + 2] == 1)
 		{
 			for (int i = 0; i < 9; i++)
@@ -503,7 +508,7 @@ void RigidNodeSet::MountGlobal()
 	}
 }
 
-//Pré-cálculo de variáveis que é feito uma única vez no início
+//Pre-calculo de variaveis que e feito uma unica vez no inicio
 void RigidNodeSet::PreCalc()
 {
 	Alloc();
@@ -536,7 +541,7 @@ void RigidNodeSet::PreCalc()
 
 void RigidNodeSet::ComputeInitialGuessDisplacements()
 {
-	//Se for o step de criação do vínculo inicializa condições iniciais
+	//Se for o step de criação do vinculo inicializa condições iniciais
 	if (bool_table.GetAt(db.current_solution_number - 1) == true)
 	{
 		//Condições iniciais - transferindo as condições iniciais do pilot node para os outros nós do rigid node set
@@ -578,7 +583,7 @@ void RigidNodeSet::ComputeInitialGuessDisplacements()
 //Computa efeito das condições iniciais nos nós da restrição
 void RigidNodeSet::ComputeVelAccel()
 {
-	//Se for o step de criação do vínculo inicializa condições iniciais
+	//Se for o step de criação do vinculo inicializa condições iniciais
 	if (bool_table.GetAt(db.current_solution_number - 1) == true)
 	{
 		//Condições iniciais - transferindo as condições iniciais do pilot node para os outros nós do rigid node set
@@ -645,7 +650,7 @@ void RigidNodeSet::ComputeVelAccel()
 	}
 }
 
-//Salvando variáveis da configuração convergida
+//Salvando variaveis da configuração convergida
 void RigidNodeSet::SaveLagrange()
 {
 	for (int i = 0; i < n_GL; i++)
@@ -726,9 +731,9 @@ void RigidNodeSet::ActivateDOFs()
 void RigidNodeSet::Alloc()
 {
 	n_nodes_set = db.node_sets[node_set_ID - 1]->n_nodes;
-	n_GL = n_nodes_set * 3 + n_nodes_set * 3;						//Número de graus de liberdade - multiplicadores de Lagrange 
-	//n_nodes_set * 3 - lambdas devidos às vinculações de rotações do NodeSet
-	//n_nodes_set * 3 - lambdas devidos às vinculações de deslocamentos do NodeSet
+	n_GL = n_nodes_set * 3 + n_nodes_set * 3;						//Numero de graus de liberdade - multiplicadores de Lagrange 
+	//n_nodes_set * 3 - lambdas devidos as vinculações de rotações do NodeSet
+	//n_nodes_set * 3 - lambdas devidos as vinculações de deslocamentos do NodeSet
 	active_lambda = new int[n_GL];
 	GLs = new int[n_GL];
 	lambda = new double[n_GL];
@@ -738,7 +743,7 @@ void RigidNodeSet::Alloc()
 	{
 		active_lambda[i] = 0;
 		GLs[i] = 0;
-		//Chute inicial para os lambdas: valores unitários
+		//Chute inicial para os lambdas: valores unitarios
 		lambda[i] = 1.0;//Valor não nulo para evitar divergência na primeira iteração
 		copy_lambda[i] = 1.0;
 	}

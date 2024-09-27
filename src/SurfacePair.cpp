@@ -1,7 +1,11 @@
 #include "SurfacePair.h"
+#include <direct.h>
 
+#include "SSContactData.h"
+#include "Surface.h"
+#include "FlexibleArcExtrusion_1_RigidArcRevolution_1.h"
 #include"Database.h"
-//Variáveis globais
+//Variaveis globais
 extern
 Database db;
 
@@ -159,10 +163,10 @@ void SurfacePair::BeginStepCheck(SSContactData* c_data)
 		}
 	}
 	
-	///////////////////////////////Ponteiros e variáveis para facilitar acesso//////////////////////////////////////////
-	Surface* surf1 = db.surfaces[surf1_ID - 1];		//Ponteiro para a superfície 1
-	Surface* surf2 = db.surfaces[surf2_ID - 1];		//Ponteiro para a superfície 2
-	//No início de cada passo é tomada a decisão acerca de strong_candidate ou não (com base na checagem de bounding box em torno das superfícies)
+	///////////////////////////////Ponteiros e variaveis para facilitar acesso//////////////////////////////////////////
+	Surface* surf1 = db.surfaces[surf1_ID - 1];		//Ponteiro para a superficie 1
+	Surface* surf2 = db.surfaces[surf2_ID - 1];		//Ponteiro para a superficie 2
+	//No inicio de cada passo e tomada a decisão acerca de strong_candidate ou não (com base na checagem de bounding box em torno das superficies)
 	bool converged1 = false;
 	bool converged2 = false;
 	bool strong_candidate = false;
@@ -174,7 +178,7 @@ void SurfacePair::BeginStepCheck(SSContactData* c_data)
 	if (strong_candidate == false)
 	{
 		for (int ip = 0; ip < n_pointwise; ip++)
-			c_data->return_value[ip] = 2;	//não é strong 
+			c_data->return_value[ip] = 2;	//não e strong 
 		if (write_report)
 		{
 			for (int i = 0; i < n_pointwise; i++)
@@ -190,11 +194,11 @@ void SurfacePair::BeginStepCheck(SSContactData* c_data)
 	//Caso especial - Special LCP
 	if (specialLCP)
 	{
-		//Salvando últimas coordenadas convectivas convergidas nas atuais - evitando que casos que divergiram sejam usados como estimativas iniciais do novo incremento
+		//Salvando ultimas coordenadas convectivas convergidas nas atuais - evitando que casos que divergiram sejam usados como estimativas iniciais do novo incremento
 		for (int ip = 0; ip < n_pointwise; ip++)
 		{
-			c_data->degenerated[ip] = false;		//marca a princípio como não degenerado para todas as soluções
-			c_data->repeated[ip] = false;			//Indica que a solução [ip] sempre será considerada
+			c_data->degenerated[ip] = false;		//marca a principio como não degenerado para todas as soluções
+			c_data->repeated[ip] = false;			//Indica que a solução [ip] sempre sera considerada
 
 			//Degeneration basis - canonical basis
 			(*c_data->P[ip])(0, 0) = 1.0;
@@ -216,7 +220,7 @@ void SurfacePair::BeginStepCheck(SSContactData* c_data)
 		c_data->return_value[0] = 0;
 
 		for (int ip = 1; ip < n_pointwise; ip++)
-			c_data->repeated[ip] = true;			//Indica que a solução [ip] sempre será desconsiderada
+			c_data->repeated[ip] = true;			//Indica que a solução [ip] sempre sera desconsiderada
 
 		if (write_report)
 		{
@@ -226,7 +230,7 @@ void SurfacePair::BeginStepCheck(SSContactData* c_data)
 		return;
 	}
 
-	//Salvando últimas coordenadas convectivas convergidas nas atuais - evitando que casos que divergiram sejam usados como estimativas iniciais do novo incremento
+	//Salvando ultimas coordenadas convectivas convergidas nas atuais - evitando que casos que divergiram sejam usados como estimativas iniciais do novo incremento
 	for (int ip = 0; ip < n_pointwise; ip++)
 	{
 		c_data->convective[ip][0] = c_data->copy_convective[ip][0];
@@ -234,8 +238,8 @@ void SurfacePair::BeginStepCheck(SSContactData* c_data)
 		c_data->convective[ip][2] = c_data->copy_convective[ip][2];
 		c_data->convective[ip][3] = c_data->copy_convective[ip][3];
 		
-		c_data->degenerated[ip] = false;		//marca a princípio como não degenerado para todas as soluções
-		c_data->repeated[ip] = false;			//Indica que a solução [ip] sempre será considerada
+		c_data->degenerated[ip] = false;		//marca a principio como não degenerado para todas as soluções
+		c_data->repeated[ip] = false;			//Indica que a solução [ip] sempre sera considerada
 	}
 	
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -269,7 +273,7 @@ void SurfacePair::BeginStepCheck(SSContactData* c_data)
 		converged2 = false;
 
 		seq_number = ip;//para controle do report
-		//Atualização dos índices das soluções das superfícies
+		//Atualização dos indices das soluções das superficies
 		if (index_u2_2 + 1 >= div2_2)
 		{
 			index_u2_2 = 0;
@@ -328,12 +332,12 @@ void SurfacePair::BeginStepCheck(SSContactData* c_data)
 		c_data->MountDegenerativeOperator();
 
 		
-		//CASO 1: não era strong candidate (ou primeiro cálculo)
+		//CASO 1: não era strong candidate (ou primeiro calculo)
 		if (c_data->copy_return_value[ip] == 2)
 		{
 			if (write_report)
 				fprintf(f_TR_report[ip], "Performing initial guess\n");
-			InitialGuess(c_data); //Realiza chute inicial com critério geométrico -> escreve em 'convective'
+			InitialGuess(c_data); //Realiza chute inicial com criterio geometrico -> escreve em 'convective'
 			/*c_data->convective[ip][0] = 1.0;
 			c_data->convective[ip][1] = 1.0;
 			c_data->convective[ip][2] = 1.0;
@@ -341,7 +345,7 @@ void SurfacePair::BeginStepCheck(SSContactData* c_data)
 			for (int i = 0; i < 4; i++)
 				(*cNR1[ip])(i, 0) = c_data->convective[ip][i];
 		}
-		//CASO 2: ou é copy_return_value 0 ou 4 (já há solução disponível proveniente de um passo anterior)
+		//CASO 2: ou e copy_return_value 0 ou 4 (ja ha solução disponivel proveniente de um passo anterior)
 		else
 		{
 			(*cNR1[ip])(0, 0) = c_data->copy_convective[ip][0];
@@ -350,7 +354,7 @@ void SurfacePair::BeginStepCheck(SSContactData* c_data)
 			(*cNR1[ip])(3, 0) = c_data->copy_convective[ip][3];
 		}
 
-		c_data->return_value[ip] = 0;		//é strong (default)
+		c_data->return_value[ip] = 0;		//e strong (default)
 		int info = 0;
 		
 		int charact1 = 3;
@@ -371,7 +375,7 @@ void SurfacePair::BeginStepCheck(SSContactData* c_data)
 			{
 				if (write_report)
 					fprintf(f_TR_report[ip], "Search for minimum\n");
-				//Determinação de mínimo ou intersecção
+				//Determinação de minimo ou intersecção
 				converged1 = FindMinimumSolution(c_data, cNR1[ip], info);
 				*cNR2[ip] = *cNR1[ip];
 				charact1 = CharacterizeCriticalPoint(cNR1[ip]);
@@ -418,7 +422,7 @@ void SurfacePair::BeginStepCheck(SSContactData* c_data)
 			if (converged2 == false)
 			{
 				
-				//Determina mínimo (ou intersecção)
+				//Determina minimo (ou intersecção)
 				converged1 = FindMinimumSolutionDegenerated(c_data, c_data->P_0[ip], cNR1[ip]);
 				*cNR2[ip] = *cNR1[ip];
 				
@@ -451,26 +455,26 @@ void SurfacePair::BeginStepCheck(SSContactData* c_data)
 		{
 			if (VerifyConvectiveRange(*cNR1[ip]) == 2)
 			{
-				c_data->return_value[ip] = 2;	//não é strong
+				c_data->return_value[ip] = 2;	//não e strong
 				if (write_report)
 					fprintf(f_TR_report[ip], "Candidate is not Strong. Strict minimum far from range of interest.\n");
 			}
 			//Negative gap
 			if (Gap(*cNR1[ip], false, nA, nB) < 0.0)
 			{
-				c_data->return_value[ip] = 2;	//não é strong
+				c_data->return_value[ip] = 2;	//não e strong
 				if (write_report)
 					fprintf(f_TR_report[ip], "Candidate is is not Strong. Strict minimum with negative gap\n");
 			}
 		}
-		//Avaliando se é candidato forte casos com interseccao
+		//Avaliando se e candidato forte casos com interseccao
 		if (charact1 == 1 && converged1 == true)
 		{
 			surf1->NormalExt(&(*cNR1[ip])(0, 0), &(*cNR1[ip])(1, 0), &nA);
 			surf2->NormalExt(&(*cNR1[ip])(2, 0), &(*cNR1[ip])(3, 0), &nB);
 			if (dot(nA,nB)>= 0.0)
 			{
-				c_data->return_value[ip] = 2;	//não é strong
+				c_data->return_value[ip] = 2;	//não e strong
 				if (write_report)
 				{
 					fprintf(f_TR_report[ip], "Candidate is not Strong. nA.nB is %.6f.\n", dot(nA, nB));
@@ -488,7 +492,7 @@ void SurfacePair::BeginStepCheck(SSContactData* c_data)
 			}
 		}
 
-		//Salva nas variáveis
+		//Salva nas variaveis
 		c_data->convective[ip][0] = (*cNR2[ip])(0, 0);
 		c_data->convective[ip][1] = (*cNR2[ip])(1, 0);
 		c_data->convective[ip][2] = (*cNR2[ip])(2, 0);
@@ -506,13 +510,13 @@ void SurfacePair::BeginStepCheck(SSContactData* c_data)
 		
 }
 
-//Determinação via otimização das coordenadas convectivas do par de superfícies
+//Determinação via otimização das coordenadas convectivas do par de superficies
 void SurfacePair::SolveLCP(SSContactData* c_data)
 {
 		
-	///////////////////////////////Ponteiros e variáveis para facilitar acesso//////////////////////////////////////////
-	Surface* surf1 = db.surfaces[surf1_ID - 1];		//Ponteiro para a superfície 1
-	Surface* surf2 = db.surfaces[surf2_ID - 1];		//Ponteiro para a superfície 2
+	///////////////////////////////Ponteiros e variaveis para facilitar acesso//////////////////////////////////////////
+	Surface* surf1 = db.surfaces[surf1_ID - 1];		//Ponteiro para a superficie 1
+	Surface* surf2 = db.surfaces[surf2_ID - 1];		//Ponteiro para a superficie 2
 
 	if (write_report)
 	{
@@ -529,7 +533,7 @@ void SurfacePair::SolveLCP(SSContactData* c_data)
 	//Caso especial - Special LCP
 	if (specialLCP)
 	{
-		//CASO 1 - não é strong candidate - retorno imediato:
+		//CASO 1 - não e strong candidate - retorno imediato:
 		if (c_data->return_value[0] == 2)
 		{
 			if (write_report)
@@ -555,7 +559,7 @@ void SurfacePair::SolveLCP(SSContactData* c_data)
 				fprintf(f_TR_report[0], "SolveLCP return value is %d \n", c_data->return_value[0]);
 			}
 				
-			EvaluateInvertedHessian(c_data);	//prepara inversa da Hessiana para envio para a rotina de contato - essa função já faz o tratamento para não convexidade
+			EvaluateInvertedHessian(c_data);	//prepara inversa da Hessiana para envio para a rotina de contato - essa função ja faz o tratamento para não convexidade
 		}
 		if (write_report)
 		{
@@ -567,16 +571,16 @@ void SurfacePair::SolveLCP(SSContactData* c_data)
 
 
 	//Valores salvos pela função (indicativos do que ocorreu em sua execução)
-	//0 - Convergiu e está no range de interesse para contato e não houve grande mudança de posição do ponto material de contato, no caso de haver contato anterior - OK
-	//1 - Não houve convergência (pode ou não estar no range para contato) - e é strong_candidate. Retorno problemático responsável por veto de passo da simulação.
-	//2 - Não é strong_candidate - OK
-	//3 - mudança abrupta na posição de contato. Retorno problemático responsável por veto de passo da simulação.
-	//4 - Houve convergência, mas não está no range para contato. Possivelmente elemento vizinho. - OK
+	//0 - Convergiu e esta no range de interesse para contato e não houve grande mudança de posição do ponto material de contato, no caso de haver contato anterior - OK
+	//1 - Não houve convergência (pode ou não estar no range para contato) - e e strong_candidate. Retorno problematico responsavel por veto de passo da simulação.
+	//2 - Não e strong_candidate - OK
+	//3 - mudança abrupta na posição de contato. Retorno problematico responsavel por veto de passo da simulação.
+	//4 - Houve convergência, mas não esta no range para contato. Possivelmente elemento vizinho. - OK
 
 	//Varredura das soluções ativas
 	for (int i = 0; i < c_data->n_solutions; i++)
 	{
-		//CASO 1 - não é strong candidate - retorno imediato:
+		//CASO 1 - não e strong candidate - retorno imediato:
 		if (c_data->return_value[i] == 2)
 		{
 			if (write_report)
@@ -589,23 +593,23 @@ void SurfacePair::SolveLCP(SSContactData* c_data)
 			if (c_data->repeated[i] == false)
 			{
 				//CASO 2: não houve convergência ou houve convergência para uma solução longe da desejada
-				//Toma como chute inicial a última solução correta conhecida (cópia do passo convergido anterior da phase 2)
+				//Toma como chute inicial a ultima solução correta conhecida (cópia do passo convergido anterior da phase 2)
 				if (c_data->return_value[i] == 1 || c_data->return_value[i] == 3)
 				{
 					(*cNR1[i])(0, 0) = c_data->copy_convective[i][0];
 					(*cNR1[i])(1, 0) = c_data->copy_convective[i][1];
 					(*cNR1[i])(2, 0) = c_data->copy_convective[i][2];
 					(*cNR1[i])(3, 0) = c_data->copy_convective[i][3];
-					//Se antes não era strong candidate, o copy_convective não traz info válida. Assim, calcula o chute inicial (geométrico) novamente
+					//Se antes não era strong candidate, o copy_convective não traz info valida. Assim, calcula o chute inicial (geometrico) novamente
 					if (c_data->copy_return_value[i] == 2)
 					{
-						InitialGuess(c_data); //Realiza chute inicial com critério geométrico -> escreve em 'convective'
+						InitialGuess(c_data); //Realiza chute inicial com criterio geometrico -> escreve em 'convective'
 						for (int ii = 0; ii < 4; ii++)
 							(*cNR1[i])(ii, 0) = c_data->convective[i][ii];
 					}
 				}
 				//CASO 3: houve convergência
-				//Toma como chute inicial a última solução convergida
+				//Toma como chute inicial a ultima solução convergida
 				if (c_data->return_value[i] == 0 || c_data->return_value[i] == 4)
 				{
 					(*cNR1[i])(0, 0) = c_data->convective[i][0];
@@ -636,7 +640,7 @@ void SurfacePair::SolveLCP(SSContactData* c_data)
 					{
 						if (write_report)
 							fprintf(f_TR_report[i], "Search for minimum\n");
-						//Determinação de mínimo ou intersecção
+						//Determinação de minimo ou intersecção
 						converged1 = FindMinimumSolution(c_data, cNR1[i], info);
 						*cNR2[i] = *cNR1[i];
 						//Se for intersecção - busca o ponto de sela
@@ -670,7 +674,7 @@ void SurfacePair::SolveLCP(SSContactData* c_data)
 					for (int index = 0; index < 4; index++)
 						(*cNR1[i])(index, 0) = temp_coordinates(index, 0);
 
-					//Se o contato era previamente ativo, vizinho ou se nao era strong (ou seja, se há initial guess calculado nesse ponto)
+					//Se o contato era previamente ativo, vizinho ou se nao era strong (ou seja, se ha initial guess calculado nesse ponto)
 					if ((c_data->return_value[i] == 0 || c_data->return_value[i] == 4) && c_data->g_n[i] < 0.0)
 					{
 						if (write_report)
@@ -684,7 +688,7 @@ void SurfacePair::SolveLCP(SSContactData* c_data)
 					//Se não entrou no if anterior ou se não convergiu a sela do if anterior
 					if (converged2 == false)
 					{
-						//Determina mínimo (ou intersecção)
+						//Determina minimo (ou intersecção)
 						converged1 = FindMinimumSolutionDegenerated(c_data, c_data->P_0[i], cNR1[i]);
 						*cNR2[i] = *cNR1[i];
 						if (c_data->P_0[i]->getColumns() == 3)
@@ -771,7 +775,7 @@ void SurfacePair::SolveLCP(SSContactData* c_data)
 			}
 		}
 	}
-	EvaluateInvertedHessian(c_data);	//prepara inversa da Hessiana para envio para a rotina de contato - essa função já faz o tratamento para não convexidade
+	EvaluateInvertedHessian(c_data);	//prepara inversa da Hessiana para envio para a rotina de contato - essa função ja faz o tratamento para não convexidade
 	if (write_report)
 	{
 		for (int i = 0; i < c_data->n_solutions; i++)
@@ -793,9 +797,9 @@ bool SurfacePair::EndStepCheck(SSContactData* c_data)
 			fprintf(f_TR_report[i], "EndStepCheck\n");
 		}
 	}
-	///////////////////////////////Ponteiros e variáveis para facilitar acesso//////////////////////////////////////////
-	Surface* surf1 = db.surfaces[surf1_ID - 1];		//Ponteiro para a superfície 1
-	Surface* surf2 = db.surfaces[surf2_ID - 1];		//Ponteiro para a superfície 2
+	///////////////////////////////Ponteiros e variaveis para facilitar acesso//////////////////////////////////////////
+	Surface* surf1 = db.surfaces[surf1_ID - 1];		//Ponteiro para a superficie 1
+	Surface* surf2 = db.surfaces[surf2_ID - 1];		//Ponteiro para a superficie 2
 
 	//Retorno com problemas: true
 	//Retorno sem problemas: false
@@ -807,7 +811,7 @@ bool SurfacePair::EndStepCheck(SSContactData* c_data)
 		//Se não for solução repetida (ou seja, se for solução ativa)
 		if (c_data->repeated[i] == false)
 		{
-			//Se algum dos pares ativos apresentou divergência do método de otimização
+			//Se algum dos pares ativos apresentou divergência do metodo de otimização
 			if (c_data->return_value[i] == 1)
 			{
 				//Teste de bounding box
@@ -833,7 +837,7 @@ bool SurfacePair::EndStepCheck(SSContactData* c_data)
 				}
 				return true;
 			}
-			//Se houve muita mudança de range das coordenadas convectivas é indicativo de perda da solução desejada para c_bar
+			//Se houve muita mudança de range das coordenadas convectivas e indicativo de perda da solução desejada para c_bar
 			if (c_data->return_value[i] == 3)
 			{
 				db.myprintf("LCP between surfaces %d and %d has presented problems. Code 3.\n", surf1_ID, surf2_ID);
@@ -860,13 +864,13 @@ bool SurfacePair::EndStepCheck(SSContactData* c_data)
 
 int SurfacePair::CharacterizeCriticalPoint(Matrix* solution)
 {
-	///////////////////////////////Ponteiros e variáveis para facilitar acesso//////////////////////////////////////////
-	Surface* surf1 = db.surfaces[surf1_ID - 1];		//Ponteiro para a superfície 1
-	Surface* surf2 = db.surfaces[surf2_ID - 1];		//Ponteiro para a superfície 2
+	///////////////////////////////Ponteiros e variaveis para facilitar acesso//////////////////////////////////////////
+	Surface* surf1 = db.surfaces[surf1_ID - 1];		//Ponteiro para a superficie 1
+	Surface* surf2 = db.surfaces[surf2_ID - 1];		//Ponteiro para a superficie 2
 
-	//0 - mínimo estrito
-	//1 - mínimo não estrito (intersecção)
-	//2 - transição mínimo-sela (just-touch)
+	//0 - minimo estrito
+	//1 - minimo não estrito (intersecção)
+	//2 - transição minimo-sela (just-touch)
 	//3 - saddle 2 negative eigenvalues
 	//4 - other
 	Matrix xk(4);
@@ -891,28 +895,28 @@ int SurfacePair::CharacterizeCriticalPoint(Matrix* solution)
 	double tol_intersect = max_eig * tol_convective*tol_convective;
 	double tol_small = max_eig * tol_small_1;
 
-	//mínimo não estrito (intersecção)
+	//minimo não estrito (intersecção)
 	if (ob < tol_intersect)
 	{
 		if (write_report)
 			fprintf(f_TR_report[seq_number], "Intersection found (tolerance %.6e). Eigenvalues are %.6e\t%.6e\t%.6e\t%.6e\n", tol_intersect, D(0, 0), D(1, 1), D(2, 2), D(3, 3));
 		return 1;
 	}
-	//mínimo estrito
+	//minimo estrito
 	if (D(0, 0) >= tol_small && D(1, 1) >= tol_small && D(2, 2) >= tol_small && D(3, 3) >= tol_small)
 	{
 		if (write_report)
 			fprintf(f_TR_report[seq_number], "Strict minimum found. Eigenvalues are %.6e\t%.6e\t%.6e\t%.6e\n", D(0, 0), D(1, 1), D(2, 2), D(3, 3));
 		return 0;
 	}
-	////transição mínimo-sela (just-touch)
+	////transição minimo-sela (just-touch)
 	//if (D(0, 0) >= -tol_small && D(0, 0) <= +tol_small && D(1, 1) >= -tol_small && D(1, 1) <= +tol_small && D(2, 2) >= tol_small && D(3, 3) >= tol_small)
 	//{
 	//	if (write_report)
 	//		fprintf(f_TR_report, "Just-touch found. Eigenvalues are %.6e\t%.6e\t%.6e\t%.6e\n", D(0, 0), D(1, 1), D(2, 2), D(3, 3));
 	//	return 2;
 	//}
-	//transição mínimo-sela (just-touch)
+	//transição minimo-sela (just-touch)
 	if (D(0, 0) <= tol_small && D(1, 1) <= tol_small && D(2, 2) >= tol_small && D(3, 3) >= tol_small)
 	{
 		if (write_report)
@@ -926,13 +930,13 @@ int SurfacePair::CharacterizeCriticalPoint(Matrix* solution)
 
 int SurfacePair::CharacterizeCriticalPointDegenerated(Matrix* solution, Matrix* P_0, bool print)
 {
-	///////////////////////////////Ponteiros e variáveis para facilitar acesso//////////////////////////////////////////
-	Surface* surf1 = db.surfaces[surf1_ID - 1];		//Ponteiro para a superfície 1
-	Surface* surf2 = db.surfaces[surf2_ID - 1];		//Ponteiro para a superfície 2
+	///////////////////////////////Ponteiros e variaveis para facilitar acesso//////////////////////////////////////////
+	Surface* surf1 = db.surfaces[surf1_ID - 1];		//Ponteiro para a superficie 1
+	Surface* surf2 = db.surfaces[surf2_ID - 1];		//Ponteiro para a superficie 2
 
-	//0 - mínimo estrito
-	//1 - mínimo não estrito (intersecção)
-	//2 - transição mínimo-sela (just-touch)
+	//0 - minimo estrito
+	//1 - minimo não estrito (intersecção)
+	//2 - transição minimo-sela (just-touch)
 	//3 - saddle 2 negative eigenvalues
 	//4 - other
 	Matrix xk(4);
@@ -964,21 +968,21 @@ int SurfacePair::CharacterizeCriticalPointDegenerated(Matrix* solution, Matrix* 
 	double tol_intersect = max_eig * tol_convective*tol_convective;
 	double tol_small = max_eig * tol_small_1;
 
-	//mínimo não estrito (intersecção)
+	//minimo não estrito (intersecção)
 	if (ob < tol_intersect)
 	{
 		if (write_report)
 			fprintf(f_TR_report[seq_number], "Intersection found. Eigenvalues are %.6e\t%.6e\t%.6e\n", D(0, 0), D(1, 1), D(2, 2));
 		return 1;
 	}
-	//mínimo estrito
+	//minimo estrito
 	if (D(0, 0) >= tol_small && D(1, 1) >= tol_small && D(2, 2) >= tol_small)
 	{
 		if (write_report)
 			fprintf(f_TR_report[seq_number], "Strict minimum found. Eigenvalues are %.6e\t%.6e\t%.6e. Tolerance is %.6e.\n", D(0, 0), D(1, 1), D(2, 2), tol_small);
 		return 0;
 	}
-	////transição mínimo-sela (just-touch)
+	////transição minimo-sela (just-touch)
 	//if (D(0, 0) >= -tol_small && D(0, 0) <= +tol_small && D(1, 1) >= tol_small && D(2, 2) >= tol_small)
 	//{
 	//	if (write_report)
@@ -997,13 +1001,13 @@ int SurfacePair::CharacterizeCriticalPointDegenerated(Matrix* solution, Matrix* 
 	return 4;
 }
 
-//Otimização - determinação de mínimo
+//Otimização - determinação de minimo
 bool SurfacePair::FindMinimumSolution(SSContactData* c_data, Matrix* solution, int &return_info)
 {
 	//Dados - trust region
-	double Deltamax = 1e4;			//máximo raio da trust region permitido
+	double Deltamax = 1e4;			//maximo raio da trust region permitido
 	double Deltak = 0.1;			//atual raio de trust region
-	double etha = 0.15;				//valor entre 0 e 0.15 - indica que a aproximação é ruim e veta o incremento
+	double etha = 0.15;				//valor entre 0 e 0.15 - indica que a aproximação e ruim e veta o incremento
 	double rhok = 0.0;				//razão entre a diferença na função objetivo e a diferença da aproximação utilizada
 	double actual_reduction = 0.0;
 	double predicted_reduction = 0.0;
@@ -1021,7 +1025,7 @@ bool SurfacePair::FindMinimumSolution(SSContactData* c_data, Matrix* solution, i
 	Matrix D(4, 4);
 	Matrix cHes(4, 4);
 
-	//Inicialização do método - chute inicial
+	//Inicialização do metodo - chute inicial
 	for (int i = 0; i < 4; i++)
 		xk(i, 0) = (*solution)(i, 0);
 
@@ -1037,7 +1041,7 @@ bool SurfacePair::FindMinimumSolution(SSContactData* c_data, Matrix* solution, i
 	double tol_ortho = tol_convective * abs(max_eig);
 	double tol_small = tol_small_1;
 
-	//Critério para identificar uma intersecção
+	//Criterio para identificar uma intersecção
 	double tol_intersect = max_eig * tol_convective*tol_convective;
 
 	if (write_report)
@@ -1094,13 +1098,13 @@ bool SurfacePair::FindMinimumSolution(SSContactData* c_data, Matrix* solution, i
 			//Construção da direção de busca
 			//Direção de busca baseada em NR - modificada pelo menor autovalor
 			zeros(&pb);
-			//Se o menor autovalor é menor ou igual a zero (tol_small) - modifica a direção de NR para garantir direção descendente
+			//Se o menor autovalor e menor ou igual a zero (tol_small) - modifica a direção de NR para garantir direção descendente
 			if (min_eig < tol_small)
 			{
 				for (int i = 0; i < 4; i++)
 					pb(i, 0) = -pGra(i, 0) / (D(i, i) - (min_eig - abs(min_eig)*tol_ascent));
 			}
-			//Se o menor autovalor é maior que zero (tol_small) - direção de NR é escolhida
+			//Se o menor autovalor e maior que zero (tol_small) - direção de NR e escolhida
 			else
 			{
 				for (int i = 0; i < 4; i++)
@@ -1132,7 +1136,7 @@ bool SurfacePair::FindMinimumSolution(SSContactData* c_data, Matrix* solution, i
 		}
 
 		//////////////////////////UPDATING SOLUTION////////////////////////////////
-		//Cálculo de rhok
+		//Calculo de rhok
 		actual_reduction = ObjectivePhase1(xk) - ObjectivePhase1(xk + pk);
 		predicted_reduction = -(transp(Gra)*pk + 0.5*transp(pk)*Hes*pk)(0, 0);
 		rhok = actual_reduction / predicted_reduction;
@@ -1195,15 +1199,15 @@ bool SurfacePair::FindMinimumSolution(SSContactData* c_data, Matrix* solution, i
 bool SurfacePair::FindSaddleSolution(SSContactData* c_data, Matrix* solution, int &return_info, bool return_gap)
 {
 	//Dados - trust region
-	double Deltamax = 10;			//máximo raio da trust region permitido
+	double Deltamax = 10;			//maximo raio da trust region permitido
 	double Deltak = 0.01;			//atual raio de trust region
-	double etha = 0.15;				//valor entre 0 e 0.15 - indica que a aproximação é ruim e veta o incremento
+	double etha = 0.15;				//valor entre 0 e 0.15 - indica que a aproximação e ruim e veta o incremento
 	double rhok = 0.0;				//razão entre a diferença na função objetivo e a diferença da aproximação utilizada
 	double actual_change = 0.0;
 	double predicted_change = 0.0;
 	double tol_small = tol_small_1;
 	int max_it = max_it_2;			//max iterations
-	//Variáveis internas de uso geral
+	//Variaveis internas de uso geral
 	Matrix Hes(4, 4);
 	Matrix Gra(4, 1);
 	Matrix pGra(4, 1);
@@ -1213,11 +1217,11 @@ bool SurfacePair::FindSaddleSolution(SSContactData* c_data, Matrix* solution, in
 	Matrix pk(4);
 	Matrix pb(4);
 	Matrix xk(4);
-	//Inicialização do método - chute inicial - obtido da solução anterior - problema de mínima distância
+	//Inicialização do metodo - chute inicial - obtido da solução anterior - problema de minima distancia
 	for (int i = 0; i < 4; i++)
 		xk(i, 0) = (*solution)(i, 0);
 
-	//Erro da mínima distância
+	//Erro da minima distancia
 	GradientPhase1(xk, Gra);
 	double ob = ObjectivePhase1(xk);
 	//Hessiana da função objetivo
@@ -1235,7 +1239,7 @@ bool SurfacePair::FindSaddleSolution(SSContactData* c_data, Matrix* solution, in
 	}
 	double tol_ortho = tol_convective * abs(max_eig);
 
-	bool saddle_basin = false;		//variável booleana que indica que a bacia de atração da sela foi localizada
+	bool saddle_basin = false;		//variavel booleana que indica que a bacia de atração da sela foi localizada
 	int it = 1;
 	bool conv1 = false;
 	saddle_basin = false;
@@ -1251,8 +1255,8 @@ bool SurfacePair::FindSaddleSolution(SSContactData* c_data, Matrix* solution, in
 		if (write_report)
 			fprintf(f_TR_report[seq_number], "FindSaddleSolution initial guess is not in saddle basin\n");
 
-		Surface* surf1 = db.surfaces[surf1_ID - 1];		//Ponteiro para a superfície 1
-		Surface* surf2 = db.surfaces[surf2_ID - 1];		//Ponteiro para a superfície 2
+		Surface* surf1 = db.surfaces[surf1_ID - 1];		//Ponteiro para a superficie 1
+		Surface* surf2 = db.surfaces[surf2_ID - 1];		//Ponteiro para a superficie 2
 		Matrix nA(3);
 		surf1->NormalExt(&xk(0, 0), &xk(1, 0), &nA);
 		Matrix nB(3);
@@ -1322,7 +1326,7 @@ bool SurfacePair::FindSaddleSolution(SSContactData* c_data, Matrix* solution, in
 			fprintf(f_TR_report[seq_number], "After FindMinimumGap, initial guess is not in saddle basin\n");
 	}
 
-	//Cálculos de erro e objetivo
+	//Calculos de erro e objetivo
 	GradientPhase1(xk, Gra);
 	//Erro - forçando primeira entrada
 	double error = tol_ortho + 1.0;
@@ -1335,7 +1339,7 @@ bool SurfacePair::FindSaddleSolution(SSContactData* c_data, Matrix* solution, in
 	char c = 'I';
 	if (write_report)
 		fprintf(f_TR_report[seq_number], "%d\t%.12e\t%.12e\t%.12e\t%.12e\t%.6e\t%.6e\t%.6e\t%c\t%.6e\t%.6e\t%.6e\n", it, xk(0, 0), xk(1, 0), xk(2, 0), xk(3, 0), ob, error, Deltak, c, rhok, actual_change, predicted_change);
-	/////////////////////////////////Passo de análise da bacia de atração do ponto de sela/////////////////////////////////////
+	/////////////////////////////////Passo de analise da bacia de atração do ponto de sela/////////////////////////////////////
 	while ((error > tol_ortho || norm(pk) > tol_convective) && it <= max_it)
 	{
 		
@@ -1351,7 +1355,7 @@ bool SurfacePair::FindSaddleSolution(SSContactData* c_data, Matrix* solution, in
 			pk = (Deltak / norminc)*pk;
 		c = 'N';
 		//////////////////////////UPDATING SOLUTION////////////////////////////////
-		//Cálculo de rhok
+		//Calculo de rhok
 		actual_change = ObjectivePhase1(xk) - ObjectivePhase1(xk + pk);
 		predicted_change = -(transp(Gra)*(pk)+0.5*transp(pk)*Hes*(pk))(0, 0);
 		rhok = actual_change / predicted_change;
@@ -1374,7 +1378,7 @@ bool SurfacePair::FindSaddleSolution(SSContactData* c_data, Matrix* solution, in
 			Deltak = Deltak / 4;
 		//incrementa iterações
 		it++;
-		//Cálculos que serão utilizados para verificar saída do loop - ou na próxima iteração, caso não saia
+		//Calculos que serão utilizados para verificar saida do loop - ou na próxima iteração, caso não saia
 		//Objetivo
 		ob = ObjectivePhase1(xk);
 		//Gradiente
@@ -1388,7 +1392,7 @@ bool SurfacePair::FindSaddleSolution(SSContactData* c_data, Matrix* solution, in
 	if (write_report)
 		fprintf(f_TR_report[seq_number], "Error\t%.6e\tTolerance\t%.6e\n", error, tol_ortho);
 	
-	////////////////////////////////Verificação final - se a solução é ponto de sela/////////////////////////////////////
+	////////////////////////////////Verificação final - se a solução e ponto de sela/////////////////////////////////////
 	//Retorno da função
 	if (error < tol_ortho)
 	{
@@ -1407,13 +1411,13 @@ bool SurfacePair::FindSaddleSolution(SSContactData* c_data, Matrix* solution, in
 		return false;
 }
 
-//Otimização - determinação de mínimo
+//Otimização - determinação de minimo
 bool SurfacePair::FindMinimumSolutionDegenerated(SSContactData* c_data, Matrix* P_0, Matrix* solution)
 {
 	//Dados - trust region
-	double Deltamax = 1e4;			//máximo raio da trust region permitido
+	double Deltamax = 1e4;			//maximo raio da trust region permitido
 	double Deltak = 0.1;			//atual raio de trust region
-	double etha = 0.15;				//valor entre 0 e 0.15 - indica que a aproximação é ruim e veta o incremento
+	double etha = 0.15;				//valor entre 0 e 0.15 - indica que a aproximação e ruim e veta o incremento
 	double rhok = 0.0;				//razão entre a diferença na função objetivo e a diferença da aproximação utilizada
 	double actual_reduction = 0.0;
 	double predicted_reduction = 0.0;
@@ -1435,7 +1439,7 @@ bool SurfacePair::FindMinimumSolutionDegenerated(SSContactData* c_data, Matrix* 
 	Matrix D(order, order);
 	Matrix cHes(order, order);
 
-	//Inicialização do método - chute inicial - obtido da solução anterior - problema de mínima distância
+	//Inicialização do metodo - chute inicial - obtido da solução anterior - problema de minima distancia
 	for (int i = 0; i < 4; i++)
 		xk(i, 0) = (*solution)(i, 0);
 
@@ -1511,13 +1515,13 @@ bool SurfacePair::FindMinimumSolutionDegenerated(SSContactData* c_data, Matrix* 
 			//Construção da direção de busca
 			//Direção de busca baseada em NR - modificada pelo menor autovalor
 			zeros(&pb);
-			//Se o menor autovalor é menor ou igual a zero (tol_small) - modifica a direção de NR para garantir direção descendente
+			//Se o menor autovalor e menor ou igual a zero (tol_small) - modifica a direção de NR para garantir direção descendente
 			if (min_eig < tol_small)
 			{
 				for (int i = 0; i < order; i++)
 					pb(i, 0) = -pGra(i, 0) / (D(i, i) - (min_eig - abs(min_eig)*tol_ascent));
 			}
-			//Se o menor autovalor é maior que zero (tol_small) - direção de NR é escolhida
+			//Se o menor autovalor e maior que zero (tol_small) - direção de NR e escolhida
 			else
 			{
 				for (int i = 0; i < order; i++)
@@ -1548,7 +1552,7 @@ bool SurfacePair::FindMinimumSolutionDegenerated(SSContactData* c_data, Matrix* 
 		}
 
 		//////////////////////////UPDATING SOLUTION////////////////////////////////
-		//Cálculo de rhok
+		//Calculo de rhok
 		double actual_reduction = ObjectivePhase1(xk) - ObjectivePhase1(xk + (*P_0)*pk);
 		double predicted_reduction = -(transp(deg_Gra)*pk + 0.5*transp(pk)*deg_Hes*pk)(0, 0);
 		rhok = actual_reduction / predicted_reduction;
@@ -1611,13 +1615,13 @@ bool SurfacePair::FindMinimumSolutionDegenerated(SSContactData* c_data, Matrix* 
 		return false;
 }
 
-//Otimização - determinação de mínimo
+//Otimização - determinação de minimo
 bool SurfacePair::FindMinimumGapDegenerated(SSContactData* c_data, Matrix* P_0, Matrix* solution, int &return_info, bool fixed_normals, Matrix& nA, Matrix& nB)
 {
 	//Dados - trust region   
 	double Deltak = minimum_convective_range / 1000;		//atual raio de trust region
-	double Deltamax = 100;									//máximo raio da trust region permitido
-	double etha = 0.15;										//valor entre 0 e 0.15 - indica que a aproximação é ruim e veta o incremento
+	double Deltamax = 100;									//maximo raio da trust region permitido
+	double etha = 0.15;										//valor entre 0 e 0.15 - indica que a aproximação e ruim e veta o incremento
 	double rhok = 0.0;										//razão entre a diferença na função objetivo e a diferença da aproximação utilizada
 	double last_reduction = 0.0;
 	double reduction = 0.0;
@@ -1639,7 +1643,7 @@ bool SurfacePair::FindMinimumGapDegenerated(SSContactData* c_data, Matrix* P_0, 
 	Matrix D(order, order);
 	Matrix cHes(order, order);
 
-	//	//Inicialização do método - chute inicial
+	//	//Inicialização do metodo - chute inicial
 	for (int i = 0; i < 4; i++)
 		xk(i, 0) = (*solution)(i, 0);
 
@@ -1710,13 +1714,13 @@ bool SurfacePair::FindMinimumGapDegenerated(SSContactData* c_data, Matrix* P_0, 
 			//Construção da direção de busca
 			//Direção de busca baseada em NR - modificada pelo menor autovalor
 			zeros(&pb);
-			//Se o menor autovalor é menor ou igual a zero (tol_small) - modifica a direção de NR para garantir direção descendente
+			//Se o menor autovalor e menor ou igual a zero (tol_small) - modifica a direção de NR para garantir direção descendente
 			if (min_eig < tol_small)
 			{
 				for (int i = 0; i < order; i++)
 					pb(i, 0) = -pGra(i, 0) / (D(i, i) - (min_eig - abs(min_eig)*tol_ascent));
 			}
-			//Se o menor autovalor é maior que zero (tol_small) - direção de NR é escolhida
+			//Se o menor autovalor e maior que zero (tol_small) - direção de NR e escolhida
 			else
 			{
 				for (int i = 0; i < order; i++)
@@ -1747,7 +1751,7 @@ bool SurfacePair::FindMinimumGapDegenerated(SSContactData* c_data, Matrix* P_0, 
 			}
 		}
 		//////////////////////////UPDATING SOLUTION////////////////////////////////
-		//Cálculo de rhok
+		//Calculo de rhok
 		actual_reduction = Gap(xk, fixed_normals, nA, nB) - Gap(xk + (*P_0)*pk, fixed_normals, nA, nB);
 		predicted_reduction = -(transp(deg_Gra)*pk + 0.5*transp(pk)*deg_Hes*pk)(0, 0);
 		rhok = actual_reduction / predicted_reduction;
@@ -1817,12 +1821,12 @@ bool SurfacePair::FindSaddleSolutionDegenerated(SSContactData* c_data, Matrix* P
 {
 	//Função desenvolvida para degeneração de ordem 3
 	//Ordem 4 - chamar função FindSaddleSolution
-	//Ordem 2 - chamar função FindMinimumSolution (não é necessário determinar o ponto de sela)
+	//Ordem 2 - chamar função FindMinimumSolution (não e necessario determinar o ponto de sela)
 
 	//Dados - trust region
-	double Deltamax = 10;			//máximo raio da trust region permitido
+	double Deltamax = 10;			//maximo raio da trust region permitido
 	double Deltak = 0.01;			//atual raio de trust region
-	double etha = 0.15;				//valor entre 0 e 0.15 - indica que a aproximação é ruim e veta o incremento
+	double etha = 0.15;				//valor entre 0 e 0.15 - indica que a aproximação e ruim e veta o incremento
 	double rhok = 0.0;				//razão entre a diferença na função objetivo e a diferença da aproximação utilizada
 	double actual_change = 0.0;
 	double predicted_change = 0.0;
@@ -1830,7 +1834,7 @@ bool SurfacePair::FindSaddleSolutionDegenerated(SSContactData* c_data, Matrix* P
 	double tol_small = tol_small_1;
 	int max_it = max_it_2;			//max iterations
 
-	//Variáveis internas de uso geral
+	//Variaveis internas de uso geral
 	Matrix Hes(4, 4);
 	Matrix Gra(4, 1);
 	Matrix pGra(3, 1);
@@ -1852,16 +1856,16 @@ bool SurfacePair::FindSaddleSolutionDegenerated(SSContactData* c_data, Matrix* P
 	if (write_report)
 		fprintf(f_TR_report[seq_number], "FindSaddleSolutionDegenerated\n");
 
-	//Inicialização do método - chute inicial - obtido da solução anterior - problema de mínima distância
+	//Inicialização do metodo - chute inicial - obtido da solução anterior - problema de minima distancia
 	for (int i = 0; i < 4; i++)
 		xk(i, 0) = (*solution)(i, 0);
 
-	//Erro da mínima distância
+	//Erro da minima distancia
 	GradientPhase1(xk, Gra);
 	double error = norm(Gra);
 	double ob = ObjectivePhase1(xk);
 
-	bool saddle_basin = false;		//variável booleana que indica que a bacia de atração da sela foi localizada
+	bool saddle_basin = false;		//variavel booleana que indica que a bacia de atração da sela foi localizada
 	int it = 1;
 
 	//Hessiana da função objetivo
@@ -1892,8 +1896,8 @@ bool SurfacePair::FindSaddleSolutionDegenerated(SSContactData* c_data, Matrix* P
 			fprintf(f_TR_report[seq_number], "FindSaddleSolution initial guess is not in saddle basin\n");
 
 
-		Surface* surf1 = db.surfaces[surf1_ID - 1];		//Ponteiro para a superfície 1
-		Surface* surf2 = db.surfaces[surf2_ID - 1];		//Ponteiro para a superfície 2
+		Surface* surf1 = db.surfaces[surf1_ID - 1];		//Ponteiro para a superficie 1
+		Surface* surf2 = db.surfaces[surf2_ID - 1];		//Ponteiro para a superficie 2
 
 		Matrix nA(3);
 		if (surf1->degeneration[0] == false && surf1->degeneration[1] == false)
@@ -2010,7 +2014,7 @@ bool SurfacePair::FindSaddleSolutionDegenerated(SSContactData* c_data, Matrix* P
 			fprintf(f_TR_report[seq_number], "After FindMinimumGap, initial guess is not in saddle basin\n");
 	}
 
-	//Cálculos de erro e objetivo
+	//Calculos de erro e objetivo
 	GradientPhase1(xk, Gra);
 	//Gradiente degenerado
 	dGra = transp(*P_0)*Gra;
@@ -2027,7 +2031,7 @@ bool SurfacePair::FindSaddleSolutionDegenerated(SSContactData* c_data, Matrix* P
 	char c = 'I';
 	if (write_report)
 		fprintf(f_TR_report[seq_number], "%d\t%.12e\t%.12e\t%.12e\t%.12e\t%.6e\t%.6e\t%.6e\t%c\t%.6e\t%.6e\t%.6e\n", it, xk(0, 0), xk(1, 0), xk(2, 0), xk(3, 0), ob, error, Deltak, c, rhok, actual_change, predicted_change);
-	/////////////////////////////////Passo de análise da bacia de atração do ponto de sela/////////////////////////////////////
+	/////////////////////////////////Passo de analise da bacia de atração do ponto de sela/////////////////////////////////////
 	while ((error > tol_ortho || norm(pk) > tol_convective) && it <= max_it)
 	{
 		//Calculando direções principais e curvaturas principais da função objetivo
@@ -2043,7 +2047,7 @@ bool SurfacePair::FindSaddleSolutionDegenerated(SSContactData* c_data, Matrix* P
 			pk = (Deltak / norminc)*pk;
 		c = 'N';
 		//////////////////////////UPDATING SOLUTION////////////////////////////////
-		//Cálculo de rhok
+		//Calculo de rhok
 		double actual_change = ObjectivePhase1(xk) - ObjectivePhase1(xk + pk);
 		double predicted_change = -(transp(Gra)*(pk)+0.5*transp(pk)*Hes*(pk))(0, 0);
 		rhok = actual_change / predicted_change;
@@ -2066,7 +2070,7 @@ bool SurfacePair::FindSaddleSolutionDegenerated(SSContactData* c_data, Matrix* P
 			Deltak = Deltak / 4;
 		//incrementa iterações
 		it++;
-		//Cálculos que serão utilizados para verificar saída do loop - ou na próxima iteração, caso não saia
+		//Calculos que serão utilizados para verificar saida do loop - ou na próxima iteração, caso não saia
 		//Objetivo
 		ob = ObjectivePhase1(xk);
 		//Gradiente
@@ -2086,7 +2090,7 @@ bool SurfacePair::FindSaddleSolutionDegenerated(SSContactData* c_data, Matrix* P
 		fprintf(f_TR_report[seq_number], "Error\t%.6e\tTolerance\t%.6e\n", error, tol_ortho);
 
 
-	////////////////////////////////Verificação final - se a solução é ponto de sela/////////////////////////////////////
+	////////////////////////////////Verificação final - se a solução e ponto de sela/////////////////////////////////////
 	//Retorno da função
 	if (error < tol_ortho)
 	{

@@ -1,15 +1,13 @@
 #pragma once
 #include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <math.h>
-#include "Matrix.h"
+
+class Matrix;
 
 class AnalyticalSurface
 {
 public:
-	AnalyticalSurface();
-	virtual ~AnalyticalSurface();
+	AnalyticalSurface() {}
+	virtual ~AnalyticalSurface() {}
 
 	int number;
 	virtual void PreCalc() = 0;

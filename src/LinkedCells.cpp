@@ -1,8 +1,9 @@
 #include "LinkedCells.h"
 
-#include"Database.h"
-
-//Variáveis globais
+#include "BoundingVolume.h"
+#include "GeneralContactSearch.h"
+#include "Database.h"
+//Variaveis globais
 extern
 Database db;
 

@@ -1,5 +1,16 @@
 #include "CollisionDetection.h"
 
+#include <float.h>
+#include <typeinfo>
+
+#include "BoundingVolume.h"
+#include "BoundingSphere.h"
+#include "BoundingCylinder.h"
+#include "BoundingTriangularBox.h"
+#include "BoundingBoxAxesOriented.h"
+#include "BoundingBoxAxesAligned.h"
+#include "MatrixFloat.h"
+
 //extern
 //FILE *fdebug;
 

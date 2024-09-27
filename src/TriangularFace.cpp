@@ -1,9 +1,13 @@
 #include "TriangularFace.h"
+
 #include "STLSurface.h"
+#include "Matrix.h"
+#include "MatrixFloat.h"
 #include"Database.h"
-//Variáveis globais
+//Variaveis globais
 extern
 Database db;
+#define PI 3.1415926535897932384626433832795
 
 TriangularFace::TriangularFace()
 {
@@ -33,7 +37,7 @@ void TriangularFace::PreCalc()
 	area = 0.5 * norm(cross(e1, e2));
 
 	double temp;
-	//Ponderações angulares dos vértices (de acordo com o ângulo interno do triângulo)
+	//Ponderações angulares dos vertices (de acordo com o angulo interno do triangulo)
 	//vertice [0]
 	e1 = *ptr->vertices[verticesIDs[1] - 1].coord_double - *ptr->vertices[verticesIDs[0] - 1].coord_double;
 	e2 = *ptr->vertices[verticesIDs[2] - 1].coord_double - *ptr->vertices[verticesIDs[0] - 1].coord_double;

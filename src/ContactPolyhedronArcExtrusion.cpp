@@ -1,7 +1,20 @@
 #include "ContactPolyhedronArcExtrusion.h"
-#include "Database.h"
 
-//Variáveis globais
+#include "Polyhedron.h"
+#include "STLSurface.h"
+#include "TriangularFace.h"
+#include "ArcExtrusion.h"
+#include "SSContactData.h"
+#include "ExecutionData.h"
+#include "BodyGeometry.h"
+#include "Node.h"
+#include "ArcCirc.h"
+#include "Interface_0.h"
+#include "Interface_1.h"
+#include "Dynamic.h"
+
+#include "Database.h"
+//Variaveis globais
 extern
 Database db;
 
@@ -143,7 +156,7 @@ void ContactPolyhedronArcExtrusion::Free()
 	}
 }
 
-//Chute inicial para coordenadas convectivas do par de superfícies
+//Chute inicial para coordenadas convectivas do par de superficies
 void ContactPolyhedronArcExtrusion::InitialGuess()
 {
 	//TODO
@@ -341,8 +354,8 @@ int ContactPolyhedronArcExtrusion::VerifyConvectiveRange(Matrix& mc)
 	
 	//Retornos:
 	//0 - Range fisico da superficie
-	//3 - Fora do range físico da superfície e em região proibida de parâmetro
-	//4 - Fora do range físico da superficie
+	//3 - Fora do range fisico da superficie e em região proibida de parametro
+	//4 - Fora do range fisico da superficie
 
 	//Primeiro teste
 	if (abs(mc(0, 0)) > 1.0)
@@ -795,7 +808,7 @@ void ContactPolyhedronArcExtrusion::MountGlobal()
 	//Geometry* surf1 = static_cast<Geometry*>(db.body_geometries[index1]->ptr_geom[sub_index1]);
 	//Geometry* surf2 = static_cast<Geometry*>(db.body_geometries[index2]->ptr_geom[sub_index2]);
 
-	//Variáveis temporárias para salvar a indexação global dos graus de liberdade a serem setados na matriz de rigidez global
+	//Variaveis temporarias para salvar a indexação global dos graus de liberdade a serem setados na matriz de rigidez global
 	int GL_global_1 = 0;
 	int GL_global_2 = 0;
 	double anterior = 0;
@@ -808,9 +821,9 @@ void ContactPolyhedronArcExtrusion::MountGlobal()
 		{
 
 			if (i < pADOFs)
-				GL_global_1 = db.nodes[pA->node - 1]->GLs[i];										//GLs da superfície 1
+				GL_global_1 = db.nodes[pA->node - 1]->GLs[i];										//GLs da superficie 1
 			else
-				GL_global_1 = *sB->GLs[i - pADOFs];													//GLs da superfície 2
+				GL_global_1 = *sB->GLs[i - pADOFs];													//GLs da superficie 2
 			//Caso o grau de liberdade seja livre:
 			if (GL_global_1 > 0)
 			{
@@ -821,7 +834,7 @@ void ContactPolyhedronArcExtrusion::MountGlobal()
 			}
 			else
 			{
-				if (GL_global_1 != 0)//se o GL é ativo
+				if (GL_global_1 != 0)//se o GL e ativo
 				{
 					anterior = db.global_P_B(-GL_global_1 - 1, 0);
 					db.global_P_B(-GL_global_1 - 1, 0) = anterior + Rc[i];
@@ -831,9 +844,9 @@ void ContactPolyhedronArcExtrusion::MountGlobal()
 			for (int j = 0; j < (pADOFs + sB->nDOFs); j++)
 			{
 				if (j < pADOFs)
-					GL_global_2 = db.nodes[pA->node - 1]->GLs[j];										//GLs da superfície 1
+					GL_global_2 = db.nodes[pA->node - 1]->GLs[j];										//GLs da superficie 1
 				else
-					GL_global_2 = *sB->GLs[j - pADOFs];					//GLs da superfície 2
+					GL_global_2 = *sB->GLs[j - pADOFs];					//GLs da superficie 2
 
 				//Caso os graus de liberdade sejam ambos livres (Matriz Kaa)
 				if (GL_global_1 > 0 && GL_global_2 > 0)
@@ -1418,7 +1431,7 @@ void ContactPolyhedronArcExtrusion::HessianPhase1(Matrix& mc, Matrix& mHes)
 ////Calcula e rotorna o gap (com sinal)
 //double ContactPolyhedronArcExtrusion::Gap(Matrix& mc, bool fixed_normals, Matrix& nA, Matrix& nB)
 //{
-//	double v[400];		//variável temporária - AceGen
+//	double v[400];		//variavel temporaria - AceGen
 //	double gap = 0.0;;
 //	double *c = mc.getMatrix();
 //	cAp[0] = cd->convective[0][0];
@@ -1444,7 +1457,7 @@ void ContactPolyhedronArcExtrusion::HessianPhase1(Matrix& mc, Matrix& mHes)
 ////Calcula o Gradiente do gap
 //void ContactPolyhedronArcExtrusion::GradientGap(Matrix& mc, Matrix& mGra, bool fixed_normals, Matrix& nA, Matrix& nB)
 //{
-//	double v[500];		//variável temporária - AceGen
+//	double v[500];		//variavel temporaria - AceGen
 //	double *c = mc.getMatrix();
 //	double Gra[4];
 //	cAp[0] = cd->convective[0][0];
@@ -1471,7 +1484,7 @@ void ContactPolyhedronArcExtrusion::HessianPhase1(Matrix& mc, Matrix& mHes)
 ////Calcula a Hessiana do gap
 //void ContactPolyhedronArcExtrusion::HessianGap(Matrix& mc, Matrix& mHes, bool fixed_normals, Matrix& nA, Matrix& nB)
 //{
-//	double v[700];		//variável temporária - AceGen
+//	double v[700];		//variavel temporaria - AceGen
 //	double *c = mc.getMatrix();
 //	double Hes[4][4];
 //	cAp[0] = cd->convective[0][0];

@@ -1,16 +1,16 @@
 #pragma once
-#include "SPContactData.h"
-#include "Surface.h"
 #include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
+
+#include "Matrix.h"
+
+class SPContactData;
 
 class SplineElementPair
 {
 public:
 	SplineElementPair();
 	virtual ~SplineElementPair();
-	//Chute inicial para coordenadas convectivas do par de superfícies
+	//Chute inicial para coordenadas convectivas do par de superficies
 	virtual void InitialGuess(SPContactData* c_data) = 0;
 	//Single function for both contributions
 	virtual void ContactSS(bool *stick, bool *stickupdated, bool *previouscontact, double* Rc, double** Kc, double** invH, double* convective, double* copy_convective, double* gti, double* gtpupdated, double* epsn, double* epsn_n, double* epst, double* cn, double* ct, double* mus, double* mud, double* fn, double* ft) = 0;
@@ -23,14 +23,14 @@ public:
 	virtual void InitializeConvectiveRange() = 0;								//Initialize range of validity of convective coordinates
 
 	void WriteConvectiveRange();						//Escreve convective range no report
-	void PreCalc();																										//Pré cálculo
+	void PreCalc();																										//Pre calculo
 	void Alloc(SPContactData* c_data);																				//Aloca memória
 	void Free();																										//Libera memória											
-	void DefaultValues();																								//Valores Default de tolerâncias e outras variáveis
+	void DefaultValues();																								//Valores Default de tolerancias e outras variaveis
 
 	void EvaluateInvertedHessian(SPContactData* c_data);																//Calcula a inversa da Hessiana
-	bool FindMinimumSolution(SPContactData* c_data, Matrix* solution, int &return_info);								//Otimização - determinação de mínimo
-	bool FindMinimumSolutionDegenerated(SPContactData* c_data, Matrix* P_0, Matrix* solution);							//Otimização - determinação de mínimo
+	bool FindMinimumSolution(SPContactData* c_data, Matrix* solution, int &return_info);								//Otimização - determinação de minimo
+	bool FindMinimumSolutionDegenerated(SPContactData* c_data, Matrix* P_0, Matrix* solution);							//Otimização - determinação de minimo
 
 	void BeginStepCheck(SPContactData* c_data);
 	bool EndStepCheck(SPContactData* c_data);
@@ -39,7 +39,7 @@ public:
 	int CharacterizeCriticalPoint(Matrix* solution);
 	int CharacterizeCriticalPointDegenerated(Matrix* solution, Matrix* P_0, bool print = false);
 
-	//Variáveis internas
+	//Variaveis internas
 	int spline1_ID;			//ID da spline 1
 	int spline2_ID;			//ID da spline 2
 	int surf1_ID;			//ID do spline element 1
@@ -48,19 +48,19 @@ public:
 	bool alloc_control;
 	Matrix** cNR1;			//Solução da phase 1
 
-	double tol_small_1;		//Critério para número muito pequeno - resíduo != 0
-	double tol_eig;			//Critério para autovalor baixo
+	double tol_small_1;		//Criterio para numero muito pequeno - residuo != 0
+	double tol_eig;			//Criterio para autovalor baixo
 	double tol_convective;	//Criterio para maximo erro nas coordenadas convectivas
 	double tol_ascent;
 	int seq_number;
 
-	int max_it_1;			//Número máximo de iterações para otimização - phase 1
+	int max_it_1;			//Numero maximo de iterações para otimização - phase 1
 
-	int n_pointwise;		//Número de interações pointwise (atribuído no construtor)
+	int n_pointwise;		//Numero de interações pointwise (atribuido no construtor)
 		
 	Matrix convective_range;//Matrix que guarda os ranges de coordenadas convectivas validas para as superficies
-	Matrix convective_max;	//Matrix que guarda os valores máximos de coordenadas convectivas
-	Matrix convective_min;	//Matrix que guarda os valores mínimos de coordenadas convectivas
+	Matrix convective_max;	//Matrix que guarda os valores maximos de coordenadas convectivas
+	Matrix convective_min;	//Matrix que guarda os valores minimos de coordenadas convectivas
 	double minimum_convective_range;
 	//TR report
 	FILE **f_TR_report;

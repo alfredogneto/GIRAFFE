@@ -1,4 +1,9 @@
 #include "NodalConstraintDOF.h"
+
+#include "Node.h"
+#include "InitialCondition.h"
+
+
 #include "IO.h"
 
 NodalConstraintDOF::NodalConstraintDOF()
@@ -12,7 +17,7 @@ NodalConstraintDOF::NodalConstraintDOF()
 	ROTY_table.SetDefault(false);
 	ROTZ_table.SetDefault(false);
 
-	n_GL = 6;						//Três graus de liberdade (esse vínculo possui 3 multiplicadores de lagrange)
+	n_GL = 6;						//Três graus de liberdade (esse vinculo possui 3 multiplicadores de lagrange)
 	active_lambda = new int[n_GL];
 	lambda = new double[n_GL];
 	copy_lambda = new double[n_GL];
@@ -37,7 +42,7 @@ NodalConstraintDOF::NodalConstraintDOF()
 	I6(4, 4) = 1.0;
 	I6(5, 5) = 1.0;
 	r = Matrix(6);
-	//Matriz de rigidez tangente e vetor resíduo
+	//Matriz de rigidez tangente e vetor residuo
 	stiffness = new Matrix(18, 18);
 	residual = new Matrix(18, 1);
 
@@ -256,7 +261,7 @@ bool NodalConstraintDOF::Check()
 
 void NodalConstraintDOF::ComputeVelAccel()
 {
-	//Se for o step de criação do vínculo inicializa condições iniciais
+	//Se for o step de criação do vinculo inicializa condições iniciais
 	if (UX_table.GetAt(db.current_solution_number - 1))
 	{
 		//Percorre GL e seta condições iniciais
@@ -315,7 +320,7 @@ void NodalConstraintDOF::ComputeVelAccel()
 
 void NodalConstraintDOF::ComputeInitialGuessDisplacements()
 {
-	//Se for o step de criação do vínculo inicializa condições iniciais
+	//Se for o step de criação do vinculo inicializa condições iniciais
 	if (UX_table.GetAt(db.current_solution_number - 1) == true)
 	{
 		//Percorre GL e seta condições iniciais
@@ -370,7 +375,7 @@ void NodalConstraintDOF::WriteVTK_XMLRender(FILE* f)
 {
 }
 
-//Salvando variáveis da configuração convergida
+//Salvando variaveis da configuração convergida
 void NodalConstraintDOF::SaveLagrange()
 {
 	//PrintPtr(lambda, 3);
@@ -378,16 +383,16 @@ void NodalConstraintDOF::SaveLagrange()
 		copy_lambda[i] = lambda[i];
 }
 
-//Montagem dos resíduos e rigidez tangente
+//Montagem dos residuos e rigidez tangente
 void NodalConstraintDOF::Mount()
 {
-	//Nesse vínculo a rigidez tangente não se modifica nunca. É montada no PreCalc()
-	//Se o vínculo estiver ativo, realiza a montagem
+	//Nesse vinculo a rigidez tangente não se modifica nunca. e montada no PreCalc()
+	//Se o vinculo estiver ativo, realiza a montagem
 	for (int i = 0; i < n_GL; i++) {
 		if (active_lambda[i] == 1)
 		{
 			r(i, 0) = db.nodes[node_A - 1]->displacements[i] - db.nodes[node_B - 1]->displacements[i];
-			//Atualização do vetor de resíduos
+			//Atualização do vetor de residuos
 			(*residual)(i, 0) = lambda[i];
 			(*residual)(6 + i, 0) = -lambda[i];
 			(*residual)(12 + i, 0) = r(i, 0);
@@ -398,11 +403,11 @@ void NodalConstraintDOF::Mount()
 //Preenche a contribuição do elemento nas matrizes globais
 void NodalConstraintDOF::MountGlobal()
 {
-	//Variáveis temporárias para salvar a indexação global dos graus de liberdade a serem setados na matriz de rigidez global
+	//Variaveis temporarias para salvar a indexação global dos graus de liberdade a serem setados na matriz de rigidez global
 	int GL_global_1 = 0;
 	int GL_global_2 = 0;
 	double anterior = 0;
-	//Se o vínculo estiver ativo, realiza a montagem
+	//Se o vinculo estiver ativo, realiza a montagem
 	if (active_lambda[0] == 1 || active_lambda[1] == 1 || active_lambda[2] == 1 || active_lambda[3] == 1 || active_lambda[4] == 1 || active_lambda[5] == 1)
 	{
 		for (int i = 0; i < 18; i++)
@@ -486,7 +491,7 @@ void NodalConstraintDOF::MountGlobal()
 
 
 
-//Pré-cálculo de variáveis que é feito uma única vez no início
+//Pre-calculo de variaveis que e feito uma unica vez no inicio
 void NodalConstraintDOF::PreCalc()
 {
 	for (int i = 0; i < 6; i++)

@@ -1,7 +1,7 @@
 #include "ElementSet.h"
 
 #include"Database.h"
-//Variáveis globais
+//Variaveis globais
 extern
 Database db;
 
@@ -56,7 +56,7 @@ bool ElementSet::Read(FILE *f)
 		list = true;
 		for (int i = 0; i < n_el; i++)
 		{
-			fscanf(f, "%s", s);//Leitura do número do elemento
+			fscanf(f, "%s", s);//Leitura do numero do elemento
 			el_list[i] = atoi(s);
 		}
 	}

@@ -1,11 +1,15 @@
 #include "ConfigurationSave.h"
+
+#include <direct.h>
+
+#include "Node.h"
+#include "Boundary.h"
+#include "Particle.h"
+#include "Polyhedron.h"
+
 #include"Database.h"
 #include"IO.h"
-#include <direct.h>
-#include <sys/types.h>
-#include <sys/stat.h>
-
-//Variáveis globais
+//Variaveis globais
 extern Database db;
 extern IO io;
 
@@ -85,7 +89,7 @@ void ConfigurationSave::ExportConfiguration(double time)
 			db.boundaries[i]->WriteModifyingParameters(f, db.boundaries[i]->material, db.boundaries[i]->node, db.boundaries[i]->number, db.boundaries[i]->number + 1);					//Escrita dos dados 
 		}
 	}
-	//Geração de partículas
+	//Geração de particulas
 	if (db.particles_exist == true)
 	{
 		fprintf(f, "\nParticles\t%d\n", db.number_particles);

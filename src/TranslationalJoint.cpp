@@ -1,13 +1,17 @@
 #include "TranslationalJoint.h"
-#include"Database.h"
 
-//Variáveis globais
+
+#include "InitialCondition.h"
+#include "Node.h"
+#include "CoordinateSystem.h"
+#include"Database.h"
+//Variaveis globais
 extern
 Database db;
 
 TranslationalJoint::TranslationalJoint()
 {
-	n_GL = 2;						//Dois graus de liberdade (esse vínculo possui 2 multiplicadores de lagrange)
+	n_GL = 2;						//Dois graus de liberdade (esse vinculo possui 2 multiplicadores de lagrange)
 	active_lambda = new int[n_GL];
 	lambda = new double[n_GL];
 	copy_lambda = new double[n_GL];
@@ -43,7 +47,7 @@ TranslationalJoint::TranslationalJoint()
 	ei1A = Matrix(3);
 	ei2A = Matrix(3);
 
-	//Matriz de rigidez tangente e vetor resíduo
+	//Matriz de rigidez tangente e vetor residuo
 	stiffness = new double*[11];
 	for (int i = 0; i < 11; i++)
 		stiffness[i] = new double[11];
@@ -178,17 +182,17 @@ bool TranslationalJoint::Check()
 	return true;
 }
 
-//Montagem dos resíduos e rigidez tangente
+//Montagem dos residuos e rigidez tangente
 void TranslationalJoint::Mount()
 {
 	ClearContributions();
-	//Montagem da rigidez tangente e resíduo
+	//Montagem da rigidez tangente e residuo
 	if (active_lambda[0] == 1 && active_lambda[1] == 1)
 	{
 		for (int i = 0; i < 3; i++)
 		{
 			alphaA(i, 0) = db.nodes[rot_node - 1]->displacements[i + 3];		//vetor rotação (atual) do nó de ref para rotação
-			alphaiA(i, 0) = db.nodes[rot_node - 1]->copy_coordinates[i + 3];	//vetor rotação acumulada (do início) do nó de ref para rotação
+			alphaiA(i, 0) = db.nodes[rot_node - 1]->copy_coordinates[i + 3];	//vetor rotação acumulada (do inicio) do nó de ref para rotação
 			uA(i, 0) = db.nodes[node_A - 1]->displacements[i];				//vetor de deslocamentos do nó A
 			uB(i, 0) = db.nodes[node_B - 1]->displacements[i];				//vetor de deslocamentos do nó B
 		}
@@ -196,8 +200,8 @@ void TranslationalJoint::Mount()
 		A = skew(alphaiA);
 		g = 4.0 / (4.0 + alpha_escalar_i*alpha_escalar_i);
 		QA = I3 + g*(A + 0.5*(A*A));
-		ei1A = QA*(*db.CS[cs - 1]->E1);	//Eixo e1 no início do incremento
-		ei2A = QA*(*db.CS[cs - 1]->E2);	//Eixo e2 no início do incremento
+		ei1A = QA*(*db.CS[cs - 1]->E1);	//Eixo e1 no inicio do incremento
+		ei2A = QA*(*db.CS[cs - 1]->E2);	//Eixo e2 no inicio do incremento
 		EvaluateTranslationalContribution(temp_v, residual, stiffness, uA.getMatrix(), uB.getMatrix(), alphaA.getMatrix(), ei1A.getMatrix(), ei2A.getMatrix(), lambda);
 	}
 }
@@ -205,7 +209,7 @@ void TranslationalJoint::Mount()
 //Preenche a contribuição do elemento nas matrizes globais
 void TranslationalJoint::MountGlobal()
 {
-	//Variáveis temporárias para salvar a indexação global dos graus de liberdade a serem setados na matriz de rigidez global
+	//Variaveis temporarias para salvar a indexação global dos graus de liberdade a serem setados na matriz de rigidez global
 	int GL_global_1 = 0;
 	int GL_global_2 = 0;
 	double anterior = 0;
@@ -303,13 +307,13 @@ void TranslationalJoint::ComputeVelAccel()
 	}
 }
 
-//Pré-cálculo de variáveis que é feito uma única vez no início
+//Pre-calculo de variaveis que e feito uma unica vez no inicio
 void TranslationalJoint::PreCalc()
 {
 	//Not applicable
 }
 
-//Salvando variáveis da configuração convergida
+//Salvando variaveis da configuração convergida
 void TranslationalJoint::SaveLagrange()
 {
 	for (int i = 0; i < n_GL; i++)
@@ -340,7 +344,7 @@ void TranslationalJoint::ActivateDOFs()
 		active_lambda[1] = 0;
 	}
 }
-//Calcula contribuições do resíduo e operador tangente - gerado no AceGen
+//Calcula contribuições do residuo e operador tangente - gerado no AceGen
 void TranslationalJoint::EvaluateTranslationalContribution(double *v, double *residual, double **stiffness, double *uA, double *uB, double *alphaA, double *ei1A , double *ei2A, double *lambda)
 {
 	int i01; int i02;

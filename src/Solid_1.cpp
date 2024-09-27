@@ -1,7 +1,9 @@
 #include "Solid_1.h"
+#include "Beam_1.h"
+#include "Encoding.h"	
 
 #include"Database.h"
-//Variáveis globais
+//Variaveis globais
 extern
 Database db;
 
@@ -162,12 +164,12 @@ void Solid_1::MountGlobal()
 {
 
 }
-//Salva variáveis nos pontos de Gauss úteis para descrição lagrangiana atualizada
+//Salva variaveis nos pontos de Gauss uteis para descrição lagrangiana atualizada
 void Solid_1::SaveLagrange()
 {
 
 }
-//Pré-cálculo de variáveis que é feito uma única vez no início
+//Pre-calculo de variaveis que e feito uma unica vez no inicio
 void Solid_1::PreCalc()
 {
 
@@ -185,7 +187,7 @@ void Solid_1::MountMassModal()
 	Zeros();
 }
 
-//Monta a matriz de amortecimento para realização da análise modal
+//Monta a matriz de amortecimento para realização da analise modal
 void Solid_1::MountDampingModal()
 {
 	Zeros();
@@ -203,7 +205,7 @@ void Solid_1::MountDyn()
 
 }
 
-//Montagens para análise modal - inserção da matriz de massa e amortecimento na matriz de rigidez para posterior montagem global
+//Montagens para analise modal - inserção da matriz de massa e amortecimento na matriz de rigidez para posterior montagem global
 void Solid_1::MountDynModal()
 {
 	

@@ -1,7 +1,11 @@
 #include "SplineElement_SplineElement.h"
 
+#include "SplineElement.h"
+#include "Dynamic.h"
+#include "Spline.h"
+#include "SPContactData.h"
 #include"Database.h"
-//Variáveis globais
+//Variaveis globais
 extern
 Database db;
 
@@ -17,8 +21,8 @@ SplineElement_SplineElement::~SplineElement_SplineElement()
 
 void SplineElement_SplineElement::InitializeConvectiveRange()
 {
-	SplineElement* surf1;		//Ponteiro para a superfície 1
-	SplineElement* surf2;		//Ponteiro para a superfície 2
+	SplineElement* surf1;		//Ponteiro para a superficie 1
+	SplineElement* surf2;		//Ponteiro para a superficie 2
 	surf1 = static_cast<SplineElement*>(db.splines[spline1_ID - 1]->sp_element[surf1_ID]);
 	surf2 = static_cast<SplineElement*>(db.splines[spline2_ID - 1]->sp_element[surf2_ID]);
 
@@ -37,9 +41,9 @@ int SplineElement_SplineElement::VerifyConvectiveRange(Matrix& mc)
 {
 	int return_value;
 
-	///////////////////////////////Ponteiros e variáveis para facilitar acesso//////////////////////////////////////////
-	SplineElement* surf1;		//Ponteiro para a superfície 1
-	SplineElement* surf2;		//Ponteiro para a superfície 2
+	///////////////////////////////Ponteiros e variaveis para facilitar acesso//////////////////////////////////////////
+	SplineElement* surf1;		//Ponteiro para a superficie 1
+	SplineElement* surf2;		//Ponteiro para a superficie 2
 	surf1 = static_cast<SplineElement*>(db.splines[spline1_ID - 1]->sp_element[surf1_ID]);
 	surf2 = static_cast<SplineElement*>(db.splines[spline2_ID - 1]->sp_element[surf2_ID]);
 	//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -62,27 +66,27 @@ int SplineElement_SplineElement::VerifyConvectiveRange(Matrix& mc)
 	//4 - Fora do range fisico da superficie - proximo
 	//2 - Fora do range fisico da superficie - distante
 
-	//Se está no range local de interesse - domínio físico da superfície
+	//Se esta no range local de interesse - dominio fisico da superficie
 	if (mc(0, 0) >= surf1_knotA && mc(0, 0) < surf1_knotB && mc(1, 0) >= surf2_knotA && mc(1, 0) < surf2_knotB)
-		return_value = 0;	//Houve convergência, está no range físico - forte candidato a contato
+		return_value = 0;	//Houve convergência, esta no range fisico - forte candidato a contato
 	else
 	{
 		if (mc(0, 0) >= (surf1_knotA - perc * surf1_range) && mc(0, 0) < (surf1_knotB + perc * surf1_range)
 			&& mc(1, 0) >= (surf2_knotA - perc * surf2_range) && mc(1, 0) < (surf2_knotB + perc * surf2_range))
-			return_value = 4;	//Houve convergência, está no range físico - forte candidato a contato
+			return_value = 4;	//Houve convergência, esta no range fisico - forte candidato a contato
 		else
-			return_value = 2;	//Houve convergência, mas não está no range físico - deve ser monitorado com cuidado - possivelmente superfície vizinha
+			return_value = 2;	//Houve convergência, mas não esta no range fisico - deve ser monitorado com cuidado - possivelmente superficie vizinha
 	}
 	return return_value;
 }
 
 
-//Chute inicial para coordenadas convectivas do par de superfícies
+//Chute inicial para coordenadas convectivas do par de superficies
 void SplineElement_SplineElement::InitialGuess(SPContactData* c_data)
 {
-	///////////////////////////////Ponteiros e variáveis para facilitar acesso//////////////////////////////////////////
-	SplineElement* surf1;		//Ponteiro para a superfície 1
-	SplineElement* surf2;		//Ponteiro para a superfície 2
+	///////////////////////////////Ponteiros e variaveis para facilitar acesso//////////////////////////////////////////
+	SplineElement* surf1;		//Ponteiro para a superficie 1
+	SplineElement* surf2;		//Ponteiro para a superficie 2
 	surf1 = static_cast<SplineElement*>(db.splines[spline1_ID - 1]->sp_element[surf1_ID]);
 	surf2 = static_cast<SplineElement*>(db.splines[spline2_ID - 1]->sp_element[surf2_ID]);
 	//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -117,7 +121,7 @@ void SplineElement_SplineElement::InitialGuess(SPContactData* c_data)
 
 	double csi_A, csi_B;
 
-	//Estimativa dos csi's com base na configuração atual - considerando-se que são elementos retilíneos (baseado em Wriggers e Zavarise, 1997)
+	//Estimativa dos csi's com base na configuração atual - considerando-se que são elementos retilineos (baseado em Wriggers e Zavarise, 1997)
 	csi_A = dot(bA - bB, (1.0 / (dot(tA, tA)*dot(tB, tB) - dot(tA, tB)*dot(tA, tB)))*(tB*dot(tA, tB) - tA * dot(tB, tB)));
 	csi_B = -1.0*dot(bA - bB, (1.0 / (dot(tA, tA)*dot(tB, tB) - dot(tA, tB)*dot(tA, tB)))*(tA*dot(tA, tB) - tB * dot(tA, tA)));
 
@@ -134,9 +138,9 @@ void SplineElement_SplineElement::InitialGuess(SPContactData* c_data)
 //Calcula a função objetivo para um conjunto de coordenadas convectivas - Phase 1
 double SplineElement_SplineElement::ObjectivePhase1(Matrix& mc)
 {
-	///////////////////////////////Ponteiros e variáveis para facilitar acesso//////////////////////////////////////////
-	SplineElement* surf1;		//Ponteiro para a superfície 1
-	SplineElement* surf2;		//Ponteiro para a superfície 2
+	///////////////////////////////Ponteiros e variaveis para facilitar acesso//////////////////////////////////////////
+	SplineElement* surf1;		//Ponteiro para a superficie 1
+	SplineElement* surf2;		//Ponteiro para a superficie 2
 
 	double* rA;
 	double* rB;
@@ -395,9 +399,9 @@ double SplineElement_SplineElement::ObjectivePhase1(Matrix& mc)
 //Calcula o Gradiente da função objetivo - Phase 1
 void SplineElement_SplineElement::GradientPhase1(Matrix& mc, Matrix& mGra)
 {
-	///////////////////////////////Ponteiros e variáveis para facilitar acesso//////////////////////////////////////////
-	SplineElement* surf1;		//Ponteiro para a superfície 1
-	SplineElement* surf2;		//Ponteiro para a superfície 2
+	///////////////////////////////Ponteiros e variaveis para facilitar acesso//////////////////////////////////////////
+	SplineElement* surf1;		//Ponteiro para a superficie 1
+	SplineElement* surf2;		//Ponteiro para a superficie 2
 
 	double* rA;
 	double* rB;
@@ -726,9 +730,9 @@ void SplineElement_SplineElement::GradientPhase1(Matrix& mc, Matrix& mGra)
 //Calcula a Hessiana da função objetivo - Phase 1
 void SplineElement_SplineElement::HessianPhase1(Matrix& mc, Matrix& mHes)
 {
-	///////////////////////////////Ponteiros e variáveis para facilitar acesso//////////////////////////////////////////
-	SplineElement* surf1;		//Ponteiro para a superfície 1
-	SplineElement* surf2;		//Ponteiro para a superfície 2
+	///////////////////////////////Ponteiros e variaveis para facilitar acesso//////////////////////////////////////////
+	SplineElement* surf1;		//Ponteiro para a superficie 1
+	SplineElement* surf2;		//Ponteiro para a superficie 2
 
 	double* rA;
 	double* rB;
@@ -1145,7 +1149,7 @@ void SplineElement_SplineElement::HessianPhase1(Matrix& mc, Matrix& mHes)
 
 void SplineElement_SplineElement::ContactSS(bool *stick, bool *stickupdated, bool *previouscontact, double* Rc, double** Kc, double** invH, double* convective, double* copy_convective, double* gti, double* gtpupdated, double* epsn, double* epsn_n, double* epst, double* cn, double* ct, double* mus, double* mud, double* fn, double* ft)
 {
-	double v[4607];		//variável temporária - AceGen
+	double v[4607];		//variavel temporaria - AceGen
 	//Zerando matrizes e vetores
 	for (int i = 0; i < 18; i++)
 	{
@@ -1153,9 +1157,9 @@ void SplineElement_SplineElement::ContactSS(bool *stick, bool *stickupdated, boo
 		for (int j = 0; j < 18; j++)
 			Kc[i][j] = 0.0;
 	}
-	///////////////////////////////Ponteiros e variáveis para facilitar acesso//////////////////////////////////////////
-	SplineElement* surf1;		//Ponteiro para a superfície 1
-	SplineElement* surf2;		//Ponteiro para a superfície 2
+	///////////////////////////////Ponteiros e variaveis para facilitar acesso//////////////////////////////////////////
+	SplineElement* surf1;		//Ponteiro para a superficie 1
+	SplineElement* surf2;		//Ponteiro para a superficie 2
 	double* rA;
 	double* rB;
 	double* dA;

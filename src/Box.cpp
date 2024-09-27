@@ -1,5 +1,5 @@
 #include "Box.h"
-
+#include <math.h>
 
 Box::Box()
 {
@@ -31,7 +31,7 @@ double Box::Get_Diagonal_Size()
 	return ret;
 }
 
-//seta vértices, centro  e prepara retorno de máximos e mínimos
+//seta vertices, centro  e prepara retorno de maximos e minimos
 void Box::SetVertices(double* e_x, double* e_y, double* e_z)
 {
 	center[0] = 0;
@@ -49,7 +49,7 @@ void Box::SetVertices(double* e_x, double* e_y, double* e_z)
 	center[0] = center[0] / 8;
 	center[1] = center[1] / 8;
 	center[2] = center[2] / 8;
-	//Calcula os valores máximos e deixa-os prontos para serem exportados, quando requeridos
+	//Calcula os valores maximos e deixa-os prontos para serem exportados, quando requeridos
 	xmax = x[0];
 	xmin = x[0];
 	ymax = y[0];

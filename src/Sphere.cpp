@@ -1,9 +1,19 @@
 #include "Sphere.h"
-#include"Database.h"
 
-//Variáveis globais
+#include "BoundingSphere.h"
+#include "Material.h"
+#include "CoordinateSystem.h"
+#include "Node.h"
+#include "Encoding.h"
+#include "GeneralContactSearch.h"
+#include "Environment.h"
+#include "MatrixFloat.h"
+#include "Dynamic.h"
+#include"Database.h"
+//Variaveis globais
 extern
 Database db;
+#define PI 3.1415926535897932384626433832795
 
 Sphere::Sphere()
 {
@@ -107,7 +117,7 @@ void Sphere::WriteModifyingParameters(FILE *f, int e_material, int e_node, int e
 	);
 }
 
-//Pré-cálculo de variáveis que é feito uma única vez no início
+//Pre-calculo de variaveis que e feito uma unica vez no inicio
 void Sphere::PreCalc()
 {
 	volume = (4.0 / 3.0) * PI*radius*radius*radius;
@@ -134,11 +144,11 @@ void Sphere::PreCalc()
 	br[0] = 0.0;
 	br[1] = 0.0;
 	br[2] = 0.0;
-	//Momentos de Inércia
+	//Momentos de Inercia
 	Jr[0][0] = inertia;
 	Jr[1][1] = inertia;
 	Jr[2][2] = inertia;
-	//Produtos de Inércia
+	//Produtos de Inercia
 	Jr[0][1] = 0.0;
 	Jr[1][0] = 0.0;
 	Jr[0][2] = 0.0;
@@ -178,7 +188,7 @@ void Sphere::UpdateBoundingVolumes()
 	}
 }
 
-//Salva variáveis
+//Salva variaveis
 void Sphere::SaveLagrange()
 {
 	//Saving bounding volumes
@@ -194,7 +204,7 @@ void Sphere::WriteVTK_XMLBase(FILE *f)
 
 void Sphere::WriteVTK_XMLRender(FILE *f)
 {
-	//vetores para escrita no formato binário - usando a função 'enconde'
+	//vetores para escrita no formato binario - usando a função 'enconde'
 	std::vector<float> float_vector;
 	std::vector<int> int_vector;
 
@@ -202,9 +212,9 @@ void Sphere::WriteVTK_XMLRender(FILE *f)
 	int n_theta = 12;
 	//Divisões em phi
 	int n_phi = 8;
-	//Número de pontos
+	//Numero de pontos
 	int n_points = (2 * n_theta + 1)*(2 * n_phi + 1);
-	//Número de células a serem geradas
+	//Numero de celulas a serem geradas
 	int n_cells = n_theta*n_phi;
 	Matrix QM = (*db.nodes[node - 1]->Q)*(*Q0);
 	
@@ -310,9 +320,9 @@ void Sphere::Alloc()
 	cs = 0;
 
 	DOFs = new int[db.number_GLs_node];
-	type_name = new char[20];//Nome do tipo da partícula
+	type_name = new char[20];//Nome do tipo da particula
 
-	//Rotina para ativar os GLS do nó da partícula
+	//Rotina para ativar os GLS do nó da particula
 	for (int j = 0; j < db.number_GLs_node; j++)
 	{
 		DOFs[j] = 0;
@@ -326,7 +336,7 @@ void Sphere::Alloc()
 	DOFs[4] = 1;
 	DOFs[5] = 1;
 
-	//Variáveis internas
+	//Variaveis internas
 	mass = 0.0;
 
 	I3 = new Matrix(3, 3);
@@ -425,7 +435,7 @@ void Sphere::Mount()
 			DdT[i][j] = 0.0;
 		}
 	}
-	//Valores de variáveis cinemáticas - atribuição
+	//Valores de variaveis cinematicas - atribuição
 	for (int i = 0; i < 3; i++)
 	{
 		alphai[i] = db.nodes[node - 1]->copy_coordinates[i + 3];
@@ -457,7 +467,7 @@ void Sphere::EvaluateAccelerations()
 
 void Sphere::MountGlobal()
 {
-	//Variáveis temporárias para salvar a indexação global dos graus de liberdade a serem setados na matriz de rigidez global
+	//Variaveis temporarias para salvar a indexação global dos graus de liberdade a serem setados na matriz de rigidez global
 	int GL_global_1 = 0;
 	int GL_global_2 = 0;
 	double anterior = 0;
@@ -505,8 +515,8 @@ void Sphere::MountFieldLoading()
 {
 	//Ponteiro para o valor da massa
 	double* m = &mass;
-	double v[1000];													//Variável necessária para o AceGen		
-	//Variáveis para cálculo de steps
+	double v[1000];													//Variavel necessaria para o AceGen		
+	//Variaveis para calculo de steps
 	double l_factor;
 	bool in_gcs_domain = true;
 	if (db.environment_exist == true)
@@ -720,7 +730,7 @@ void Sphere::MountFieldLoading()
 	//Outras contribuições de esforços de campo, colocar aqui...
 }
 
-//Calcula contribuições de inércia
+//Calcula contribuições de inercia
 void Sphere::InertialContributions()
 {
 	double value = 0.0;
@@ -738,7 +748,7 @@ void Sphere::InertialContributions()
 	if (typeid(*db.solution[db.current_solution_number - 1]) == typeid(Dynamic))
 	{
 		Dynamic* ptr_sol = static_cast<Dynamic*>(db.solution[db.current_solution_number - 1]);
-		//Ponteiros para parâmetros do Newmark
+		//Ponteiros para parametros do Newmark
 		a1 = &ptr_sol->a1;
 		a2 = &ptr_sol->a2;
 		a3 = &ptr_sol->a3;
@@ -758,7 +768,7 @@ void Sphere::InertialContributions()
 
 	//Ponteiro para o valor da massa
 	double* m = &mass;
-	double v[1000];													//Variável necessária para o AceGen		
+	double v[1000];													//Variavel necessaria para o AceGen		
 	//AceGen
 	v[134] = Power(alphai[0], 2);
 	v[132] = 0.5e0*alphai[0] * alphai[1];

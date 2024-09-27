@@ -1,5 +1,7 @@
 #pragma once
 #include "Boundary.h"
+class MatrixFloat;
+
 class STLBoundary :
 	public Boundary
 {

@@ -1,10 +1,8 @@
 #pragma once
 #include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <math.h>
-#include "Matrix.h"
-#include "SplineElement.h"
+
+class Matrix;
+class SplineElement;
 
 class Spline
 {
@@ -15,22 +13,22 @@ public:
 	bool Read(FILE *f);
 	void Write(FILE *f);	
 
-	void PreCalc();								//Cálculos realizados uma única vez
+	void PreCalc();								//Calculos realizados uma unica vez
 	void WriteVTK_XML_SplineMesh(FILE *f);		//Malha da spline junto ao paraview
 	void WriteVTK_XML_SplineRender(FILE *f);	//Malha renderizada da spline junto ao paraview
-	void CalculateSpline();						//Cálculo de pontos da spline
-	void CalculateSplineTangentNormal();		//Cálculo de vetor tangente e normal a spline
-	void SaveConfiguration();					//Atualiza as variáveis internas da superfície, para pegarem info do pilot node para uso posterior com posição atualizada
+	void CalculateSpline();						//Calculo de pontos da spline
+	void CalculateSplineTangentNormal();		//Calculo de vetor tangente e normal a spline
+	void SaveConfiguration();					//Atualiza as variaveis internas da superficie, para pegarem info do pilot node para uso posterior com posição atualizada
 	bool Check();								//Checa inconsistências para evitar erros de execução
 	
-	//Variáveis internas da spline		
+	//Variaveis internas da spline		
 	bool alloc = false;			//Controle de alocação da spline para destrutor
-	int number;					//Número de referência
-	double radius;				//Raio que define a superfície externa a spline (offset)
+	int number;					//Numero de referência
+	double radius;				//Raio que define a superficie externa a spline (offset)
 	int nodeset;				//Idenificador do nodeset que define os pontos de controle da spline	
-	int size_nodeset;			//Número de nós definidos no nodeset
-	int size_sp_nodes;			//Número de nós utilizados para descrever a spline apenas para visualização	
-	int size_sp_elements;		//Número de elementos (trechos) de spline
+	int size_nodeset;			//Numero de nós definidos no nodeset
+	int size_sp_nodes;			//Numero de nós utilizados para descrever a spline apenas para visualização	
+	int size_sp_elements;		//Numero de elementos (trechos) de spline
 
 	int* nodeset_list;			//Lista de nós do nodeset	
 	double* knot;				//Knot vector calculado de acordo com a quantidade de nós do nodeset

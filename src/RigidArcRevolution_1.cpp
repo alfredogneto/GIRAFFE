@@ -1,9 +1,16 @@
 ﻿#include "RigidArcRevolution_1.h"
 
+#include "ArcCirc.h"
+#include "PostFiles.h"
+#include "Node.h"
+#include "Encoding.h"
+#include "CoordinateSystem.h"
+
 #include"Database.h"
-//Variáveis globais
+//Variaveis globais
 extern
 Database db;
+#define PI 3.1415926535897932384626433832795
 
 RigidArcRevolution_1::RigidArcRevolution_1()
 {
@@ -122,7 +129,7 @@ void RigidArcRevolution_1::SurfacePoint(double& zeta, double& theta, Matrix& poi
 	point = *x_ABp + (*Q_ABp) * ar;
 }
 
-//Normal exterior à superfície na posição escolhida
+//Normal exterior a superficie na posição escolhida
 void RigidArcRevolution_1::NormalExt(double* zeta, double* theta, Matrix* n)
 {
 	double *d = d_B->getMatrix();		//ponteiro para o vetor d
@@ -201,11 +208,11 @@ void RigidArcRevolution_1::WriteVTK_XMLRender(FILE *f)
 {
 	if (db.post_files->WriteRigidContactSurfaces_flag == true)
 	{
-		int n_circ1 = 24; //número de divisões ao longo da revolução
-		int n_circ2 = 24; //número de divisões ao longo do arco
-		//Número de pontos a serem gerados
+		int n_circ1 = 24; //numero de divisões ao longo da revolução
+		int n_circ2 = 24; //numero de divisões ao longo do arco
+		//Numero de pontos a serem gerados
 		int n_points = (2*n_circ1 + 1) * (2*n_circ2 + 1);
-		//Número de células a serem geradas
+		//Numero de celulas a serem geradas
 		int n_cells = n_circ1*n_circ2;
 		double** points;
 		points = new double*[n_points];
@@ -213,7 +220,7 @@ void RigidArcRevolution_1::WriteVTK_XMLRender(FILE *f)
 			points[i] = new double[3];
 		int index = 0;
 		double phi = 0;
-		double phi_f = this->rev_Ang;	//ângulo de revolução
+		double phi_f = this->rev_Ang;	//angulo de revolução
 		double theta = 0;
 
 		//
@@ -268,7 +275,7 @@ void RigidArcRevolution_1::WriteVTK_XMLRender(FILE *f)
 			}
 
 
-			////Se os ângulos inicial e final estiverem no primeiro ou no quarto quadrante
+			////Se os angulos inicial e final estiverem no primeiro ou no quarto quadrante
 			//if (((*theta_i < 0 && *theta_i >= -PI / 2) || (*theta_i >= 0 && *theta_i <= PI / 2)) && ((*theta_f < 0 && *theta_f >= -PI / 2) || (*theta_f >= 0 && *theta_f <= PI / 2)))
 			//{
 			//	theta = *theta_i;
@@ -286,7 +293,7 @@ void RigidArcRevolution_1::WriteVTK_XMLRender(FILE *f)
 
 			//}
 			//
-			////Se os ângulos inicial e final esiverem no segundo ou terceiro quadrante
+			////Se os angulos inicial e final esiverem no segundo ou terceiro quadrante
 			//if (((*theta_i < -PI / 2 && *theta_i >= -PI) || (*theta_i >= PI / 2 && *theta_i <= PI)) && ((*theta_f < -PI / 2 && *theta_f >= -PI) || (*theta_f >= PI / 2 && *theta_f <= PI)))
 			//{
 			//	if (*theta_i<0)
@@ -315,7 +322,7 @@ void RigidArcRevolution_1::WriteVTK_XMLRender(FILE *f)
 						
 
 		}
-		//vetores para escrita no formato binário - usando a função 'enconde'
+		//vetores para escrita no formato binario - usando a função 'enconde'
 		std::vector<float> float_vector;
 		std::vector<int> int_vector;
 
@@ -333,7 +340,7 @@ void RigidArcRevolution_1::WriteVTK_XMLRender(FILE *f)
 		xO(0, 0) = db.nodes[nodes[0] - 1]->copy_coordinates[0];
 		xO(1, 0) = db.nodes[nodes[0] - 1]->copy_coordinates[1];
 		xO(2, 0) = db.nodes[nodes[0] - 1]->copy_coordinates[2];
-		for (int point = 0; point <n_points; point++)//Percorre os nós que descrevem o perímetro da ST
+		for (int point = 0; point <n_points; point++)//Percorre os nós que descrevem o perimetro da ST
 		{
 			//Posição de cada ponto P no plano xy (referência)
 			vec_P(0, 0) = points[point][0];
@@ -557,7 +564,7 @@ bool RigidArcRevolution_1::Check()
 	return true;
 }
 
-//Realiza chute inicial para as variáveis zeta e theta
+//Realiza chute inicial para as variaveis zeta e theta
 void RigidArcRevolution_1::InitialGuess(Matrix* xS, double** convective, int n_solutions)
 {
 
@@ -588,7 +595,7 @@ void RigidArcRevolution_1::PreCalc()
 	Matrix e2l = *db.CS[cs - 1]->E2;
 	Matrix e3l = *db.CS[cs - 1]->E3;
 
-	//Salva a matriz de transformação de coordenadas (para orientar o plano da ST de acordo com a orientação de referência da superfície)
+	//Salva a matriz de transformação de coordenadas (para orientar o plano da ST de acordo com a orientação de referência da superficie)
 	(*Q0B)(0, 0) = dot(e1g, e1l);
 	(*Q0B)(0, 1) = dot(e1g, e2l);
 	(*Q0B)(0, 2) = dot(e1g, e3l);
@@ -607,7 +614,7 @@ void RigidArcRevolution_1::PreCalc()
 
 }
 
-//Retorna as coordenadas da superfície para um par (zeta,theta) - configuração anterior convergida
+//Retorna as coordenadas da superficie para um par (zeta,theta) - configuração anterior convergida
 void RigidArcRevolution_1::Gamma_and_Triad(Matrix* G_p, Matrix* t1_p, Matrix* t2_p, Matrix* n_p, Matrix* G_i, Matrix* t1_i, Matrix* t2_i, Matrix* n_i, Matrix* G_ip, double* phii, double* thi, double* phip, double* thp)
 {
 	double *d = d_B->getMatrix();		//ponteiro para o vetor d
@@ -790,12 +797,12 @@ void RigidArcRevolution_1::Gamma_and_Triad(Matrix* G_p, Matrix* t1_p, Matrix* t2
 		
 }
 
-//Dado o ponto xS, calcula as coordenadas (zeta,theta) referentes à mínima distância
+//Dado o ponto xS, calcula as coordenadas (zeta,theta) referentes a minima distancia
 void RigidArcRevolution_1::FindMinimimumParameters(Matrix* xS, NSContactData* cd)
 {
 
 }
-//Atualiza as variáveis internas da superfície, para pegarem info do pilot node para uso posterior com posição atualizada
+//Atualiza as variaveis internas da superficie, para pegarem info do pilot node para uso posterior com posição atualizada
 void RigidArcRevolution_1::FillNodes()
 {
 	Matrix alphaB(3);
@@ -820,7 +827,7 @@ void RigidArcRevolution_1::FillNodes()
 	*x_ABp = *x_ABi + uB;
 }
 
-//Retorna coordenadas globais do ponto central da superfície a ser utilizado para cálculos grosseiros de sua localização (pinball)
+//Retorna coordenadas globais do ponto central da superficie a ser utilizado para calculos grosseiros de sua localização (pinball)
 void RigidArcRevolution_1::CenterPoint(Matrix* center)
 {
 	//*center = *x_ABi;
@@ -863,14 +870,14 @@ void RigidArcRevolution_1::SaveConfiguration()
 	double g = 4.0 / (4.0 + alpha*alpha);					//função g(alpha) - em algumas ref. tb. chamado de h(alpha)
 	*Q_ABi = *I3 + g*(A + 0.5*(A*A));						//Tensor de rotação
 	*Q_ABic = *Q_ABi;										//Cópia - antes da transformação embutida
-	*Q_ABi = (*Q_ABi)*(*Q0B);								//Para já realizar a transformação da parametrização do arco para o sistema global
+	*Q_ABi = (*Q_ABi)*(*Q0B);								//Para ja realizar a transformação da parametrização do arco para o sistema global
 	Q_ABi->MatrixToPtr(aQ_ABi, 3);
 	
 }
 
 void RigidArcRevolution_1::UpdateBox()
 {
-	//Objetivo dessa funÁ„o È obter o minimo box que englobe o arco
+	//Objetivo dessa funa„o e obter o minimo box que englobe o arco
 
 	//Atribuindo valores do arco
 	radius = &db.arcs[arc_ID - 1]->radius;
@@ -893,18 +900,18 @@ void RigidArcRevolution_1::UpdateBox()
 	Matrix p3(2); //no eixo x negativo
 	Matrix p4(2); //no eixo y negativo
 
-	//Iniciando os pontos com o mesmo valor do initial point, pois assim mesmo que o ponto pn n„o exista, ele n„o ir· interferir na localizaÁ„o
+	//Iniciando os pontos com o mesmo valor do initial point, pois assim mesmo que o ponto pn n„o exista, ele n„o ir· interferir na localizaa„o
 	//de m·ximo e mÌnimos, pois o ponto i sempre ir· existir...
 	p1 = i_point0;
 	p2 = i_point0;
 	p3 = i_point0;
 	p4 = i_point0;
 
-	//Criando thetas que v„o de 0 a 2PI, para viabilizar as verificaÁıes da exisitÍncia dos pontos p1-4
+	//Criando thetas que v„o de 0 a 2PI, para viabilizar as verificaaıes da exisitincia dos pontos p1-4
 	double theta_imod;
 	double theta_fmod;
 
-	//Caso seja um retorno do terceiro ou quarto quadrante (negativo na funÁ„o atan2), somar 2PI para obter o ‚ngulo completo. Caso contr·tio, usar o ‚ngulo original.
+	//Caso seja um retorno do terceiro ou quarto quadrante (negativo na funcao atan2), somar 2PI para obter o angulo completo. Caso contrario, usar o angulo original.
 	if (*theta_i < 0)// && *theta_i >= -PI)
 		theta_imod = 2 * PI + *theta_i;
 	else
@@ -1070,10 +1077,10 @@ void RigidArcRevolution_1::UpdateBox()
 	}
 
 
-	//Organizando os pontos em uma tabela para comparaÁ„o (centro, inicial, final, p1, p2, p3 e p4)
+	//Organizando os pontos em uma tabela para comparaa„o (centro, inicial, final, p1, p2, p3 e p4)
 	Matrix points(7, 2);
-	points(0, 0) = i_point0(0, 0); //Mudei de ideia, melhor n„o incluir o center point na comparaÁ„o, pois a principio parece desnecess·rio
-	points(0, 1) = i_point0(1, 0); //No entanto, se identificar que È melhor fazer o box incluindo o centro È sÛ trocar i_point0 por c_point0 nessas duas linhas
+	points(0, 0) = i_point0(0, 0); //Mudei de ideia, melhor n„o incluir o center point na comparaa„o, pois a principio parece desnecess·rio
+	points(0, 1) = i_point0(1, 0); //No entanto, se identificar que e melhor fazer o box incluindo o centro e sÛ trocar i_point0 por c_point0 nessas duas linhas
 
 	points(1, 0) = i_point0(0, 0);
 	points(1, 1) = i_point0(1, 0);
@@ -1112,7 +1119,7 @@ void RigidArcRevolution_1::UpdateBox()
 			mincorner0(1, 0) = points(i, 1);
 	}
 
-	//Definindo os quatro vertices do retangulo e contabilizando a posiÁ„o do centro de curvatura
+	//Definindo os quatro vertices do retangulo e contabilizando a posia„o do centro de curvatura
 	Matrix A0(2);
 	Matrix B0(2);
 	Matrix C0(2);
@@ -1135,7 +1142,7 @@ void RigidArcRevolution_1::UpdateBox()
 	Matrix C = C0 + *c_point;
 	Matrix D = D0 + *c_point;
 
-	//Criando vetores com os corners do box que englobem o arco j· revolucionado considerando os fatores de ovalizaÁ„o
+	//Criando vetores com os corners do box que englobem o arco j· revolucionado considerando os fatores de ovalizaa„o
 	Matrix v1(3);
 	v1(0, 0) = A(0, 0)*x_fac;
 	v1(1, 0) = A(1, 0);
@@ -1176,7 +1183,7 @@ void RigidArcRevolution_1::UpdateBox()
 	v8(1, 0) = A(1, 0);
 	v8(2, 0) = -(*radius)*z_fac;
 
-	//AssociaÁ„o com o nÛ
+	//Associaa„o com o nÛ
 	Matrix xABi(3);
 	xABi = *x_ABi;
 	Matrix QABi(3, 3);
@@ -1224,17 +1231,17 @@ void RigidArcRevolution_1::UpdateBox()
 	y[7] = v8(1, 0);
 	z[7] = v8(2, 0);
 
-	//Setando os vÈrtices
+	//Setando os vertices
 	box.SetVertices(x, y, z);
 }
 
-//Calcula contribuições de contato entre esfera e superfície
+//Calcula contribuições de contato entre esfera e superficie
 void RigidArcRevolution_1::ContactSphereSurfaceSticking(double* Rc, double** Kc, double zetap, double thetap, double zetai, double thetai, double* gti, int node, double* epsn, double* epst, double* cn, double* ct, double* mu, double* radius)
 {
 
 }
 
-//Calcula contribuições de contato entre esfera e superfície
+//Calcula contribuições de contato entre esfera e superficie
 void RigidArcRevolution_1::ContactSphereSurfaceSliding(double* Rc, double** Kc, double zetap, double thetap, double zetai, double thetai, double* gti, int node, double* epsn, double* epst, double* cn, double* ct, double* mu, double* radius)
 {
 

@@ -1,8 +1,10 @@
 #include "ConcomitantSolution.h"
+#include <direct.h>
 
-#include"Database.h"
+#include "Modal.h"
 
-//Variáveis globais
+#include "Database.h"
+//Variaveis globais
 extern
 Database db;
 

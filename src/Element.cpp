@@ -1,7 +1,10 @@
 #include "Element.h"
 #define PI 3.1415926535897932384626433832795
+
+#include "Node.h"
+
 #include"Database.h"
-//Variáveis globais
+//Variaveis globais
 extern
 Database db;
 

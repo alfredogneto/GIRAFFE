@@ -1,7 +1,6 @@
 #pragma once
 #include "SurfacePair.h"
-#include "FlexibleArcExtrusion_1.h"
-#include "RigidArcRevolution_1.h"
+class Matrix;
 
 class FlexibleArcExtrusion_1_RigidArcRevolution_1 :
 	public SurfacePair
@@ -9,7 +8,7 @@ class FlexibleArcExtrusion_1_RigidArcRevolution_1 :
 public:
 	FlexibleArcExtrusion_1_RigidArcRevolution_1();
 	~FlexibleArcExtrusion_1_RigidArcRevolution_1();
-	//Chute inicial para coordenadas convectivas do par de superfícies
+	//Chute inicial para coordenadas convectivas do par de superficies
 	void InitialGuess(SSContactData* c_data);
 	
 	double ObjectivePhase1(Matrix& mc);								//Calcula a função objetivo para um conjunto de coordenadas convectivas - Phase 1

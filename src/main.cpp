@@ -1,9 +1,16 @@
-#include<stdio.h>
-#include<math.h>
-#include"IO.h"
+#include <stdio.h>
+#include <math.h>
+#include <string>
+#include <chrono>
+#include <iostream>
+using namespace std;
+using namespace std::chrono;
+#include "IO.h"
 #include "Errors.h"
-#include "string.h"
-
+#include "Monitor.h"
+#include "ConcomitantSolution.h"
+#include "PostFiles.h"
+#include "Solution.h"
 //#define _CRTDBG_MAP_ALLOC
 //#include <stdlib.h>
 //#include <crtdbg.h>
@@ -15,9 +22,9 @@
 //#define DBG_NEW new
 //#endif
 
-//Variáveis globais
+//Variaveis globais
 Database db;
-IO io;									//Criação de objeto IO para entrada e saída de dados
+IO io;									//Criação de objeto IO para entrada e saida de dados
 
 int main(int argc, char* argv[])
 {
@@ -29,7 +36,7 @@ int main(int argc, char* argv[])
 	if (readOK == true && checkOK == true)
 	{
 		db.myprintf("GIRAFFE simulation output report. Version %s.\nFile name: %s\n\n", db.version, db.file_name);
-		db.PreCalc();						//Realiza pré-cálculos
+		db.PreCalc();						//Realiza pre-calculos
 		//Execution time
 		high_resolution_clock::time_point t1 = high_resolution_clock::now();
 		//Start Monitor
@@ -65,7 +72,7 @@ int main(int argc, char* argv[])
 		high_resolution_clock::time_point t2 = high_resolution_clock::now();
 		auto duration = std::chrono::duration_cast<std::chrono::microseconds>(t2 - t1).count();
 		db.myprintf("\nTotal solution time:\t   %lf sec.\n", duration / 1e6);
-		//Escreve arquivo de saída
+		//Escreve arquivo de saida
 		io.WriteFile();					
 	}
 	cout << "\nGiraffe execution has finished.\n"; 

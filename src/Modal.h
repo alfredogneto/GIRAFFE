@@ -1,5 +1,6 @@
 #pragma once
 #include "Solution.h"
+#include "Matrix.h"
 
 class Modal:
 	public Solution
@@ -9,7 +10,7 @@ public:
 	~Modal();
 
 	bool Read(FILE *f);											//Leitura de arquivo de entrada
-	void Write(FILE *f);										//Gravação de arquivo de saída
+	void Write(FILE *f);										//Gravação de arquivo de saida
 	bool Solve();												//Solves solution routine
 	void CreateOutputFolder();									//Creates output folder
 	void WriteResults(double time_value);						//Escreve resultados
@@ -33,12 +34,12 @@ public:
 	Matrix eig;													//Matrix com autovalores complexos
 	Matrix eigenvectors;										//Matrix com autovetores complexos
 	double mode_factor;											//Fator multiplicativo para o modo de vibrar
-	bool concomitant_solution;									//Flag que indica se é análise concomitante
+	bool concomitant_solution;									//Flag que indica se e analise concomitante
 	
 	//Special functions for matrices
-	void ZerosLocalMatrices();				//Zera matrizes dos elementos (para uso na análise modal)
-	void MountMassModal();					//Monta matriz de massa para análise modal
-	void MountDampingModal();				//Monta matriz de amortecimento para análise modal
+	void ZerosLocalMatrices();				//Zera matrizes dos elementos (para uso na analise modal)
+	void MountMassModal();					//Monta matriz de massa para analise modal
+	void MountDampingModal();				//Monta matriz de amortecimento para analise modal
 	void MountDynModal();					//Montagens para analise Modal
 
 };

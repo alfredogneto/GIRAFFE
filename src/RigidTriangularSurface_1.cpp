@@ -1,7 +1,13 @@
 #include "RigidTriangularSurface_1.h"
 
+#include "PostFiles.h"
+#include "Node.h"
+#include "Encoding.h"
+#include "Point.h"
+#include "NSContactData.h"
+#include "Dynamic.h"
 #include"Database.h"
-//Variáveis globais
+//Variaveis globais
 extern
 Database db;
 
@@ -71,7 +77,7 @@ void RigidTriangularSurface_1::SurfacePoint(double& zeta, double& theta, Matrix&
 	//TODO
 }
 
-//Normal exterior à superfície na posição escolhida
+//Normal exterior a superficie na posição escolhida
 void RigidTriangularSurface_1::NormalExt(double* zeta, double* theta, Matrix* n)
 {
 
@@ -87,12 +93,12 @@ void RigidTriangularSurface_1::WriteVTK_XMLRender(FILE *f)
 {
 	if (db.post_files->WriteRigidContactSurfaces_flag == true)
 	{
-		//vetores para escrita no formato binário - usando a função 'enconde'
+		//vetores para escrita no formato binario - usando a função 'enconde'
 		std::vector<float> float_vector;
 		std::vector<int> int_vector;
 
-		int n_points = 4;	//três da superfície + pilot node
-		int n_cells = 2;	//triângulo + pilot
+		int n_points = 4;	//três da superficie + pilot node
+		int n_cells = 2;	//triangulo + pilot
 		Matrix pilot(3);
 		//Opens Piece
 		fprintf(f, "\t\t<Piece NumberOfPoints = \"%d\" NumberOfCells = \"%d\">\n", n_points, n_cells);
@@ -226,7 +232,7 @@ bool RigidTriangularSurface_1::Check()
 	return true;
 }
 
-//Realiza chute inicial para as variáveis zeta e theta
+//Realiza chute inicial para as variaveis zeta e theta
 void RigidTriangularSurface_1::InitialGuess(Matrix* xS, double** convective, int n_solutions)
 {
 	convective[0][0] = 0.0;
@@ -242,7 +248,7 @@ void RigidTriangularSurface_1::PreCalc()
 	(*xP_i)(0, 0) = db.nodes[pilot_node - 1]->ref_coordinates[0];
 	(*xP_i)(1, 0) = db.nodes[pilot_node - 1]->ref_coordinates[1];
 	(*xP_i)(2, 0) = db.nodes[pilot_node - 1]->ref_coordinates[2];
-	//Cálculo dos vetores dAi, dBi e dCi
+	//Calculo dos vetores dAi, dBi e dCi
 	*dA_i = xA - *xP_i;
 	*dB_i = xB - *xP_i;
 	*dC_i = xC - *xP_i;
@@ -254,7 +260,7 @@ void RigidTriangularSurface_1::PreCalc()
 	DegenerationPreCalc();
 }
 
-//Retorna as coordenadas da superfície para um par (zeta,theta) - configuração anterior convergida
+//Retorna as coordenadas da superficie para um par (zeta,theta) - configuração anterior convergida
 void RigidTriangularSurface_1::Gamma_and_Triad(Matrix* G_p, Matrix* t1_p, Matrix* t2_p, Matrix* n_p, Matrix* G_i, Matrix* t1_i, Matrix* t2_i, Matrix* n_i, Matrix* G_ip, double* zi, double* thi, double* zp, double* thp)
 {
 	double *dAp = dA_p->getMatrix();	//ponteiro para o vetor dA
@@ -375,7 +381,7 @@ void RigidTriangularSurface_1::Gamma_and_Triad(Matrix* G_p, Matrix* t1_p, Matrix
 	Gi[2] = v[148] * v[164] + v[151] * v[165] + v[154] * v[166];
 }
 
-//Dado o ponto xS, calcula as coordenadas (zeta,theta) referentes à mínima distância
+//Dado o ponto xS, calcula as coordenadas (zeta,theta) referentes a minima distancia
 void RigidTriangularSurface_1::FindMinimimumParameters(Matrix* xS, NSContactData* cd)
 {
 	
@@ -393,16 +399,16 @@ void RigidTriangularSurface_1::FindMinimimumParameters(Matrix* xS, NSContactData
 	double zeta = dzeta / d;
 	double theta = dtheta/d;
 
-	////Salva nas variáveis
+	////Salva nas variaveis
 	//cd->convective[0][0] = zeta;
 	//cd->convective[0][1] = theta;
 	//
-	////Se está no range local de interesse - domínio físico da superfície triangular
+	////Se esta no range local de interesse - dominio fisico da superficie triangular
 	//if (abs(zeta) <= 1.0 && abs(theta) <= 1.0 && theta <= -zeta)
 	//	cd->return_value[0] = 0;
 	//else
 	//{
-	//	//Se está em região próxima, mas não no range local de interesse
+	//	//Se esta em região próxima, mas não no range local de interesse
 	//	if (abs(zeta) < 1.2 && abs(theta) < 1.2 && theta < -zeta + 0.2)
 	//		cd->return_value[0] = 3;
 	//	//Se não estiver no range de interesse
@@ -445,7 +451,7 @@ void RigidTriangularSurface_1::FindMinimimumParameters(Matrix* xS, NSContactData
 	{
 		if (error > tol_ortho)
 		{
-			//Cálculo do resíduo e jacobiano
+			//Calculo do residuo e jacobiano
 			v[70] = (1e0 + vi[1]) / 2e0;
 			v[69] = (1e0 + vi[0]) / 2e0;
 			v[68] = (-vi[0] - vi[1]) / 2e0;
@@ -484,14 +490,14 @@ void RigidTriangularSurface_1::FindMinimimumParameters(Matrix* xS, NSContactData
 			delta = fullsystem(Jacobian, -1.0*residual, &flag_error);	//Resolve sistema linear
 			if (flag_error == 0)										//Se conseguiu fazer o sistema linear
 			{
-				(*vNR) = (*vNR) + delta;								//Atualização das variáveis
+				(*vNR) = (*vNR) + delta;								//Atualização das variaveis
 				error = norm(delta);									//Norma do residuo
 
 				it++;
 			}
 			else
 			{
-				it = max_it + 1;//Força saída - divergência
+				it = max_it + 1;//Força saida - divergência
 			}
 			/*(*vNR).print();
 			delta.print();
@@ -504,18 +510,18 @@ void RigidTriangularSurface_1::FindMinimimumParameters(Matrix* xS, NSContactData
 		delete[]J[i];
 	delete[]J;
 	
-	//Convergiu - ainda há ações a verificar...
+	//Convergiu - ainda ha ações a verificar...
 	if (error <= tol_ortho && flag_error == 0)
 	{
-		//Salva nas variáveis
+		//Salva nas variaveis
 		cd->convective[0][0] = (*vNR)(0, 0);
 		cd->convective[0][1] = (*vNR)(1, 0);
-		//Se está no range local de interesse - domínio físico da superfície triangular
+		//Se esta no range local de interesse - dominio fisico da superficie triangular
 		if (abs((*vNR)(0, 0)) <= 1.0 && abs((*vNR)(1, 0)) <= 1.0 && (*vNR)(1, 0) <= -(*vNR)(0, 0))
 			cd->return_value[0] = 0;
 		else
 		{
-			//Se está em região próxima, mas não no range local de interesse
+			//Se esta em região próxima, mas não no range local de interesse
 			if (abs((*vNR)(0, 0)) < 1.2 && abs((*vNR)(1, 0)) < 1.2 && (*vNR)(1, 0) < -(*vNR)(0, 0) + 0.2)
 				cd->return_value[0] = 3;
 			//Se não estiver no range de interesse
@@ -527,16 +533,16 @@ void RigidTriangularSurface_1::FindMinimimumParameters(Matrix* xS, NSContactData
 	else
 		cd->return_value[0] = 1;
 	//Retornos da função
-	//0 - Convergiu e está no range de interesse para contato
-	//1 - Não houve convergência (pode ou não estar no range para contato) - retorno problemático!!
-	//2 - Houve convergência, mas não está no range para contato
-	//3 - Houve convergência, está fora do range para contato, mas próximo
+	//0 - Convergiu e esta no range de interesse para contato
+	//1 - Não houve convergência (pode ou não estar no range para contato) - retorno problematico!!
+	//2 - Houve convergência, mas não esta no range para contato
+	//3 - Houve convergência, esta fora do range para contato, mas próximo
 
 	cd->repeated[0] = false;
 	for (int i = 1; i < cd->n_solutions; i++)
 		cd->repeated[i] = true;
 }
-//Atualiza as variáveis internas da superfície, para pegarem info do pilot node para uso posterior com posição atualizada
+//Atualiza as variaveis internas da superficie, para pegarem info do pilot node para uso posterior com posição atualizada
 void RigidTriangularSurface_1::FillNodes()
 {
 	//Atualização do Pilot Node
@@ -558,7 +564,7 @@ void RigidTriangularSurface_1::FillNodes()
 	*dC_p = Q*(*dC_i);
 }
 
-//Retorna coordenadas globais do ponto central da superfície a ser utilizado para cálculos grosseiros de sua localização (pinball)
+//Retorna coordenadas globais do ponto central da superficie a ser utilizado para calculos grosseiros de sua localização (pinball)
 void RigidTriangularSurface_1::CenterPoint(Matrix* center)
 {
 	*center = *xP_i + 0.3333333333333333333333*(*dA_i + *dB_i + *dC_i);
@@ -574,7 +580,7 @@ void RigidTriangularSurface_1::SaveConfiguration()
 }
 
 
-//Calcula contribuições de contato entre esfera e superfície
+//Calcula contribuições de contato entre esfera e superficie
 void RigidTriangularSurface_1::ContactSphereSurfaceSticking(double* Rc, double** Kc, double zetap, double thetap, double zetai, double thetai, double* gti, int node, double* epsn, double* epst, double* cn, double* ct, double* mu, double* radius)
 {
 	double *dAi = dA_i->getMatrix();	//ponteiro para o vetor dA
@@ -2820,7 +2826,7 @@ void RigidTriangularSurface_1::ContactSphereSurfaceSticking(double* Rc, double**
 					+ v[2232] * v[988] + v[2240] * v[996]);
 }
 
-//Calcula contribuições de contato entre esfera e superfície
+//Calcula contribuições de contato entre esfera e superficie
 void RigidTriangularSurface_1::ContactSphereSurfaceSliding(double* Rc, double** Kc, double zetap, double thetap, double zetai, double thetai, double* gti, int node, double* epsn, double* epst, double* cn, double* ct, double* mu, double* radius)
 {
 	double *dAi = dA_i->getMatrix();	//ponteiro para o vetor dA

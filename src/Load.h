@@ -1,11 +1,8 @@
 #pragma once
 #include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <math.h>
-#include "Table.h"
-#include "Matrix.h"
-#include "MathCode.h"
+
+class Table;
+class MathCode;
 
 class Load
 {
@@ -16,8 +13,8 @@ public:
 	virtual bool Read(FILE *f) = 0;						//Reads input file
 	virtual void Write(FILE *f) = 0;					//Writes output file
 	virtual void WriteVTK_XML(FILE *f) = 0;				//Writes VTK XML data for post-processing
-	virtual void PreCalc() = 0;							//Pre-calculus - chamado no início - somente uma vez
-	virtual void UpdateforSolutionStep() = 0;			//Atualiza dados necessários e que sejam dependentes de DOFs ativos/inativos - chamado no início de cada solution step
+	virtual void PreCalc() = 0;							//Pre-calculus - chamado no inicio - somente uma vez
+	virtual void UpdateforSolutionStep() = 0;			//Atualiza dados necessarios e que sejam dependentes de DOFs ativos/inativos - chamado no inicio de cada solution step
 	virtual void Mount() = 0;							//Evaluates the load and its tangent operator (when applicable). 
 														//Additionally, when applicable inserts contributions to the global vector/matrix
 	virtual bool Check() = 0;							//Checking inconsistencies

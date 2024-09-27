@@ -1,6 +1,18 @@
 #include "PSYCoupling.h"
+#include <iostream>
+
+#include "Matrix.h"
+#include "Displacement.h"
+#include "Constraint.h"
+#include "NodalDisplacement.h"
+#include "NodalConstraint.h"
+#include "Particle.h"
+#include "Table.h"
+#include "Node.h"
+#include "Sphere.h"
+#include "Hooke.h"
 #include"Database.h"
-//Variáveis globais
+//Variaveis globais
 extern
 Database db;
 
@@ -55,7 +67,7 @@ bool PSYCoupling::Read(FILE *f)
 	return true;
 }
 
-//Saída no arquivo de entrada do Giraffe
+//Saida no arquivo de entrada do Giraffe
 void PSYCoupling::Write(FILE *f)
 {
 	fprintf(f, "PSYCoupling\t");
@@ -128,10 +140,10 @@ void PSYCoupling::CoupleByFile()
 
 void PSYCoupling::CoupleByBinary()
 {
-	//Criar cópias em variáveis-espelho para passar como referência à dll do PSY - se basear na função WritePSYFile()
+	//Criar cópias em variaveis-espelho para passar como referência a dll do PSY - se basear na função WritePSYFile()
 	cout << "Running PSY - coupling by binary..." << "\n";
-	//Chamar função do PSY - com parâmetros de entrada como sendo a estrutura toda psy_info
-	//Ler variáveis-espelho escritas pelo PSY e salvar no Giraffe - se basear na função ReadPSYFile()
+	//Chamar função do PSY - com parametros de entrada como sendo a estrutura toda psy_info
+	//Ler variaveis-espelho escritas pelo PSY e salvar no Giraffe - se basear na função ReadPSYFile()
 }
 
 //Lê o arquivo do PSY
@@ -151,10 +163,10 @@ void PSYCoupling::ReadPSYFile()
 	int node = 0;
 	Matrix coordinates(3);
 	Matrix velocity(3);
-	//Leitura dos dados das partículas
+	//Leitura dos dados das particulas
 	for (int i = 0; i < db.number_particles; i++)
 	{
-		//Número
+		//Numero
 		fscanf(f, "%s", s);
 		node = db.particles[atoi(s) - 1]->node;
 		fscanf(f, "%s", s);
@@ -202,10 +214,10 @@ void PSYCoupling::WritePSYFile()
 	fprintf(f_PSY, "$rotational_dofs !on/off\n");
 	fprintf(f_PSY, "\toff\n");
 	fprintf(f_PSY, "$particle_attributes_and_radius  !number, kind, radius, material_set_number, pressurf_number\n");
-	//Impressão das partículas
+	//Impressão das particulas
 	for (int i = 0; i < db.number_particles; i++)
 	{
-		//Partícula esférica
+		//Particula esferica
 		//Ponteiro para o Sphere
 		Sphere* ptr = static_cast<Sphere*>(db.particles[i]);
 		fprintf(f_PSY, "\t%d\tjet_sphere\t%.6e\t%d\t%d\n", ptr->number, ptr->radius, ptr->material, 0);
@@ -224,7 +236,7 @@ void PSYCoupling::WritePSYFile()
 		double dynamic_friction = 0.1;
 		fprintf(f_PSY, "\t%d\t%.6e\t%.6e\t%.6e\t%.6e\t%.6e\t%.6e\t%.6e\t%.6e\n", ptr->number, ptr->rho, 0.0, ptr->E, ptr->nu, damping_rate, e, static_friction, dynamic_friction);
 	}
-	//Impressão das coordenadas das partículas e velocidades iniciais
+	//Impressão das coordenadas das particulas e velocidades iniciais
 	fprintf(f_PSY, "$particle_coordinates_and_initial_velocities  ! number, x, y, z, vx, vy, vz, wx, wy, wz\n");
 	for (int i = 0; i < db.number_particles; i++)
 	{
@@ -242,7 +254,7 @@ void PSYCoupling::WritePSYFile()
 	fprintf(f_PSY, "\t%d\n", 0);
 	fprintf(f_PSY, "$no_particles_with_initial_given_forces_and_moments\n");
 	fprintf(f_PSY, "\t%d\n", db.number_particles);
-	//Impressão das forças nas partículas (reações vinculares da simulação do Giraffe)
+	//Impressão das forças nas particulas (reações vinculares da simulação do Giraffe)
 	fprintf(f_PSY, "$particle_initial_given_forces_and_moments\n");
 	int node = 0;
 	Matrix forces(3);

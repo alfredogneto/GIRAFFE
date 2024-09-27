@@ -1,6 +1,6 @@
 #pragma once
 #include "Matrix.h"
-#include "Table.h"
+class Table;
 
 //This class contains a structures to save aerodynamic data
 class AerodynamicData
@@ -11,7 +11,7 @@ public:
 
 	int number;				//ID
 	Matrix ref_position;	//Reference position for aerodynamic forces
-	double ref_length;		//Comprimento de referência (corda)
+	double ref_length;		//Comprimento de referï¿½ncia (corda)
 	Table* CL;				//Lift coeff. vs. alpha
 	Table* CD;				//Drag coeff. vs. alpha
 	Table* CM;				//Pitching coeff. vs. alpha

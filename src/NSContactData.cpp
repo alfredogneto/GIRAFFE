@@ -1,6 +1,6 @@
 #include "NSContactData.h"
-#include "stdio.h"
-#include "math.h"
+
+#include "Matrix.h"
 
 NSContactData::NSContactData()
 {
@@ -100,7 +100,7 @@ void NSContactData::Alloc()
 			convective[i][0] = 0.0;
 			convective[i][1] = 0.0;
 			g_n[i] = 0.0;
-			copy_g_n[i] = 1.0;	//Assumindo que não há contato anterior
+			copy_g_n[i] = 1.0;	//Assumindo que não ha contato anterior
 			return_value[i] = 1;
 			repeated[i] = true;
 		}
@@ -221,7 +221,7 @@ void NSContactData::Free()
 	n_i = NULL;
 }
 
-//Checa repetição de raízes e salva a informação na matriz 'repeated'
+//Checa repetição de raizes e salva a informação na matriz 'repeated'
 void NSContactData::CheckRepeated(double tol_coordinate_value)
 {
 	for (int i = 0; i < n_solutions; i++)

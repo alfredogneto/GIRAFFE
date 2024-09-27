@@ -1,10 +1,26 @@
 #include "Polyhedron.h"
-#include"Database.h"
+
+#include "BoundingSphere.h"
+#include "CADData.h"
+#include "MatrixFloat.h"
+#include "STLSurface.h"
+#include "CoordinateSystem.h"
+#include "Material.h"
+#include "GeneralContactSearch.h"
+#include "Interface_1.h"
+#include "BoundingTriangularBox.h"
+#include "BoundingCylinder.h"
+#include "Environment.h"
+#include "Node.h"
+#include "ContactParticleParticle.h"
+#include "Dynamic.h"
+#include "TriangularFace.h"
 
 //extern
 //FILE *fdebug;
 
-//Variáveis globais
+#include"Database.h"
+//Variaveis globais
 extern
 Database db;
 
@@ -152,9 +168,9 @@ void Polyhedron::PreCalc()
 	(*Q0)(1, 2) = (*db.CS[cs - 1]->E3)(1, 0);
 	(*Q0)(2, 2) = (*db.CS[cs - 1]->E3)(2, 0);
 
-	//Calculando valores do br. Feito apenas uma vez no início. 
+	//Calculando valores do br. Feito apenas uma vez no inicio. 
 	//A origem do CAD coincide com o Polo, então G-O = G
-	//Como G é dado no sistema do CAD, então G precisa ser transformado
+	//Como G e dado no sistema do CAD, então G precisa ser transformado
 	Matrix local_b = *db.cad_data[CADDATA_ID - 1]->G;
 	
 	(*mbr) = (*Q0) * local_b;
@@ -162,7 +178,7 @@ void Polyhedron::PreCalc()
 	br[1] = (*mbr)(1, 0);
 	br[2] = (*mbr)(2, 0);
 
-	//Atualizando J_O para o sistema global e copiando valores para Jr. Feito apenas uma vez no início
+	//Atualizando J_O para o sistema global e copiando valores para Jr. Feito apenas uma vez no inicio
 	*mJr = db.materials[material - 1]->rho * (*Q0) * (*db.cad_data[CADDATA_ID - 1]->J_O)*transp(*Q0);
 	mJr->MatrixToPtr(Jr, 3);
 	mass = db.cad_data[CADDATA_ID - 1]->volume * db.materials[material - 1]->rho;
@@ -198,7 +214,7 @@ void Polyhedron::PreCalc()
 		if (ptr->gnb > largest_gnb)
 			largest_gnb = ptr->gnb;
 	}
-	//PreCalc do CAD é chamado antes do PreCalc das partículas
+	//PreCalc do CAD e chamado antes do PreCalc das particulas
 	BoundingSphere* ptr_bv1 = static_cast<BoundingSphere*>(bv);
 	STLSurface* ptr_cad = static_cast<STLSurface*>(db.cad_data[CADDATA_ID - 1]);
 	//Initial settings of the spherical bounding volume
@@ -482,7 +498,7 @@ bool Polyhedron::CheckInsideEdge(Matrix& point, int edge_ID, double tol)
 {
 	STLSurface* ptr_cad = static_cast<STLSurface*>(db.cad_data[CADDATA_ID - 1]);
 
-	//Checando se é uma aresta côncava. Se assim o for, retorna false
+	//Checando se e uma aresta côncava. Se assim o for, retorna false
 	if (ptr_cad->edges[edge_ID - 1].concave_indicator == 1)
 		return false;
 	else
@@ -491,7 +507,7 @@ bool Polyhedron::CheckInsideEdge(Matrix& point, int edge_ID, double tol)
 		Matrix n2(3);
 		Matrix t(3);
 		Matrix O(3);
-		//Vértices da aresta em questão
+		//Vertices da aresta em questão
 		O = *x0ip + (*Qip)*(*ptr_cad->vertices[ptr_cad->edges[edge_ID - 1].verticesIDs[0] - 1].coord_double);
 		n1 = (*Qip)*(*ptr_cad->faces[ptr_cad->edges[edge_ID - 1].faceIDs[0] - 1]->normal);
 		n2 = (*Qip)*(*ptr_cad->faces[ptr_cad->edges[edge_ID - 1].faceIDs[1] - 1]->normal);
@@ -519,9 +535,9 @@ void Polyhedron::Alloc()
 	cs = 0;
 
 	DOFs = new int[db.number_GLs_node];
-	type_name = new char[20];//Nome do tipo da partícula
+	type_name = new char[20];//Nome do tipo da particula
 
-	//Rotina para ativar os GLS do nó da partícula
+	//Rotina para ativar os GLS do nó da particula
 	for (int j = 0; j < db.number_GLs_node; j++)
 	{
 		DOFs[j] = 0;
@@ -535,7 +551,7 @@ void Polyhedron::Alloc()
 	DOFs[4] = 1;
 	DOFs[5] = 1;
 
-	//Variáveis internas
+	//Variaveis internas
 	mass = 0.0;
 
 	I3 = new Matrix(3, 3);
@@ -664,7 +680,7 @@ void Polyhedron::Mount()
 			DdT[i][j] = 0.0;
 		}
 	}
-	//Valores de variáveis cinemáticas - atribuição
+	//Valores de variaveis cinematicas - atribuição
 	for (int i = 0; i < 3; i++)
 	{
 		alphai[i] = db.nodes[node - 1]->copy_coordinates[i + 3];
@@ -683,7 +699,7 @@ void Polyhedron::Mount()
 //Explicit
 void Polyhedron::InitialEvaluations()
 {
-	//Seta variáveis nodais associadas com o tratamento que essa partícula vai empregar
+	//Seta variaveis nodais associadas com o tratamento que essa particula vai empregar
 	*db.nodes[node - 1]->Q0 = *Q0;
 	db.nodes[node - 1]->flag_material_description = true;
 	db.nodes[node - 1]->flag_pseudo_moment = false;
@@ -742,7 +758,7 @@ void Polyhedron::EvaluateExplicit()
 	Matrix force_w;
 	Matrix moment_w;
 
-	//Variáveis para cálculo de steps
+	//Variaveis para calculo de steps
 	double l_factor;
 	if (db.environment_exist == true)
 	{
@@ -766,7 +782,7 @@ void Polyhedron::EvaluateExplicit()
 	}
 
 	//Espalhamento - Residual vector
-	//Variáveis temporárias para salvar a indexação global dos graus de liberdade a serem setados na matriz de rigidez global
+	//Variaveis temporarias para salvar a indexação global dos graus de liberdade a serem setados na matriz de rigidez global
 	int GL_global = 0;
 	double anterior = 0;
 	for (int i = 0; i < 6; i++)
@@ -862,7 +878,7 @@ void Polyhedron::EvaluateAccelerations()
 
 void Polyhedron::MountGlobal()
 {
-	//Variáveis temporárias para salvar a indexação global dos graus de liberdade a serem setados na matriz de rigidez global
+	//Variaveis temporarias para salvar a indexação global dos graus de liberdade a serem setados na matriz de rigidez global
 	int GL_global_1 = 0;
 	int GL_global_2 = 0;
 	double anterior = 0;
@@ -910,8 +926,8 @@ void Polyhedron::MountFieldLoading()
 {
 	//Ponteiro para o valor da massa
 	double* m = &mass;
-	double v[1000];													//Variável necessária para o AceGen		
-	//Variáveis para cálculo de steps
+	double v[1000];													//Variavel necessaria para o AceGen		
+	//Variaveis para calculo de steps
 	double l_factor;
 	bool in_gcs_domain = true;
 	if (db.environment_exist == true)
@@ -1125,7 +1141,7 @@ void Polyhedron::MountFieldLoading()
 	//Outras contribuições de esforços de campo, colocar aqui...
 }
 
-//Calcula contribuições de inércia
+//Calcula contribuições de inercia
 void Polyhedron::InertialContributions()
 {
 	double value = 0.0;
@@ -1143,7 +1159,7 @@ void Polyhedron::InertialContributions()
 	if (typeid(*db.solution[db.current_solution_number - 1]) == typeid(Dynamic))
 	{
 		Dynamic* ptr_sol = static_cast<Dynamic*>(db.solution[db.current_solution_number - 1]);
-		//Ponteiros para parâmetros do Newmark
+		//Ponteiros para parametros do Newmark
 		a1 = &ptr_sol->a1;
 		a2 = &ptr_sol->a2;
 		a3 = &ptr_sol->a3;
@@ -1163,7 +1179,7 @@ void Polyhedron::InertialContributions()
 
 	//Ponteiro para o valor da massa
 	double* m = &mass;
-	double v[1000];													//Variável necessária para o AceGen		
+	double v[1000];													//Variavel necessaria para o AceGen		
 	//AceGen
 	v[134] = Power(alphai[0], 2);
 	v[132] = 0.5e0*alphai[0] * alphai[1];

@@ -1,7 +1,13 @@
 #include "STLSurface.h"
-#include"Database.h"
-#include"Eigen/dense"
-//Variáveis globais
+#include <Eigen/dense>
+
+#include "MatrixFloat.h"
+#include "TriangularFace.h"
+#include "Particle.h"
+#include "VEMPolyhedron.h"
+#include "Encoding.h"
+#include "Database.h"
+//Variaveis globais
 extern
 Database db;
 
@@ -68,7 +74,7 @@ bool STLSurface::Read(FILE *f)
 	return true;
 }
 
-//Escrita do arquivo de saída
+//Escrita do arquivo de saida
 void STLSurface::Write(FILE *f)
 {
 	fprintf(f, "STLSurface\t%d\t%s\n",

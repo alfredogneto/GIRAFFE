@@ -1,9 +1,6 @@
 #pragma once
 #include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include "Matrix.h"
-#include <math.h>
+
 class BEM
 {
 public:
@@ -13,13 +10,13 @@ public:
 	bool Read(FILE *f);					//Leitura
 	void Write(FILE *f);				//Gravação
 	bool Check();						//Checking inconsistencies
-	//variáveis internas
-	int B;		//Número de pás
+	//variaveis internas
+	int B;		//Numero de pas
 	double R;		//Raio do rotor
 	double Rhub;	//Raio do hub
 	int CS_rotor;	//Sistema de coordenadas para descrever o plano do rotor (plano xz)
-	int node_rotor;	//Nó associado à posição do rotor
+	int node_rotor;	//Nó associado a posição do rotor
 
-	double tol_bem;	//tolerância do BEM
+	double tol_bem;	//tolerancia do BEM
 };
 

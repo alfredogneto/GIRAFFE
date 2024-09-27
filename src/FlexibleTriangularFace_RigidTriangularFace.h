@@ -1,9 +1,10 @@
 #pragma once
 #include "SurfacePairGeneralContact.h"
-#include "VEMPolyhedron.h"
-#include "STLSurface.h"
-#include "TriangularFace.h"
-#include "Interface_1.h"
+
+class STLSurface;
+class TriangularFace;
+class Interface_1;
+class Matrix;
 
 class FlexibleTriangularFace_RigidTriangularFace :
 	public SurfacePairGeneralContact

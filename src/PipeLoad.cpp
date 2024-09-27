@@ -1,5 +1,12 @@
 #include "PipeLoad.h"
+
 #include "IO.h"
+#include "Table.h"
+#include "MathCode.h"
+#include "ElementSet.h"
+#include "Element.h"
+#include "Pipe_1.h"
+
 
 PipeLoad::PipeLoad()
 {
@@ -29,7 +36,7 @@ void PipeLoad::PreCalc()
 
 }
 
-//Atualiza dados necessários e que sejam dependentes de DOFs ativos/inativos - chamado no início de cada solution step
+//Atualiza dados necessarios e que sejam dependentes de DOFs ativos/inativos - chamado no inicio de cada solution step
 void PipeLoad::UpdateforSolutionStep()
 {
 

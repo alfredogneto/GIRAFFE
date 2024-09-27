@@ -1,6 +1,187 @@
 #include "Database.h"
 #include <stdarg.h>
 
+#include "Node.h"
+#include "SuperNode.h"
+#include "PipeSection.h"
+#include "RigidBodyData.h"
+#include "CoordinateSystem.h"
+#include "Environment.h"
+
+#include "Monitor.h"
+#include "PostFiles.h"
+#include "SolverOptions.h"
+
+#include "NodeSet.h"
+#include "SurfaceSet.h"
+#include "ElementSet.h"
+#include "SuperNodeSet.h"
+
+#include "InitialCondition.h"
+#include "ConvergenceCriteria.h"
+
+#include "AnalyticalSurface.h"
+#include "Plane.h"
+#include "LineRegion.h"
+#include "SurfaceRegion.h"
+
+//Elementos
+#include "Element.h"
+#include "Beam_1.h"
+#include "Pipe_1.h"
+#include "Shell_1.h"
+#include "Solid_1.h"
+#include "SpringDashpot_1.h"
+#include "Mass_1.h"
+#include "RigidBody_1.h"
+#include "Truss_1.h"
+#include "TwoNodeConnector_1.h"
+
+//Materiais
+#include "Material.h"
+#include "Hooke.h"
+#include "ElasticPlasticIsoHardening.h"
+#include "Orthotropic.h"
+
+//Point & Curves
+#include "Point.h"
+#include "ArcCirc.h"
+
+//Surfaces
+#include "Surface.h"
+#include "RigidTriangularSurface_1.h"
+#include "RigidOscillatorySurface_1.h"
+#include "FlexibleTriangularSurface_2.h"
+#include "FlexibleSECylinder_1.h"
+#include "FlexibleArcExtrusion_1.h"
+#include "RigidArcRevolution_1.h"
+#include "RigidNURBS_1.h"
+
+//Geometries
+#include "Geometry.h"
+#include "SECylinder.h"
+#include "ArcExtrusion.h"
+#include "ArcRevolution.h"
+
+//BodyGeometry
+#include "BodyGeometry.h"
+
+//Splines
+#include "Spline.h"
+#include "SplineElement.h"
+
+//Contatos
+#include "Contact.h"
+#include "LRLR.h"
+#include "GeneralPLR.h"
+#include "NSSS.h"
+#include "SSSS.h"
+#include "SPSP.h"
+
+//GeneralContactSearch
+#include "GeneralContactSearch.h"
+
+//Seções transversais
+#include "Section.h"
+#include "SecGeneral.h"
+#include "SecRectangle.h"
+#include "SecSuperEllipse.h"
+#include "SecTube.h"
+#include "SecUserDefined.h"
+#include "SecHelicalFiber.h"
+
+//Shell sections
+#include "ShellSection.h"
+#include "ShellSectionHomogeneous.h"
+#include "ShellSectionComposite.h"
+
+//Special constraints
+#include "SpecialConstraint.h"
+#include "SameDisplacement.h"
+#include "Hinge.h"
+#include "UniversalJoint.h"
+#include "SameRotation.h"
+#include "RigidNodeSet.h"
+#include "TranslationalJoint.h"
+#include "NodalConstraintDOF.h"
+
+//Partículas
+#include "Particle.h"
+#include "Sphere.h"
+#include "Polyhedron.h"
+#include "NURBSParticle.h"
+#include "VEMPolyhedron.h"
+
+//Boundaries
+#include "Boundary.h"
+#include "STLBoundary.h"
+
+//Surface pairs (for general contact search)
+#include "SurfacePairGeneralContact.h"
+#include "RigidTriangularFace_RigidTriangularFace.h"
+#include "FlexibleTriangularFace_FlexibleTriangularFace.h"
+#include "FlexibleTriangularFace_RigidTriangularFace.h"
+
+//Section details
+#include "SectionDetails.h"
+#include "SolidSection.h"
+#include "MultiCellSection.h"
+
+//AerodynamicData
+#include "AerodynamicData.h"
+#include "BEM.h"
+
+//Solutions
+#include "Solution.h"
+#include "Static.h"
+#include "Dynamic.h"
+#include "Modal.h"
+#include "ConcomitantSolution.h"
+#include "ExplicitDynamic.h"
+
+//Loads
+#include "Load.h"
+#include "NodalLoad.h"
+#include "NodalFollowerLoad.h"
+#include "ShellLoad.h"
+#include "PipeLoad.h"
+#include "SuperNodalLoad.h"
+
+//Deslocamentos prescritos
+#include "Displacement.h"
+#include "NodalDisplacement.h"
+#include "DisplacementField.h"
+
+//Constraints
+#include "Constraint.h"
+#include "NodalConstraint.h"
+#include "SuperNodalConstraint.h"
+
+//PSY
+#include "PSYCoupling.h"
+
+//CADData
+#include "CADData.h"
+#include "STLSurface.h"
+#include "NURBSSurface.h"
+
+//ContactInterfaces
+#include "ContactInterface.h"
+#include "Interface_0.h"
+#include "Interface_1.h"
+
+//BoundingVolumes
+#include "BoundingVolume.h"
+#include "BoundingSphere.h"
+#include "BoundingCylinder.h"
+#include "BoundingTriangularBox.h"
+#include "BoundingBoxAxesAligned.h"
+#include "BoundingBoxAxesOriented.h"
+
+#include "Encoding.h"
+#include "ExecutionData.h"
+#include "ConfigurationSave.h"
+
 Database::Database()
 {
 	//Maximum number of DOFs/node
@@ -96,7 +277,7 @@ Database::Database()
 	solver_options = new SolverOptions();
 	execution_data = new ExecutionData();
 
-	//Variáveis booleanas de controle
+	//Variaveis booleanas de controle
 	solution_exist = false;
 	nodes_exist = false;
 	super_nodes_exist = false;
@@ -147,7 +328,7 @@ Database::Database()
 	n_GL_free = 0;
 	n_GL_fixed = 0;
 	
-	last_converged_time = 0.0;				//Último instante convergido
+	last_converged_time = 0.0;				//ultimo instante convergido
 	current_time_step = 0.0;				//Incremento de tempo atual
 	current_solution_number = 0;			//Atual solution
 	current_iteration_number = 0;
@@ -458,7 +639,7 @@ int Database::myprintf(const char* format, ...)
 	return ret_status;
 }
 
-//Imprime na tela o conteúdo do ponteiro ptr (matriz de duas dimensões)
+//Imprime na tela o conteudo do ponteiro ptr (matriz de duas dimensões)
 void Database::PrintPtr(double* ptr, int lines)
 {
 	myprintf("\n");
@@ -472,7 +653,7 @@ void Database::PrintPtr(double* ptr, int lines)
 	}
 	myprintf("\n");
 }
-//Imprime na tela o conteúdo do ponteiro ptr (matriz de duas dimensões)
+//Imprime na tela o conteudo do ponteiro ptr (matriz de duas dimensões)
 void Database::PrintPtr(double** ptr, int lines, int columns)
 {
 	myprintf("\n");
@@ -490,7 +671,7 @@ void Database::PrintPtr(double** ptr, int lines, int columns)
 	myprintf("\n");
 }
 
-//Calcula uma dimensão característica da geometria do modelo - de todos os nós existentes - com base em suas posições atuais
+//Calcula uma dimensão caracteristica da geometria do modelo - de todos os nós existentes - com base em suas posições atuais
 double Database::EvaluateBoundingBoxDiag()
 {
 	//Verify bounding box size
@@ -519,7 +700,7 @@ double Database::EvaluateBoundingBoxDiag()
 	//calcula a diagonal do bounding box e retorna
 	return sqrt((max_x - min_x)*(max_x - min_x) + (max_y - min_y)*(max_y - min_y) + (max_z - min_z)*(max_z - min_z));
 }
-//Realiza pré-cálculo em todos os elementos
+//Realiza pre-calculo em todos os elementos
 void Database::PreCalc()
 {
 #pragma omp for

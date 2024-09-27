@@ -1,5 +1,6 @@
 #pragma once
 #include "Particle.h"
+
 class Sphere :
 	public Particle
 {
@@ -24,26 +25,26 @@ public:
 	void MountFieldLoading();
 	void InertialContributions();
 	void UpdateVariables();
-	void PreCalc();								//Pré-cálculo de variáveis que é feito uma única vez no início
+	void PreCalc();								//Pre-calculo de variaveis que e feito uma unica vez no inicio
 	void UpdateBoundingVolumes();
-	void SaveLagrange();						//Salva variáveis
+	void SaveLagrange();						//Salva variaveis
 	void WriteVTK_XMLBase(FILE *f);
 	void WriteVTK_XMLRender(FILE *f);
 
 	
 	double radius;
 	double volume;									//Volume
-	double inertia;									//inércia à rotação
+	double inertia;									//inercia a rotação
 
 	//Rigid body variables
 	double mass;													//Massa
-	double** Jr;													//Tensor de inércia - formato double**
+	double** Jr;													//Tensor de inercia - formato double**
 	double* br;														//Vetor br - formato double*
 	double** DdT;													//Operador tangente
-	double* dT;														//Resíduo
+	double* dT;														//Residuo
 	double** Ddfield;												//Carregamento de campo linearizado
-	double* dfield;													//Resíduo carregamento de campo
-	//Variáveis cinemáticas
+	double* dfield;													//Residuo carregamento de campo
+	//Variaveis cinematicas
 	double alphai[3];
 	double ud[3];
 	double alphad[3];

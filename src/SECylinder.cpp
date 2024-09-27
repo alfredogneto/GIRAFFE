@@ -1,11 +1,20 @@
 #include "SECylinder.h"
 
+#include "BoundingCylinder.h"
+#include "MatrixFloat.h"
+#include "Node.h"
+#include "CoordinateSystem.h"
+#include "GeneralContactSearch.h"
+#include "Interface_1.h"
+#include "PostFiles.h"
+#include "Encoding.h"
+
 #include"Database.h"
 
 //extern
 //FILE *fdebug;
 
-//Variáveis globais
+//Variaveis globais
 extern
 Database db;
 
@@ -45,7 +54,7 @@ void SECylinder::AllocSpecific()
 	sprintf(type_name, "SECylinder");
 	bv_offset = 0.0f;
 
-	//Variáveis para calcular estado atual (nas funcoes de bounding volume)
+	//Variaveis para calcular estado atual (nas funcoes de bounding volume)
 	xAf = new MatrixFloat(3);
 	xBf = new MatrixFloat(3);
 
@@ -177,11 +186,11 @@ bool SECylinder::Read(FILE* f)
 	}
 	else
 		return false;
-	//Leitura dos sistemas de coordenadas para criação da superfície
+	//Leitura dos sistemas de coordenadas para criação da superficie
 	//Salva a posição (stream)
 	fpos_t pos;
 	fgetpos(f, &pos);
-	//Caso 1 - um único sistema
+	//Caso 1 - um unico sistema
 	fscanf(f, "%s", s);
 	if (!strcmp(s, "CS"))
 	{
@@ -316,7 +325,7 @@ void SECylinder::PreCalc()
 	Matrix e2l = *db.CS[csA - 1]->E2;
 	Matrix e3l = *db.CS[csA - 1]->E3;
 
-	//Salva a matriz de transformação de coordenadas (para orientar o plano da ST de acordo com a orientação de referência da superfície)
+	//Salva a matriz de transformação de coordenadas (para orientar o plano da ST de acordo com a orientação de referência da superficie)
 	(*Q0A)(0, 0) = dot(e1g, e1l);
 	(*Q0A)(0, 1) = dot(e1g, e2l);
 	(*Q0A)(0, 2) = dot(e1g, e3l);
@@ -333,7 +342,7 @@ void SECylinder::PreCalc()
 	e2l = *db.CS[csB - 1]->E2;
 	e3l = *db.CS[csB - 1]->E3;
 
-	//Salva a matriz de transformação de coordenadas (para orientar o plano da ST de acordo com a orientação de referência da superfície)
+	//Salva a matriz de transformação de coordenadas (para orientar o plano da ST de acordo com a orientação de referência da superficie)
 	(*Q0B)(0, 0) = dot(e1g, e1l);
 	(*Q0B)(0, 1) = dot(e1g, e2l);
 	(*Q0B)(0, 2) = dot(e1g, e3l);
@@ -512,14 +521,14 @@ void SECylinder::WriteVTK_XMLRender(FILE *f)
 			points[index][0] = phi * *a*cos(theta);
 			points[index][1] = phi * *b*sin(theta);
 		}
-		//vetores para escrita no formato binário - usando a função 'enconde'
+		//vetores para escrita no formato binario - usando a função 'enconde'
 		std::vector<float> float_vector;
 		std::vector<int> int_vector;
 
 		Matrix vec_P(3);
-		//Número de pontos a serem gerados
+		//Numero de pontos a serem gerados
 		int n_points = n_circ * 2;
-		//Número de células a serem geradas
+		//Numero de celulas a serem geradas
 		int n_cells = n_circ;
 		//Opens Piece
 		fprintf(f, "\t\t<Piece NumberOfPoints=\"%d\" NumberOfCells=\"%d\">\n", n_points, n_cells);
@@ -531,7 +540,7 @@ void SECylinder::WriteVTK_XMLRender(FILE *f)
 		//Preenchendo as coordenadas dos pontos
 		for (int i = 0; i < 2; i++)//percorrendo os 2 nós das extremidades
 		{
-			for (int point = 0; point < n_circ; point++)//Percorre os nós que descrevem o perímetro da ST
+			for (int point = 0; point < n_circ; point++)//Percorre os nós que descrevem o perimetro da ST
 			{
 				//Posição de cada ponto P no plano xy (referência)
 				vec_P(0, 0) = points[point][0];

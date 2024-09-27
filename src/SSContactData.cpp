@@ -1,9 +1,9 @@
 #include "SSContactData.h"
-#include "stdio.h"
-#include "math.h"
 
+#include "Matrix.h"
+#include "SurfaceData.h"
 #include"Database.h"
-//Variáveis globais
+//Variaveis globais
 extern
 Database db;
 
@@ -171,7 +171,7 @@ void SSContactData::Alloc()
 			initial_guess[i][2] = 0.0;
 			initial_guess[i][3] = 0.0;
 			g_n[i] = 0.0;
-			copy_g_n[i] = 1.0;	//Assumindo que não há contato anterior
+			copy_g_n[i] = 1.0;	//Assumindo que não ha contato anterior
 			return_value[i] = 2;
 			copy_return_value[i] = 2;
 			repeated[i] = true;
@@ -357,7 +357,7 @@ void SSContactData::Free()
 	copy_convergedLCP = NULL;
 }
 
-//Checa repetição de raízes e salva a informação na matriz 'repeated'
+//Checa repetição de raizes e salva a informação na matriz 'repeated'
 void SSContactData::CheckRepeated(double tol_coordinate_value)
 {
 	for (int i = 0; i < n_solutions; i++)

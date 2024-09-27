@@ -1,4 +1,8 @@
 #include "ArcCirc.h"
+//#include <stdlib.h>
+#include <string.h>
+#include <math.h>
+#define PI 3.1415926535897932384626433832795
 
 ArcCirc::ArcCirc()
 {
@@ -70,7 +74,7 @@ void ArcCirc::Write(FILE *f)
 	fprintf(f, "Arc\t%d\tInitialPoint\t%.6e\t%.6e\tFinalPoint\t%.6e\t%.6e\tCenterPoint\t%.6e\t%.6e\n", number, i_point(0, 0), i_point(1, 0), f_point(0, 0), f_point(1, 0), c_point(0, 0), c_point(1, 0));
 }
 
-//Pré-cálculo
+//Pre-calculo
 void ArcCirc::PreCalc()
 {
 	theta_i = ArcReduction(atan2(i_point(1, 0) - c_point(1, 0), i_point(0, 0) - c_point(0, 0)));

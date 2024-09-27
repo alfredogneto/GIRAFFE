@@ -1,6 +1,7 @@
 #pragma once
 #include "ContactBodyBody.h"
-#include "SECylinder.h"
+
+class Matrix;
 
 class ContactSECylinderSECylinder :
 	public ContactBodyBody

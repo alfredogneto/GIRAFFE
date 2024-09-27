@@ -1,8 +1,17 @@
 #include "ArcRevolution.h"
 
-#include"Database.h"
+#include "BoundingBoxAxesOriented.h"
+#include "MatrixFloat.h"
+#include "ArcCirc.h"
+#include "Interface_1.h"
+#include "Node.h"
+#include "CoordinateSystem.h"
+#include "GeneralContactSearch.h"
+#include "PostFiles.h"
+#include "Encoding.h"
 
-//Variáveis globais
+#include"Database.h"
+//Variaveis globais
 extern
 Database db;
 
@@ -52,7 +61,7 @@ void ArcRevolution::AllocSpecific()
 	sprintf(type_name, "ArcRevolution");
 	bv_offset = 0.0f;
 
-	//Variáveis para calcular estado atual (nas funcoes de bounding volume)
+	//Variaveis para calcular estado atual (nas funcoes de bounding volume)
 	xAf = new MatrixFloat(3);
 
 	flag_normal_int = false;
@@ -272,7 +281,7 @@ void ArcRevolution::PreCalc()
 	Matrix e2l = *db.CS[cs - 1]->E2;
 	Matrix e3l = *db.CS[cs - 1]->E3;
 
-	//Salva a matriz de transformação de coordenadas (para orientar o plano da ST de acordo com a orientação de referência da superfície)
+	//Salva a matriz de transformação de coordenadas (para orientar o plano da ST de acordo com a orientação de referência da superficie)
 	(*Q0)(0, 0) = dot(e1g, e1l);
 	(*Q0)(0, 1) = dot(e1g, e2l);
 	(*Q0)(0, 2) = dot(e1g, e3l);
@@ -421,11 +430,11 @@ void ArcRevolution::WriteVTK_XMLRender(FILE *f)
 {
 	if (db.post_files->WriteRigidContactSurfaces_flag == true)
 	{
-		int n_circ1 = 24; //número de divisões ao longo da revolução
-		int n_circ2 = 24; //número de divisões ao longo do arco
-		//Número de pontos a serem gerados
+		int n_circ1 = 24; //numero de divisões ao longo da revolução
+		int n_circ2 = 24; //numero de divisões ao longo do arco
+		//Numero de pontos a serem gerados
 		int n_points = (2 * n_circ1 + 1) * (2 * n_circ2 + 1);
-		//Número de células a serem geradas
+		//Numero de celulas a serem geradas
 		int n_cells = n_circ1 * n_circ2;
 		double** points;
 		points = new double*[n_points];
@@ -433,7 +442,7 @@ void ArcRevolution::WriteVTK_XMLRender(FILE *f)
 			points[i] = new double[3];
 		int index = 0;
 		
-		double phi_f = 2 * PI;	//ângulo de revolução
+		double phi_f = 2 * PI;	//angulo de revolução
 	
 		//
 		double theta_i = db.arcs[arc_ID - 1]->theta_i;
@@ -458,7 +467,7 @@ void ArcRevolution::WriteVTK_XMLRender(FILE *f)
 
 			phi += dphi;
 		}
-		//vetores para escrita no formato binário - usando a função 'enconde'
+		//vetores para escrita no formato binario - usando a função 'enconde'
 		std::vector<float> float_vector;
 		std::vector<int> int_vector;
 
@@ -476,7 +485,7 @@ void ArcRevolution::WriteVTK_XMLRender(FILE *f)
 		xO(0, 0) = db.nodes[nodes[0] - 1]->copy_coordinates[0];
 		xO(1, 0) = db.nodes[nodes[0] - 1]->copy_coordinates[1];
 		xO(2, 0) = db.nodes[nodes[0] - 1]->copy_coordinates[2];
-		for (int point = 0; point < n_points; point++)//Percorre os nós que descrevem o perímetro da ST
+		for (int point = 0; point < n_points; point++)//Percorre os nós que descrevem o perimetro da ST
 		{
 			//Posição de cada ponto P no plano xy (referência)
 			vec_P(0, 0) = points[point][0];

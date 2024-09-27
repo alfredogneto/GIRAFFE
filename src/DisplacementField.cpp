@@ -1,6 +1,9 @@
 #include "DisplacementField.h"
-#include "IO.h"
 
+#include "Node.h"
+#include "CoordinateSystem.h"
+#include "Solution.h"
+#include "IO.h"
 
 DisplacementField::DisplacementField()
 {
@@ -95,7 +98,7 @@ bool  DisplacementField::Read(FILE *f)
 	return true;
 }
 
-//Alocação dinâmica de variáveis
+//Alocação dinamica de variaveis
 void DisplacementField::Alloc()
 {
 	Free();
@@ -111,7 +114,7 @@ void DisplacementField::Alloc()
 	alloced = true;
 }
 
-//Desalocação dinâmica de variáveis
+//Desalocação dinamica de variaveis
 void DisplacementField::Free()
 {
 	if (alloced == true)

@@ -1,5 +1,5 @@
 #include "SurfaceRegion.h"
-
+#include <string>
 
 SurfaceRegion::SurfaceRegion()
 {

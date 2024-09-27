@@ -1,9 +1,18 @@
 #include "FlexibleArcExtrusion_1_RigidArcRevolution_1.h"
 
-#include"Database.h"
-//Variáveis globais
+#include "Dynamic.h"
+#include "FlexibleArcExtrusion_1.h"
+#include "RigidArcRevolution_1.h"
+#include "ArcCirc.h"
+#include "Node.h"
+#include "Matrix.h"
+#include "SSContactData.h"
+
+#include "Database.h"
+//Variaveis globais
 extern
 Database db;
+#define PI 3.1415926535897932384626433832795
 
 FlexibleArcExtrusion_1_RigidArcRevolution_1::FlexibleArcExtrusion_1_RigidArcRevolution_1()
 {
@@ -17,8 +26,8 @@ FlexibleArcExtrusion_1_RigidArcRevolution_1::~FlexibleArcExtrusion_1_RigidArcRev
 
 void FlexibleArcExtrusion_1_RigidArcRevolution_1::InitializeConvectiveRange()
 {
-	FlexibleArcExtrusion_1* surf1;		//Ponteiro para a superfície 1
-	RigidArcRevolution_1* surf2;		//Ponteiro para a superfície 2
+	FlexibleArcExtrusion_1* surf1;		//Ponteiro para a superficie 1
+	RigidArcRevolution_1* surf2;		//Ponteiro para a superficie 2
 	surf1 = static_cast<FlexibleArcExtrusion_1*>(db.surfaces[surf1_ID - 1]);
 	surf2 = static_cast<RigidArcRevolution_1*>(db.surfaces[surf2_ID - 1]);
 
@@ -102,7 +111,7 @@ void FlexibleArcExtrusion_1_RigidArcRevolution_1::InitializeConvectiveRange()
 
 bool FlexibleArcExtrusion_1_RigidArcRevolution_1::SpecialLCP(Matrix& solution)
 {
-	///////////////////////////////Ponteiros e variáveis para facilitar acesso//////////////////////////////////////////
+	///////////////////////////////Ponteiros e variaveis para facilitar acesso//////////////////////////////////////////
 	FlexibleArcExtrusion_1* surf_1 = static_cast<FlexibleArcExtrusion_1*>(db.surfaces[surf1_ID - 1]);
 	int arc1id = surf_1->arc_ID;
 	RigidArcRevolution_1* surf_2 = static_cast<RigidArcRevolution_1*>(db.surfaces[surf2_ID - 1]);
@@ -197,7 +206,7 @@ bool FlexibleArcExtrusion_1_RigidArcRevolution_1::SpecialLCP(Matrix& solution)
 	theta_glob1 = atan2((c2g(2, 0) - c1g(2, 0)), (c2g(1, 0) - c1g(1, 0)));		// Extrudada - Trilho
 	theta_glob2 = atan2((c1g(2, 0) - c2g(2, 0)), (c1g(1, 0) - c2g(1, 0)));		// Revolucionada - Roda
 
-	////	Verifica se o theta está na direção correta ou oposta
+	////	Verifica se o theta esta na direção correta ou oposta
 	//if (dot(0.5*(i1g + f1g) - c1g, c2g - c1g) < 0)	// Extrudada - Trilho
 	//{
 	//	theta_glob1 = theta_glob1 + PI;
@@ -229,7 +238,7 @@ bool FlexibleArcExtrusion_1_RigidArcRevolution_1::SpecialLCP(Matrix& solution)
 	p2g(2, 0) = c2g(2, 0) + (db.arcs[arc2id - 1]->radius)*sin(theta_glob2);
 
 	
-	//	Verifica se o theta está na direção correta ou oposta
+	//	Verifica se o theta esta na direção correta ou oposta
 	if (dot(0.5*(i1g + f1g) - c1g, p1g - c1g) < 0)	// Extrudada - Trilho
 	{
 		theta_glob1 = theta_glob1 + PI;
@@ -273,8 +282,8 @@ int FlexibleArcExtrusion_1_RigidArcRevolution_1::VerifyConvectiveRange(Matrix& m
 	//0 - Range fisico da superficie
 	//4 - Fora do range fisico da superficie - proximo
 	//2 - Fora do range fisico da superficie - distante (nao strong) 
-	FlexibleArcExtrusion_1* surf1;		//Ponteiro para a superfície 1
-	RigidArcRevolution_1* surf2;		//Ponteiro para a superfície 2
+	FlexibleArcExtrusion_1* surf1;		//Ponteiro para a superficie 1
+	RigidArcRevolution_1* surf2;		//Ponteiro para a superficie 2
 	surf1 = static_cast<FlexibleArcExtrusion_1*>(db.surfaces[surf1_ID - 1]);
 	surf2 = static_cast<RigidArcRevolution_1*>(db.surfaces[surf2_ID - 1]);
 	double thetai1 = db.arcs[surf1->arc_ID - 1]->theta_i;
@@ -393,15 +402,15 @@ int FlexibleArcExtrusion_1_RigidArcRevolution_1::VerifyConvectiveRange(Matrix& m
 //Calcula e rotorna o gap (com sinal)
 double FlexibleArcExtrusion_1_RigidArcRevolution_1::Gap(Matrix& mc, bool fixed_normals, Matrix& nA, Matrix& nB)
 {
-	double v[2000];		//variável temporária - AceGen
+	double v[2000];		//variavel temporaria - AceGen
 
 	bool* fixnormal = &fixed_normals;
 	double* normalA = nA.getMatrix();
 	double* normalB = nB.getMatrix();
 
-	///////////////////////////////Ponteiros e variáveis para facilitar acesso//////////////////////////////////////////
-	FlexibleArcExtrusion_1* surf1;		//Ponteiro para a superfície 1
-	RigidArcRevolution_1* surf2;		//Ponteiro para a superfície 2
+	///////////////////////////////Ponteiros e variaveis para facilitar acesso//////////////////////////////////////////
+	FlexibleArcExtrusion_1* surf1;		//Ponteiro para a superficie 1
+	RigidArcRevolution_1* surf2;		//Ponteiro para a superficie 2
 	double* radA;
 	double* radB;
 	double* xfac;
@@ -451,7 +460,7 @@ double FlexibleArcExtrusion_1_RigidArcRevolution_1::Gap(Matrix& mc, bool fixed_n
 		QBAi[i] = new double[3];
 		QABi[i] = new double[3];
 	}
-	//Salvando variáveis locais para montagem de superfícies
+	//Salvando variaveis locais para montagem de superficies
 	surf1->Q_AAi->MatrixToPtr(QAAi, 3);
 	surf1->Q_BAi->MatrixToPtr(QBAi, 3);
 	surf2->Q_ABi->MatrixToPtr(QABi, 3);
@@ -612,14 +621,14 @@ double FlexibleArcExtrusion_1_RigidArcRevolution_1::Gap(Matrix& mc, bool fixed_n
 //Calcula o Gradiente do gap
 void FlexibleArcExtrusion_1_RigidArcRevolution_1::GradientGap(Matrix& mc, Matrix& mGra, bool fixed_normals, Matrix& nA, Matrix& nB)
 {
-	double v[2000];		//variável temporária - AceGen
+	double v[2000];		//variavel temporaria - AceGen
 
 	bool* fixnormal = &fixed_normals;
 	double* normalA = nA.getMatrix();
 	double* normalB = nB.getMatrix();
-	///////////////////////////////Ponteiros e variáveis para facilitar acesso//////////////////////////////////////////
-	FlexibleArcExtrusion_1* surf1;		//Ponteiro para a superfície 1
-	RigidArcRevolution_1* surf2;		//Ponteiro para a superfície 2
+	///////////////////////////////Ponteiros e variaveis para facilitar acesso//////////////////////////////////////////
+	FlexibleArcExtrusion_1* surf1;		//Ponteiro para a superficie 1
+	RigidArcRevolution_1* surf2;		//Ponteiro para a superficie 2
 	double* radA;
 	double* radB;
 	double* xfac;
@@ -669,7 +678,7 @@ void FlexibleArcExtrusion_1_RigidArcRevolution_1::GradientGap(Matrix& mc, Matrix
 		QBAi[i] = new double[3];
 		QABi[i] = new double[3];
 	}
-	//Salvando variáveis locais para montagem de superfícies
+	//Salvando variaveis locais para montagem de superficies
 	surf1->Q_AAi->MatrixToPtr(QAAi, 3);
 	surf1->Q_BAi->MatrixToPtr(QBAi, 3);
 	surf2->Q_ABi->MatrixToPtr(QABi, 3);
@@ -923,14 +932,14 @@ void FlexibleArcExtrusion_1_RigidArcRevolution_1::GradientGap(Matrix& mc, Matrix
 //Calcula a Hessiana do gap
 void FlexibleArcExtrusion_1_RigidArcRevolution_1::HessianGap(Matrix& mc, Matrix& mHes, bool fixed_normals, Matrix& nA, Matrix& nB)
 {
-	double v[2000];		//variável temporária - AceGen
+	double v[2000];		//variavel temporaria - AceGen
 
 	bool* fixnormal = &fixed_normals;
 	double* normalA = nA.getMatrix();
 	double* normalB = nB.getMatrix();
-	///////////////////////////////Ponteiros e variáveis para facilitar acesso//////////////////////////////////////////
-	FlexibleArcExtrusion_1* surf1;		//Ponteiro para a superfície 1
-	RigidArcRevolution_1* surf2;		//Ponteiro para a superfície 2
+	///////////////////////////////Ponteiros e variaveis para facilitar acesso//////////////////////////////////////////
+	FlexibleArcExtrusion_1* surf1;		//Ponteiro para a superficie 1
+	RigidArcRevolution_1* surf2;		//Ponteiro para a superficie 2
 	double* radA;
 	double* radB;
 	double* xfac;
@@ -980,7 +989,7 @@ void FlexibleArcExtrusion_1_RigidArcRevolution_1::HessianGap(Matrix& mc, Matrix&
 		QBAi[i] = new double[3];
 		QABi[i] = new double[3];
 	}
-	//Salvando variáveis locais para montagem de superfícies
+	//Salvando variaveis locais para montagem de superficies
 	surf1->Q_AAi->MatrixToPtr(QAAi, 3);
 	surf1->Q_BAi->MatrixToPtr(QBAi, 3);
 	surf2->Q_ABi->MatrixToPtr(QABi, 3);
@@ -1452,10 +1461,10 @@ void FlexibleArcExtrusion_1_RigidArcRevolution_1::HessianGap(Matrix& mc, Matrix&
 	delete[] QABi;
 }
 
-//Chute inicial para coordenadas convectivas do par de superfícies
+//Chute inicial para coordenadas convectivas do par de superficies
 void FlexibleArcExtrusion_1_RigidArcRevolution_1::InitialGuess(SSContactData* c_data)
 {
-	///////////////////////////////Ponteiros e variáveis para facilitar acesso//////////////////////////////////////////
+	///////////////////////////////Ponteiros e variaveis para facilitar acesso//////////////////////////////////////////
 	FlexibleArcExtrusion_1* surf1;		//Ponteiro para a superfÌcie 1
 	RigidArcRevolution_1* surf2;		//Ponteiro para a superfÌcie 2
 	surf1 = static_cast<FlexibleArcExtrusion_1*>(db.surfaces[surf1_ID - 1]);
@@ -1487,24 +1496,24 @@ void FlexibleArcExtrusion_1_RigidArcRevolution_1::InitialGuess(SSContactData* c_
 	cglob = Q * c;
 
 	//*** Inicio do chute inicial do zeta
-	//Express„o obtida no Mathematica escrevendo um vetor parametrizado em theta para descrever a reta e projetando o ponto da superfÌcie 2 nessa reta. Impor ortogonalidade e encontrar o zeta que satisfaz a equaÁ„o. O zeta È obtido pela express„o abaixo
+	//Express„o obtida no Mathematica escrevendo um vetor parametrizado em theta para descrever a reta e projetando o ponto da superfÌcie 2 nessa reta. Impor ortogonalidade e encontrar o zeta que satisfaz a equaa„o. O zeta e obtido pela express„o abaixo
 	//double zetaguess = ((xAAi(0, 0)*xAAi(0, 0)) + (xAAi(1, 0)*xAAi(1, 0)) + (xAAi(2, 0)*xAAi(2, 0)) - (2 * xAAi(0, 0)*xABi(0, 0)) - (2 * xAAi(1, 0)*xABi(1, 0)) - (2 * xAAi(2, 0)*xABi(2, 0)) + (2 * xABi(0, 0)*xBAi(0, 0)) - (xBAi(0, 0)*xBAi(0, 0)) + (2 * xABi(1, 0)*xBAi(1, 0)) - (xBAi(1, 0)*xBAi(1, 0)) + (2 * xABi(2, 0)*xBAi(2, 0)) - (xBAi(2, 0)*xBAi(2, 0))) / ((xAAi(0, 0)*xAAi(0, 0)) + (xAAi(1, 0)*xAAi(1, 0)) + (xAAi(2, 0)*xAAi(2, 0)) - (2 * xAAi(0, 0)*xBAi(0, 0)) + (xBAi(0, 0)*xBAi(0, 0)) - (2 * xAAi(1, 0)*xBAi(1, 0)) + (xBAi(1, 0)*xBAi(1, 0)) - (2 * xAAi(2, 0)*xBAi(2, 0)) + (xBAi(2, 0)*xBAi(2, 0)));
 
-	//Express„o obtida no Mathematica escrevendo um vetor parametrizado em theta para descrever a reta e projetando o ponto da superfÌcie 2 + centro de curvatura do arco nessa reta. Impor ortogonalidade e encontrar o zeta que satisfaz a equaÁ„o. O zeta È obtido pela express„o abaixo
+	//Express„o obtida no Mathematica escrevendo um vetor parametrizado em theta para descrever a reta e projetando o ponto da superfÌcie 2 + centro de curvatura do arco nessa reta. Impor ortogonalidade e encontrar o zeta que satisfaz a equaa„o. O zeta e obtido pela express„o abaixo
 	double zetaguess = (-(2 * cglob(0, 0)*xAAi(0, 0)) + (xAAi(0, 0)*xAAi(0, 0)) - (2 * cglob(1, 0)*xAAi(1, 0)) + (xAAi(1, 0)*xAAi(1, 0)) - (2 * cglob(2, 0)*xAAi(2, 0)) + (xAAi(2, 0)*xAAi(2, 0)) - (2 * xAAi(0, 0)*xABi(0, 0)) - (2 * xAAi(1, 0)*xABi(1, 0)) - (2 * xAAi(2, 0)*xABi(2, 0)) + (2 * cglob(0, 0)*xBAi(0, 0)) + (2 * xABi(0, 0)*xBAi(0, 0)) - (xBAi(0, 0)*xBAi(0, 0)) + (2 * cglob(1, 0)*xBAi(1, 0)) + (2 * xABi(1, 0)*xBAi(1, 0)) - (xBAi(1, 0)*xBAi(1, 0)) - (2 * cglob(2, 0)*xBAi(2, 0)) + (2 * xABi(2, 0)*xBAi(2, 0)) - (xBAi(2, 0)*xBAi(2, 0))) / ((xAAi(0, 0)*xAAi(0, 0)) + (xAAi(1, 0)*xAAi(1, 0)) + (xAAi(2, 0)*xAAi(2, 0)) - (2 * xAAi(0, 0)*xBAi(0, 0)) + (xBAi(0, 0)*xBAi(0, 0)) - (2 * xAAi(1, 0)*xBAi(1, 0)) + (xBAi(1, 0)*xBAi(1, 0)) - (2 * xAAi(2, 0)*xBAi(2, 0)) + (xBAi(2, 0)*xBAi(2, 0)));
 
 
-	//Vetor global que d· a posiÁ„o do zetaguess
+	//Vetor global que d· a posia„o do zetaguess
 	Matrix zetaglob;
 	zetaglob = 0.5*xAAi*(1 - zetaguess) + 0.5*xBAi*(1 + zetaguess);
 
 	//*** Fim do chute inicial do zeta
 
-	//Usando um vetor que vai do nÛ do RB atÈ o ponto dado por zetaglobal, porÈm, ao invÈs de pegar esse ponto sobre o eixo da viga, 
+	//Usando um vetor que vai do nÛ do RB ate o ponto dado por zetaglobal, porem, ao inves de pegar esse ponto sobre o eixo da viga, 
 	//pegar esse ponto sobre um eixo paralelo que passa pelo centro de curvatura do arco extrudado
 	//Centro de curvatura do arco extrudado
 	Matrix cpoint_ext = *surf1->c_point;
-	// Matriz rotaÁ„o/transformaÁ„o (nÛ A da viga, podia ser o nÛ B - pode causar problemas futuros fazer uma escolha aqui)
+	// Matriz rotaa„o/transformaa„o (nÛ A da viga, podia ser o nÛ B - pode causar problemas futuros fazer uma escolha aqui)
 	Matrix Q_ext = *surf1->Q_AAi;
 	//Escrever zetaglob no CS do arco extrudado
 	Matrix zetaloc;
@@ -1517,11 +1526,11 @@ void FlexibleArcExtrusion_1_RigidArcRevolution_1::InitialGuess(SSContactData* c_
 	//Voltar para o CS global
 	Matrix zetaglobt;
 	zetaglobt = Q_ext * zetaloct;
-	//Usar o zetaglobt ao invÈs de zetaglob para calcular vglob
+	//Usar o zetaglobt ao inves de zetaglob para calcular vglob
 
 
 	//*** Inicio do chite inicial do theta2 e do phi
-	//Vetor global que vai do centro do corpo rÌgido atÈ o zetaguess
+	//Vetor global que vai do centro do corpo rÌgido ate o zetaguess
 	Matrix vglob;
 	vglob = zetaglobt - (xABi + cglob);
 
@@ -1620,11 +1629,11 @@ void FlexibleArcExtrusion_1_RigidArcRevolution_1::InitialGuess(SSContactData* c_
 //Calcula a função objetivo para um conjunto de coordenadas convectivas - Phase 1
 double FlexibleArcExtrusion_1_RigidArcRevolution_1::ObjectivePhase1(Matrix& mc)
 {
-	double v[2000];		//variável temporária - AceGen
+	double v[2000];		//variavel temporaria - AceGen
 
-	///////////////////////////////Ponteiros e variáveis para facilitar acesso//////////////////////////////////////////
-	FlexibleArcExtrusion_1* surf1;		//Ponteiro para a superfície 1
-	RigidArcRevolution_1* surf2;		//Ponteiro para a superfície 2
+	///////////////////////////////Ponteiros e variaveis para facilitar acesso//////////////////////////////////////////
+	FlexibleArcExtrusion_1* surf1;		//Ponteiro para a superficie 1
+	RigidArcRevolution_1* surf2;		//Ponteiro para a superficie 2
 	double* radA;
 	double* radB;
 	double* xfac;
@@ -1674,7 +1683,7 @@ double FlexibleArcExtrusion_1_RigidArcRevolution_1::ObjectivePhase1(Matrix& mc)
 		QBAi[i] = new double[3];
 		QABi[i] = new double[3];
 	}
-	//Salvando variáveis locais para montagem de superfícies
+	//Salvando variaveis locais para montagem de superficies
 	surf1->Q_AAi->MatrixToPtr(QAAi, 3);
 	surf1->Q_BAi->MatrixToPtr(QBAi, 3);
 	surf2->Q_ABi->MatrixToPtr(QABi, 3);
@@ -1778,11 +1787,11 @@ double FlexibleArcExtrusion_1_RigidArcRevolution_1::ObjectivePhase1(Matrix& mc)
 //Calcula o Gradiente da função objetivo - Phase 1
 void FlexibleArcExtrusion_1_RigidArcRevolution_1::GradientPhase1(Matrix& mc, Matrix& mGra)
 {
-	double v[2000];		//variável temporária - AceGen
+	double v[2000];		//variavel temporaria - AceGen
 
-	///////////////////////////////Ponteiros e variáveis para facilitar acesso//////////////////////////////////////////
-	FlexibleArcExtrusion_1* surf1;		//Ponteiro para a superfície 1
-	RigidArcRevolution_1* surf2;		//Ponteiro para a superfície 2
+	///////////////////////////////Ponteiros e variaveis para facilitar acesso//////////////////////////////////////////
+	FlexibleArcExtrusion_1* surf1;		//Ponteiro para a superficie 1
+	RigidArcRevolution_1* surf2;		//Ponteiro para a superficie 2
 	double* radA;
 	double* radB;
 	double* xfac;
@@ -1832,7 +1841,7 @@ void FlexibleArcExtrusion_1_RigidArcRevolution_1::GradientPhase1(Matrix& mc, Mat
 		QBAi[i] = new double[3];
 		QABi[i] = new double[3];
 	}
-	//Salvando variáveis locais para montagem de superfícies
+	//Salvando variaveis locais para montagem de superficies
 	surf1->Q_AAi->MatrixToPtr(QAAi, 3);
 	surf1->Q_BAi->MatrixToPtr(QBAi, 3);
 	surf2->Q_ABi->MatrixToPtr(QABi, 3);
@@ -1972,11 +1981,11 @@ void FlexibleArcExtrusion_1_RigidArcRevolution_1::GradientPhase1(Matrix& mc, Mat
 //Calcula a Hessiana da função objetivo - Phase 1
 void FlexibleArcExtrusion_1_RigidArcRevolution_1::HessianPhase1(Matrix& mc, Matrix& mHes)
 {
-	double v[2000];		//variável temporária - AceGen
+	double v[2000];		//variavel temporaria - AceGen
 
-	///////////////////////////////Ponteiros e variáveis para facilitar acesso//////////////////////////////////////////
-	FlexibleArcExtrusion_1* surf1;		//Ponteiro para a superfície 1
-	RigidArcRevolution_1* surf2;		//Ponteiro para a superfície 2
+	///////////////////////////////Ponteiros e variaveis para facilitar acesso//////////////////////////////////////////
+	FlexibleArcExtrusion_1* surf1;		//Ponteiro para a superficie 1
+	RigidArcRevolution_1* surf2;		//Ponteiro para a superficie 2
 	double* radA;
 	double* radB;
 	double* xfac;
@@ -2026,7 +2035,7 @@ void FlexibleArcExtrusion_1_RigidArcRevolution_1::HessianPhase1(Matrix& mc, Matr
 		QBAi[i] = new double[3];
 		QABi[i] = new double[3];
 	}
-	//Salvando variáveis locais para montagem de superfícies
+	//Salvando variaveis locais para montagem de superficies
 	surf1->Q_AAi->MatrixToPtr(QAAi, 3);
 	surf1->Q_BAi->MatrixToPtr(QBAi, 3);
 	surf2->Q_ABi->MatrixToPtr(QABi, 3);
@@ -2246,7 +2255,7 @@ void FlexibleArcExtrusion_1_RigidArcRevolution_1::HessianPhase1(Matrix& mc, Matr
 
 void FlexibleArcExtrusion_1_RigidArcRevolution_1::ContactSS(bool *stick, bool *stickupdated, bool *previouscontact, double* Rc, double** Kc, double** invH, double* convective, double* copy_convective, double* gti, double* gtpupdated, double* epsn, double* epsn0, double* epst, double* cn, double* ct, double* mus, double* mud, double* fn, double* ft)
 {
-	double v[30000];		//variável temporária - AceGen
+	double v[30000];		//variavel temporaria - AceGen
 	double value = 0.0;
 	double* a4;
 	double* a5;
@@ -2272,9 +2281,9 @@ void FlexibleArcExtrusion_1_RigidArcRevolution_1::ContactSS(bool *stick, bool *s
 			Kc[i][j] = 0.0;
 	}
 
-	///////////////////////////////Ponteiros e variáveis para facilitar acesso//////////////////////////////////////////
-	FlexibleArcExtrusion_1* surf1;		//Ponteiro para a superfície 1
-	RigidArcRevolution_1* surf2;		//Ponteiro para a superfície 2
+	///////////////////////////////Ponteiros e variaveis para facilitar acesso//////////////////////////////////////////
+	FlexibleArcExtrusion_1* surf1;		//Ponteiro para a superficie 1
+	RigidArcRevolution_1* surf2;		//Ponteiro para a superficie 2
 	double* radA;
 	double* radB;
 	double* xfac;
@@ -2326,7 +2335,7 @@ void FlexibleArcExtrusion_1_RigidArcRevolution_1::ContactSS(bool *stick, bool *s
 		QBAi[i] = new double[3];
 		QABi[i] = new double[3];
 	}
-	//Salvando variáveis locais para montagem de superfícies
+	//Salvando variaveis locais para montagem de superficies
 	surf1->Q_AAi->MatrixToPtr(QAAi, 3);
 	surf1->Q_BAi->MatrixToPtr(QBAi, 3);
 	surf2->Q_ABi->MatrixToPtr(QABi, 3);

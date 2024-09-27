@@ -1,4 +1,9 @@
 #include "NodalConstraint.h"
+
+#include "Node.h"
+#include "NodeSet.h"
+
+
 #include "IO.h"
 
 NodalConstraint::NodalConstraint()

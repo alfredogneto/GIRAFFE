@@ -1,7 +1,20 @@
 #include "STLBoundary.h"
-#include"Database.h"
 
-//Variáveis globais
+#include "BoundingSphere.h"
+#include "CADData.h"
+#include "STLSurface.h"
+#include "Node.h"
+#include "CoordinateSystem.h"
+#include "GeneralContactSearch.h"
+#include "BoundingTriangularBox.h"
+#include "BoundingCylinder.h"
+#include "Particle.h"
+#include "VEMPolyhedron.h"
+#include "Encoding.h"
+#include "TriangularFace.h"
+#include "MatrixFloat.h"
+#include"Database.h"
+//Variaveis globais
 extern
 Database db;
 
@@ -118,7 +131,7 @@ void STLBoundary::WriteModifyingParameters(FILE *f, int e_material, int e_node, 
 //Explicit
 void STLBoundary::InitialEvaluations()
 {
-	//Seta variáveis nodais associadas com o tratamento que essa partícula vai empregar
+	//Seta variaveis nodais associadas com o tratamento que essa particula vai empregar
 	*db.nodes[node - 1]->Q0 = *Q0;
 	db.nodes[node - 1]->flag_material_description = true;
 	db.nodes[node - 1]->flag_pseudo_moment = false;
@@ -144,7 +157,7 @@ void STLBoundary::PreCalc()
 	//////////////////////////////////////Bounding Volumes////////////////////////////////////
 	if (db.gcs_exist)
 		inc_len_factor = db.gcs->inc_len_factor;
-	//PreCalc do CAD é chamado antes do PreCalc das partículas
+	//PreCalc do CAD e chamado antes do PreCalc das particulas
 	BoundingSphere* ptr_bv1 = static_cast<BoundingSphere*>(bv);
 	STLSurface* ptr_cad = static_cast<STLSurface*>(db.cad_data[CADDATA_ID - 1]);
 	//Initial settings of the spherical bounding volume

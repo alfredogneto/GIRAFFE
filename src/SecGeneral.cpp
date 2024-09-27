@@ -1,5 +1,8 @@
 #include "SecGeneral.h"
+#include <string>
 
+#include "SolidSection.h"
+#include "SectionDetails.h"
 
 SecGeneral::SecGeneral()
 {
@@ -93,7 +96,7 @@ bool SecGeneral::Read(FILE *f)
 			return false;
 	}
 	else
-		fsetpos(f, &pos);	//volta à posição anterior
+		fsetpos(f, &pos);	//volta a posição anterior
 
 	return true;
 }

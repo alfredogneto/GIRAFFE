@@ -1,5 +1,5 @@
 #include "ShellSectionComposite.h"
-
+#include <string>
 
 ShellSectionComposite::ShellSectionComposite()
 {

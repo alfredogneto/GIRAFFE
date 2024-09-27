@@ -1,5 +1,8 @@
 #pragma once
 #include "Solution.h"
+
+class Matrix;
+
 class ExplicitDynamic :
 	public Solution
 {
@@ -11,7 +14,7 @@ public:
 	bool Solve();				//Solves solution routine
 	
 	void WriteResults();		//Escreve resultados de acordo com uma amostragem especificada
-	void SetGlobalSizeExplicit();				//Seta tamanhos de contribuições globais - explícito
+	void SetGlobalSizeExplicit();				//Seta tamanhos de contribuições globais - explicito
 	void MountExplicit();
 	void Euler();
 	void RungeKutta4();
@@ -27,7 +30,7 @@ public:
 	double i_time_step;
 	double max_time_step;
 	double min_time_step;
-	char* method;	//Nome do tipo do método
+	char* method;	//Nome do tipo do metodo
 	
 	int sample;
 	//Damping

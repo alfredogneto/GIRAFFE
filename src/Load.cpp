@@ -1,5 +1,7 @@
 #include "Load.h"
 
+#include "Table.h"
+#include "MathCode.h"
 
 Load::Load()
 {

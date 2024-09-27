@@ -1,5 +1,7 @@
 #pragma once
 #include "Element.h"
+#include "Matrix.h"
+
 class Shell_1 :
 	public Element
 {
@@ -16,18 +18,18 @@ public:
 	void Mount();												//Monta elementos
 	void MountElementLoads();									//Monta carregamentos associados ao elemento
 	void MountMass();											//Monta a matriz de massa
-	void MountMassModal();										//Monta a matriz de massa para realização da análise modal
-	void MountDampingModal();									//Monta a matriz de amortecimento para realização da análise modal
+	void MountMassModal();										//Monta a matriz de massa para realização da analise modal
+	void MountDampingModal();									//Monta a matriz de amortecimento para realização da analise modal
 	void MountDamping(bool update_rayleigh);					//Monta a matriz de amortecimento
 	void MountDyn();											//Montagens - Newmark
-	void MountDynModal();										//Montagens para análise modal - inserção da matriz de massa e amortecimento na matriz de rigidez para posterior montagem global
+	void MountDynModal();										//Montagens para analise modal - inserção da matriz de massa e amortecimento na matriz de rigidez para posterior montagem global
 	void TransformMatrix();										//Monta matriz de transformação de coordenadas
 	void MountGlobal();											//Preenche a contribuição do elemento nas matrizes globais
 	void MountFieldLoads();										//Monta carregamentos de campo (ex: peso próprio)
 	void MountShellSpecialLoads(int l_number);					//Monta carregamentos de pressão na casca
 
-	void SaveLagrange();										//Salva variáveis nos pontos de Gauss úteis para descrição lagrangiana atualizada
-	void PreCalc();												//Pré-cálculo de variáveis que é feito uma única vez no início
+	void SaveLagrange();										//Salva variaveis nos pontos de Gauss uteis para descrição lagrangiana atualizada
+	void PreCalc();												//Pre-calculo de variaveis que e feito uma unica vez no inicio
 	void Zeros();												//Zera matrizes
 
 	//Funções de forma e suas derivadas
@@ -97,7 +99,7 @@ public:
 	Matrix** alpha_i4;
 	////////////////////////////////////
 	
-	//Variáveis para descrever a cinemática
+	//Variaveis para descrever a cinematica
 	Matrix** alpha_delta;
 	Matrix** alpha_delta_x1;
 	Matrix** alpha_delta_x2;
@@ -111,7 +113,7 @@ public:
 	Matrix* e2rlocal;	//Direção 2	da casca (local)
 	Matrix* e3rlocal;	//Direção 3	da casca (local)
 
-	//Variáveis a serem salvas - Lag. Atualizado
+	//Variaveis a serem salvas - Lag. Atualizado
 	Matrix** Q_i;
 	Matrix** Q_delta;
 	Matrix** Xi_delta;
@@ -126,22 +128,22 @@ public:
 
 	Matrix* stiffness;								//Matriz de rigidez
 	Matrix* mass;									//Matriz de massa
-	Matrix* mass_modal;								//Matriz de massa para análise modal
+	Matrix* mass_modal;								//Matriz de massa para analise modal
 	Matrix* damping;								//Matriz de amortecimento
-	Matrix* damping_modal;							//Matriz de amortecimento para análise modal
+	Matrix* damping_modal;							//Matriz de amortecimento para analise modal
 	Matrix* damping_loading;						//Esforços de amortecimento
 	Matrix* rayleigh_damping;						//Matriz de amortecimento inicial do problema
 	Matrix* i_loading;								//Vetor de esforços internos
-	Matrix* inertial_loading;						//Vetor de esforços de inércia
+	Matrix* inertial_loading;						//Vetor de esforços de inercia
 	Matrix* P_loading;								//Vetor de esforços desbalanceados
 	Matrix* e_loading;								//Vetor de esforços externos
 
 	Matrix* transform;								//Matriz de transformação de coordenadas
 	Matrix* transform3;								//Matriz de transformação de coordenadas 3x3
 
-	double lambda, mu;								//Lamé
+	double lambda, mu;								//Lame
 	double stiff_drill;								//Rigidez ao drilling
-	double area;									//Área do elemento
+	double area;									//area do elemento
 	double alpha1;									//Pesos de integração
 
 	double coef1, coef2, coef3;						//Coeficientes para uso na matriz de massa
@@ -166,7 +168,7 @@ public:
 	Matrix** m_r1_global;			//momento em er1
 	Matrix** m_r2_global;			//momento em er2
 
-	//Variáveis internas para uso na dinâmica
+	//Variaveis internas para uso na dinamica
 	Matrix** alpha_dot;
 	Matrix** Xi_dot;
 	Matrix** Mip;
@@ -187,7 +189,7 @@ public:
 	Matrix k_1;
 	Matrix k_2;
 
-	//Calcula as contribuições inerciais para a análise dinâmica - inclui todas as contribuições para a forma fraca e para o operador tangente
+	//Calcula as contribuições inerciais para a analise dinamica - inclui todas as contribuições para a forma fraca e para o operador tangente
 	void EvaluateInertialContributions(double* v, double(*a1)
 		, double(*a2), double(*a3), double(*a4), double(*a5), double(*a6)
 		, double* alphai, double* alphad, double* ui, double* ud, double* omegai
@@ -196,14 +198,14 @@ public:
 
 	void EvaluateMassModal(double* v, double* alphai, double* coef1, double* coef2, double* coef3, double* e3r, double** matrixm);
 
-	//Variáveis para função gerada no AceGen
-	double temp_v[2000];				//variável temporária para cálculos internos
+	//Variaveis para função gerada no AceGen
+	double temp_v[2000];				//variavel temporaria para calculos internos
 	Matrix *DdT;
 	Matrix *dT;
 	double** pDdT;
 	double* tempkin;
 
-	//Variáveis para cálculo de steps
+	//Variaveis para calculo de steps
 	int t1, t2;
 	double load_multiplier, l_factor, mult;
 
@@ -213,7 +215,7 @@ public:
 	double rho_comp;			//Rho do material compósito
 	double stiff_drill_comp1;	//Rigidiz ao drilling na direção 1
 	double stiff_drill_comp2;	//Rigidez ao drilling na direção 2
-	bool composite_shell;		//Verifica se a casca é de material compósito
+	bool composite_shell;		//Verifica se a casca e de material compósito
 
 
 };

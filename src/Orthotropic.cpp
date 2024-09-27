@@ -1,6 +1,5 @@
 #include "Orthotropic.h"
-
-
+#include <string>
 
 Orthotropic::Orthotropic()
 {
@@ -11,7 +10,6 @@ Orthotropic::Orthotropic()
 	G23 = 0;
 	nu12 = 0;
 }
-
 
 Orthotropic::~Orthotropic()
 {

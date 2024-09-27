@@ -1,10 +1,9 @@
 #pragma once
 #include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <math.h>
-#include "Matrix.h"
+
 #include "Box.h"
+
+class Matrix;
 
 class SplineElement
 {
@@ -17,21 +16,21 @@ public:
 	bool ReadCommon(FILE *f);
 
 	//Funções
-	void FillNodes();														//Atualiza as variáveis internas da superfície, para pegarem info do pilot node para uso posterior com posição atualizada
+	void FillNodes();														//Atualiza as variaveis internas da superficie, para pegarem info do pilot node para uso posterior com posição atualizada
 	void SaveConfiguration();												//Salva vetores de configuração convergida
-	void CenterPoint(Matrix* center, double* radii);						//Retorna coordenadas globais do ponto central da superfície a ser utilizado para cálculos grosseiros de sua localização (pinball)
+	void CenterPoint(Matrix* center, double* radii);						//Retorna coordenadas globais do ponto central da superficie a ser utilizado para calculos grosseiros de sua localização (pinball)
 	bool Check();															//Checa inconsistências para evitar erros de execução
 	void SetMinMaxRange();
 	void SplinePoint(double & zeta, Matrix& point);					//Obtem ponto da spline
 	void UpdateBox();
 
 	int *nodes;		//Nós globais - conectividade
-	int n_nodes;	//Número de nós da superfície
+	int n_nodes;	//Numero de nós da superficie
 	int **DOFs;		//Indica para a indexação de cada grau de liberdade, 1 ou 0, ativo ou inativo para o elemento em questão
-	int nDOFs;		//Número de GL
-	//int VTK_type;	//Tipo de célula para VTK
-	int *VTK_nodes;	//Indexação para converter numeração do formato giraffe para o formato da célula equivalente do paraview
-	int **GLs;		//Ponteiro para os GL globais utilizados na superfície
+	int nDOFs;		//Numero de GL
+	//int VTK_type;	//Tipo de celula para VTK
+	int *VTK_nodes;	//Indexação para converter numeração do formato giraffe para o formato da celula equivalente do paraview
+	int **GLs;		//Ponteiro para os GL globais utilizados na superficie
 
 	Box box;
 

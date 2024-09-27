@@ -1,12 +1,9 @@
 #pragma once
 #include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <math.h>
-#include "Matrix.h"
-#include "Displacement.h"
-#include "Constraint.h"
 #include "BoolTable.h"
+
+class Constraint;
+class Displacement;
 
 class PSYCoupling
 {
@@ -15,7 +12,7 @@ public:
 	~PSYCoupling();
 
 	bool Read(FILE *f);		//Leitura no arquivo de entrada do Giraffe
-	void Write(FILE *f);	//Saída no arquivo de entrada do Giraffe
+	void Write(FILE *f);	//Saida no arquivo de entrada do Giraffe
 
 	void PreCalc();		
 	void ReadPSYFile();

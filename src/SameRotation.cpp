@@ -1,15 +1,16 @@
 #include "SameRotation.h"
 
+#include "Node.h"
+#include "InitialCondition.h"
 #include"Database.h"
-
-//Variáveis globais
+//Variaveis globais
 extern
 Database db;
 
 SameRotation::SameRotation()
 {
 	
-	n_GL = 3;						//Três graus de liberdade (esse vínculo possui 3 multiplicadores de lagrange)
+	n_GL = 3;						//Três graus de liberdade (esse vinculo possui 3 multiplicadores de lagrange)
 	active_lambda = new int[n_GL];
 	lambda = new double[n_GL];
 	copy_lambda = new double[n_GL];
@@ -33,7 +34,7 @@ SameRotation::SameRotation()
 	I3(1, 1) = 1.0;
 	I3(2, 2) = 1.0;
 	r = Matrix(3);
-	//Matriz de rigidez tangente e vetor resíduo
+	//Matriz de rigidez tangente e vetor residuo
 	stiffness = new Matrix(9,9);
 	residual = new Matrix(9,1);
 
@@ -122,17 +123,17 @@ bool SameRotation::Check()
 	return true;
 }
 
-//Montagem dos resíduos e rigidez tangente
+//Montagem dos residuos e rigidez tangente
 void SameRotation::Mount()
 {
-	//Nesse vínculo a rigidez tangente não se modifica nunca. É montada no PreCalc()
-	//Se o vínculo estiver ativo, realiza a montagem
+	//Nesse vinculo a rigidez tangente não se modifica nunca. e montada no PreCalc()
+	//Se o vinculo estiver ativo, realiza a montagem
 	if (active_lambda[0] == 1 && active_lambda[1] == 1 && active_lambda[2] == 1)
 	{
 		for (int i = 0; i < 3; i++)
 			r(i, 0) = db.nodes[node_A - 1]->displacements[i+3] - db.nodes[node_B - 1]->displacements[i+3];
 
-		//Atualização do vetor de resíduos
+		//Atualização do vetor de residuos
 		(*residual)(0, 0) = lambda[0];
 		(*residual)(1, 0) = lambda[1];
 		(*residual)(2, 0) = lambda[2];
@@ -150,11 +151,11 @@ void SameRotation::Mount()
 //Preenche a contribuição do elemento nas matrizes globais
 void SameRotation::MountGlobal()
 {
-	//Variáveis temporárias para salvar a indexação global dos graus de liberdade a serem setados na matriz de rigidez global
+	//Variaveis temporarias para salvar a indexação global dos graus de liberdade a serem setados na matriz de rigidez global
 	int GL_global_1 = 0;
 	int GL_global_2 = 0;
 	double anterior = 0;
-	//Se o vínculo estiver ativo, realiza a montagem
+	//Se o vinculo estiver ativo, realiza a montagem
 	if (active_lambda[0] == 1 && active_lambda[1] == 1 && active_lambda[2] == 1)
 	{
 		for (int i = 0; i < 9; i++)
@@ -223,7 +224,7 @@ void SameRotation::MountGlobal()
 
 void SameRotation::ComputeInitialGuessDisplacements()
 {
-	//Se for o step de criação do vínculo inicializa condições iniciais
+	//Se for o step de criação do vinculo inicializa condições iniciais
 	if (bool_table.GetAt(db.current_solution_number - 1) == true)
 	{
 		//Percorre GL e seta condições iniciais
@@ -241,7 +242,7 @@ void SameRotation::ComputeInitialGuessDisplacements()
 //Computa efeito das condições iniciais nos nós da restrição
 void SameRotation::ComputeVelAccel()
 {
-	//Se for o step de criação do vínculo inicializa condições iniciais
+	//Se for o step de criação do vinculo inicializa condições iniciais
 	if (bool_table.GetAt(db.current_solution_number - 1) == true)
 	{
 		//Percorre GL e seta condições iniciais
@@ -259,7 +260,7 @@ void SameRotation::ComputeVelAccel()
 	
 }
 
-//Pré-cálculo de variáveis que é feito uma única vez no início
+//Pre-calculo de variaveis que e feito uma unica vez no inicio
 void SameRotation::PreCalc()
 {
 	for (int i = 0; i < 3; i++)
@@ -274,7 +275,7 @@ void SameRotation::PreCalc()
 	}
 }
 
-//Salvando variáveis da configuração convergida
+//Salvando variaveis da configuração convergida
 void SameRotation::SaveLagrange()
 {
 	for (int i = 0; i < n_GL; i++)

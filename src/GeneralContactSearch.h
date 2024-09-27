@@ -1,40 +1,13 @@
 #pragma once
 #include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <math.h>
-#include "Matrix.h"
 #include "BoolTable.h"
-#include "ContactParticleParticle.h"
-#include "ContactParticleBoundary.h"
-#include "ContactBodyBody.h"
-#include "ContactParticleBody.h"
-
-//Particle pairs:
-#include "ContactPolyhedronPolyhedron.h"
-#include "ContactVEMPolyhedronVEMPolyhedron.h"
-//Particle-boundary pairs:
-#include "ContactPolyhedronSTLBoundary.h"
-#include "ContactVEMPolyhedronSTLBoundary.h"
-//Geometry pairs:
-#include "ContactSECylinderSECylinder.h"
-#include "ContactArcExtrusionArcRevolution.h"
-//Particle-body pairs:
-#include "ContactPolyhedronArcExtrusion.h"
-
 #include "LinkedCells.h"
 #include "Verlet.h"
 
-#include <vector>
-#include <array>
-#include <string>
-#include <ctype.h>
-
-#include <cstdio>
-
-#include <omp.h>
-#include <process.h>
-#include <chrono>
+class ContactParticleParticle;
+class ContactParticleBoundary;
+class ContactBodyBody;
+class ContactParticleBody;
 
 using namespace std;
 

@@ -1,5 +1,8 @@
 #pragma once
 #include "Geometry.h"
+
+class MatrixFloat;
+
 class SECylinder :
 	public Geometry
 {
@@ -19,18 +22,18 @@ public:
 
 	void UpdateVariables();
 	void UpdateBoundingVolumes();				//Updates bounding volumes
-	void SaveLagrange();						//Salva variáveis
+	void SaveLagrange();						//Salva variaveis
 
 	//Variables - SECylinder
 	double *a, *b, *n, *e;
 	int csA, csB;
 	bool flag_normal_int;
 
-	//Variáveis para calcular estado atual (nas funcoes de bounding volume)
+	//Variaveis para calcular estado atual (nas funcoes de bounding volume)
 	MatrixFloat* xAf;
 	MatrixFloat* xBf;
 
-	//Variáveis para calcular estado atual (nas funcoes de contato)
+	//Variaveis para calcular estado atual (nas funcoes de contato)
 	Matrix* x_Ai;
 	Matrix* x_Ap;
 	Matrix* x_Bi;

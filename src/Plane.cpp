@@ -1,6 +1,7 @@
 #include "Plane.h"
-#include"Database.h"
-//Variáveis globais
+#include "Database.h"
+#include "Matrix.h"
+//Variaveis globais
 extern
 Database db;
 
@@ -23,8 +24,8 @@ Plane::~Plane()
 
 void Plane::WriteVTK_XMLRender(FILE *f)
 {
-	int n_points = 4;	//quatro pontos dos cantos da supefície
-	int n_cells = 1;	//quadrilátero
+	int n_points = 4;	//quatro pontos dos cantos da supeficie
+	int n_cells = 1;	//quadrilatero
 	Matrix point1(3);
 	Matrix point2(3);
 	Matrix point3(3);
@@ -172,7 +173,7 @@ void Plane::PreCalc()
 			t1_temp = 1.0 / (norm(t1_temp))*t1_temp;
 		else
 		{
-			//Dá um chute melhor e faz o processo
+			//Da um chute melhor e faz o processo
 			t1_temp(0, 0) = 0.0;
 			t1_temp(1, 0) = 1.0;
 			t1_temp(2, 0) = 0.0;

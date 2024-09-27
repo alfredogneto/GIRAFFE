@@ -1,8 +1,5 @@
 #pragma once
 #include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <math.h>
 
 class Table
 {
@@ -12,8 +9,8 @@ public:
 	~Table();
 
 	
-	int n_times;							//Guarda o número de instantes salvos (linhas)
-	int n_values;							//Número de valores da tabela (colunas)
+	int n_times;							//Guarda o numero de instantes salvos (linhas)
+	int n_values;							//Numero de valores da tabela (colunas)
 	
 	void SetTime(int time_index, double time);
 	void SetValue(int time_index, int value_index, double value);

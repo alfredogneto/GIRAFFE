@@ -1,11 +1,12 @@
 #include "SecHelicalFiber.h"
 
-#include"Database.h"
-
-//Variáveis globais
+#include "SolidSection.h"
+#include "Hooke.h"
+#include "Database.h"
+//Variaveis globais
 extern
 Database db;
-
+#define PI 3.1415926535897932384626433832795
 SecHelicalFiber::SecHelicalFiber()
 {
 	sec_details = new SolidSection();
@@ -105,7 +106,7 @@ bool SecHelicalFiber::Read(FILE *f)
 			return false;
 	}
 	else
-		fsetpos(f, &pos);	//volta à posição anterior
+		fsetpos(f, &pos);	//volta a posição anterior
 
 	return true;
 }

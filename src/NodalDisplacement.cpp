@@ -1,4 +1,11 @@
 #include "NodalDisplacement.h"
+
+#include "Table.h"
+#include "MathCode.h"
+#include "NodeSet.h"
+#include "CoordinateSystem.h"
+#include "Node.h"
+
 #include "IO.h"
 
 NodalDisplacement::NodalDisplacement()

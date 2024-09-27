@@ -1,9 +1,17 @@
 #include "FlexibleSECylinder_1_FlexibleTriangularSurface_2.h"
 
-#include"Database.h"
-//Variáveis globais
+#include "FlexibleSECylinder_1.h"
+#include "FlexibleTriangularSurface_2.h"
+#include "Dynamic.h"
+#include "Matrix.h"
+#include "SSContactData.h"
+
+#include "Database.h"
+//Variaveis globais
 extern
 Database db;
+
+#define PI 3.1415926535897932384626433832795
 
 FlexibleSECylinder_1_FlexibleTriangularSurface_2::FlexibleSECylinder_1_FlexibleTriangularSurface_2()
 {
@@ -15,7 +23,7 @@ FlexibleSECylinder_1_FlexibleTriangularSurface_2::~FlexibleSECylinder_1_Flexible
 	Free();
 }
 
-//Chute inicial para coordenadas convectivas do par de superfícies
+//Chute inicial para coordenadas convectivas do par de superficies
 void FlexibleSECylinder_1_FlexibleTriangularSurface_2::InitialGuess(SSContactData* c_data)
 {
 	c_data->convective[0][0] = 0.0;
@@ -42,7 +50,7 @@ int FlexibleSECylinder_1_FlexibleTriangularSurface_2::VerifyConvectiveRange(Matr
 	//4 - Fora do range fisico da superficie - proximo
 	//2 - Fora do range fisico da superficie - distante
 
-	//Se está no range local de interesse - domínio físico da superfície triangular e da viga
+	//Se esta no range local de interesse - dominio fisico da superficie triangular e da viga
 	if (abs(mc(2, 0)) <= 1.0 && abs(mc(3, 0)) <= 1.0 && mc(3, 0) <= -mc(2, 0) && abs(mc(0, 0)) <= 1.0)
 		return_value = 0;
 	else
@@ -60,8 +68,8 @@ int FlexibleSECylinder_1_FlexibleTriangularSurface_2::VerifyConvectiveRange(Matr
 //Initialize range of validity of convective coordinates
 void FlexibleSECylinder_1_FlexibleTriangularSurface_2::InitializeConvectiveRange()
 {
-	FlexibleSECylinder_1* surf1;		//Ponteiro para a superfície 1
-	FlexibleTriangularSurface_2* surf2;		//Ponteiro para a superfície 2
+	FlexibleSECylinder_1* surf1;		//Ponteiro para a superficie 1
+	FlexibleTriangularSurface_2* surf2;		//Ponteiro para a superficie 2
 	surf1 = static_cast<FlexibleSECylinder_1*>(db.surfaces[surf1_ID - 1]);
 	surf2 = static_cast<FlexibleTriangularSurface_2*>(db.surfaces[surf2_ID - 1]);
 
@@ -6822,7 +6830,7 @@ void FlexibleSECylinder_1_FlexibleTriangularSurface_2::ContactSS(bool *stick, bo
 //Calcula a função objetivo para um conjunto de coordenadas convectivas - Phase 1
 double FlexibleSECylinder_1_FlexibleTriangularSurface_2::ObjectivePhase1(Matrix& mc)
 {
-	double v[2000];		//variável temporária - AceGen
+	double v[2000];		//variavel temporaria - AceGen
 	double* cp = mc.getMatrix();
 	EvaluateDOFsVariables();
 
@@ -6951,7 +6959,7 @@ double FlexibleSECylinder_1_FlexibleTriangularSurface_2::ObjectivePhase1(Matrix&
 //Calcula o Gradiente da função objetivo - Phase 1
 void FlexibleSECylinder_1_FlexibleTriangularSurface_2::GradientPhase1(Matrix& mc, Matrix& mGra)
 {
-	double v[2000];		//variável temporária - AceGen
+	double v[2000];		//variavel temporaria - AceGen
 	double* cp = mc.getMatrix();
 	EvaluateDOFsVariables();
 	double* Gra = mGra.getMatrix();
@@ -7086,7 +7094,7 @@ void FlexibleSECylinder_1_FlexibleTriangularSurface_2::GradientPhase1(Matrix& mc
 //Calcula a Hessiana da função objetivo - Phase 1
 void FlexibleSECylinder_1_FlexibleTriangularSurface_2::HessianPhase1(Matrix& mc, Matrix& mHes)
 {
-	double v[2000];		//variável temporária - AceGen
+	double v[2000];		//variavel temporaria - AceGen
 	double* cp = mc.getMatrix();
 	EvaluateDOFsVariables();
 	double Hes[4][4];
@@ -7282,7 +7290,7 @@ void FlexibleSECylinder_1_FlexibleTriangularSurface_2::HessianPhase1(Matrix& mc,
 //Calcula e rotorna o gap (com sinal)
 double FlexibleSECylinder_1_FlexibleTriangularSurface_2::Gap(Matrix& mc, bool fixed_normals, Matrix& nA, Matrix& nB)
 {
-	double v[2000];		//variável temporária - AceGen
+	double v[2000];		//variavel temporaria - AceGen
 	double* cp = mc.getMatrix();
 	EvaluateDOFsVariables();
 	bool* fixnormal = &fixed_normals;
@@ -7455,7 +7463,7 @@ double FlexibleSECylinder_1_FlexibleTriangularSurface_2::Gap(Matrix& mc, bool fi
 //Calcula o Gradiente do gap
 void FlexibleSECylinder_1_FlexibleTriangularSurface_2::GradientGap(Matrix& mc, Matrix& mGra, bool fixed_normals, Matrix& nA, Matrix& nB)
 {
-	double v[2000];		//variável temporária - AceGen
+	double v[2000];		//variavel temporaria - AceGen
 	double* cp = mc.getMatrix();
 	EvaluateDOFsVariables();
 	bool* fixnormal = &fixed_normals;
@@ -7747,7 +7755,7 @@ void FlexibleSECylinder_1_FlexibleTriangularSurface_2::GradientGap(Matrix& mc, M
 //Calcula a Hessiana do gap
 void FlexibleSECylinder_1_FlexibleTriangularSurface_2::HessianGap(Matrix& mc, Matrix& mHes, bool fixed_normals, Matrix& nA, Matrix& nB)
 {
-	double v[2000];		//variável temporária - AceGen
+	double v[2000];		//variavel temporaria - AceGen
 	double* cp = mc.getMatrix();
 	EvaluateDOFsVariables();
 	bool* fixnormal = &fixed_normals;

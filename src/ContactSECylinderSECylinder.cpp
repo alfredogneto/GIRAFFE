@@ -1,7 +1,15 @@
 #include "ContactSECylinderSECylinder.h"
-#include "Database.h"
 
-//Variáveis globais
+#include "SECylinder.h"
+#include "Matrix.h"
+#include "SSContactData.h"
+#include "ExecutionData.h"
+#include "BodyGeometry.h"
+#include "CoordinateSystem.h"
+#include "Dynamic.h"
+
+#include "Database.h"
+//Variaveis globais
 extern
 Database db;
 
@@ -151,7 +159,7 @@ void ContactSECylinderSECylinder::Free()
 	}
 }
 
-//Chute inicial para coordenadas convectivas do par de superfícies
+//Chute inicial para coordenadas convectivas do par de superficies
 void ContactSECylinderSECylinder::InitialGuess()
 {
 	//Local specific pointers
@@ -181,7 +189,7 @@ void ContactSECylinderSECylinder::InitialGuess()
 	//Se não houver paralelismo
 	if (abs(dot(tA, tA)*dot(tB, tB) - dot(tA, tB)*dot(tA, tB)) > tol_ortho)
 	{
-		//Estimativa dos csi's com base na configuração atual - considerando-se que são elementos retilíneos (baseado em Wriggers e Zavarise, 1997)
+		//Estimativa dos csi's com base na configuração atual - considerando-se que são elementos retilineos (baseado em Wriggers e Zavarise, 1997)
 		csi_A = dot(bA - bB, (1.0 / (dot(tA, tA)*dot(tB, tB) - dot(tA, tB)*dot(tA, tB)))*(tB*dot(tA, tB) - tA * dot(tB, tB)));
 		csi_B = -1.0*dot(bA - bB, (1.0 / (dot(tA, tA)*dot(tB, tB) - dot(tA, tB)*dot(tA, tB)))*(tA*dot(tA, tB) - tB * dot(tA, tA)));
 	}
@@ -454,19 +462,19 @@ int ContactSECylinderSECylinder::VerifyConvectiveRange(Matrix& mc)
 	//0 - Range fisico da superficie
 	//4 - Fora do range fisico da superficie
 
-	//Se está no range local de interesse - domínio físico da superfície
+	//Se esta no range local de interesse - dominio fisico da superficie
 	if (abs(mc(0, 0)) < 1.0 && abs(mc(2, 0)) < 1.0)
 	{
-		return 0;	//Houve convergência, está no range físico
+		return 0;	//Houve convergência, esta no range fisico
 	}
 	else
 	{
 		if ((sA->deg_u1 && abs(mc(2, 0)) < 1.0))
-			return 0;	//coordenada u1 da superfície B no range e degeneração da coordenada u1 da superfície A.
+			return 0;	//coordenada u1 da superficie B no range e degeneração da coordenada u1 da superficie A.
 		if ((sB->deg_u1 && abs(mc(0, 0)) < 1.0))
-			return 0;	//coordenada u1 da superfície A no range e degeneração da coordenada u1 da superfície B.
+			return 0;	//coordenada u1 da superficie A no range e degeneração da coordenada u1 da superficie B.
 		if (sA->deg_u1 && sB->deg_u1)
-			return 0;	//coordenada u1 da superfície A no range e degeneração da coordenada u1 da superfície B.
+			return 0;	//coordenada u1 da superficie A no range e degeneração da coordenada u1 da superficie B.
 		return 4;
 	}
 		
@@ -791,11 +799,11 @@ void ContactSECylinderSECylinder::HessianPhase1(Matrix& mc, Matrix& mHes)
 	double Hes[4][4];
 	//Pontos de singularidade - função phi
 	double test1 = 2 * c[1] / PI;
-	test1 = abs(test1 - int(test1));//testa o quão próximo de inteiro é esse número
+	test1 = abs(test1 - int(test1));//testa o quão próximo de inteiro e esse numero
 	if (test1 < tol_small_1)
 		c[1] += tol_small_1;
 	double test3 = 2 * c[3] / PI;
-	test3 = abs(test3 - int(test3));//testa o quão próximo de inteiro é esse número
+	test3 = abs(test3 - int(test3));//testa o quão próximo de inteiro e esse numero
 	if (test3 < tol_small_1)
 		c[3] += tol_small_1;
 
@@ -1048,7 +1056,7 @@ void ContactSECylinderSECylinder::HessianPhase1(Matrix& mc, Matrix& mHes)
 //Calcula e rotorna o gap (com sinal)
 double ContactSECylinderSECylinder::Gap(Matrix& mc, bool fixed_normals, Matrix& nA, Matrix& nB)
 {
-	double v[2000];		//variável temporária - AceGen
+	double v[2000];		//variavel temporaria - AceGen
 	double gap;
 	double *c = mc.getMatrix();
 
@@ -1236,16 +1244,16 @@ double ContactSECylinderSECylinder::Gap(Matrix& mc, bool fixed_normals, Matrix& 
 //Calcula o Gradiente do gap
 void ContactSECylinderSECylinder::GradientGap(Matrix& mc, Matrix& mGra, bool fixed_normals, Matrix& nA, Matrix& nB)
 {
-	double v[2000];		//variável temporária - AceGen
+	double v[2000];		//variavel temporaria - AceGen
 	double *c = mc.getMatrix();
 	double Gra[4];
 	//Pontos de singularidade - função phi
 	double test1 = 2 * c[1] / PI;
-	test1 = abs(test1 - int(test1));//testa o quão próximo de inteiro é esse número
+	test1 = abs(test1 - int(test1));//testa o quão próximo de inteiro e esse numero
 	if (test1 < tol_small_1)
 		c[1] += tol_small_1;
 	double test3 = 2 * c[3] / PI;
-	test3 = abs(test3 - int(test3));//testa o quão próximo de inteiro é esse número
+	test3 = abs(test3 - int(test3));//testa o quão próximo de inteiro e esse numero
 	if (test3 < tol_small_1)
 		c[3] += tol_small_1;
 
@@ -1573,16 +1581,16 @@ void ContactSECylinderSECylinder::GradientGap(Matrix& mc, Matrix& mGra, bool fix
 //Calcula a Hessiana do gap
 void ContactSECylinderSECylinder::HessianGap(Matrix& mc, Matrix& mHes, bool fixed_normals, Matrix& nA, Matrix& nB)
 {
-	double v[2000];		//variável temporária - AceGen
+	double v[2000];		//variavel temporaria - AceGen
 	double *c = mc.getMatrix();
 	double Hes[4][4];
 	//Pontos de singularidade - função phi
 	double test1 = 2 * c[1] / PI;
-	test1 = abs(test1 - int(test1));//testa o quão próximo de inteiro é esse número
+	test1 = abs(test1 - int(test1));//testa o quão próximo de inteiro e esse numero
 	if (test1 < tol_small_1)
 		c[1] += tol_small_1;
 	double test3 = 2 * c[3] / PI;
-	test3 = abs(test3 - int(test3));//testa o quão próximo de inteiro é esse número
+	test3 = abs(test3 - int(test3));//testa o quão próximo de inteiro e esse numero
 	if (test3 < tol_small_1)
 		c[3] += tol_small_1;
 

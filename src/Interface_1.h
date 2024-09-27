@@ -11,7 +11,7 @@ public:
 	bool Check();				//Checa inconsistências para evitar erros de execução
 	bool Read(FILE *f);
 	void Write(FILE *f);
-	void PreCalc();				//Pré-cálculo de variáveis que é feito uma única vez no início
+	void PreCalc();				//Pre-calculo de variaveis que e feito uma unica vez no inicio
 
 	double EvaluateElasticForce(double gap);
 	double EvaluateElasticStiffness(double gap);

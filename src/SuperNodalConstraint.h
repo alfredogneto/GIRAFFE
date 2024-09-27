@@ -1,4 +1,5 @@
 #pragma once
+#include <vector>
 #include "BoolTable.h"
 #include "Constraint.h"
 

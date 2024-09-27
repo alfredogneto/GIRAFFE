@@ -1,5 +1,5 @@
 #include "LineRegion.h"
-
+#include <string>
 
 LineRegion::LineRegion()
 {

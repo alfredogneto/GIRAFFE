@@ -1,4 +1,8 @@
 #include "Surface.h"
+#include <string>
+
+#include "Matrix.h"
+#include "NSContactData.h"
 
 Surface::Surface()
 {
@@ -140,7 +144,7 @@ void Surface::InitializeDegeneration()
 
 void Surface::DegenerationPreCalc()
 {
-	//Alocação de acordo com nível de degeneração
+	//Alocação de acordo com nivel de degeneração
 	double copy_u1, copy_u2;
 	if (entered_u1)
 	{

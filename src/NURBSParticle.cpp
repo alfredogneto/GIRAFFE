@@ -1,7 +1,19 @@
 #include "NURBSParticle.h"
-#include"Database.h"
 
-//Variáveis globais
+#include "BoundingSphere.h"
+#include "CADData.h"
+#include "NURBSSurface.h"
+#include "CoordinateSystem.h"
+#include "Material.h"
+#include "Node.h"
+#include "MatrixFloat.h"
+#include "Environment.h"
+#include "GeneralContactSearch.h"
+#include "SurfaceSet.h"
+#include "Dynamic.h"
+
+#include"Database.h"
+//Variaveis globais
 extern
 Database db;
 
@@ -129,22 +141,22 @@ void NURBSParticle::PreCalc()
 	(*Q0)(1, 2) = (*db.CS[cs - 1]->E3)(1, 0);
 	(*Q0)(2, 2) = (*db.CS[cs - 1]->E3)(2, 0);
 
-	//Calculando valores do br. Feito apenas uma vez no início. 
+	//Calculando valores do br. Feito apenas uma vez no inicio. 
 	//A origem do CAD coincide com o Polo, então G-O = G
-	//Como G é dado no sistema do CAD, então G precisa ser transformado
+	//Como G e dado no sistema do CAD, então G precisa ser transformado
 	Matrix local_b = *db.cad_data[CADDATA_ID - 1]->G;
 	Matrix global_b = (*Q0) * local_b;
 	br[0] = global_b(0, 0);
 	br[1] = global_b(1, 0);
 	br[2] = global_b(2, 0);
 
-	//Atualizando J_O para o sistema global e copiando valores para Jr. Feito apenas uma vez no início
+	//Atualizando J_O para o sistema global e copiando valores para Jr. Feito apenas uma vez no inicio
 	Matrix global_J = db.materials[material - 1]->rho * (*Q0) * (*db.cad_data[CADDATA_ID - 1]->J_O)*transp(*Q0);
 	global_J.MatrixToPtr(Jr, 3);
 	mass = db.cad_data[CADDATA_ID - 1]->volume * db.materials[material - 1]->rho;
 
 	//////////////////////////////////////Bounding Volume////////////////////////////////////
-	//PreCalc do CAD é chamado antes do PreCalc das partículas
+	//PreCalc do CAD e chamado antes do PreCalc das particulas
 	BoundingSphere* ptr_bv = static_cast<BoundingSphere*>(bv);
 	NURBSSurface* ptr_cad = static_cast<NURBSSurface*>(db.cad_data[CADDATA_ID - 1]);
 	ptr_bv->radius = ptr_cad->radius;
@@ -211,9 +223,9 @@ void NURBSParticle::Alloc()
 	cs = 0;
 
 	DOFs = new int[db.number_GLs_node];
-	type_name = new char[20];//Nome do tipo da partícula
+	type_name = new char[20];//Nome do tipo da particula
 
-	//Rotina para ativar os GLS do nó da partícula
+	//Rotina para ativar os GLS do nó da particula
 	for (int j = 0; j < db.number_GLs_node; j++)
 	{
 		DOFs[j] = 0;
@@ -227,7 +239,7 @@ void NURBSParticle::Alloc()
 	DOFs[4] = 1;
 	DOFs[5] = 1;
 
-	//Variáveis internas
+	//Variaveis internas
 	mass = 0.0;
 
 	I3 = new Matrix(3, 3);
@@ -338,7 +350,7 @@ void NURBSParticle::Mount()
 			DdT[i][j] = 0.0;
 		}
 	}
-	//Valores de variáveis cinemáticas - atribuição
+	//Valores de variaveis cinematicas - atribuição
 	for (int i = 0; i < 3; i++)
 	{
 		alphai[i] = db.nodes[node - 1]->copy_coordinates[i + 3];
@@ -374,7 +386,7 @@ void NURBSParticle::InitialEvaluations()
 
 void NURBSParticle::MountGlobal()
 {
-	//Variáveis temporárias para salvar a indexação global dos graus de liberdade a serem setados na matriz de rigidez global
+	//Variaveis temporarias para salvar a indexação global dos graus de liberdade a serem setados na matriz de rigidez global
 	int GL_global_1 = 0;
 	int GL_global_2 = 0;
 	double anterior = 0;
@@ -422,8 +434,8 @@ void NURBSParticle::MountFieldLoading()
 {
 	//Ponteiro para o valor da massa
 	double* m = &mass;
-	double v[1000];													//Variável necessária para o AceGen		
-	//Variáveis para cálculo de steps
+	double v[1000];													//Variavel necessaria para o AceGen		
+	//Variaveis para calculo de steps
 	double l_factor;
 	bool in_gcs_domain = true;
 	if (db.environment_exist == true)
@@ -637,7 +649,7 @@ void NURBSParticle::MountFieldLoading()
 	//Outras contribuições de esforços de campo, colocar aqui...
 }
 
-//Calcula contribuições de inércia
+//Calcula contribuições de inercia
 void NURBSParticle::InertialContributions()
 {
 	double value = 0.0;
@@ -655,7 +667,7 @@ void NURBSParticle::InertialContributions()
 	if (typeid(*db.solution[db.current_solution_number - 1]) == typeid(Dynamic))
 	{
 		Dynamic* ptr_sol = static_cast<Dynamic*>(db.solution[db.current_solution_number - 1]);
-		//Ponteiros para parâmetros do Newmark
+		//Ponteiros para parametros do Newmark
 		a1 = &ptr_sol->a1;
 		a2 = &ptr_sol->a2;
 		a3 = &ptr_sol->a3;
@@ -675,7 +687,7 @@ void NURBSParticle::InertialContributions()
 
 	//Ponteiro para o valor da massa
 	double* m = &mass;
-	double v[1000];													//Variável necessária para o AceGen		
+	double v[1000];													//Variavel necessaria para o AceGen		
 	//AceGen
 	v[134] = Power(alphai[0], 2);
 	v[132] = 0.5e0*alphai[0] * alphai[1];

@@ -1,5 +1,7 @@
 #include "SurfaceData.h"
 
+#include "Matrix.h"
+
 SurfaceData::SurfaceData(int n_solutions)
 {
 	n_sol = n_solutions;

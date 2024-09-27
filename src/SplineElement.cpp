@@ -1,4 +1,8 @@
 #include "SplineElement.h"
+
+#include "Matrix.h"
+#include "Node.h"
+
 #include "Database.h"
 extern
 Database db;
@@ -236,7 +240,7 @@ void SplineElement::UpdateBox()
 	y[7] = vec(1, 0);
 	z[7] = vec(2, 0);
 
-	//Setando os vértices
+	//Setando os vertices
 	box.SetVertices(x, y, z);
 }
 
@@ -261,7 +265,7 @@ void SplineElement::PreCalc()
 	//Matrix e2l = *db.CS[csA - 1]->E2;
 	//Matrix e3l = *db.CS[csA - 1]->E3;
 
-	////Salva a matriz de transformação de coordenadas (para orientar o plano da ST de acordo com a orientação de referência da superfície)
+	////Salva a matriz de transformação de coordenadas (para orientar o plano da ST de acordo com a orientação de referência da superficie)
 	//(*Q0A)(0, 0) = dot(e1g, e1l);
 	//(*Q0A)(0, 1) = dot(e1g, e2l);
 	//(*Q0A)(0, 2) = dot(e1g, e3l);
@@ -278,7 +282,7 @@ void SplineElement::PreCalc()
 	//e2l = *db.CS[csB - 1]->E2;
 	//e3l = *db.CS[csB - 1]->E3;
 
-	////Salva a matriz de transformação de coordenadas (para orientar o plano da ST de acordo com a orientação de referência da superfície)
+	////Salva a matriz de transformação de coordenadas (para orientar o plano da ST de acordo com a orientação de referência da superficie)
 	//(*Q0B)(0, 0) = dot(e1g, e1l);
 	//(*Q0B)(0, 1) = dot(e1g, e2l);
 	//(*Q0B)(0, 2) = dot(e1g, e3l);
