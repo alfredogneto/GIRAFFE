@@ -20,9 +20,9 @@ The platform is coded in a way that permits embracing new elements, novel contac
 
 # Building and compiling
 
-You can build the Giraffe project and compile it automatically with and the auxiliary batch files here provided.
-Furthermore, the provided batch files automatically download some prerequisites from public repositories. For that, you need to install Git.
-The following instructions can be followed to install **Giraffe** in Microsoft Windows operational system:
+You can build the Giraffe project and compile it automatically with the auxiliary batch files here provided.
+The provided batch files automatically download prerequisites from public repositories. For that, you need to install Git.
+The following instructions can be followed to install **Giraffe** in MS Windows OS:
 
 1. Install the following software:
 
