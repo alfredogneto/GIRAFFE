@@ -38,7 +38,7 @@ The following instructions can be followed to install **Giraffe** in MS Windows 
 ```cmd
 git clone https://github.com/alfredogneto/GIRAFFE.git
 ```
-  3. Run the provided `install_dependencies.bat` file, the following is a description of what it does:
+  3. Run the provided `install_dependencies.bat`.
   
   `install_dependencies.bat`: creates a `/dependencies` folder, clones [exprtk](https://github.com/ArashPartow/exprtk.git), [Eigen](https://gitlab.com/libeigen/eigen.git) and [vcpkg](https://github.com/microsoft/vcpkg.git), such as installs the last one. Afer, it installs [arpack-ng](https://github.com/opencollab/arpack-ng.git). It creates environment variables for **GIRAFFE** execution. All variables are created in the user's profile and are based in the folder where Giraffe is located on your computer.
 
@@ -79,6 +79,6 @@ To compile and execute **Giraffe** you need some additional resources:
 
 # Disclaimer
 
-   Currently, **Giraffe** is built and tested only with [Microsoft Visual Studio](https://visualstudio.microsoft.com/) and the MS Windows platform.
+   Currently, **Giraffe** is built and tested only with [Microsoft Visual Studio](https://visualstudio.microsoft.com/) and the MS Windows OS.
  We plan to expand it to Linux and Mac soon.
    
