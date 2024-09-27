@@ -9,6 +9,11 @@
 #include "Matrix.h"
 #include "SolverOptions.h"
 #include "Database.h"
+
+//#define EIGEN_USE_MKL_ALL
+//#include "Eigen\PardisoSupport"
+#include "Eigen\SparseLU"
+
 //Variaveis globais
 extern
 Database db;
@@ -73,96 +78,131 @@ void SparseMatrix::Mount()
 //Resolve o sistema linear da forma Ax=b
 Matrix sparsesystem(SparseMatrix &A, Matrix &b, int *info_fail,int processors,int solver_type)	
 {
-	if (A.mounted == false)
-		A.Mount();
-	
-	//Parametros - PARDISO
-	int			mtype = 11;						//Tipo de solução -- Real unsymmetric matrix
-	int			nrhs = 1;						//Numero de colunas do lado direito da equacao
-	void*		pt[64];							//Ponteiro de memoria interno do PARDISO
-	int			iparm[64];						//Parametros de controle do PARDISO
-	int			maxfct = 1;						//Numero maximo de fatorizacoes numericas salvas na memória
-	int			mnum = 1;						//Qual fatorizacao utilizar
-	int			phase;							//Fase do processo de solução
-	int			msglvl = 0;						//Imprime informações estatisticas
-	int			solver;							//0 - Esparso 
-												//1 - Iterativo
-	if (solver_type != 0 && solver_type != 1)
+	bool use_MKL = true;
+
+	if (use_MKL == false)
 	{
-		printf("Bad solver choice. Sparse Solver is adopted\n");
-		solver = 0;
+		//Solving - Sparse LU solver
+		//Initial operations
+		Eigen::setNbThreads(db.solver_options->processors);
+		//Return vector
+		Matrix x_return(b.getLines());
+		//Mapping variables to Eigen formats
+		Eigen::Map<Eigen::VectorXd> map_x(x_return.getMatrix(), x_return.getLines(), 1);
+		Eigen::Map<Eigen::VectorXd> map_b(b.getMatrix(), b.getLines(), 1);
+		Eigen::SparseLU<Eigen::SparseMatrix<double>, Eigen::COLAMDOrdering<int> >   solver;
+		solver.analyzePattern(A.m_matrix);
+		solver.factorize(A.m_matrix);
+		map_x = solver.solve(map_b);
+		return x_return;
 	}
 	else
 	{
-		solver = solver_type;
+		////Solving - Pardiso - Alternative using Eigen (less efficient than direct implementation below)
+		////Initial operations
+		//Eigen::setNbThreads(db.solver_options->processors);
+		////Return vector
+		//Matrix x_return(b.getLines());
+		////Mapping variables to Eigen formats
+		//Eigen::Map<Eigen::VectorXd> map_x(x_return.getMatrix(), x_return.getLines(), 1);
+		//Eigen::Map<Eigen::VectorXd> map_b(b.getMatrix(), b.getLines(), 1);
+		//Eigen::PardisoLU<Eigen::SparseMatrix<double>>   solver;
+		//solver.analyzePattern(A.m_matrix);
+		//solver.factorize(A.m_matrix);
+		//map_x = solver.solve(map_b);
+		//return x_return;
+
+		//Direct MKL acessing implementation
+		if (A.mounted == false)
+			A.Mount();
+
+		//Parâmetros - PARDISO
+		int			mtype = 11;						//Tipo de solução -- Real unsymmetric matrix
+		int			nrhs = 1;						//Numero de colunas do lado direito da equacao
+		void* pt[64];							//Ponteiro de memoria interno do PARDISO
+		int			iparm[64];						//Parametros de controle do PARDISO
+		int			maxfct = 1;						//Numero maximo de fatorizacoes numéricas salvas na memória
+		int			mnum = 1;						//Qual fatorizacao utilizar
+		int			phase;							//Fase do processo de solução
+		int			msglvl = 0;						//Imprime informações estatísticas
+		int			solver;							//0 - Esparso
+		//1 - Iterativo
+		if (solver_type != 0 && solver_type != 1)
+		{
+			printf("Bad solver choice. Sparse Solver is adopted\n");
+			solver = 0;
+		}
+		else
+		{
+			solver = solver_type;
+		}
+		//Variaveis auxiliares
+		double		ddum;										//Variavel dummy
+		int			idum;										//Variavel dummy
+
+		double* a = A.m_matrix.valuePtr();					//Valores da matriz
+		int* ia = A.m_matrix.outerIndexPtr();			//Índice dos valores "outer" da matriz
+		int* ja = A.m_matrix.innerIndexPtr();			//Índice do primeiro valor da linha da matriz
+
+		int			n = (int)A.m_matrix.rows();						//Número de linhas da matriz
+		int			nnz = ia[n];								//Número de valores na matriz
+		Matrix		x(n);										//Matriz de retorno - solução
+		if (n == 0)
+			return n;
+		///////////////////////////////////////////////////////////////////////////
+		//     Inicializa parâmetros de controle                                 //
+		///////////////////////////////////////////////////////////////////////////
+		pardisoinit(pt, &mtype, iparm);
+		//Setando algumas variáveis específicas de controle
+		iparm[1] = 3;
+		if (solver == 1)//solve iterativo
+			iparm[3] = 31;
+		///////////////////////////////////////////////////////////////////////////
+		//     Adiciona 1 ao índice - 1-index (FORTRAN)                          //
+		///////////////////////////////////////////////////////////////////////////
+		for (size_t i = 0, iLen = n + 1; i < iLen; i++)
+		{
+			ia[i] += 1;
+		}
+
+		for (size_t i = 0, iLen = nnz; i < iLen; i++)
+		{
+			ja[i] += 1;
+		}
+		///////////////////////////////////////////////////////////////////////////
+		//     Fase de análise, fatorização numérica, solução e refinamento      //
+		//     iterativo                                                         //
+		///////////////////////////////////////////////////////////////////////////
+		phase = 13;
+
+		pardiso(pt, &maxfct, &mnum, &mtype, &phase, &n, a, ia, ja, &idum, &nrhs, iparm, &msglvl, b.getMatrix(), x.getMatrix(), info_fail);
+
+		if (*info_fail != 0)
+		{
+			std::cout << "ERROR during analysis, numerical factorization, solver, iterative refinement: " << *info_fail << std::endl;
+		}
+		///////////////////////////////////////////////////////////////////////////
+		//     Subtrai 1 do índice - 0-index (C++)                               //
+		///////////////////////////////////////////////////////////////////////////
+		for (size_t i = 0, iLen = n + 1; i < iLen; i++)
+		{
+			ia[i] -= 1;
+		}
+
+		for (size_t i = 0, iLen = nnz; i < iLen; i++)
+		{
+			ja[i] -= 1;
+		}
+		///////////////////////////////////////////////////////////////////////////
+		//     Fase de limpeza de memória                                        //
+		///////////////////////////////////////////////////////////////////////////
+		phase = -1;
+		int temp_fail = *info_fail;
+		pardiso(pt, &maxfct, &mnum, &mtype, &phase, &n, &ddum, ia, ja, &idum, &nrhs, iparm, &msglvl, &ddum, &ddum, info_fail);
+		if (temp_fail != 0 || *info_fail != 0)
+			*info_fail = 1; //falha
+		return x;
 	}
-	//Variaveis auxiliares
-	double		ddum;										//Variavel dummy
-	int			idum;										//Variavel dummy
-
-	double*		a = A.m_matrix.valuePtr();					//Valores da matriz
-	int*		ia = A.m_matrix.outerIndexPtr();			//indice dos valores "outer" da matriz
-	int*		ja = A.m_matrix.innerIndexPtr();			//indice do primeiro valor da linha da matriz
-
-	int			n = (int)A.m_matrix.rows();						//Numero de linhas da matriz
-	int			nnz = ia[n];								//Numero de valores na matriz
-	Matrix		x(n);										//Matriz de retorno - solução
-	if (n == 0)
-		return n;
-	///////////////////////////////////////////////////////////////////////////
-	//     Inicializa parametros de controle                                 //
-	///////////////////////////////////////////////////////////////////////////
-	pardisoinit(pt, &mtype, iparm);
-	//Setando algumas variaveis especificas de controle
-	iparm[1] = 3;
-	if (solver == 1)//solve iterativo
-		iparm[3] = 31;
-	///////////////////////////////////////////////////////////////////////////
-	//     Adiciona 1 ao indice - 1-index (FORTRAN)                          //
-	///////////////////////////////////////////////////////////////////////////
-	for (size_t i = 0, iLen = n + 1; i < iLen; i++) 
-	{
-		ia[i] += 1;
-	}
-
-	for (size_t i = 0, iLen = nnz; i < iLen; i++) 
-	{
-		ja[i] += 1;
-	}
-	///////////////////////////////////////////////////////////////////////////
-	//     Fase de analise, fatorização numerica, solução e refinamento      //
-	//     iterativo                                                         //
-	///////////////////////////////////////////////////////////////////////////
-	phase = 13;
-
-	pardiso(pt, &maxfct, &mnum, &mtype, &phase, &n, a, ia, ja, &idum, &nrhs, iparm, &msglvl, b.getMatrix(), x.getMatrix(), info_fail);
-
-	if (*info_fail != 0) 
-	{
-		std::cout << "ERROR during analysis, numerical factorization, solver, iterative refinement: " << *info_fail << std::endl;
-	}
-	///////////////////////////////////////////////////////////////////////////
-	//     Subtrai 1 do indice - 0-index (C++)                               //
-	///////////////////////////////////////////////////////////////////////////
-	for (size_t i = 0, iLen = n + 1; i < iLen; i++) 
-	{
-		ia[i] -= 1;
-	}
-
-	for (size_t i = 0, iLen = nnz; i < iLen; i++) 
-	{
-		ja[i] -= 1;
-	}
-	///////////////////////////////////////////////////////////////////////////
-	//     Fase de limpeza de memória                                        //
-	///////////////////////////////////////////////////////////////////////////
-	phase = -1;
-	int temp_fail = *info_fail;
-	pardiso(pt, &maxfct, &mnum, &mtype, &phase, &n, &ddum, ia, ja, &idum, &nrhs, iparm, &msglvl, &ddum, &ddum, info_fail);
-	if (temp_fail != 0 || *info_fail != 0)
-		*info_fail = 1; //falha
-
-	return x;
 }
 
 //Operador Multiplicacao de matrizes (matrix2 deve necessariamente ser um vetor)
