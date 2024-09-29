@@ -1,5 +1,5 @@
 
-# **GIRAFFE**: Generic Interface Readilly Accessible for Finite Elements
+# **GIRAFFE**: Generic Interface Readily Accessible for Finite Elements
 <img src="./images/Giraffe.png" width="300">
 
 ## Table of contents
@@ -10,7 +10,6 @@
 - [Dependencies](#dependencies)
 - [Disclaimer](#disclaimer)
 
-#  Introduction
 #  Introduction
 **Giraffe** is the acronym of “Generic Interface Readily Accessible for Finite Elements”. It is a platform coded in C++, with the objective of generating a base interface to be used by researchers, to implement their finite element formulations. It was already employed for modeling structural problems, with beam, shell, and rigid body elements. It also has discrete element method capabilities, particularly handling polyhedral elements. **Giraffe** has resources to switch on/off boundary conditions, loads, joints, contacts, etc. straightforwardly. This leads to creating scenarios where load sequence is an issue. Furthermore, it provides numerical strategies to achieve solutions to challenging nonlinear problems. Also, post-processing possibilities are convenient, with an organized set of post files, which is automatically generated for using [Paraview](https://www.paraview.org/). **Giraffe** has a proper input file format, documented in its [user's manual](/documentation/Giraffe%20User's%20Manual%20v2.0.124.pdf).
 
