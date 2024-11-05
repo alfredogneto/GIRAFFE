@@ -185,12 +185,20 @@ void SplineElementPair::BeginStepCheck(SPContactData* c_data)
 		}
 	}
 
-	///////////////////////////////Ponteiros e variaveis para facilitar acesso//////////////////////////////////////////
-	SplineElement* surf1 = db.splines[spline1_ID - 1]->sp_element[surf1_ID];		//Ponteiro para a superficie 1
-	SplineElement* surf2 = db.splines[spline2_ID - 1]->sp_element[surf2_ID];		//Ponteiro para a superficie 2
-	//No inicio de cada passo e tomada a decisão acerca de strong_candidate ou não (com base na checagem de bounding box em torno das superficies)
+	///////////////////////////////Ponteiros e variáveis para facilitar acesso//////////////////////////////////////////
+	SplineElement* surf1 = db.splines[spline1_ID - 1]->sp_element[surf1_ID];		//Ponteiro para a superfície 1
+	SplineElement* surf2 = db.splines[spline2_ID - 1]->sp_element[surf2_ID];		//Ponteiro para a superfície 2
+	Matrix GammaA(3);
+	Matrix GammaB(3);
+	Matrix cNR1_deg(2);
+	Matrix cNR2_deg(2);
+	double g_deg1;
+	double g_deg2;
+	//No início de cada passo é tomada a decisão acerca de strong_candidate ou não (com base na checagem de bounding box em torno das superfícies)
 	bool converged1 = false;
 	bool strong_candidate = false;
+	bool deg1_converged = false;
+	bool deg2_converged = false;
 	//Primeira checagem - bounding box overlap
 	double inflation_factor = 4.0;
 	strong_candidate = true;
@@ -281,6 +289,8 @@ void SplineElementPair::BeginStepCheck(SPContactData* c_data)
 		////////////AUTOMATIC DEGENERATION///////////////
 		if (c_data->return_value[ip] == 2 || converged1 == false || charact1 == 4)
 		{
+			//Degeneration with respect to spline 1
+
 			//Degenerated coordinates index (in the new basis)
 			//Initially assumed as false
 			c_data->degenerated[ip] = true;
@@ -310,12 +320,16 @@ void SplineElementPair::BeginStepCheck(SPContactData* c_data)
 			c_data->MountDegenerativeOperator();
 
 			converged1 = FindMinimumSolutionDegenerated(c_data, c_data->P_0[ip], cNR1[ip]); //Verifica convergência do modelo - true/false
-			c_data->return_value[ip] = VerifyConvectiveRange(*cNR1[ip]); //Verifica o range da coordenada convectiva (4 longe, 2 próximo ou 0 no range) 
-			//charact1 = CharacterizeCriticalPoint(cNR1[ip]); //Caracteriza o ponto critico (0 minimo estrito ou 4 outro tipo de problema)
-			charact1 = CharacterizeCriticalPointDegenerated(cNR1[ip], c_data->P_0[ip], false);
-		}
-		if (c_data->return_value[ip] == 2 || converged1 == false || charact1 == 4)
-		{
+			deg1_converged = converged1;
+
+			surf1->SplinePoint((*cNR1[ip])(0, 0), GammaA);
+			surf2->SplinePoint((*cNR1[ip])(1, 0), GammaB);
+			g_deg1 = norm(GammaA - GammaB);
+			cNR1_deg(0, 0) = (*cNR1[ip])(0, 0);
+			cNR1_deg(1, 0) = (*cNR1[ip])(1, 0);
+
+			//Degenration with respect to spline 2			
+
 			//Degenerated coordinates index (in the new basis)
 			//Initially assumed as false
 			c_data->degenerated[ip] = true;
@@ -323,7 +337,6 @@ void SplineElementPair::BeginStepCheck(SPContactData* c_data)
 			c_data->deg_control[ip][1] = true;
 
 			//Correction in case of degeneration
-			Matrix temp_coordinates(2);
 			for (int index = 0; index < 2; index++)
 				temp_coordinates(index, 0) = (*cNR1[ip])(index, 0);
 			//Transforming into degeneration basis
@@ -344,10 +357,113 @@ void SplineElementPair::BeginStepCheck(SPContactData* c_data)
 			c_data->MountDegenerativeOperator();
 
 			converged1 = FindMinimumSolutionDegenerated(c_data, c_data->P_0[ip], cNR1[ip]);
+			deg2_converged = converged1;
+
+			surf1->SplinePoint((*cNR1[ip])(0, 0), GammaA);
+			surf2->SplinePoint((*cNR1[ip])(1, 0), GammaB);
+			g_deg2 = norm(GammaA - GammaB);
+			cNR2_deg(0, 0) = (*cNR1[ip])(0, 0);
+			cNR2_deg(1, 0) = (*cNR1[ip])(1, 0);
+
+			//Assuming solution with lower gap
+			if (deg1_converged == true && deg2_converged == true)
+				if (g_deg1 <= g_deg2) {
+					//Initially assumed as false
+					c_data->degenerated[ip] = true;
+					c_data->deg_control[ip][0] = true;
+					c_data->deg_control[ip][1] = false;
+
+					//Correction in case of degeneration
+			Matrix temp_coordinates(2);
+			for (int index = 0; index < 2; index++)
+				temp_coordinates(index, 0) = (*cNR1[ip])(index, 0);
+			//Transforming into degeneration basis
+			temp_coordinates = transp(*c_data->P[ip]) * temp_coordinates;
+			//Fixing degenerated coordinates
+			for (int i = 0; i < 2; i++)
+				if (c_data->deg_control[ip][i] == true)
+					temp_coordinates(i, 0) = c_data->copy_deg_coordinates[ip][i];
+			//Transforming into original basis
+			temp_coordinates = (*c_data->P[ip]) * temp_coordinates;
+			//Copying info into cNR1 vector
+			for (int i = 0; i < 2; i++)
+				(*cNR1[ip])(i, 0) = temp_coordinates(i, 0);
+
+					if (write_report)
+						fprintf(f_TR_report[ip], "Direct search for degenerated minimum for coordinate 1\n");
+
+					//Degenerative operator
+					c_data->MountDegenerativeOperator();
+
+					(*cNR1[ip])(0, 0) = cNR1_deg(0, 0);
+					(*cNR1[ip])(1, 0) = cNR1_deg(1, 0);
+				}
+				else {
+					//Initially assumed as false
+					c_data->degenerated[ip] = true;
+					c_data->deg_control[ip][0] = false;
+					c_data->deg_control[ip][1] = true;
+
+					//Correction in case of degeneration			
+					for (int index = 0; index < 2; index++)
+						temp_coordinates(index, 0) = (*cNR1[ip])(index, 0);
+					//Transforming into degeneration basis
+					temp_coordinates = transp(*c_data->P[ip]) * temp_coordinates;
+					//Fixing degenerated coordinates
+					for (int i = 0; i < 2; i++)
+						if (c_data->deg_control[ip][i] == true)
+							temp_coordinates(i, 0) = c_data->copy_deg_coordinates[ip][i];
+					//Transforming into original basis
+					temp_coordinates = (*c_data->P[ip]) * temp_coordinates;
+					//Copying info into cNR1 vector
+					for (int i = 0; i < 2; i++)
+						(*cNR1[ip])(i, 0) = temp_coordinates(i, 0);
+			if (write_report)
+				fprintf(f_TR_report[ip], "Direct search for degenerated minimum for coordinate 2\n");
+
+			//Degenerative operator
+			c_data->MountDegenerativeOperator();
+
+					(*cNR1[ip])(0, 0) = cNR2_deg(0, 0);
+					(*cNR1[ip])(1, 0) = cNR2_deg(1, 0);
+				}
 			c_data->return_value[ip] = VerifyConvectiveRange(*cNR1[ip]);
-			//charact1 = CharacterizeCriticalPoint(cNR1[ip]);
 			charact1 = CharacterizeCriticalPointDegenerated(cNR1[ip], c_data->P_0[ip], false);
 		}
+		//if (c_data->return_value[ip] == 2 || converged1 == false || charact1 == 4)
+		//{
+		//	//Degenerated coordinates index (in the new basis)
+		//	//Initially assumed as false
+		//	c_data->degenerated[ip] = true;
+		//	c_data->deg_control[ip][0] = false;
+		//	c_data->deg_control[ip][1] = true;
+
+		//	//Correction in case of degeneration
+		//	Matrix temp_coordinates(2);
+		//	for (int index = 0; index < 2; index++)
+		//		temp_coordinates(index, 0) = (*cNR1[ip])(index, 0);
+		//	//Transforming into degeneration basis
+		//	temp_coordinates = transp(*c_data->P[ip]) * temp_coordinates;
+		//	//Fixing degenerated coordinates
+		//	for (int i = 0; i < 2; i++)
+		//		if (c_data->deg_control[ip][i] == true)
+		//			temp_coordinates(i, 0) = c_data->copy_deg_coordinates[ip][i];
+		//	//Transforming into original basis
+		//	temp_coordinates = (*c_data->P[ip]) * temp_coordinates;
+		//	//Copying info into cNR1 vector
+		//	for (int i = 0; i < 2; i++)
+		//		(*cNR1[ip])(i, 0) = temp_coordinates(i, 0);
+		//	if (write_report)
+		//		fprintf(f_TR_report[ip], "Direct search for degenerated minimum for coordinate 2\n");
+
+		//	//Degenerative operator
+		//	c_data->MountDegenerativeOperator();
+
+		//	converged1 = FindMinimumSolutionDegenerated(c_data, c_data->P_0[ip], cNR1[ip]);
+		//	c_data->return_value[ip] = VerifyConvectiveRange(*cNR1[ip]);
+		//	//charact1 = CharacterizeCriticalPoint(cNR1[ip]);
+		//	charact1 = CharacterizeCriticalPointDegenerated(cNR1[ip], c_data->P_0[ip], false);
+		//}
 
 
 		///////////////////////////////VERIFICATIONS//////////////////////////////////
@@ -391,9 +507,15 @@ void SplineElementPair::BeginStepCheck(SPContactData* c_data)
 //Determinação via otimização das coordenadas convectivas do par de superficies
 void SplineElementPair::SolveLCP(SPContactData* c_data)
 {
-	///////////////////////////////Ponteiros e variaveis para facilitar acesso//////////////////////////////////////////
-	SplineElement* surf1 = db.splines[spline1_ID - 1]->sp_element[surf1_ID];		//Ponteiro para a superficie 1
-	SplineElement* surf2 = db.splines[spline2_ID - 1]->sp_element[surf2_ID];		//Ponteiro para a superficie 2
+	///////////////////////////////Ponteiros e variáveis para facilitar acesso//////////////////////////////////////////
+	SplineElement* surf1 = db.splines[spline1_ID - 1]->sp_element[surf1_ID];		//Ponteiro para a superfície 1
+	SplineElement* surf2 = db.splines[spline2_ID - 1]->sp_element[surf2_ID];		//Ponteiro para a superfície 2
+	Matrix GammaA(3);
+	Matrix GammaB(3);
+	Matrix cNR1_deg(2);
+	Matrix cNR2_deg(2);
+	double g_deg1;
+	double g_deg2;
 
 	if (write_report)
 	{
@@ -461,96 +583,10 @@ void SplineElementPair::SolveLCP(SPContactData* c_data)
 				}
 
 				bool converged1 = false;
+				bool deg1_converged = false;
+				bool deg2_converged = false;
 				int charact1 = 3;
 				int info = 0;
-
-				////////////////NO DEGENERATION///////////////
-				//if (converged1 == false)
-				//{
-				//	if (write_report)
-				//		fprintf(f_TR_report[i], "Search for minimum\n");
-
-				//	//Degenerated coordinates index (in the new basis)
-				//	c_data->deg_control[i][0] = false;
-				//	c_data->deg_control[i][1] = false;
-
-				//	//Degenerative operator
-				//	c_data->MountDegenerativeOperator();
-
-				//	//Determinação de minimo ou intersecção
-				//	converged1 = FindMinimumSolution(c_data, cNR1[i], info);
-				//}
-				//////////////AUTOMATIC DEGENERATION///////////////
-				//if (c_data->return_value[i] == 2 || converged1 == false || charact1 == 4)
-				//{
-				//	//Degenerated coordinates index (in the new basis)
-				//	//Initially assumed as false
-				//	c_data->degenerated[i] = true;
-				//	c_data->deg_control[i][0] = true;
-				//	c_data->deg_control[i][1] = false;
-
-				//	//Correction in case of degeneration
-				//	Matrix temp_coordinates(2);
-				//	for (int index = 0; index < 2; index++)
-				//		temp_coordinates(index, 0) = (*cNR1[i])(index, 0);
-				//	//Transforming into degeneration basis
-				//	temp_coordinates = transp(*c_data->P[i]) * temp_coordinates;
-				//	//Fixing degenerated coordinates
-				//	for (int j = 0; j < 2; j++)
-				//		if (c_data->deg_control[i][j] == true)
-				//			temp_coordinates(j, 0) = c_data->copy_deg_coordinates[i][j];
-				//	//Transforming into original basis
-				//	temp_coordinates = (*c_data->P[i]) * temp_coordinates;
-				//	//Copying info into cNR1 vector
-				//	for (int j = 0; j < 2; j++)
-				//		(*cNR1[i])(j, 0) = temp_coordinates(j, 0);
-
-				//	if (write_report)
-				//		fprintf(f_TR_report[i], "Direct search for degenerated minimum for coordinate 1\n");
-
-				//	//Degenerative operator
-				//	c_data->MountDegenerativeOperator();
-
-				//	converged1 = FindMinimumSolutionDegenerated(c_data, c_data->P_0[i], cNR1[i]); //Verifica convergência do modelo - true/false
-				//	c_data->return_value[i] = VerifyConvectiveRange(*cNR1[i]); //Verifica o range da coordenada convectiva (4 longe, 2 próximo ou 0 no range) 
-				//	//charact1 = CharacterizeCriticalPoint(cNR1[ip]); //Caracteriza o ponto critico (0 minimo estrito ou 4 outro tipo de problema)
-				//	charact1 = CharacterizeCriticalPointDegenerated(cNR1[i], c_data->P_0[i], false);
-				//}
-				//if (c_data->return_value[i] == 2 || converged1 == false || charact1 == 4)
-				//{
-				//	//Degenerated coordinates index (in the new basis)
-				//	//Initially assumed as false
-				//	c_data->degenerated[i] = true;
-				//	c_data->deg_control[i][0] = false;
-				//	c_data->deg_control[i][1] = true;
-
-				//	//Correction in case of degeneration
-				//	Matrix temp_coordinates(2);
-				//	for (int index = 0; index < 2; index++)
-				//		temp_coordinates(index, 0) = (*cNR1[i])(index, 0);
-				//	//Transforming into degeneration basis
-				//	temp_coordinates = transp(*c_data->P[i]) * temp_coordinates;
-				//	//Fixing degenerated coordinates
-				//	for (int j = 0; j < 2; j++)
-				//		if (c_data->deg_control[i][j] == true)
-				//			temp_coordinates(j, 0) = c_data->copy_deg_coordinates[i][j];
-				//	//Transforming into original basis
-				//	temp_coordinates = (*c_data->P[i]) * temp_coordinates;
-				//	//Copying info into cNR1 vector
-				//	for (int j = 0; j < 2; j++)
-				//		(*cNR1[i])(j, 0) = temp_coordinates(j, 0);
-				//	if (write_report)
-				//		fprintf(f_TR_report[i], "Direct search for degenerated minimum for coordinate 2\n");
-
-				//	//Degenerative operator
-				//	c_data->MountDegenerativeOperator();
-
-				//	converged1 = FindMinimumSolutionDegenerated(c_data, c_data->P_0[i], cNR1[i]);
-				//	c_data->return_value[i] = VerifyConvectiveRange(*cNR1[i]);
-				//	//charact1 = CharacterizeCriticalPoint(cNR1[ip]);
-				//	charact1 = CharacterizeCriticalPointDegenerated(cNR1[i], c_data->P_0[i], false);
-				//}
-
 
 				if (c_data->degenerated[i] == false)
 				{
@@ -574,7 +610,7 @@ void SplineElementPair::SolveLCP(SPContactData* c_data)
 				else
 				{
 					////////////AUTOMATIC DEGENERATION///////////////
-					if (converged1 == false && c_data->deg_control[i][0] == true)
+					if (converged1 == false && c_data->degenerated[i] == true)
 					{
 						//Degenerated coordinates index (in the new basis)
 						////Initially assumed as false
@@ -604,16 +640,19 @@ void SplineElementPair::SolveLCP(SPContactData* c_data)
 						c_data->MountDegenerativeOperator();
 
 						converged1 = FindMinimumSolutionDegenerated(c_data, c_data->P_0[i], cNR1[i]);
-					}
-					if (converged1 == false && c_data->deg_control[i][1] == true)
-					{
+
+						surf1->SplinePoint((*cNR1[i])(0, 0), GammaA);
+						surf2->SplinePoint((*cNR1[i])(1, 0), GammaB);
+						g_deg1 = norm(GammaA - GammaB);
+						cNR1_deg(0, 0) = (*cNR1[i])(0, 0);
+						cNR1_deg(1, 0) = (*cNR1[i])(1, 0);
+
 						//Degenerated coordinates index (in the new basis)
 						////Initially assumed as false
 						c_data->deg_control[i][0] = false;
 						c_data->deg_control[i][1] = true;
 
-						//Correction in case of degeneration
-						Matrix temp_coordinates(2);
+						//Correction in case of degeneration						
 						for (int index = 0; index < 2; index++)
 							temp_coordinates(index, 0) = (*cNR1[i])(index, 0);
 						//Transforming into degeneration basis
@@ -635,7 +674,77 @@ void SplineElementPair::SolveLCP(SPContactData* c_data)
 						c_data->MountDegenerativeOperator();
 
 						converged1 = FindMinimumSolutionDegenerated(c_data, c_data->P_0[i], cNR1[i]);
+
+						surf1->SplinePoint((*cNR1[i])(0, 0), GammaA);
+						surf2->SplinePoint((*cNR1[i])(1, 0), GammaB);
+						g_deg2 = norm(GammaA - GammaB);
+						cNR2_deg(0, 0) = (*cNR1[i])(0, 0);
+						cNR2_deg(1, 0) = (*cNR1[i])(1, 0);
+
+						if (deg1_converged == true && deg2_converged == true) {							
+							if (g_deg1 <= g_deg2) {
+								//Degenerated coordinates index (in the new basis)
+								////Initially assumed as false
+								c_data->deg_control[i][0] = true;
+								c_data->deg_control[i][1] = false;
+
+								//Correction in case of degeneration
+								Matrix temp_coordinates(2);
+								for (int index = 0; index < 2; index++)
+									temp_coordinates(index, 0) = (*cNR1[i])(index, 0);
+								//Transforming into degeneration basis
+								temp_coordinates = transp(*c_data->P[i]) * temp_coordinates;
+								//Fixing degenerated coordinates
+								for (int index = 0; index < 2; index++)
+									if (c_data->deg_control[i][index] == true)
+										temp_coordinates(index, 0) = c_data->copy_deg_coordinates[i][index];
+								//Transforming into original basis
+								temp_coordinates = (*c_data->P[i]) * temp_coordinates;
+								//Copying info into cNR1 vector
+								for (int index = 0; index < 2; index++)
+									(*cNR1[i])(index, 0) = temp_coordinates(index, 0);
+
+								if (write_report)
+									fprintf(f_TR_report[i], "Direct search for degenerated minimum for coordinate 1\n");
+
+								//Degenerative operator
+								c_data->MountDegenerativeOperator();
+								(*cNR1[i])(0, 0) = cNR1_deg(0, 0);
+								(*cNR1[i])(1, 0) = cNR1_deg(1, 0);
 					}
+							else {
+						//Degenerated coordinates index (in the new basis)
+						////Initially assumed as false
+						c_data->deg_control[i][0] = false;
+						c_data->deg_control[i][1] = true;
+
+						//Correction in case of degeneration
+						for (int index = 0; index < 2; index++)
+							temp_coordinates(index, 0) = (*cNR1[i])(index, 0);
+						//Transforming into degeneration basis
+						temp_coordinates = transp(*c_data->P[i]) * temp_coordinates;
+						//Fixing degenerated coordinates
+						for (int index = 0; index < 2; index++)
+							if (c_data->deg_control[i][index] == true)
+								temp_coordinates(index, 0) = c_data->copy_deg_coordinates[i][index];
+						//Transforming into original basis
+						temp_coordinates = (*c_data->P[i]) * temp_coordinates;
+						//Copying info into cNR1 vector
+						for (int index = 0; index < 2; index++)
+							(*cNR1[i])(index, 0) = temp_coordinates(index, 0);
+
+						if (write_report)
+							fprintf(f_TR_report[i], "Direct search for degenerated minimum for coordinate 2\n");
+
+						//Degenerative operator
+						c_data->MountDegenerativeOperator();
+								(*cNR1[i])(0, 0) = cNR2_deg(0, 0);
+								(*cNR1[i])(1, 0) = cNR2_deg(1, 0);
+							}
+						}
+
+					}
+
 				}
 
 				if (converged1 == false)
@@ -834,8 +943,22 @@ bool SplineElementPair::EndStepCheck(SPContactData* c_data)
 				//return true;
 			}
 
-			//Criterio numerico para indicar inversão do vetor normal de contato
-			if (dot(*c_data->n[i], *c_data->copy_n[i]) < -0.9)
+			//Critério numérico para indicar inversão do vetor normal de contato
+			//double pen_tol = 1e-14;
+			//if (c_data->g_n[i] < -pen_tol)
+
+			//if (dot(*c_data->g[i], *c_data->g[i]) < tol_small_1)
+			//{
+			//	db.myprintf("LCP between surfaces %d and %d has presented problems. Code 5.\n", surf1_ID, surf2_ID);
+			//	if (write_report)
+			//	{
+			//		fprintf(f_TR_report[i], "LCP between surfaces %d and %d has presented problems. Code 5.\n", surf1_ID, surf2_ID);
+			//	}
+			//	c_problem = true;
+			//	//return true;
+			//}
+
+			if (dot(*c_data->n[i], *c_data->copy_n[i]) < -0.5)
 			{
 				db.myprintf("LCP between surfaces %d and %d has presented problems. Code 4.\n", surf1_ID, surf2_ID);
 				if (write_report)
@@ -1128,7 +1251,7 @@ bool SplineElementPair::FindMinimumSolutionDegenerated(SPContactData* c_data, Ma
 	double error = tol_ortho + 1.0;
 	//Initial guess report
 	if (write_report)
-		fprintf(f_TR_report[seq_number], "%d\t%.12e\t%.12e\t%.6e\t%.6e\t%.6e\t%c\t%.6e\t%.6e\t%.6e\n", it, xk(0, 0), xk(1, 0), ob, error, Deltak, c, rhok, actual_reduction, predicted_reduction);
+		fprintf(f_TR_report[seq_number], "%d\t%.12e\t%.12e\t%.12e\t%.12e\t%.6e\t%.6e\t%.6e\t%c\t%.6e\t%.6e\t%.6e\n", it, xk(0, 0), xk(1, 0), ob, error, Deltak, c, rhok, actual_reduction, predicted_reduction);
 	/////////////////////////////////////////////////////BEGIN///////////////////////////////////////////////
 	while ((error > tol_ortho || norm((*P_0) * pk) > tol_convective) && it <= max_it)
 	{
@@ -1167,13 +1290,13 @@ bool SplineElementPair::FindMinimumSolutionDegenerated(SPContactData* c_data, Ma
 			//Construção da direção de busca
 			//Direção de busca baseada em NR - modificada pelo menor autovalor
 			zeros(&pb);
-			//Se o menor autovalor e menor ou igual a zero (tol_small) - modifica a direção de NR para garantir direção descendente
+			//Se o menor autovalor é menor ou igual a zero (tol_small) - modifica a direção de NR para garantir direção descendente
 			if (min_eig < tol_small)
 			{
 				for (int i = 0; i < order; i++)
 					pb(i, 0) = -pGra(i, 0) / (D(i, i) - (min_eig - abs(min_eig) * tol_ascent));
 			}
-			//Se o menor autovalor e maior que zero (tol_small) - direção de NR e escolhida
+			//Se o menor autovalor é maior que zero (tol_small) - direção de NR é escolhida
 			else
 			{
 				for (int i = 0; i < order; i++)
@@ -1314,7 +1437,7 @@ void SplineElementPair::WriteConvectiveRange()
 		strcat(name, pair_name);		//nome do arquivo
 		strcat(name, ".txt");			//criando arquivo
 		f_TR_report[seq_number] = fopen(name, "a");
-		fprintf(f_TR_report[seq_number], "ConvectiveRange:\nMin\t%.6e\tMax\t%.6e\tRange\t%.6e\nMin\t%.6e\tMax\t%.6e\tRange\t%.6e\n",
+		fprintf(f_TR_report[seq_number], "ConvectiveRange:\nMin\t%.6e\tMax\t%.6e\tRange\t%.6e\nMin\t%.6e\tMax\t%.6e\tRange\t%.6e\nMin\t%.6e\tMax\t%.6e\tRange\t%.6e\nMin\t%.6e\tMax\t%.6e\tRange\t%.6e\n",
 			convective_min(0, 0), convective_max(0, 0), convective_range(0, 0),
 			convective_min(1, 0), convective_max(1, 0), convective_range(1, 0)/*,
 		convective_min(2, 0), convective_max(2, 0), convective_range(2, 0),
