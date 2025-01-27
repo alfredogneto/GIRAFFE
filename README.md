@@ -42,6 +42,8 @@ git clone https://github.com/alfredogneto/GIRAFFE.git
   `install_dependencies.bat`: creates a `/dependencies` folder, clones [exprtk](https://github.com/ArashPartow/exprtk.git), [Eigen](https://gitlab.com/libeigen/eigen.git) and [vcpkg](https://github.com/microsoft/vcpkg.git), such as installs the last one. Afer, it installs [arpack-ng](https://github.com/opencollab/arpack-ng.git). It creates environment variables for **GIRAFFE** execution. All variables are created in the user's profile and are based in the folder where Giraffe is located on your computer.
 
   4. After `install_dependencies.bat` finishes, manually add the following entries to the **user** environment variable `Path`: `%GIRAFFE_PATH%` and `%MKL_PATH%`.  This can be done, for example, using the procedure described [here](https://www.java.com/en/download/help/path.html). PS: If you want to add these paths to the **system** version of `Path`, you have to copy the variables into the system scope too.
+
+![image](https://github.com/user-attachments/assets/ec21dd45-866a-4f83-9d75-9b336c3e269f)
   
   5. The last step is to run `build.bat`.
 
