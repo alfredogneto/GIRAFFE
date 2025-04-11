@@ -1,9 +1,10 @@
 #include "SurfacePairGeneralContact.h"
-
+#include"Database.h"
 #include "TimeStepControlData.h"
 #include "SSContactData.h"
 #include "Matrix.h"
-
+extern
+Database db;
 ////////////////////////////////////////////////////////////////////
 #define _CRTDBG_MAP_ALLOC
 #include <stdlib.h>
@@ -35,7 +36,10 @@ void SurfacePairGeneralContact::Alloc()
 {
 	AllocSpecific();
 }
-
+/*void SurfacePairGeneralContact::AllocExplicit()
+{
+	AllocSpecificExplicit();
+}*/
 void SurfacePairGeneralContact::SetActive()
 {
 	if (active == false)
@@ -63,7 +67,13 @@ void SurfacePairGeneralContact::SetUnnactive()
 void SurfacePairGeneralContact::Free()
 {
 	FreeSpecific();
+	//FreeSpecificExplicit();
 }
+
+/*void SurfacePairGeneralContact::FreeExplicit()
+{
+	FreeSpecificExplicit();
+}*/
 
 //Calcula a inversa da Hessiana
 void SurfacePairGeneralContact::EvaluateInvertedHessian()
@@ -84,7 +94,7 @@ void SurfacePairGeneralContact::EvaluateInvertedHessian()
 		Matrix P(order_minor, order_minor);
 		Matrix D(order_minor, order_minor);
 		fulleigen1(Hes_minor, P, D, tol_eig);
-		//Inversão da Hessiana
+		//Inversao da Hessiana
 		for (int i = 0; i < order_minor; i++)
 		{
 			D(i, i) = 1.0 / D(i, i);

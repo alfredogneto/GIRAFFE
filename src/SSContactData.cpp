@@ -23,6 +23,10 @@ Database db;
 
 SSContactData::SSContactData()
 {
+	patchA = NULL;
+	patchB = NULL;
+	copy_patchA = NULL;
+	copy_patchB = NULL;
 	n_solutions = 1;
 	alloced = false;
 	convective = NULL;
@@ -50,6 +54,8 @@ SSContactData::SSContactData()
 	deg_control = NULL;
 	stick = NULL;
 	copy_stick = NULL;
+	other_patch = NULL;
+	copy_other_patch = NULL;
 
 	copy_convergedLCP = NULL;
 	convergedLCP = NULL;
@@ -69,6 +75,10 @@ void SSContactData::Alloc()
 {
 	if (alloced == false)
 	{
+		patchA = new int[n_solutions];
+		patchB = new int[n_solutions];
+		copy_patchA = new int[n_solutions];
+		copy_patchB = new int[n_solutions];
 		convective = DBG_NEW double*[n_solutions];
 		for (int i = 0; i < n_solutions; i++)
 			convective[i] = new double[4];
@@ -142,12 +152,17 @@ void SSContactData::Alloc()
 		for (int i = 0; i < n_solutions; i++)
 			P[i] = new Matrix(4, 4);
 
+		other_patch = new bool[n_solutions];
+		copy_other_patch = new bool[n_solutions];
 		stick = new bool[n_solutions];
 		copy_stick = new bool[n_solutions];
 
 		for (int i = 0; i < n_solutions; i++)
 		{
-			 
+			patchA[i] = 0;
+			patchB[i] = 0;
+			copy_patchA[i] = 0;
+			copy_patchB[i] = 0;
 			copy_convective[i][0] = 0.0;
 			copy_convective[i][1] = 0.0;
 			copy_convective[i][2] = 0.0;
@@ -171,10 +186,10 @@ void SSContactData::Alloc()
 			initial_guess[i][2] = 0.0;
 			initial_guess[i][3] = 0.0;
 			g_n[i] = 0.0;
-			copy_g_n[i] = 1.0;	//Assumindo que não ha contato anterior
+			copy_g_n[i] = 1.0;	//Assumindo que nao ha contato anterior
 			return_value[i] = 2;
 			copy_return_value[i] = 2;
-			repeated[i] = true;
+			repeated[i] = false;
 			stick[i] = true;
 			copy_stick[i] = true;
 
@@ -185,6 +200,8 @@ void SSContactData::Alloc()
 			for(int nj=0;nj<4;nj++)
 				invHessian[i][ni][nj] = 0.0;
 
+			other_patch[i] = false;
+			copy_other_patch[i] = false;
 			characterization_index[i] = 0;
 			copy_characterization_index[i] = 0;
 
@@ -198,6 +215,16 @@ void SSContactData::Free()
 {
 	if (alloced == true)
 	{
+		
+		if (patchA != NULL)
+			delete[]patchA;
+		if (patchB != NULL)
+			delete[]patchB;
+		if (copy_patchA != NULL)
+			delete[]copy_patchA;
+		if (copy_patchB != NULL)
+			delete[]copy_patchB;
+
 		if (convective != NULL)
 		{
 			for (int i = 0; i < n_solutions; i++)
@@ -322,12 +349,22 @@ void SSContactData::Free()
 		if (copy_stick != NULL)
 			delete[]copy_stick;
 
+		if (other_patch != NULL)
+			delete[]other_patch;
+
+		if (copy_other_patch != NULL)
+			delete[]copy_other_patch;
+
 		if (characterization_index != NULL)
 			delete[]characterization_index;
 		if (copy_characterization_index != NULL)
 			delete[]copy_characterization_index;
 
 	}
+	patchA = NULL;
+	patchB = NULL;
+	copy_patchA = NULL;
+	copy_patchB = NULL;
 	convective = NULL;
 	copy_convective = NULL;
 	copy_deg_coordinates = NULL;
@@ -353,11 +390,13 @@ void SSContactData::Free()
 	degenerated = NULL;
 	stick = NULL;
 	copy_stick = NULL;
+	other_patch = NULL;
+	copy_other_patch = NULL;
 	convergedLCP = NULL;
 	copy_convergedLCP = NULL;
 }
 
-//Checa repetição de raizes e salva a informação na matriz 'repeated'
+//Checa repeticao de raizes e salva a informacao na matriz 'repeated'
 void SSContactData::CheckRepeated(double tol_coordinate_value)
 {
 	for (int i = 0; i < n_solutions; i++)
@@ -365,7 +404,7 @@ void SSContactData::CheckRepeated(double tol_coordinate_value)
 		repeated[i] = false;
 		for (int j = 0; j < i; j++)
 		{
-			if (return_value[i] != 1)//se não houve divergência
+			if (return_value[i] != 1)//se nao houve divergência
 			{
 				if (abs(convective[i][0] - convective[j][0]) <= tol_coordinate_value && abs(convective[i][1] - convective[j][1]) <= tol_coordinate_value && (convective[i][2] - convective[j][2]) <= tol_coordinate_value && (convective[i][3] - convective[j][3]) <= tol_coordinate_value)
 					repeated[i] = true;

@@ -3,7 +3,10 @@
 #include "NURBSSurface.h"
 #include "PostFiles.h"
 #include "Node.h"
+#include "Encoding.h"
 #include "CoordinateSystem.h"
+#include "Dynamic.h"
+#include "SSContactData.h"
 
 #include"Database.h"
 //Variaveis globais

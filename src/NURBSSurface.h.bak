@@ -1,0 +1,80 @@
+#pragma once
+#include "CADData.h"
+#include "MatrixFloat.h"
+
+class NURBSSurface :
+	public CADData
+{
+public:
+	NURBSSurface();
+	~NURBSSurface();
+
+	
+	//Dados NURBS
+	int U_dim;
+	int U_order;
+	int V_dim;
+	int V_order;
+	double* U_knot_vector;
+	double* V_knot_vector;
+	double** weights;
+	Matrix** control_points;
+	Matrix** Pw;	//control points em 4D (ja com pesos)
+	double** Bin;	//Binomial coefficients
+
+	bool Read(FILE *f);												//Leitura do arquivo de entrada
+	void Write(FILE *f);											//Escrita do arquivo de saida
+	void PreCalc();													//PreCalc
+
+	//Geometric evaluation functions
+	void EvaluateVolume();
+	void EvaluateCentroid();
+	void EvaluateInertiaTensor();
+	void EvaluateRadius();
+
+	//Marina
+	bool ReadNurbsData();
+	void Subdivision();
+	void ControlPointsSub();
+	//Marina
+	int id_nurbs;
+	int connectivity[4];
+	int subdivisions[2];
+	//Marina - Subdivision - Bezier surfaces
+	//NURBSSurface *n_sub;
+	double*** parameter_sub; //Intervalo de parametros dos subpatches
+	double*** box_sub_coord; //Valores maximos e minimos das coordenadas dos pontos dos paralelepipedos dos subpatches
+	MatrixFloat** box_sub_center; //Centros dos paralelepipedos dos subpatches
+	MatrixFloat*** box_sub_points; //8 pontos dos paralelepipedos dos subpatches
+	MatrixFloat** halfedge_lengths;
+
+	bool ReadCADFile();												//Leitura do arquivo de CAD
+	int FindSpan(int &n, int &p, double &u, double* U);
+	void BasisFunctions(int &i, double &u, int &p, double* U, double* N);
+	void DersBasisFunctions(int &i, double &u, int &p, int &n, double* U, double** ders);
+	void NURBSPoint(double &u, double &v, Matrix &point);
+	void NURBSDerivatives(double &uc, double &vc, Matrix** &Skl, int &d);
+	void WriteVTK_XMLRender(FILE *f, Matrix& pos, Matrix& rot, int number);
+	void WriteVTK_XMLRender(FILE *f, Matrix& pos, Matrix& rot, int number, int number2); //para conseguir plotar ID do CAD
+
+	//Marina
+	void SurfaceKnotIns(int np, int p, double* UP, int rp, int mp, int q, double* VP, int sp, Matrix** Pw, int dir, double uv, int k, int s, int r, int &nq, double *UQ, int &mq, double* VQ, Matrix** Qw);
+	void PointInversion(Matrix p, double &uf, double &vf, Matrix p_f, bool &conv, double &tol, double &err, int uv);
+	void NURBSPointProjection(double p[3], double &uf, double &vf, double* p_f, bool &conv, double &tol, double &err, bool &conv_total, Matrix * P_0);
+	void NURBSSupportFunction(double* v_dir, double &uf, double &vf, double* p_f, double &obj, bool &conv, bool &conv_total, double &delta, Matrix* P_0);
+	void NormalExt(Matrix* Qp, double* zeta, double* theta, Matrix* n);
+	void SurfacePoint(Matrix* Qp, Matrix* xp, double& zeta, double& theta, Matrix& point);
+
+	// NURBS com subdivisao
+	int n_sub_U_dim;
+	int n_sub_U_order;
+	int n_sub_V_dim;
+	int n_sub_V_order;
+	double* n_sub_U_knot_vector;
+	double* n_sub_V_knot_vector;
+	double** n_sub_weights;
+	Matrix** n_sub_control_points;
+	Matrix** n_sub_Pw;	//control points em 4D (ja com pesos)
+	double** n_sub_Bin;	//Binomial coefficients
+};
+

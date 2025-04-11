@@ -1,11 +1,13 @@
 #include "ContactParticleParticle.h"
 
-//#include "CollisionDetection.h"]
+//#include "CollisionDetection.h"
 #include "SurfacePairGeneralContact.h"
+#include "RigidNURBSSurface_RigidNURBSSurface.h"
 #include "Particle.h"
 #include "BoundingSphere.h"
 #include "BoundingCylinder.h"
 #include "BoundingTriangularBox.h"
+#include "OrientedBoundingBox.h" //Marina
 #include "Encoding.h"
 #include "Dynamic.h"
 #include "Matrix.h"
@@ -95,8 +97,16 @@ void ContactParticleParticle::SaveConfiguration()
 			contact_pairs[i]->cd->copy_convective[0][3] = contact_pairs[i]->cd->convective[0][3];
 			contact_pairs[i]->cd->copy_degenerated[0] = contact_pairs[i]->cd->degenerated[0];
 			contact_pairs[i]->cd->copy_stick[0] = contact_pairs[i]->cd->stick[0];
+			//Marina
+			contact_pairs[i]->cd->copy_other_patch[0] = contact_pairs[i]->cd->other_patch[0];
 		}
 	}
+	//Marina
+	*contact_detection = false;
+	*contact_detectionA = false;
+	*contact_detectionB = false;
+	*contact_detectionAB = false;
+
 }
 
 void ContactParticleParticle::MountContacts()
@@ -109,8 +119,14 @@ void ContactParticleParticle::MountContacts()
 			if (contact_pairs[i]->eligible)
 			{
 				contact_pairs[i]->Alloc();
-				contact_pairs[i]->SetVariables();					//Sets variables for next evaluations
-				contact_pairs[i]->EvaluateInvertedHessian();
+				contact_pairs[i]->SetVariables(); //Sets variables for next evaluations
+				//Marina
+				if (typeid(*contact_pairs[i]) == typeid(RigidNURBSSurface_RigidNURBSSurface)) {
+					static_cast<RigidNURBSSurface_RigidNURBSSurface*>(contact_pairs[i])->EvaluateInvertedHessian(contact_pairs[i]->cd,2);
+				}
+				else {
+					contact_pairs[i]->EvaluateInvertedHessian();
+				}					
 				contact_pairs[i]->MountLocalContributions();		//Local contact contributions
 			}
 		}
@@ -125,7 +141,15 @@ void ContactParticleParticle::MountContactsExplicit(double t)
 		{
 			contact_pairs[i]->Alloc();
 			contact_pairs[i]->SetVariablesExplicit(t);					//Sets variables for next evaluations
-			contact_pairs[i]->EvaluateInvertedHessian();
+			
+			//Marina
+			/*if (typeid(*contact_pairs[i]) == typeid(RigidNURBSSurface_RigidNURBSSurface)) {
+				static_cast<RigidNURBSSurface_RigidNURBSSurface*>(contact_pairs[i])->EvaluateInvertedHessian(contact_pairs[i]->cd, 2);
+			}
+			else {
+				contact_pairs[i]->EvaluateInvertedHessian();
+			}*/
+			//contact_pairs[i]->EvaluateInvertedHessian();
 			contact_pairs[i]->MountLocalContributionsExplicit(t);		//Local contact contributions
 		}
 	}
@@ -156,6 +180,9 @@ bool ContactParticleParticle::NightOwlContact()
 				
 			if (typeid(*db.particles[index1]->sub_bv[sub_index1]) == typeid(BoundingTriangularBox))
 				db.myprintf("BoundingTriangularBox\n");
+			//Marina
+			if (typeid(*db.particles[index1]->sub_bv[sub_index1]) == typeid(OrientedBoundingBox))
+				db.myprintf("OrientedBoundingBox\n");
 			//Bounding volume 2
 			if (typeid(*db.particles[index2]->sub_bv[sub_index2]) == typeid(BoundingSphere))
 				db.myprintf("BoundingSphere\n");
@@ -167,7 +194,9 @@ bool ContactParticleParticle::NightOwlContact()
 			}
 			if (typeid(*db.particles[index2]->sub_bv[sub_index2]) == typeid(BoundingTriangularBox))
 				db.myprintf("BoundingTriangularBox\n");
-			
+			//Marina
+			if (typeid(*db.particles[index2]->sub_bv[sub_index2]) == typeid(OrientedBoundingBox))
+				db.myprintf("OrientedBoundingBox\n");
 			return true;
 		}
 		else

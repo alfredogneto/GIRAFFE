@@ -292,6 +292,7 @@ bool Dynamic::Solve()
 	////////////////////////////////////////////////////////////////////////////////
 	while ((time < end_time || db.conv_criteria->diverged == true) && aborted == false)
 	{
+		high_resolution_clock::time_point t4 = high_resolution_clock::now();//Inicia a marcação de tempo de execução
 		//Setando variaveis no database
 		db.last_converged_time = time;
 		time += time_step;	//Incremento do time step, de acordo com a progressão da solução
@@ -316,6 +317,7 @@ bool Dynamic::Solve()
 		bool res_converged = false;
 		bool GL_converged = false;
 		db.conv_criteria->diverged = false;	//Flag que indica que não divergiu (false)
+		db.gcs->duration_mount_contact = 0.0;
 		//Newton Raphson
 		while ((res_converged == false || GL_converged == false) && (db.conv_criteria->diverged == false) && (aborted == false))
 		{
@@ -395,6 +397,10 @@ bool Dynamic::Solve()
 				{
 					WriteResults(time);								//salvando resultados
 				}
+				//Marina
+				high_resolution_clock::time_point t3 = high_resolution_clock::now();
+				auto duration3 = std::chrono::duration_cast<std::chrono::microseconds>(t3 - t4).count();
+				db.time_step_marina = duration3;
 				//Atualiza monitor
 				if (db.monitor_exist == true && (converged_number%db.monitor->sample == 0 || time == end_time))
 					db.monitor->UpdateMonitor(time);

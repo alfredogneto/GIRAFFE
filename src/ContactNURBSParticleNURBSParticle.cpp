@@ -1,0 +1,347 @@
+#include "ContactNURBSParticleNURBSParticle.h"
+#include "Database.h"
+
+#include "NURBSParticle.h"
+#include "NURBSMultipatchSurface.h"                 
+#include "Matrix.h"
+#include "RigidNURBSSurface_RigidNURBSSurface.h"
+#include "Node.h"
+#include "GeneralContactSearch.h"
+#include "SurfacePairGeneralContact.h"
+//Variaveis globais
+extern
+Database db;
+
+
+ContactNURBSParticleNURBSParticle::ContactNURBSParticleNURBSParticle()
+{
+	index1 = 0;				//Particle 1 - index
+	index2 = 0;				//Particle 2 - index
+	sub_index1 = 0;			//Particle 1 - sub_index
+	sub_index2 = 0;			//Particle 2 - sub_index
+
+	prev_active = false;
+	cur_active = false;
+
+	I3 = new Matrix(3, 3);
+	(*I3)(0, 0) = 1.0;
+	(*I3)(1, 1) = 1.0;
+	(*I3)(2, 2) = 1.0;
+
+	contact_pairs.clear();
+
+	//Degenerations
+	deg_pointA = 0;
+	deg_curveA = 0;
+	deg_pointB = 0;
+	deg_curveB = 0;
+
+	//Marina
+	contact_detection = new bool(false);
+	contact_detectionA = new bool(false);
+	contact_detectionB = new bool(false);
+	contact_detectionAB = new bool(false);
+}
+
+
+ContactNURBSParticleNURBSParticle::~ContactNURBSParticleNURBSParticle()
+{
+	for (int i = 0; i < contact_pairs.size(); i++)
+		delete contact_pairs[i];
+	contact_pairs.clear();
+
+	//Cleaning
+	delete I3;
+
+	//Marina
+	delete contact_detection;
+	delete contact_detectionA;
+	delete contact_detectionB;
+	delete contact_detectionAB;
+}
+
+void ContactNURBSParticleNURBSParticle::PreCalc()
+{
+	pA = static_cast<NURBSParticle*>(db.particles[index1]);
+	pB = static_cast<NURBSParticle*>(db.particles[index2]);
+	surfA = static_cast<NURBSMultipatchSurface*>(db.cad_data[pA->CADDATA_ID - 1]);
+	surfB = static_cast<NURBSMultipatchSurface*>(db.cad_data[pB->CADDATA_ID - 1]);
+
+	//pointers to evaluate rigid body motion of the particle
+	QAp = pA->Qip;
+	QBp = pB->Qip;
+	x0Ap = pA->x0ip;
+	x0Bp = pB->x0ip;
+
+	QAi = pA->Qi;
+	QBi = pB->Qi;
+	x0Ai = pA->x0i;
+	x0Bi = pB->x0i;
+
+	Q0A = pA->Q0;
+	Q0B = pB->Q0;
+
+	/*
+	//Tests to exit with no creation of a contact pair: edge-edge
+	if (deg_curveA != 0 && surfA->edges[deg_curveA - 1].concave_indicator == 0)
+		return;
+	if (deg_curveB != 0 && surfB->edges[deg_curveB - 1].concave_indicator == 0)
+		return;
+	*/
+
+	CreateSurfacePair(deg_pointA, deg_curveA, deg_pointB, deg_curveB);
+
+	//Marina
+	*contact_detection = false;
+	*contact_detectionA = false;
+	*contact_detectionB = false;
+	*contact_detectionAB = false;
+}
+
+void ContactNURBSParticleNURBSParticle::MountGlobal()
+{
+	//Variaveis temporarias para salvar a indexacao global dos graus de liberdade a serem setados na matriz de rigidez global
+	int GL_global_1 = 0;
+	int GL_global_2 = 0;
+	double anterior = 0;
+	for (int c = 0; c < contact_pairs.size(); c++)
+	{
+		if (contact_pairs[c]->GetActive())
+		{
+			if (contact_pairs[c]->eligible)
+			{
+				for (int i = 0; i < 12; i++)
+				{
+					if (i < 6)
+						GL_global_1 = db.nodes[db.particles[index1]->node - 1]->GLs[i];
+					else
+						GL_global_1 = db.nodes[db.particles[index2]->node - 1]->GLs[i - 6];
+					//Caso o grau de liberdade seja livre:
+					if (GL_global_1 > 0)
+					{
+						anterior = db.global_P_A(GL_global_1 - 1, 0);
+						db.global_P_A(GL_global_1 - 1, 0) = anterior + contact_pairs[c]->Rc[i];
+						anterior = db.global_I_A(GL_global_1 - 1, 0);
+						db.global_I_A(GL_global_1 - 1, 0) = anterior + contact_pairs[c]->Rc[i];
+					}
+					else
+					{
+						if (GL_global_1 != 0)//se o GL e ativo
+						{
+							anterior = db.global_P_B(-GL_global_1 - 1, 0);
+							db.global_P_B(-GL_global_1 - 1, 0) = anterior + contact_pairs[c]->Rc[i];
+						}
+					}
+					for (int j = 0; j < 12; j++)
+					{
+						if (j < 6)
+							GL_global_2 = db.nodes[db.particles[index1]->node - 1]->GLs[j];
+						else
+							GL_global_2 = db.nodes[db.particles[index2]->node - 1]->GLs[j - 6];
+						//Caso os graus de liberdade sejam ambos livres (Matriz Kaa)
+						if (GL_global_1 > 0 && GL_global_2 > 0)
+							db.global_stiffness_AA.setValue(GL_global_1 - 1, GL_global_2 - 1, contact_pairs[c]->Kc[i][j]);
+						//Caso os graus de liberdade sejam ambos fixos (Matriz Kbb)
+						if (GL_global_1 < 0 && GL_global_2 < 0)
+							db.global_stiffness_BB.setValue(-GL_global_1 - 1, -GL_global_2 - 1, contact_pairs[c]->Kc[i][j]);
+						//Caso os graus de liberdade sejam livre e fixo (Matriz Kab)
+						if (GL_global_1 > 0 && GL_global_2 < 0)
+							db.global_stiffness_AB.setValue(GL_global_1 - 1, -GL_global_2 - 1, contact_pairs[c]->Kc[i][j]);
+						//Caso os graus de liberdade sejam fixo e livre (Matriz Kba)
+						if (GL_global_1 < 0 && GL_global_2 > 0)
+							db.global_stiffness_BA.setValue(-GL_global_1 - 1, GL_global_2 - 1, contact_pairs[c]->Kc[i][j]);
+					}
+				}
+			}
+		}
+	}
+}
+
+void ContactNURBSParticleNURBSParticle::MountGlobalExplicit()
+{
+	//Variaveis temporarias para salvar a indexacao global dos graus de liberdade a serem setados na matriz de rigidez global
+	//Obs: aqui os contatos sao subtraidos pois no explicito ja esta isolada a aceleracao e aqui entram como se fosse forcas externas, sendo necessaria a inversao do sinal
+	int GL_global_1 = 0;
+	double anterior = 0;
+	for (int c = 0; c < contact_pairs.size(); c++)
+	{
+		if (contact_pairs[c]->GetActive())
+		{
+			if (contact_pairs[c]->eligible)
+			{
+				for (int i = 0; i < 12; i++)
+				{
+					if (i < 6)
+						GL_global_1 = db.nodes[db.particles[index1]->node - 1]->GLs[i];
+					else
+						GL_global_1 = db.nodes[db.particles[index2]->node - 1]->GLs[i - 6];
+					//Caso o grau de liberdade seja livre:
+					if (GL_global_1 > 0)
+					{
+						anterior = db.global_P_A(GL_global_1 - 1, 0);
+						db.global_P_A(GL_global_1 - 1, 0) = anterior - contact_pairs[c]->Rc[i];
+						anterior = db.global_I_A(GL_global_1 - 1, 0);
+						db.global_I_A(GL_global_1 - 1, 0) = anterior - contact_pairs[c]->Rc[i];
+					}
+					else
+					{
+						if (GL_global_1 != 0)//se o GL e ativo
+						{
+							anterior = db.global_P_B(-GL_global_1 - 1, 0);
+							db.global_P_B(-GL_global_1 - 1, 0) = anterior - contact_pairs[c]->Rc[i];
+						}
+					}
+				}
+			}
+		}
+	}
+
+}
+
+void ContactNURBSParticleNURBSParticle::ProcessContactHierarchy()
+{
+	//?
+}
+
+void ContactNURBSParticleNURBSParticle::InsertNewContact(int deg_pointA, int deg_curveA, int deg_pointB, int deg_curveB)
+{
+	RigidNURBSSurface_RigidNURBSSurface* temp = new RigidNURBSSurface_RigidNURBSSurface();
+	temp->index1 = index1;
+	temp->index2 = index2;
+	temp->sub_index1 = sub_index1;
+	temp->sub_index2 = sub_index2;
+
+	temp->deg_pointA = deg_pointA;
+	temp->deg_curveA = deg_curveA;
+	temp->deg_pointB = deg_pointB;
+	temp->deg_curveB = deg_curveB;
+	//temp->faceAID = faceAID;
+	//temp->faceBID = faceBID;
+	//Assigning pointers - not creating copies, just pointing
+	temp->ptrx0Ai = x0Ai;
+	temp->ptrx0Bi = x0Bi;
+	temp->ptrQAi = QAi;
+	temp->ptrQBi = QBi;
+	temp->ptrx0Ap = x0Ap;
+	temp->ptrx0Bp = x0Bp;
+	temp->ptrQAp = QAp;
+	temp->inv_QAp = transp(*QAp);
+	temp->ptrQBp = QBp;
+	temp->inv_QBp = transp(*QBp);
+	temp->node_A = pA->node;
+	temp->node_B = pB->node;
+	temp->material_A = pA->material;
+	temp->material_B = pB->material;
+	temp->CAD_AID = pA->CADDATA_ID;
+	temp->CAD_BID = pB->CADDATA_ID;
+	temp->ptrQ0A = Q0A;
+	temp->ptrQ0B = Q0B;
+
+	//temp->I3 = I3;
+	temp->SetActive();
+	contact_pairs.push_back(temp);
+}
+
+int ContactNURBSParticleNURBSParticle::CreateSurfacePair(int deg_pointA, int deg_curveA, int deg_pointB, int deg_curveB)
+{
+	/*int list_index = -1;
+	for (int i = 0; i < contact_pairs.size(); i++)
+	{
+		RigidNURBSSurface_RigidNURBSSurface* ptr = static_cast<RigidNURBSSurface_RigidNURBSSurface*>(contact_pairs[i]);
+		if (ptr->deg_pointA == deg_pointA && ptr->deg_pointB == deg_pointB &&
+			ptr->deg_curveA == deg_curveA && ptr->deg_curveB == deg_curveB /*&& ptr->faceAID == faceAID && ptr->faceBID == faceBID*//*)
+		/*{
+			contact_pairs[i]->SetActive();
+			list_index = i;
+		}
+	}
+	if (list_index == -1)
+	{*/
+	InsertNewContact(deg_pointA, deg_curveA, deg_pointB, deg_curveB);
+	/*list_index = (int)contact_pairs.size() - 1;
+}*/
+//ProcessSurfacePair(list_index);
+
+	return 0;
+}
+
+void ContactNURBSParticleNURBSParticle::ProcessSurfacePair(int list_index)
+{
+	contact_pairs[list_index]->eligible = false;
+	contact_pairs[list_index]->SolveLCP();
+	contact_pairs[list_index]->EvaluateNormalGap();
+}
+
+void ContactNURBSParticleNURBSParticle::ProcessSurfacePairs()
+{
+	for (int i = 0; i < (int)contact_pairs.size(); i++) {
+		ProcessSurfacePair(i);
+	}
+		
+}
+
+void ContactNURBSParticleNURBSParticle::FinalProcessSurfacePairsExplicit(double t)
+{
+	for (int i = 0; i < (int)contact_pairs.size(); i++)
+		FinalProcessSurfacePairExplicit(i, t);
+}
+
+void ContactNURBSParticleNURBSParticle::FinalProcessSurfacePairExplicit(int list_index, double t)
+{
+	//Copies
+	/*bool prev_elig = contact_pairs[list_index]->eligible;
+	double prev_conv[4];
+	for (int i = 0; i < 4; i++)
+		prev_conv[i] = contact_pairs[list_index]->cd->convective[0][i];
+	int prev_patch[2];
+	prev_patch[0] = contact_pairs[list_index]->cd->patchA[0]; //Marina
+	prev_patch[1] = contact_pairs[list_index]->cd->patchB[0]; //Marina
+	bool prev_other = contact_pairs[list_index]->cd->other_patch[0]; //Marina
+	int prev_ret_value = contact_pairs[list_index]->cd->return_value[0];
+	double prev_g_n = contact_pairs[list_index]->cd->g_n[0]; 
+	double prev_g0[3];
+	for (int i = 0; i < 3; i++)
+		prev_g0[i] = (*contact_pairs[list_index]->cd->g[0])(i,0);
+	double prev_n0[3];
+	for (int i = 0; i < 3; i++)
+		prev_n0[i] = (*contact_pairs[list_index]->cd->n[0])(i, 0);*/
+
+	contact_pairs[list_index]->eligible = false; //Marina
+	contact_pairs[list_index]->SolveLCP();
+	contact_pairs[list_index]->EvaluateNormalGap();//here the normal of contact is updated, which ensures a successful test for penetration in HaveErrors function
+
+	
+	if (contact_pairs[list_index]->eligible) {
+		//contact_pairs[list_index]->eligible = false; //Marina
+		//contact_pairs[list_index]->SolveLCP();
+		//contact_pairs[list_index]->EvaluateNormalGap();//here the normal of contact is updated, which ensures a successful test for penetration in HaveErrors function
+		contact_pairs[list_index]->Alloc();
+		contact_pairs[list_index]->SetVariablesExplicit(t);
+		contact_pairs[list_index]->FinalUpdateExplicit(t);
+		//ft[0] = contact_pairs[list_index]->ft[0];
+		//ft[1] = contact_pairs[list_index]->ft[1];
+		//ft[2] = contact_pairs[list_index]->ft[2];
+	}
+	
+	
+
+	//Returning values modified in SolveLCP and EvaluateNormalGap routines (except gap and normal)
+	/*contact_pairs[list_index]->eligible = prev_elig;
+	for (int i = 0; i < 4; i++)
+		contact_pairs[list_index]->cd->convective[0][i] = prev_conv[i];
+	contact_pairs[list_index]->cd->patchA[0] = prev_patch[0];
+	contact_pairs[list_index]->cd->patchB[0] = prev_patch[1];
+	contact_pairs[list_index]->cd->return_value[0] = prev_ret_value;
+	contact_pairs[list_index]->cd->g_n[0] = prev_g_n;
+	contact_pairs[list_index]->cd->other_patch[0] = prev_other;
+
+	for (int i = 0; i < 3; i++)
+		(*contact_pairs[list_index]->cd->g[0])(i, 0) = prev_g0[i];
+	for (int i = 0; i < 3; i++)
+		(*contact_pairs[list_index]->cd->n[0])(i, 0) = prev_n0[i];*/
+
+	/*bool prev_elig = contact_pairs[list_index]->eligible;
+	contact_pairs[list_index]->SolveLCP();
+	contact_pairs[list_index]->EvaluateNormalGap();
+	contact_pairs[list_index]->eligible = prev_elig;*/
+}

@@ -1,0 +1,227 @@
+#pragma once
+#include "SurfacePairGeneralContact.h"
+class NURBSParticle;
+class NURBSMultipatchSurface;
+class Interface_2;
+class ContactNURBSParticleNURBSParticle;
+#include "Matrix.h"
+class GeneralContactSearch;
+
+class RigidNURBSSurface_RigidNURBSSurface :
+	public SurfacePairGeneralContact
+{
+public:
+	RigidNURBSSurface_RigidNURBSSurface();
+	~RigidNURBSSurface_RigidNURBSSurface();
+
+	void EvaluateNormalGap();
+	void EvaluateNormalGapEligibleOrNot();
+	bool HaveErrors();					//Checks for possible errors
+	void SolveLCP();					//Solves LCP for the surface pair
+	void SolvePreviousContact();		//Solves the previous contact problem
+	void MountLocalContributions();		//Mounts local contributions due to contact occurrence
+	void PreCalc();						//PreCalcs vertices for parameterizations and contact degenerations
+	void SetVariables();				//Sets variables for AceGen codes interfaces
+	void HessianPhase1(Matrix& mHes);
+	void SurfacePoints();
+	void Report();
+	void CompactReport();
+	void PredictorTimeStep(double kin);
+
+	//void AllocSpecificExplicit();
+	//void FreeSpecificExplicit();
+	void MountLocalContributionsExplicit(double t);
+	void SetVariablesExplicit(double t);
+	void FinalUpdateExplicit(double t);
+
+	void AllocSpecific();
+	void FreeSpecific();
+	bool alloc_specific_control;
+	//bool alloc_specific_explicit_control;
+
+	//Marina
+	void DefaultValues();																								//Valores Default de tolerâncias e outras variáveis
+	void InitialGuess(SSContactData * c_data);
+	int CharacterizeCriticalPoint(Matrix* solution, Matrix& patch);
+	int CharacterizeCriticalPointDegenerated(Matrix* solution, Matrix& patch);
+	double ObjectivePhase1(Matrix& mc, Matrix& patch);								//Calcula a função objetivo para um conjunto de coordenadas convectivas - Phase 1
+	void GradientPhase1(Matrix& mc, Matrix& patch, Matrix& mGra);					//Calcula o Gradiente da função objetivo - Phase 1
+	void HessianPhase1(Matrix& mc, Matrix& patch, Matrix& mHes);					//Calcula a Hessiana da função objetivo - Phase 1
+	bool FindMinimumSolution(SSContactData* c_data, Matrix* solution, Matrix& patch, int &return_info, bool &conv_total);
+	bool GeneralFindMinimumSolution(SSContactData* c_data, Matrix* solution, Matrix& patch, int &return_info, int &number_patchesA, int &number_patchesB);
+	bool GeneralNURBSPointProjection(double &zeta, double &theta, int &patch, double p[3], int surf);
+	bool FindMinimumSolutionCSO(SSContactData* c_data, Matrix* solution, Matrix *patches, int type_initial_estimate);
+	int VerifyConvectiveRange(SSContactData* c_data, Matrix& mc, Matrix& patch);
+	void GradientHessianObjectiveFunctionCSO(double rho, double phi, double &zetaA, double &thetaA, double &zetaB, double &thetaB, int &patchA, int &patchB, Matrix& mGrad, Matrix& mHes);
+	void BeginStepCheck(SSContactData* c_data);
+	bool EndStepCheck(SSContactData* c_data);
+	double Gap(Matrix& mc, Matrix& patch, bool fixed_normals, Matrix& nA, Matrix& nB);
+	void EvaluateInvertedHessian(SSContactData* c_data, int type);
+	int VerifyCriticalMultipatchNURBSRegion(SSContactData* c_data, Matrix* solution, Matrix& patch);
+	bool FindMinimumSolutionDegenerated(SSContactData* c_data, Matrix* P_0, Matrix* solution, Matrix& patch);
+	//Specific for NURBS
+	void EvaluateNURBSDerivatives_p(Matrix& mc, Matrix& patch);						//Evaluates the necessary derivatives to be used as input to AceGen routines
+	void EvaluateNURBSDerivatives_i(Matrix& mc, Matrix& patch);						//Evaluates the necessary derivatives to be used as input to AceGen routines
+	void EvaluateNURBSDOFsVariables();									           //Evaluates the necessary DOFs variables to be used as input to AceGen routines
+	bool SupportFunction(double rho, double phi, double &zetaA, double &thetaA, double &zetaB, double &thetaB, double *pA, double *pB, int &patchA, int &patchB, double &obj, bool &conv_sup);
+	bool SupportFunction(double rho, double phi, double &zeta, double &theta, double *p, int &patch, bool &conv_sup, int surf, bool &conv_total);
+	int derivative_order;
+	Matrix** dataA;
+	Matrix** dataB;
+	void SurfacePointsTemp();
+	//IDs of vertices of STL surfaces to be considered to triangular surface parameterization (following the defined sequence)
+	//int vertexIDsA[3];
+	//int vertexIDsB[3];
+
+	bool previous_evaluation;			//Flag to evaluate previous contact condition
+	double extra_leng;					//Extra length to consider in parameterization parameters
+
+	//Node ID's
+	int node_A;
+	int node_B;
+	//CAD ID's
+	int CAD_AID;
+	int CAD_BID;
+	//Face ID's
+	//int faceAID;
+	//int faceBID;
+	//Material ID's (for interface law atribution)
+	int material_A;
+	int material_B;
+
+	//Pointers
+	NURBSMultipatchSurface* surfA;
+	NURBSMultipatchSurface* surfB;
+	//Marina
+	ContactNURBSParticleNURBSParticle* pair_control;
+
+	Matrix* nA;
+	Matrix* nB;
+
+	/*
+	double* x1A;
+	double* x2A;
+	double* x3A;
+	double* x1B;
+	double* x2B;
+	double* x3B;
+	*/
+
+	double* gti;
+	double* gtpupdated;
+	bool *stick;
+	bool *stickupdated;
+	double** invH;
+
+	//Pointers
+	Matrix* ptrQAp;
+	Matrix inv_QAp;
+	Matrix* ptrQBp;
+	Matrix inv_QBp;
+	Matrix* ptrx0Ap;
+	Matrix* ptrx0Bp;
+
+	Matrix* ptrQAi;
+	Matrix* ptrQBi;
+	Matrix* ptrx0Ai;
+	Matrix* ptrx0Bi;
+
+	Matrix* ptrQ0A;
+	Matrix* ptrQ0B;
+
+	//Matrix* I3;
+
+	//AceGen variables - alloced in AllocSpecific only on demand
+	double* cAp;
+	double* cBp;
+	double* cAi;
+	double* cBi;
+	double* xAi;
+	double* xBi;
+	double* uA;
+	double* uB;
+	double* alphaA;
+	double* alphaB;
+	double* duiA;
+	double* duiB;
+	double* dalphaiA;
+	double* dalphaiB;
+	double* dduiA;
+	double* dduiB;
+	double* ddalphaiA;
+	double* ddalphaiB;
+	double** QAi;
+	double** QBi;
+	double* GAp;
+	double** dGAp;
+	double*** ddGAp;
+	double**** dddGAp;
+	double* GBp;
+	double** dGBp;
+	double*** ddGBp;
+	double**** dddGBp;
+	double* GAi;
+	double** dGAi;
+	double* GBi;
+	double** dGBi;
+
+	bool* invertnormalA;
+	bool* invertnormalB;
+
+	//Explicit
+	double** Q0A;
+	double** Q0B;
+
+	//Contact model parameters
+	double(*epsn);
+	double(*cn);
+	double(*mus);
+	double(*mud);
+	double(*epst);
+	double(*ct);
+	Interface_2* inter;
+
+	//Interface work variables
+	//double* Wnum;
+	//double* Wteo;
+
+	//Marina
+	int patchA; //patch da subdivisão
+	int subA_u; //subdivisão em u do patch A
+	int subA_v; //subdivisão em v do patch A
+	int patchB; //patch da subdivisão
+	int subB_u; //subdivisão em u do patch A
+	int subB_v; //subdivisão em v do patch A
+	bool alloc_control;
+	Matrix** cNR1;			//Solução da phase 1
+	Matrix** cNR2;			//Solução da phase 2
+	Matrix** patches1;      //patches of phase 1
+	Matrix** patches2;		//patches of phase 2
+	
+	//Last calls of derivatives - improves efficiency
+	Matrix last_cp;
+	Matrix last_ci;
+	bool first_ci;
+	bool first_cp;
+	int patch1_i;
+	int patch1_p;
+	int patch2_i;
+	int patch2_p;
+
+	double tol_small_1;		//Critério para número muito pequeno - resíduo != 0
+	double tol_eig;			//Critério para autovalor baixo
+	double tol_convective;	//Criterio para maximo erro nas coordenadas convectivas
+	double tol_ascent;
+	int seq_number;
+
+	int max_it_1;			//Número máximo de iterações para otimização - phase 1
+	int max_it_2;			//Número máximo de iterações para otimização - phase 2
+
+	double perc;			//Percentual de coordenada convectiva para considerar longe ou perto do range (afeta return value da funcao ConvectiveRange)
+	Matrix convective_range;//Matrix que guarda os ranges de coordenadas convectivas validas para as superficies
+	Matrix convective_max;	//Matrix que guarda os valores máximos de coordenadas convectivas
+	Matrix convective_min;	//Matrix que guarda os valores mínimos de coordenadas convectivas
+	double minimum_convective_range;
+
+};
+

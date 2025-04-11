@@ -121,6 +121,7 @@
 #include "RigidTriangularFace_RigidTriangularFace.h"
 #include "FlexibleTriangularFace_FlexibleTriangularFace.h"
 #include "FlexibleTriangularFace_RigidTriangularFace.h"
+#include "RigidNURBSSurface_RigidNURBSSurface.h" //Marina
 
 //Section details
 #include "SectionDetails.h"
@@ -164,11 +165,13 @@
 #include "CADData.h"
 #include "STLSurface.h"
 #include "NURBSSurface.h"
+#include "NURBSMultipatchSurface.h" //Marina
 
 //ContactInterfaces
 #include "ContactInterface.h"
 #include "Interface_0.h"
 #include "Interface_1.h"
+#include "Interface_2.h" //Marina
 
 //BoundingVolumes
 #include "BoundingVolume.h"
@@ -177,6 +180,7 @@
 #include "BoundingTriangularBox.h"
 #include "BoundingBoxAxesAligned.h"
 #include "BoundingBoxAxesOriented.h"
+#include "OrientedBoundingBox.h" //Marina
 
 #include "Encoding.h"
 #include "ExecutionData.h"
@@ -189,6 +193,8 @@ Database::Database()
 	//Versão do GIRAFFE
 	sprintf(version,"2.0.135");
 	
+	//Marina
+	time_step_marina = 0;
 	number_solutions = 0;
 	number_nodes = 0;
 	number_super_nodes = 0;

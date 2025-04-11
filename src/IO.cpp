@@ -70,6 +70,7 @@
 
 //Splines
 #include "Spline.h"
+#include "SplineElement.h"
 
 //Contatos
 #include "Contact.h"
@@ -122,6 +123,7 @@
 #include "RigidTriangularFace_RigidTriangularFace.h"
 #include "FlexibleTriangularFace_FlexibleTriangularFace.h"
 #include "FlexibleTriangularFace_RigidTriangularFace.h"
+#include "RigidNURBSSurface_RigidNURBSSurface.h" //Marina
 
 //Section details
 #include "SectionDetails.h"
@@ -165,11 +167,13 @@
 #include "CADData.h"
 #include "STLSurface.h"
 #include "NURBSSurface.h"
+#include "NURBSMultipatchSurface.h" //Marina
 
 //ContactInterfaces
 #include "ContactInterface.h"
 #include "Interface_0.h"
 #include "Interface_1.h"
+#include "Interface_2.h" //Marina
 
 //BoundingVolumes
 #include "BoundingVolume.h"
@@ -178,6 +182,7 @@
 #include "BoundingTriangularBox.h"
 #include "BoundingBoxAxesAligned.h"
 #include "BoundingBoxAxesOriented.h"
+#include "OrientedBoundingBox.h"
 
 #include "Encoding.h"
 #include "ExecutionData.h"
@@ -2113,7 +2118,13 @@ bool IO::ReadCADData(FILE *f)
 			db.cad_data[i] = new NURBSSurface();
 			CAD_OK = true;
 		}
-		
+		//Marina
+		//Alocação do elemento "NURBSMultipatchSurface"
+		if (!strcmp(s, "NURBSMultipatchSurface"))
+		{
+			db.cad_data[i] = new NURBSMultipatchSurface();
+			CAD_OK = true;
+		}		
 		if (CAD_OK == true)
 		{
 			if (!db.cad_data[i]->Read(f))
@@ -2159,7 +2170,11 @@ bool IO::ReadContactInterfaces(FILE *f)
 			db.contactinterfaces[i] = new Interface_0();
 			Interface_OK = true;
 		}
-		if (Interface_OK == true)
+		//Marina
+		else if (!strcmp(s, "Interface_2")) {
+			db.contactinterfaces[i] = new Interface_2();
+			Interface_OK = true;
+		}		if (Interface_OK == true)
 		{
 			if (!db.contactinterfaces[i]->Read(f))
 			{

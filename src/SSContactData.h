@@ -8,6 +8,11 @@ public:
 	SSContactData();
 	~SSContactData();
 	int n_solutions;
+	//Marina
+	int *patchA; // for contact between MultipatchRigiNURBS_1 surfaces
+	int *patchB; // for contact between MultipatchRigiNURBS_1 surfaces
+	int *copy_patchA; // for contact between MultipatchRigiNURBS_1 surfaces
+	int *copy_patchB; // for contact between MultipatchRigiNURBS_1 surfaces
 	double** convective;
 	double** copy_convective;
 	double** copy_deg_coordinates;				//degenerated coordinates copy
@@ -27,8 +32,8 @@ public:
 	bool* repeated;
 	double*** invHessian;						//Inverse of the Hessian matrix - determined during the FindMinimumParameters routine
 	
-	bool* copy_degenerated;						//true ou false para indicar se o contato foi ou não degenerado no passo anterior
-	bool* degenerated;							//true ou false para indicar se o contato e ou não degenerado
+	bool* copy_degenerated;						//true ou false para indicar se o contato foi ou nao degenerado no passo anterior
+	bool* degenerated;							//true ou false para indicar se o contato e ou nao degenerado
 	
 	double* g_n;								//gap normal
 	double* copy_g_n;							//gap normal
@@ -44,11 +49,15 @@ public:
 	SurfaceData* surf1;							//Dados - superficie 1
 	SurfaceData* surf2;							//Dados - superficie 2
 
-	bool alloced;								//Booleana que indica se esta ou não alocado - controle de alocação
-	void CheckRepeated(double tol_coordinate_value);	//Checa repetição de raizes e salva a informação na matriz 'repeated'
+	bool alloced;								//Booleana que indica se esta ou nao alocado - controle de alocacao
+	void CheckRepeated(double tol_coordinate_value);	//Checa repeticao de raizes e salva a informacao na matriz 'repeated'
 	void Plot();
 	void PlotSmallReport();
 	void Alloc();										//Aloca matrizes
 	void Free();										//Desaloca matrizes	
+	
+	//Marina
+	bool* other_patch;
+	bool* copy_other_patch;
 };	
 

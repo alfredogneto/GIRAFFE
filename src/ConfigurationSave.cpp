@@ -6,6 +6,7 @@
 #include "Boundary.h"
 #include "Particle.h"
 #include "Polyhedron.h"
+#include "NURBSParticle.h" //Marina
 
 #include"Database.h"
 #include"IO.h"
@@ -119,6 +120,21 @@ void ConfigurationSave::ExportConfiguration(double time)
 		if (typeid(*db.particles[i]) == typeid(Polyhedron))
 		{
 			Polyhedron* ptr = static_cast<Polyhedron*>(db.particles[i]);
+			Matrix e1(3);
+			e1(0, 0) = 1.0;
+			Matrix e3(3);
+			e3(2, 0) = 1.0;
+			if (db.particles[i]->node != 0)
+			{
+				e1 = (*ptr->Qip)*e1;
+				e3 = (*ptr->Qip)*e3;
+			}
+			fprintf(f, "CS\t%d\tE1\t%.12e\t%.12e\t%.12e\tE3\t%.12e\t%.12e\t%.12e\n", i + 2 + db.number_boundaries, e1(0, 0), e1(1, 0), e1(2, 0), e3(0, 0), e3(1, 0), e3(2, 0));
+		}
+		//Marina
+		if (typeid(*db.particles[i])==typeid(NURBSParticle)) {
+   
+			NURBSParticle *ptr = static_cast<NURBSParticle*>(db.particles[i]);
 			Matrix e1(3);
 			e1(0, 0) = 1.0;
 			Matrix e3(3);

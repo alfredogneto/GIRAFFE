@@ -1,6 +1,7 @@
 #pragma once
 #include <stdio.h>
 #include "Matrix.h"
+#include <string.h>
 
 class SSContactData;
 

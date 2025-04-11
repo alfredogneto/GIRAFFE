@@ -1,8 +1,10 @@
 #include "NURBSParticle.h"
 
 #include "BoundingSphere.h"
+#include "OrientedBoundingBox.h" //Marina
 #include "CADData.h"
 #include "NURBSSurface.h"
+#include "NURBSMultipatchSurface.h"
 #include "CoordinateSystem.h"
 #include "Material.h"
 #include "Node.h"
@@ -11,6 +13,8 @@
 #include "GeneralContactSearch.h"
 #include "SurfaceSet.h"
 #include "Dynamic.h"
+#include "Interface_2.h"
+#include "ContactParticleParticle.h"
 
 #include"Database.h"
 //Variaveis globais
@@ -23,9 +27,24 @@ NURBSParticle::NURBSParticle()
 	Alloc();
 	bv = new BoundingSphere();
 	CADDATA_ID = 0;
+	nullbv = false;
+	n_sub_bv = 0;
 	strain_energy = 0.0;
 	potential_g_energy = 0.0;
 	sprintf(type_name, "NURBS");
+	inc_len_factor = 0.1f;
+
+	x0f = new MatrixFloat(3);
+	Q0f = new MatrixFloat(3, 3);
+
+	pQi = new double*[3];
+	for (int i = 0; i < 3; i++)
+		pQi[i] = new double[3];
+
+	allocedMassFragmented = false;
+
+	GLA = NULL;
+	GLB = NULL;
 }
 
 NURBSParticle::~NURBSParticle()
@@ -41,6 +60,13 @@ NURBSParticle::~NURBSParticle()
 		}
 		delete[] sub_bv;
 	}
+
+	delete x0f;
+	delete Q0f;
+
+	for (int i = 0; i < 3; i++)
+		delete pQi[i];
+	delete[] pQi;
 }
 
 bool NURBSParticle::Check()
@@ -53,8 +79,9 @@ bool NURBSParticle::Check()
 		return false;
 	if (CADDATA_ID > db.number_cad_data)
 		return false;
-	if (typeid(*db.cad_data[CADDATA_ID - 1]) != typeid(NURBSSurface))
-		return false;	
+	//Marina
+	if (typeid(*db.cad_data[CADDATA_ID - 1]) != typeid(NURBSSurface) && typeid(*db.cad_data[CADDATA_ID - 1]) != typeid(NURBSMultipatchSurface))
+		return false;
 	return true;
 }
 
@@ -99,6 +126,18 @@ bool NURBSParticle::Read(FILE *f)
 	}
 	else
 		return false;
+	//Marina
+	//Salva a posicao (stream)
+	fpos_t pos;
+	fgetpos(f, &pos);
+	fscanf(f, "%s", s);
+	if (!strcmp(s, "NullBV"))
+	{
+		nullbv = true;
+	}
+	else {
+		fsetpos(f, &pos);
+	}
 	return true;
 }
 
@@ -127,7 +166,7 @@ void NURBSParticle::WriteModifyingParameters(FILE *f, int e_material, int e_node
 void NURBSParticle::PreCalc()
 {
 	////////////////////////////////////////////////////////////////
-	//Matriz para transformação de coordenadas  local-global
+	//Matriz para transformacao de coordenadas  local-global
 	//vlocal = (sistema do CAD)
 	// Q0*vlocal = vglobal
 	////////////////////////////////////////////////////////////////
@@ -142,41 +181,229 @@ void NURBSParticle::PreCalc()
 	(*Q0)(2, 2) = (*db.CS[cs - 1]->E3)(2, 0);
 
 	//Calculando valores do br. Feito apenas uma vez no inicio. 
-	//A origem do CAD coincide com o Polo, então G-O = G
-	//Como G e dado no sistema do CAD, então G precisa ser transformado
+	//A origem do CAD coincide com o Polo, entao G-O = G
+	//Como G e dado no sistema do CAD, entao G precisa ser transformado
 	Matrix local_b = *db.cad_data[CADDATA_ID - 1]->G;
-	Matrix global_b = (*Q0) * local_b;
-	br[0] = global_b(0, 0);
-	br[1] = global_b(1, 0);
-	br[2] = global_b(2, 0);
+	//Matrix global_b = (*Q0) * local_b;
+	
+	(*mbr) = (*Q0) * local_b;
+	br[0] = (*mbr)(0, 0);
+	br[1] = (*mbr)(1, 0);
+	br[2] = (*mbr)(2, 0);
 
 	//Atualizando J_O para o sistema global e copiando valores para Jr. Feito apenas uma vez no inicio
 	Matrix global_J = db.materials[material - 1]->rho * (*Q0) * (*db.cad_data[CADDATA_ID - 1]->J_O)*transp(*Q0);
 	global_J.MatrixToPtr(Jr, 3);
 	mass = db.cad_data[CADDATA_ID - 1]->volume * db.materials[material - 1]->rho;
 
-	//////////////////////////////////////Bounding Volume////////////////////////////////////
+	//Explicit
+	*mbrlocal = *db.cad_data[CADDATA_ID - 1]->G;
+	*mJrlocal = (db.materials[material - 1]->rho) * (*db.cad_data[CADDATA_ID - 1]->J_O);
+
+	//Skew(b) - including the mass
+	Matrix mB = mass * skew(*mbrlocal);
+
+	//Mass matrix evaluation - explicit
+	for (int i = 0; i < 3; i++)
+	{
+		for (int j = 0; j < 3; j++)
+		{
+			(*MassMatrix)(i, j) = mass * (*I3)(i, j);
+			(*MassMatrix)(i + 0, j + 3) = -1.0 * mB(i, j);
+			(*MassMatrix)(i + 3, j + 0) = mB(i, j);
+			(*MassMatrix)(i + 3, j + 3) = (*mJrlocal)(i, j);
+		}
+	}
+
+
+	//Marina
+	//////////////////////////////////////Bounding Volumes////////////////////////////////////
+	if (db.gcs_exist)
+		inc_len_factor = db.gcs->inc_len_factor;
 	//PreCalc do CAD e chamado antes do PreCalc das particulas
-	BoundingSphere* ptr_bv = static_cast<BoundingSphere*>(bv);
-	NURBSSurface* ptr_cad = static_cast<NURBSSurface*>(db.cad_data[CADDATA_ID - 1]);
-	ptr_bv->radius = ptr_cad->radius;
-	
-	//TODO subdivisions
-	
+	BoundingSphere* ptr_bv1 = static_cast<BoundingSphere*>(bv);
+	NURBSMultipatchSurface* ptr_cad = static_cast<NURBSMultipatchSurface*>(db.cad_data[CADDATA_ID - 1]); // por enquanto so NURBSMultipatchSurface
+	//Initial settings of the spherical bounding volume
+	ptr_bv1->radius = (1.0f + inc_len_factor) * ptr_cad->radius;
+	ptr_bv1->ref_radius = (1.0f + inc_len_factor) * ptr_cad->radius;
+	ptr_bv1->size = ptr_bv1->radius;
+	//Associated entity:
+	ptr_bv1->associated_type = 'P';
+	ptr_bv1->associated_ID = number;
+	ptr_bv1->associated_sub_ID = 0;
+	//Sub bounding volumes (subpatches)
+	n_sub_bv = 0;
+	for (int i = 0; i < ptr_cad->n_patches; i++)
+	{
+		n_sub_bv = n_sub_bv + ptr_cad->patches[i]->subdivisions[0] * ptr_cad->patches[i]->subdivisions[1];
+	}
+	sub_bv = new BoundingVolume*[n_sub_bv];
+	//BV on subpatches
+	OrientedBoundingBox* ptr_bv2;
+	int aux = 0;
+	for (int i = 0; i < ptr_cad->n_patches; i++)
+	{
+		for (int j = 0; j < ptr_cad->patches[i]->subdivisions[0]; j++)
+		{
+			for (int k = 0; k < ptr_cad->patches[i]->subdivisions[1]; k++)
+			{
+				sub_bv[aux] = new OrientedBoundingBox();
+				ptr_bv2 = static_cast<OrientedBoundingBox*>(sub_bv[aux]);
+				ptr_bv2->inc_len_factor = inc_len_factor;
+
+				(*ptr_bv2->half_dis) = ptr_cad->patches[i]->halfedge_lengths[j][k];
+
+				/*
+				(*ptr_bv2->x0) = (*x0f) + (*Q0f) * ((ptr_cad->patches[i]->box_sub_points[j][k][0] - ptr_cad->patches[i]->box_sub_center[j][k])*(1.0f + inc_len_factor) + ptr_cad->patches[i]->box_sub_center[j][k]);
+				(*ptr_bv2->x1) = (*x0f) + (*Q0f) * ((ptr_cad->patches[i]->box_sub_points[j][k][1] - ptr_cad->patches[i]->box_sub_center[j][k])*(1.0f + inc_len_factor) + ptr_cad->patches[i]->box_sub_center[j][k]);
+				(*ptr_bv2->x2) = (*x0f) + (*Q0f) * ((ptr_cad->patches[i]->box_sub_points[j][k][2] - ptr_cad->patches[i]->box_sub_center[j][k])*(1.0f + inc_len_factor) + ptr_cad->patches[i]->box_sub_center[j][k]);
+				(*ptr_bv2->x3) = (*x0f) + (*Q0f) * ((ptr_cad->patches[i]->box_sub_points[j][k][3] - ptr_cad->patches[i]->box_sub_center[j][k])*(1.0f + inc_len_factor) + ptr_cad->patches[i]->box_sub_center[j][k]);
+				(*ptr_bv2->x4) = (*x0f) + (*Q0f) * ((ptr_cad->patches[i]->box_sub_points[j][k][4] - ptr_cad->patches[i]->box_sub_center[j][k])*(1.0f + inc_len_factor) + ptr_cad->patches[i]->box_sub_center[j][k]);
+				(*ptr_bv2->x5) = (*x0f) + (*Q0f) * ((ptr_cad->patches[i]->box_sub_points[j][k][5] - ptr_cad->patches[i]->box_sub_center[j][k])*(1.0f + inc_len_factor) + ptr_cad->patches[i]->box_sub_center[j][k]);
+				(*ptr_bv2->x6) = (*x0f) + (*Q0f) * ((ptr_cad->patches[i]->box_sub_points[j][k][6] - ptr_cad->patches[i]->box_sub_center[j][k])*(1.0f + inc_len_factor) + ptr_cad->patches[i]->box_sub_center[j][k]);
+				(*ptr_bv2->x7) = (*x0f) + (*Q0f) * ((ptr_cad->patches[i]->box_sub_points[j][k][7] - ptr_cad->patches[i]->box_sub_center[j][k])*(1.0f + inc_len_factor) + ptr_cad->patches[i]->box_sub_center[j][k]);
+				*/
+
+				/*(*ptr_bv2->x0)(0, 0) = (ptr_cad->patches[i]->box_sub_points[j][k][0](0, 0) - ptr_cad->patches[i]->box_sub_center[j][k][0])*(1.0f + inc_len_factor) + ptr_cad->patches[i]->box_sub_center[j][k][0];
+				(*ptr_bv2->x0)(1, 0) = (ptr_cad->patches[i]->box_sub_points[j][k][0](1, 0) - ptr_cad->patches[i]->box_sub_center[j][k][1])*(1.0f + inc_len_factor) + ptr_cad->patches[i]->box_sub_center[j][k][1];
+				(*ptr_bv2->x0)(2, 0) = (ptr_cad->patches[i]->box_sub_points[j][k][0](2, 0) - ptr_cad->patches[i]->box_sub_center[j][k][2])*(1.0f + inc_len_factor) + ptr_cad->patches[i]->box_sub_center[j][k][2];
+
+				(*ptr_bv2->x1)(0, 0) = (ptr_cad->patches[i]->box_sub_points[j][k][1](0, 0) - ptr_cad->patches[i]->box_sub_center[j][k][0])*(1.0f + inc_len_factor) + ptr_cad->patches[i]->box_sub_center[j][k][0];
+				(*ptr_bv2->x1)(1, 0) = (ptr_cad->patches[i]->box_sub_points[j][k][1](1, 0) - ptr_cad->patches[i]->box_sub_center[j][k][1])*(1.0f + inc_len_factor) + ptr_cad->patches[i]->box_sub_center[j][k][1];
+				(*ptr_bv2->x1)(2, 0) = (ptr_cad->patches[i]->box_sub_points[j][k][1](2, 0) - ptr_cad->patches[i]->box_sub_center[j][k][2])*(1.0f + inc_len_factor) + ptr_cad->patches[i]->box_sub_center[j][k][2];
+
+				(*ptr_bv2->x2)(0, 0) = (ptr_cad->patches[i]->box_sub_points[j][k][2](0, 0) - ptr_cad->patches[i]->box_sub_center[j][k][0])*(1.0f + inc_len_factor) + ptr_cad->patches[i]->box_sub_center[j][k][0];
+				(*ptr_bv2->x2)(1, 0) = (ptr_cad->patches[i]->box_sub_points[j][k][2](1, 0) - ptr_cad->patches[i]->box_sub_center[j][k][1])*(1.0f + inc_len_factor) + ptr_cad->patches[i]->box_sub_center[j][k][1];
+				(*ptr_bv2->x2)(2, 0) = (ptr_cad->patches[i]->box_sub_points[j][k][2](2, 0) - ptr_cad->patches[i]->box_sub_center[j][k][2])*(1.0f + inc_len_factor) + ptr_cad->patches[i]->box_sub_center[j][k][2];
+
+				(*ptr_bv2->x3)(0, 0) = (ptr_cad->patches[i]->box_sub_points[j][k][3](0, 0) - ptr_cad->patches[i]->box_sub_center[j][k][0])*(1.0f + inc_len_factor) + ptr_cad->patches[i]->box_sub_center[j][k][0];
+				(*ptr_bv2->x3)(1, 0) = (ptr_cad->patches[i]->box_sub_points[j][k][3](1, 0) - ptr_cad->patches[i]->box_sub_center[j][k][1])*(1.0f + inc_len_factor) + ptr_cad->patches[i]->box_sub_center[j][k][1];
+				(*ptr_bv2->x3)(2, 0) = (ptr_cad->patches[i]->box_sub_points[j][k][3](2, 0) - ptr_cad->patches[i]->box_sub_center[j][k][2])*(1.0f + inc_len_factor) + ptr_cad->patches[i]->box_sub_center[j][k][2];
+
+				(*ptr_bv2->x4)(0, 0) = (ptr_cad->patches[i]->box_sub_points[j][k][4](0, 0) - ptr_cad->patches[i]->box_sub_center[j][k][0])*(1.0f + inc_len_factor) + ptr_cad->patches[i]->box_sub_center[j][k][0];
+				(*ptr_bv2->x4)(1, 0) = (ptr_cad->patches[i]->box_sub_points[j][k][4](1, 0) - ptr_cad->patches[i]->box_sub_center[j][k][1])*(1.0f + inc_len_factor) + ptr_cad->patches[i]->box_sub_center[j][k][1];
+				(*ptr_bv2->x4)(2, 0) = (ptr_cad->patches[i]->box_sub_points[j][k][4](2, 0) - ptr_cad->patches[i]->box_sub_center[j][k][2])*(1.0f + inc_len_factor) + ptr_cad->patches[i]->box_sub_center[j][k][2];
+
+				(*ptr_bv2->x5)(0, 0) = (ptr_cad->patches[i]->box_sub_points[j][k][5](0, 0) - ptr_cad->patches[i]->box_sub_center[j][k][0])*(1.0f + inc_len_factor) + ptr_cad->patches[i]->box_sub_center[j][k][0];
+				(*ptr_bv2->x5)(1, 0) = (ptr_cad->patches[i]->box_sub_points[j][k][5](1, 0) - ptr_cad->patches[i]->box_sub_center[j][k][1])*(1.0f + inc_len_factor) + ptr_cad->patches[i]->box_sub_center[j][k][1];
+				(*ptr_bv2->x5)(2, 0) = (ptr_cad->patches[i]->box_sub_points[j][k][5](2, 0) - ptr_cad->patches[i]->box_sub_center[j][k][2])*(1.0f + inc_len_factor) + ptr_cad->patches[i]->box_sub_center[j][k][2];
+
+				(*ptr_bv2->x6)(0, 0) = (ptr_cad->patches[i]->box_sub_points[j][k][6](0, 0) - ptr_cad->patches[i]->box_sub_center[j][k][0])*(1.0f + inc_len_factor) + ptr_cad->patches[i]->box_sub_center[j][k][0];
+				(*ptr_bv2->x6)(1, 0) = (ptr_cad->patches[i]->box_sub_points[j][k][6](1, 0) - ptr_cad->patches[i]->box_sub_center[j][k][1])*(1.0f + inc_len_factor) + ptr_cad->patches[i]->box_sub_center[j][k][1];
+				(*ptr_bv2->x6)(2, 0) = (ptr_cad->patches[i]->box_sub_points[j][k][6](2, 0) - ptr_cad->patches[i]->box_sub_center[j][k][2])*(1.0f + inc_len_factor) + ptr_cad->patches[i]->box_sub_center[j][k][2];
+
+				(*ptr_bv2->x7)(0, 0) = (ptr_cad->patches[i]->box_sub_points[j][k][7](0, 0) - ptr_cad->patches[i]->box_sub_center[j][k][0])*(1.0f + inc_len_factor) + ptr_cad->patches[i]->box_sub_center[j][k][0];
+				(*ptr_bv2->x7)(1, 0) = (ptr_cad->patches[i]->box_sub_points[j][k][7](1, 0) - ptr_cad->patches[i]->box_sub_center[j][k][1])*(1.0f + inc_len_factor) + ptr_cad->patches[i]->box_sub_center[j][k][1];
+				(*ptr_bv2->x7)(2, 0) = (ptr_cad->patches[i]->box_sub_points[j][k][7](2, 0) - ptr_cad->patches[i]->box_sub_center[j][k][2])*(1.0f + inc_len_factor) + ptr_cad->patches[i]->box_sub_center[j][k][2];
+				*/
+
+				ptr_bv2->size = 0.5f * sqrt(((*ptr_bv2->x0)(0, 0) - (*ptr_bv2->x6)(0, 0))*((*ptr_bv2->x0)(0, 0) - (*ptr_bv2->x6)(0, 0)) + ((*ptr_bv2->x0)(1, 0) - (*ptr_bv2->x6)(1, 0))*((*ptr_bv2->x0)(1, 0) - (*ptr_bv2->x6)(1, 0)) + ((*ptr_bv2->x0)(2, 0) - (*ptr_bv2->x6)(2, 0))*((*ptr_bv2->x0)(2, 0) - (*ptr_bv2->x6)(2, 0)));
+				//fprintf(fdebug, "%.6e\t", ptr_bv2->size);
+				//Associated entity:
+				ptr_bv2->associated_type = 'P';
+				ptr_bv2->associated_ID = number;
+				ptr_bv2->associated_sub_ID = i + 1;
+				aux = aux + 1;
+			}
+		}
+	}
+	UpdateVariables();
 	UpdateBoundingVolumes();
+	SaveLagrange();
 }
 
 void NURBSParticle::UpdateBoundingVolumes()
 {
-	BoundingSphere* ptr_bv = static_cast<BoundingSphere*>(bv);
-	*ptr_bv->prev_center = *ptr_bv->center;
-	(*ptr_bv->center)(0, 0) = (float)db.nodes[node - 1]->copy_coordinates[0] + (float)db.nodes[node - 1]->displacements[0];
-	(*ptr_bv->center)(1, 0) = (float)db.nodes[node - 1]->copy_coordinates[1] + (float)db.nodes[node - 1]->displacements[1];
-	(*ptr_bv->center)(2, 0) = (float)db.nodes[node - 1]->copy_coordinates[2] + (float)db.nodes[node - 1]->displacements[2];
-	MatrixFloat copy_center = *ptr_bv->center;
-	
-	NURBSSurface* ptr_cad = static_cast<NURBSSurface*>(db.cad_data[CADDATA_ID - 1]);
+	//Marina
+	//Evaluating x0f and Q0f
 
+	//Conversao da matriz de rotacao para single precision
+	*x0f = *x0ip;
+	*Q0f = *Qip;
+
+	//Updating the main bounding volume
+	BoundingSphere* ptr_bv1 = static_cast<BoundingSphere*>(bv);
+	*ptr_bv1->prev_center = *ptr_bv1->center;
+	*ptr_bv1->center = *x0f;
+	MatrixFloat copy_center = *ptr_bv1->center;
+
+	//Updating the sub bounding volumes
+	NURBSMultipatchSurface* ptr_cad = static_cast<NURBSMultipatchSurface*>(db.cad_data[CADDATA_ID - 1]); //Marina
+	//BV on subpatches
+	OrientedBoundingBox* ptr_bv2;
+	int aux = 0;
+	for (int i = 0; i < ptr_cad->n_patches; i++)
+	{
+		for (int j = 0; j < ptr_cad->patches[i]->subdivisions[0]; j++)
+		{
+			for (int k = 0; k < ptr_cad->patches[i]->subdivisions[1]; k++)
+			{
+				//sub_bv[aux] = new OrientedBoundingBox();
+				ptr_bv2 = static_cast<OrientedBoundingBox*>(sub_bv[aux]);
+				ptr_bv2->inc_len_factor = inc_len_factor;
+
+				(*ptr_bv2->x0) = (*x0f) + (*Q0f) * ((ptr_cad->patches[i]->box_sub_points[j][k][0] - ptr_cad->patches[i]->box_sub_center[j][k])*(1.0f + inc_len_factor) + ptr_cad->patches[i]->box_sub_center[j][k]);
+				(*ptr_bv2->x1) = (*x0f) + (*Q0f) * ((ptr_cad->patches[i]->box_sub_points[j][k][1] - ptr_cad->patches[i]->box_sub_center[j][k])*(1.0f + inc_len_factor) + ptr_cad->patches[i]->box_sub_center[j][k]);
+				(*ptr_bv2->x2) = (*x0f) + (*Q0f) * ((ptr_cad->patches[i]->box_sub_points[j][k][2] - ptr_cad->patches[i]->box_sub_center[j][k])*(1.0f + inc_len_factor) + ptr_cad->patches[i]->box_sub_center[j][k]);
+				(*ptr_bv2->x3) = (*x0f) + (*Q0f) * ((ptr_cad->patches[i]->box_sub_points[j][k][3] - ptr_cad->patches[i]->box_sub_center[j][k])*(1.0f + inc_len_factor) + ptr_cad->patches[i]->box_sub_center[j][k]);
+				(*ptr_bv2->x4) = (*x0f) + (*Q0f) * ((ptr_cad->patches[i]->box_sub_points[j][k][4] - ptr_cad->patches[i]->box_sub_center[j][k])*(1.0f + inc_len_factor) + ptr_cad->patches[i]->box_sub_center[j][k]);
+				(*ptr_bv2->x5) = (*x0f) + (*Q0f) * ((ptr_cad->patches[i]->box_sub_points[j][k][5] - ptr_cad->patches[i]->box_sub_center[j][k])*(1.0f + inc_len_factor) + ptr_cad->patches[i]->box_sub_center[j][k]);
+				(*ptr_bv2->x6) = (*x0f) + (*Q0f) * ((ptr_cad->patches[i]->box_sub_points[j][k][6] - ptr_cad->patches[i]->box_sub_center[j][k])*(1.0f + inc_len_factor) + ptr_cad->patches[i]->box_sub_center[j][k]);
+				(*ptr_bv2->x7) = (*x0f) + (*Q0f) * ((ptr_cad->patches[i]->box_sub_points[j][k][7] - ptr_cad->patches[i]->box_sub_center[j][k])*(1.0f + inc_len_factor) + ptr_cad->patches[i]->box_sub_center[j][k]);
+
+				(*ptr_bv2->orient)(0, 0) = (*Q0f)(0, 0);
+				(*ptr_bv2->orient)(1, 0) = (*Q0f)(1, 0);
+				(*ptr_bv2->orient)(2, 0) = (*Q0f)(2, 0);
+				(*ptr_bv2->orient)(0, 1) = (*Q0f)(0, 1);
+				(*ptr_bv2->orient)(1, 1) = (*Q0f)(1, 1);
+				(*ptr_bv2->orient)(2, 1) = (*Q0f)(2, 1);
+				(*ptr_bv2->orient)(0, 2) = (*Q0f)(0, 2);
+				(*ptr_bv2->orient)(1, 2) = (*Q0f)(1, 2);
+				(*ptr_bv2->orient)(2, 2) = (*Q0f)(2, 2);
+
+				(*ptr_bv2->center) = (*x0f) + (*Q0f) *(ptr_cad->patches[i]->box_sub_center[j][k]);
+
+				/*
+				(*ptr_bv2->x0)(0, 0) = (*x0f)(0, 0) + (*Q0f)(0, 0)*((ptr_cad->patches[i]->box_sub_points[j][k][0](0, 0) - ptr_cad->patches[i]->box_sub_center[j][k](0, 0))*(1.0f + inc_len_factor) + ptr_cad->patches[i]->box_sub_center[j][k](0, 0)) + (*Q0f)(0, 1)*((ptr_cad->patches[i]->box_sub_points[j][k][0](1, 0) - ptr_cad->patches[i]->box_sub_center[j][k](1, 0))*(1.0f + inc_len_factor) + ptr_cad->patches[i]->box_sub_center[j][k](1, 0)) + (*Q0f)(0, 2)*((ptr_cad->patches[i]->box_sub_points[j][k][0](2, 0) - ptr_cad->patches[i]->box_sub_center[j][k](2, 0))*(1.0f + inc_len_factor) + ptr_cad->patches[i]->box_sub_center[j][k](2, 0));
+				(*ptr_bv2->x0)(1, 0) = (*x0f)(1, 0) + (*Q0f)(1, 0)*((ptr_cad->patches[i]->box_sub_points[j][k][0](0, 0) - ptr_cad->patches[i]->box_sub_center[j][k](0, 0))*(1.0f + inc_len_factor) + ptr_cad->patches[i]->box_sub_center[j][k](0, 0)) + (*Q0f)(1, 1)*((ptr_cad->patches[i]->box_sub_points[j][k][0](1, 0) - ptr_cad->patches[i]->box_sub_center[j][k](1, 0))*(1.0f + inc_len_factor) + ptr_cad->patches[i]->box_sub_center[j][k](1, 0)) + (*Q0f)(1, 2)*((ptr_cad->patches[i]->box_sub_points[j][k][0](2, 0) - ptr_cad->patches[i]->box_sub_center[j][k](2, 0))*(1.0f + inc_len_factor) + ptr_cad->patches[i]->box_sub_center[j][k](2, 0));
+				(*ptr_bv2->x0)(2, 0) = (*x0f)(2, 0) + (*Q0f)(2, 0)*((ptr_cad->patches[i]->box_sub_points[j][k][0](0, 0) - ptr_cad->patches[i]->box_sub_center[j][k](0, 0))*(1.0f + inc_len_factor) + ptr_cad->patches[i]->box_sub_center[j][k](0, 0)) + (*Q0f)(2, 1)*((ptr_cad->patches[i]->box_sub_points[j][k][0](1, 0) - ptr_cad->patches[i]->box_sub_center[j][k](1, 0))*(1.0f + inc_len_factor) + ptr_cad->patches[i]->box_sub_center[j][k](1, 0)) + (*Q0f)(2, 2)*((ptr_cad->patches[i]->box_sub_points[j][k][0](2, 0) - ptr_cad->patches[i]->box_sub_center[j][k](2, 0))*(1.0f + inc_len_factor) + ptr_cad->patches[i]->box_sub_center[j][k](2, 0));
+
+				(*ptr_bv2->x1)(0, 0) = (*x0f)(0, 0) + (*Q0f)(0, 0)*((ptr_cad->patches[i]->box_sub_points[j][k][1](0, 0) - ptr_cad->patches[i]->box_sub_center[j][k](0, 0))*(1.0f + inc_len_factor) + ptr_cad->patches[i]->box_sub_center[j][k](0, 0)) + (*Q0f)(0, 1)*((ptr_cad->patches[i]->box_sub_points[j][k][1](1, 0) - ptr_cad->patches[i]->box_sub_center[j][k](1, 0))*(1.0f + inc_len_factor) + ptr_cad->patches[i]->box_sub_center[j][k](1, 0)) + (*Q0f)(0, 2)*((ptr_cad->patches[i]->box_sub_points[j][k][1](2, 0) - ptr_cad->patches[i]->box_sub_center[j][k](2, 0))*(1.0f + inc_len_factor) + ptr_cad->patches[i]->box_sub_center[j][k](2, 0));
+				(*ptr_bv2->x1)(1, 0) = (*x0f)(1, 0) + (*Q0f)(1, 0)*((ptr_cad->patches[i]->box_sub_points[j][k][1](0, 0) - ptr_cad->patches[i]->box_sub_center[j][k](0, 0))*(1.0f + inc_len_factor) + ptr_cad->patches[i]->box_sub_center[j][k](0, 0)) + (*Q0f)(1, 1)*((ptr_cad->patches[i]->box_sub_points[j][k][1](1, 0) - ptr_cad->patches[i]->box_sub_center[j][k](1, 0))*(1.0f + inc_len_factor) + ptr_cad->patches[i]->box_sub_center[j][k](1, 0)) + (*Q0f)(1, 2)*((ptr_cad->patches[i]->box_sub_points[j][k][1](2, 0) - ptr_cad->patches[i]->box_sub_center[j][k](2, 0))*(1.0f + inc_len_factor) + ptr_cad->patches[i]->box_sub_center[j][k](2, 0));
+				(*ptr_bv2->x1)(2, 0) = (*x0f)(2, 0) + (*Q0f)(2, 0)*((ptr_cad->patches[i]->box_sub_points[j][k][1](0, 0) - ptr_cad->patches[i]->box_sub_center[j][k](0, 0))*(1.0f + inc_len_factor) + ptr_cad->patches[i]->box_sub_center[j][k](0, 0)) + (*Q0f)(2, 1)*((ptr_cad->patches[i]->box_sub_points[j][k][1](1, 0) - ptr_cad->patches[i]->box_sub_center[j][k](1, 0))*(1.0f + inc_len_factor) + ptr_cad->patches[i]->box_sub_center[j][k](1, 0)) + (*Q0f)(2, 2)*((ptr_cad->patches[i]->box_sub_points[j][k][1](2, 0) - ptr_cad->patches[i]->box_sub_center[j][k](2, 0))*(1.0f + inc_len_factor) + ptr_cad->patches[i]->box_sub_center[j][k](2, 0));
+
+				(*ptr_bv2->x2)(0, 0) = (*x0f)(0, 0) + (*Q0f)(0, 0)*((ptr_cad->patches[i]->box_sub_points[j][k][2](0, 0) - ptr_cad->patches[i]->box_sub_center[j][k](0, 0))*(1.0f + inc_len_factor) + ptr_cad->patches[i]->box_sub_center[j][k](0, 0)) + (*Q0f)(0, 1)*((ptr_cad->patches[i]->box_sub_points[j][k][2](1, 0) - ptr_cad->patches[i]->box_sub_center[j][k](1, 0))*(1.0f + inc_len_factor) + ptr_cad->patches[i]->box_sub_center[j][k](1, 0)) + (*Q0f)(0, 2)*((ptr_cad->patches[i]->box_sub_points[j][k][2](2, 0) - ptr_cad->patches[i]->box_sub_center[j][k](2, 0))*(1.0f + inc_len_factor) + ptr_cad->patches[i]->box_sub_center[j][k](2, 0));
+				(*ptr_bv2->x2)(1, 0) = (*x0f)(1, 0) + (*Q0f)(1, 0)*((ptr_cad->patches[i]->box_sub_points[j][k][2](0, 0) - ptr_cad->patches[i]->box_sub_center[j][k](0, 0))*(1.0f + inc_len_factor) + ptr_cad->patches[i]->box_sub_center[j][k](0, 0)) + (*Q0f)(1, 1)*((ptr_cad->patches[i]->box_sub_points[j][k][2](1, 0) - ptr_cad->patches[i]->box_sub_center[j][k](1, 0))*(1.0f + inc_len_factor) + ptr_cad->patches[i]->box_sub_center[j][k](1, 0)) + (*Q0f)(1, 2)*((ptr_cad->patches[i]->box_sub_points[j][k][2](2, 0) - ptr_cad->patches[i]->box_sub_center[j][k](2, 0))*(1.0f + inc_len_factor) + ptr_cad->patches[i]->box_sub_center[j][k](2, 0));
+				(*ptr_bv2->x2)(2, 0) = (*x0f)(2, 0) + (*Q0f)(2, 0)*((ptr_cad->patches[i]->box_sub_points[j][k][2](0, 0) - ptr_cad->patches[i]->box_sub_center[j][k](0, 0))*(1.0f + inc_len_factor) + ptr_cad->patches[i]->box_sub_center[j][k](0, 0)) + (*Q0f)(2, 1)*((ptr_cad->patches[i]->box_sub_points[j][k][2](1, 0) - ptr_cad->patches[i]->box_sub_center[j][k](1, 0))*(1.0f + inc_len_factor) + ptr_cad->patches[i]->box_sub_center[j][k](1, 0)) + (*Q0f)(2, 2)*((ptr_cad->patches[i]->box_sub_points[j][k][2](2, 0) - ptr_cad->patches[i]->box_sub_center[j][k](2, 0))*(1.0f + inc_len_factor) + ptr_cad->patches[i]->box_sub_center[j][k](2, 0));
+
+				(*ptr_bv2->x3)(0, 0) = (*x0f)(0, 0) + (*Q0f)(0, 0)*((ptr_cad->patches[i]->box_sub_points[j][k][3](0, 0) - ptr_cad->patches[i]->box_sub_center[j][k](0, 0))*(1.0f + inc_len_factor) + ptr_cad->patches[i]->box_sub_center[j][k](0, 0)) + (*Q0f)(0, 1)*((ptr_cad->patches[i]->box_sub_points[j][k][3](1, 0) - ptr_cad->patches[i]->box_sub_center[j][k](1, 0))*(1.0f + inc_len_factor) + ptr_cad->patches[i]->box_sub_center[j][k](1, 0)) + (*Q0f)(0, 2)*((ptr_cad->patches[i]->box_sub_points[j][k][3](2, 0) - ptr_cad->patches[i]->box_sub_center[j][k](2, 0))*(1.0f + inc_len_factor) + ptr_cad->patches[i]->box_sub_center[j][k](2, 0));
+				(*ptr_bv2->x3)(1, 0) = (*x0f)(1, 0) + (*Q0f)(1, 0)*((ptr_cad->patches[i]->box_sub_points[j][k][3](0, 0) - ptr_cad->patches[i]->box_sub_center[j][k](0, 0))*(1.0f + inc_len_factor) + ptr_cad->patches[i]->box_sub_center[j][k](0, 0)) + (*Q0f)(1, 1)*((ptr_cad->patches[i]->box_sub_points[j][k][3](1, 0) - ptr_cad->patches[i]->box_sub_center[j][k](1, 0))*(1.0f + inc_len_factor) + ptr_cad->patches[i]->box_sub_center[j][k](1, 0)) + (*Q0f)(1, 2)*((ptr_cad->patches[i]->box_sub_points[j][k][3](2, 0) - ptr_cad->patches[i]->box_sub_center[j][k](2, 0))*(1.0f + inc_len_factor) + ptr_cad->patches[i]->box_sub_center[j][k](2, 0));
+				(*ptr_bv2->x3)(2, 0) = (*x0f)(2, 0) + (*Q0f)(2, 0)*((ptr_cad->patches[i]->box_sub_points[j][k][3](0, 0) - ptr_cad->patches[i]->box_sub_center[j][k](0, 0))*(1.0f + inc_len_factor) + ptr_cad->patches[i]->box_sub_center[j][k](0, 0)) + (*Q0f)(2, 1)*((ptr_cad->patches[i]->box_sub_points[j][k][3](1, 0) - ptr_cad->patches[i]->box_sub_center[j][k](1, 0))*(1.0f + inc_len_factor) + ptr_cad->patches[i]->box_sub_center[j][k](1, 0)) + (*Q0f)(2, 2)*((ptr_cad->patches[i]->box_sub_points[j][k][3](2, 0) - ptr_cad->patches[i]->box_sub_center[j][k](2, 0))*(1.0f + inc_len_factor) + ptr_cad->patches[i]->box_sub_center[j][k](2, 0));
+
+				(*ptr_bv2->x4)(0, 0) = (*x0f)(0, 0) + (*Q0f)(0, 0)*((ptr_cad->patches[i]->box_sub_points[j][k][4](0, 0) - ptr_cad->patches[i]->box_sub_center[j][k](0, 0))*(1.0f + inc_len_factor) + ptr_cad->patches[i]->box_sub_center[j][k](0, 0)) + (*Q0f)(0, 1)*((ptr_cad->patches[i]->box_sub_points[j][k][4](1, 0) - ptr_cad->patches[i]->box_sub_center[j][k](1, 0))*(1.0f + inc_len_factor) + ptr_cad->patches[i]->box_sub_center[j][k](1, 0)) + (*Q0f)(0, 2)*((ptr_cad->patches[i]->box_sub_points[j][k][4](2, 0) - ptr_cad->patches[i]->box_sub_center[j][k](2, 0))*(1.0f + inc_len_factor) + ptr_cad->patches[i]->box_sub_center[j][k](2, 0));
+				(*ptr_bv2->x4)(1, 0) = (*x0f)(1, 0) + (*Q0f)(1, 0)*((ptr_cad->patches[i]->box_sub_points[j][k][4](0, 0) - ptr_cad->patches[i]->box_sub_center[j][k](0, 0))*(1.0f + inc_len_factor) + ptr_cad->patches[i]->box_sub_center[j][k](0, 0)) + (*Q0f)(1, 1)*((ptr_cad->patches[i]->box_sub_points[j][k][4](1, 0) - ptr_cad->patches[i]->box_sub_center[j][k](1, 0))*(1.0f + inc_len_factor) + ptr_cad->patches[i]->box_sub_center[j][k](1, 0)) + (*Q0f)(1, 2)*((ptr_cad->patches[i]->box_sub_points[j][k][4](2, 0) - ptr_cad->patches[i]->box_sub_center[j][k](2, 0))*(1.0f + inc_len_factor) + ptr_cad->patches[i]->box_sub_center[j][k](2, 0));
+				(*ptr_bv2->x4)(2, 0) = (*x0f)(2, 0) + (*Q0f)(2, 0)*((ptr_cad->patches[i]->box_sub_points[j][k][4](0, 0) - ptr_cad->patches[i]->box_sub_center[j][k](0, 0))*(1.0f + inc_len_factor) + ptr_cad->patches[i]->box_sub_center[j][k](0, 0)) + (*Q0f)(2, 1)*((ptr_cad->patches[i]->box_sub_points[j][k][4](1, 0) - ptr_cad->patches[i]->box_sub_center[j][k](1, 0))*(1.0f + inc_len_factor) + ptr_cad->patches[i]->box_sub_center[j][k](1, 0)) + (*Q0f)(2, 2)*((ptr_cad->patches[i]->box_sub_points[j][k][4](2, 0) - ptr_cad->patches[i]->box_sub_center[j][k](2, 0))*(1.0f + inc_len_factor) + ptr_cad->patches[i]->box_sub_center[j][k](2, 0));
+
+				(*ptr_bv2->x5)(0, 0) = (*x0f)(0, 0) + (*Q0f)(0, 0)*((ptr_cad->patches[i]->box_sub_points[j][k][5](0, 0) - ptr_cad->patches[i]->box_sub_center[j][k](0, 0))*(1.0f + inc_len_factor) + ptr_cad->patches[i]->box_sub_center[j][k](0, 0)) + (*Q0f)(0, 1)*((ptr_cad->patches[i]->box_sub_points[j][k][5](1, 0) - ptr_cad->patches[i]->box_sub_center[j][k](1, 0))*(1.0f + inc_len_factor) + ptr_cad->patches[i]->box_sub_center[j][k](1, 0)) + (*Q0f)(0, 2)*((ptr_cad->patches[i]->box_sub_points[j][k][5](2, 0) - ptr_cad->patches[i]->box_sub_center[j][k](2, 0))*(1.0f + inc_len_factor) + ptr_cad->patches[i]->box_sub_center[j][k](2, 0));
+				(*ptr_bv2->x5)(1, 0) = (*x0f)(1, 0) + (*Q0f)(1, 0)*((ptr_cad->patches[i]->box_sub_points[j][k][5](0, 0) - ptr_cad->patches[i]->box_sub_center[j][k](0, 0))*(1.0f + inc_len_factor) + ptr_cad->patches[i]->box_sub_center[j][k](0, 0)) + (*Q0f)(1, 1)*((ptr_cad->patches[i]->box_sub_points[j][k][5](1, 0) - ptr_cad->patches[i]->box_sub_center[j][k](1, 0))*(1.0f + inc_len_factor) + ptr_cad->patches[i]->box_sub_center[j][k](1, 0)) + (*Q0f)(1, 2)*((ptr_cad->patches[i]->box_sub_points[j][k][5](2, 0) - ptr_cad->patches[i]->box_sub_center[j][k](2, 0))*(1.0f + inc_len_factor) + ptr_cad->patches[i]->box_sub_center[j][k](2, 0));
+				(*ptr_bv2->x5)(2, 0) = (*x0f)(2, 0) + (*Q0f)(2, 0)*((ptr_cad->patches[i]->box_sub_points[j][k][5](0, 0) - ptr_cad->patches[i]->box_sub_center[j][k](0, 0))*(1.0f + inc_len_factor) + ptr_cad->patches[i]->box_sub_center[j][k](0, 0)) + (*Q0f)(2, 1)*((ptr_cad->patches[i]->box_sub_points[j][k][5](1, 0) - ptr_cad->patches[i]->box_sub_center[j][k](1, 0))*(1.0f + inc_len_factor) + ptr_cad->patches[i]->box_sub_center[j][k](1, 0)) + (*Q0f)(2, 2)*((ptr_cad->patches[i]->box_sub_points[j][k][5](2, 0) - ptr_cad->patches[i]->box_sub_center[j][k](2, 0))*(1.0f + inc_len_factor) + ptr_cad->patches[i]->box_sub_center[j][k](2, 0));
+
+				(*ptr_bv2->x6)(0, 0) = (*x0f)(0, 0) + (*Q0f)(0, 0)*((ptr_cad->patches[i]->box_sub_points[j][k][6](0, 0) - ptr_cad->patches[i]->box_sub_center[j][k](0, 0))*(1.0f + inc_len_factor) + ptr_cad->patches[i]->box_sub_center[j][k](0, 0)) + (*Q0f)(0, 1)*((ptr_cad->patches[i]->box_sub_points[j][k][6](1, 0) - ptr_cad->patches[i]->box_sub_center[j][k](1, 0))*(1.0f + inc_len_factor) + ptr_cad->patches[i]->box_sub_center[j][k](1, 0)) + (*Q0f)(0, 2)*((ptr_cad->patches[i]->box_sub_points[j][k][6](2, 0) - ptr_cad->patches[i]->box_sub_center[j][k](2, 0))*(1.0f + inc_len_factor) + ptr_cad->patches[i]->box_sub_center[j][k](2, 0));
+				(*ptr_bv2->x6)(1, 0) = (*x0f)(1, 0) + (*Q0f)(1, 0)*((ptr_cad->patches[i]->box_sub_points[j][k][6](0, 0) - ptr_cad->patches[i]->box_sub_center[j][k](0, 0))*(1.0f + inc_len_factor) + ptr_cad->patches[i]->box_sub_center[j][k](0, 0)) + (*Q0f)(1, 1)*((ptr_cad->patches[i]->box_sub_points[j][k][6](1, 0) - ptr_cad->patches[i]->box_sub_center[j][k](1, 0))*(1.0f + inc_len_factor) + ptr_cad->patches[i]->box_sub_center[j][k](1, 0)) + (*Q0f)(1, 2)*((ptr_cad->patches[i]->box_sub_points[j][k][6](2, 0) - ptr_cad->patches[i]->box_sub_center[j][k](2, 0))*(1.0f + inc_len_factor) + ptr_cad->patches[i]->box_sub_center[j][k](2, 0));
+				(*ptr_bv2->x6)(2, 0) = (*x0f)(2, 0) + (*Q0f)(2, 0)*((ptr_cad->patches[i]->box_sub_points[j][k][6](0, 0) - ptr_cad->patches[i]->box_sub_center[j][k](0, 0))*(1.0f + inc_len_factor) + ptr_cad->patches[i]->box_sub_center[j][k](0, 0)) + (*Q0f)(2, 1)*((ptr_cad->patches[i]->box_sub_points[j][k][6](1, 0) - ptr_cad->patches[i]->box_sub_center[j][k](1, 0))*(1.0f + inc_len_factor) + ptr_cad->patches[i]->box_sub_center[j][k](1, 0)) + (*Q0f)(2, 2)*((ptr_cad->patches[i]->box_sub_points[j][k][6](2, 0) - ptr_cad->patches[i]->box_sub_center[j][k](2, 0))*(1.0f + inc_len_factor) + ptr_cad->patches[i]->box_sub_center[j][k](2, 0));
+
+				(*ptr_bv2->x7)(0, 0) = (*x0f)(0, 0) + (*Q0f)(0, 0)*((ptr_cad->patches[i]->box_sub_points[j][k][7](0, 0) - ptr_cad->patches[i]->box_sub_center[j][k](0, 0))*(1.0f + inc_len_factor) + ptr_cad->patches[i]->box_sub_center[j][k](0, 0)) + (*Q0f)(0, 1)*((ptr_cad->patches[i]->box_sub_points[j][k][7](1, 0) - ptr_cad->patches[i]->box_sub_center[j][k](1, 0))*(1.0f + inc_len_factor) + ptr_cad->patches[i]->box_sub_center[j][k](1, 0)) + (*Q0f)(0, 2)*((ptr_cad->patches[i]->box_sub_points[j][k][7](2, 0) - ptr_cad->patches[i]->box_sub_center[j][k](2, 0))*(1.0f + inc_len_factor) + ptr_cad->patches[i]->box_sub_center[j][k](2, 0));
+				(*ptr_bv2->x7)(1, 0) = (*x0f)(1, 0) + (*Q0f)(1, 0)*((ptr_cad->patches[i]->box_sub_points[j][k][7](0, 0) - ptr_cad->patches[i]->box_sub_center[j][k](0, 0))*(1.0f + inc_len_factor) + ptr_cad->patches[i]->box_sub_center[j][k](0, 0)) + (*Q0f)(1, 1)*((ptr_cad->patches[i]->box_sub_points[j][k][7](1, 0) - ptr_cad->patches[i]->box_sub_center[j][k](1, 0))*(1.0f + inc_len_factor) + ptr_cad->patches[i]->box_sub_center[j][k](1, 0)) + (*Q0f)(1, 2)*((ptr_cad->patches[i]->box_sub_points[j][k][7](2, 0) - ptr_cad->patches[i]->box_sub_center[j][k](2, 0))*(1.0f + inc_len_factor) + ptr_cad->patches[i]->box_sub_center[j][k](2, 0));
+				(*ptr_bv2->x7)(2, 0) = (*x0f)(2, 0) + (*Q0f)(2, 0)*((ptr_cad->patches[i]->box_sub_points[j][k][7](0, 0) - ptr_cad->patches[i]->box_sub_center[j][k](0, 0))*(1.0f + inc_len_factor) + ptr_cad->patches[i]->box_sub_center[j][k](0, 0)) + (*Q0f)(2, 1)*((ptr_cad->patches[i]->box_sub_points[j][k][7](1, 0) - ptr_cad->patches[i]->box_sub_center[j][k](1, 0))*(1.0f + inc_len_factor) + ptr_cad->patches[i]->box_sub_center[j][k](1, 0)) + (*Q0f)(2, 2)*((ptr_cad->patches[i]->box_sub_points[j][k][7](2, 0) - ptr_cad->patches[i]->box_sub_center[j][k](2, 0))*(1.0f + inc_len_factor) + ptr_cad->patches[i]->box_sub_center[j][k](2, 0));
+				*/
+
+				//ptr_bv2->Report();
+				aux = aux + 1;
+			}
+		}
+	}
+
+	/*
 	Matrix alpha(3);
 	alpha(0, 0) = db.nodes[node - 1]->displacements[3];
 	alpha(1, 0) = db.nodes[node - 1]->displacements[4];
@@ -185,16 +412,43 @@ void NURBSParticle::UpdateBoundingVolumes()
 	Matrix A = skew(alpha);
 	double g = 4.0 / (4.0 + alpha_escalar * alpha_escalar);
 	Matrix Qd = *I3 + g * (A + 0.5*((A)*(A)));
-
-	//TODO - update subdivisions
+	*/
 }
 
 void NURBSParticle::SaveLagrange()
 {
+	//Marina
+	//Do not call UpdateVaribles because node data are updated first!
+	//Particle variables
+	*x0i = *x0ip;
+	*Qi = *Qip;
+
 	//Saving bounding volumes
 	bv->SaveConfiguration();
 	for (int i = 0; i < n_sub_bv; i++)
 		sub_bv[i]->SaveConfiguration();
+
+	///////////////////////Potential gravitational energy//////////////////////////////////////////
+	Matrix center(3);	//Updated center of mass of the body
+	Matrix g(3);		//Vetor gravidade
+	if (db.environment_exist == true)
+	{
+		//Se existe campo gravitacional
+		if (db.environment->g_exist == true)
+		{
+			//Gravity field
+			double l_factor = db.environment->bool_g.GetLinearFactorAtCurrentTime();
+			g(0, 0) = l_factor * db.environment->G(0, 0);
+			g(1, 0) = l_factor * db.environment->G(1, 0);
+			g(2, 0) = l_factor * db.environment->G(2, 0);
+			//Center of mass - approximated value
+			center = *x0ip + (*Qip) * (*db.cad_data[CADDATA_ID - 1]->G);
+		}
+	}
+	potential_g_energy = -mass * dot(g, center); 
+	
+	Qi->MatrixToPtr(pQi, 3);
+
 }
 void NURBSParticle::WriteVTK_XMLBase(FILE *f)
 {
@@ -208,8 +462,12 @@ void NURBSParticle::WriteVTK_XMLRender(FILE *f)
 	pos(1, 0) = db.nodes[node - 1]->copy_coordinates[1];
 	pos(2, 0) = db.nodes[node - 1]->copy_coordinates[2];
 
-	db.cad_data[CADDATA_ID - 1]->WriteVTK_XMLRender(f, pos, (*db.nodes[node - 1]->Q)*(*Q0), number);
+	if (db.nodes[node - 1]->flag_material_description)
+		db.cad_data[CADDATA_ID - 1]->WriteVTK_XMLRender(f, pos, (*Q0) * (*db.nodes[node - 1]->Q), number);
+	else
+		db.cad_data[CADDATA_ID - 1]->WriteVTK_XMLRender(f, pos, (*db.nodes[node - 1]->Q)*(*Q0), number);
 }
+
 
 void NURBSParticle::Alloc()
 {
@@ -225,16 +483,16 @@ void NURBSParticle::Alloc()
 	DOFs = new int[db.number_GLs_node];
 	type_name = new char[20];//Nome do tipo da particula
 
-	//Rotina para ativar os GLS do nó da particula
+	//Rotina para ativar os GLS do no da particula
 	for (int j = 0; j < db.number_GLs_node; j++)
 	{
 		DOFs[j] = 0;
 	}
-	//Translação
+	//Translacao
 	DOFs[0] = 1;
 	DOFs[1] = 1;
 	DOFs[2] = 1;
-	//Rotação
+	//Rotacao
 	DOFs[3] = 1;
 	DOFs[4] = 1;
 	DOFs[5] = 1;
@@ -246,6 +504,11 @@ void NURBSParticle::Alloc()
 	(*I3)(0, 0) = 1.0;
 	(*I3)(1, 1) = 1.0;
 	(*I3)(2, 2) = 1.0;
+
+	mJr = new Matrix(3, 3);
+	mbr = new Matrix(3);
+	MassMatrix = new Matrix(6, 6);
+	ResidualVector = new Matrix(6);
 
 	Q0 = new Matrix(3, 3);
 	Qip = new Matrix(3, 3);
@@ -277,6 +540,9 @@ void NURBSParticle::Alloc()
 			DdT[i][j] = 0.0;
 		}
 	}
+
+	mJrlocal = new Matrix(3, 3);
+	mbrlocal = new Matrix(3);
 
 	kinetic_energy = 0.0;
 
@@ -317,6 +583,13 @@ void NURBSParticle::Free()
 		delete[]Ddfield[i];
 	delete[] Ddfield;
 	delete[] dfield;
+	delete mJr;
+	delete mbr;
+	delete mJrlocal;
+	delete mbrlocal;
+	delete MassMatrix;
+	delete ResidualVector;
+	FreeMassFragmented();
 }
 
 void NURBSParticle::UpdateVariables()
@@ -330,7 +603,10 @@ void NURBSParticle::UpdateVariables()
 	Matrix A = skew(alpha);
 	double g = 4.0 / (4.0 + alpha_escalar * alpha_escalar);
 	Matrix QdA = *I3 + g * (A + 0.5*((A)*(A)));
-	*Qip = QdA * (*db.nodes[node - 1]->Q) * (*Q0);
+	if (db.nodes[node - 1]->flag_material_description)
+		*Qip = (*Q0) * (*db.nodes[node - 1]->Q) * QdA;
+	else
+		*Qip = QdA * (*db.nodes[node - 1]->Q) * (*Q0);
 	//Position
 	(*x0ip)(0, 0) = db.nodes[node - 1]->copy_coordinates[0] + db.nodes[node - 1]->displacements[0];
 	(*x0ip)(1, 0) = db.nodes[node - 1]->copy_coordinates[1] + db.nodes[node - 1]->displacements[1];
@@ -350,7 +626,7 @@ void NURBSParticle::Mount()
 			DdT[i][j] = 0.0;
 		}
 	}
-	//Valores de variaveis cinematicas - atribuição
+	//Valores de variaveis cinematicas - atribuicao
 	for (int i = 0; i < 3; i++)
 	{
 		alphai[i] = db.nodes[node - 1]->copy_coordinates[i + 3];
@@ -370,30 +646,196 @@ void NURBSParticle::Mount()
 //Explicit
 void NURBSParticle::EvaluateExplicit()
 {
+	//Node pointer
+	Node* nd = db.nodes[node - 1];
+	Matrix mBr = skew(*mbrlocal);
+	//Auxiliary variables
+	Matrix A = skew(*nd->alpha);
+	double g = 4.0 / (4.0 + norm(*nd->alpha)*norm(*nd->alpha));
+	Matrix Qdelta = *I3 + g * (A + 0.5*(A)*(A));
+	Matrix Qp = (*nd->Q0) * (*nd->Q) * Qdelta;
+	Matrix Qpt = transp(Qp);
+	//Residual vector contributions
+	Matrix force_i = -1.0 * mass * skew(*nd->omega) * (cross(*nd->omega, *mbrlocal));
+	Matrix moment_i = -1.0 * skew(*nd->omega) * ((*mJrlocal) * (*nd->omega));
 
+	//Peso proprio
+	Matrix force_w;
+	Matrix moment_w;
+
+	//Variaveis para calculo de steps
+	double l_factor;
+	if (db.environment_exist == true)
+	{
+		//Se existe campo gravitacional
+		if (db.environment->g_exist == true)
+		{
+			l_factor = db.environment->bool_g.GetLinearFactorAtCurrentTime();
+			force_w = l_factor * mass * Qpt * db.environment->G;
+			moment_w = l_factor * mass * cross(*mbrlocal, Qpt * db.environment->G);
+		}
+	}
+
+	Matrix force = force_i + force_w;
+	Matrix moment = moment_i + moment_w;
+
+	//Residual vector evaluation
+	for (int i = 0; i < 3; i++)
+	{
+		(*ResidualVector)(i, 0) = force(i, 0);
+		(*ResidualVector)(i + 3, 0) = moment(i, 0);
+	}
+
+	//Espalhamento - Residual vector
+	//Variaveis temporarias para salvar a indexacao global dos graus de liberdade a serem setados na matriz de rigidez global
+	int GL_global = 0;
+	double anterior = 0;
+	for (int i = 0; i < 6; i++)
+	{
+		GL_global = db.nodes[node - 1]->GLs[i];
+		//Caso o grau de liberdade seja livre:
+		if (GL_global > 0)
+		{
+			anterior = db.global_P_A(GL_global - 1, 0);
+			db.global_P_A(GL_global - 1, 0) = anterior + (*ResidualVector)(i, 0);
+			db.global_I_A(GL_global - 1, 0) = anterior + (*ResidualVector)(i, 0);
+		}
+		else
+		{
+			anterior = db.global_P_B(-GL_global - 1, 0);
+			db.global_P_B(-GL_global - 1, 0) = anterior + (*ResidualVector)(i, 0);
+		}
+	}
+
+	//Post-processing
+	kinetic_energy = 0.5 * mass * dot(*nd->du, *nd->du) + 0.5 * dot(*nd->omega, (*mJrlocal)*(*nd->omega)) + mass * dot(cross(*nd->omega, *mbrlocal), *nd->du);
+	Matrix angular_mom = ((*mJrlocal) + mass * mBr * mBr)*(*nd->omega);
+	angular_momentum[0] = angular_mom(0, 0);
+	angular_momentum[1] = angular_mom(1, 0);
+	angular_momentum[2] = angular_mom(2, 0);
+	angular_momentum_mag = norm(angular_mom);
 }
 
 void NURBSParticle::EvaluateAccelerations()
 {
+	Matrix residualA(db.nodes[node - 1]->n_GL_free);
+	Matrix residualB(db.nodes[node - 1]->n_GL_fixed);
+
+	Matrix accelA(db.nodes[node - 1]->n_GL_free);
+	Matrix accelB(db.nodes[node - 1]->n_GL_fixed);
+	Matrix accel(6);
+
+	//Tomando as informacões do vetor global e copiando em residualA:
+	int GL_global = 0;
+	for (int i = 0; i < db.nodes[node - 1]->n_GL_free; i++)
+	{
+		GL_global = db.nodes[node - 1]->GLs[GLA[i]];
+		residualA(i, 0) = db.global_P_A(GL_global - 1, 0);
+	}
+	//Tomando as informacões de accelB:
+	for (int i = 0; i < db.nodes[node - 1]->n_GL_fixed; i++)
+		accelB(i, 0) = db.nodes[node - 1]->accel[GLB[i]];
+
+	//Calculando accelA:
+	if (db.nodes[node - 1]->n_GL_free != 0 && db.nodes[node - 1]->n_GL_fixed != 0)
+		accelA = (*invMAA)*((residualA)-(*MAB) * accelB);
+	else
+	{
+		if (db.nodes[node - 1]->n_GL_fixed == 0)
+			accelA = (*invMAA)*(residualA);
+	}
+	//Calculando residualB:
+	if (db.nodes[node - 1]->n_GL_free != 0 && db.nodes[node - 1]->n_GL_fixed != 0)
+		residualB = transp(*MAB) * accelA + (*MBB) * accelB;
+	else
+	{
+		if (db.nodes[node - 1]->n_GL_free == 0)
+			residualB = (*MBB) * accelB;
+	}
+
+	//Calculando o vetor accel(6):
+	for (int i = 0; i < db.nodes[node - 1]->n_GL_free; i++)
+		accel(GLA[i], 0) = accelA(i, 0);
+	for (int i = 0; i < db.nodes[node - 1]->n_GL_fixed; i++)
+		accel(GLB[i], 0) = accelB(i, 0);
+	//Salvando acceleracões nos nos
+	for (int k = 0; k < 3; k++)
+	{
+		GL_global = db.nodes[node - 1]->GLs[k];
+		if (GL_global > 0)
+			(*db.nodes[node - 1]->ddu)(k, 0) = accel(k, 0);
+	}
+
+	for (int k = 0; k < 3; k++)
+	{
+		GL_global = db.nodes[node - 1]->GLs[k + 3];
+		if (GL_global > 0)
+			(*db.nodes[node - 1]->domega)(k, 0) = accel(k + 3, 0);
+	}
+	//Salvando reacões vinculares em P_B
+	for (int i = 0; i < db.nodes[node - 1]->n_GL_fixed; i++)
+	{
+		GL_global = db.nodes[node - 1]->GLs[GLB[i]];
+		double anterior = db.global_P_B(-GL_global - 1, 0);
+		db.global_P_B(-GL_global - 1, 0) = - anterior - residualB(i, 0);
+	}
 
 }
 
 
 void NURBSParticle::InitialEvaluations()
 {
+	//Seta variaveis nodais associadas com o tratamento que essa particula vai empregar
+	*db.nodes[node - 1]->Q0 = *Q0;
+	db.nodes[node - 1]->flag_material_description = true;
+	db.nodes[node - 1]->flag_pseudo_moment = false;
 
+	AllocMassFragmented(db.nodes[node - 1]->n_GL_free, db.nodes[node - 1]->n_GL_fixed);
+
+	int GL_global_1, GL_global_2;
+
+	//Connectivity (local)
+	int countA = 0;
+	int countB = 0;
+	for (int i = 0; i < 6; i++)
+	{
+		if (db.nodes[node - 1]->GLs[i] > 0)
+		{
+			GLA[countA] = i;
+			countA++;
+		}
+
+		else
+		{
+			GLB[countB] = i;
+			countB++;
+		}
+	}
+
+	//Distribuicao da matriz de massa 6x6 (fragmentacao)
+	for (int i = 0; i < db.nodes[node - 1]->n_GL_free; i++)
+		for (int j = 0; j < db.nodes[node - 1]->n_GL_free; j++)
+			(*invMAA)(i, j) = (*MassMatrix)(GLA[i], GLA[j]);
+	for (int i = 0; i < db.nodes[node - 1]->n_GL_free; i++)
+		for (int j = 0; j < db.nodes[node - 1]->n_GL_fixed; j++)
+			(*MAB)(i, j) = (*MassMatrix)(GLA[i], GLB[j]);
+	for (int i = 0; i < db.nodes[node - 1]->n_GL_fixed; i++)
+		for (int j = 0; j < db.nodes[node - 1]->n_GL_fixed; j++)
+			(*MBB)(i, j) = (*MassMatrix)(GLB[i], GLB[j]);
+	//Inversa da matriz MAA
+	*invMAA = invert(*invMAA);
 }
 
 void NURBSParticle::MountGlobal()
 {
-	//Variaveis temporarias para salvar a indexação global dos graus de liberdade a serem setados na matriz de rigidez global
+	//Variaveis temporarias para salvar a indexacao global dos graus de liberdade a serem setados na matriz de rigidez global
 	int GL_global_1 = 0;
 	int GL_global_2 = 0;
 	double anterior = 0;
 	for (int i = 0; i < 6; i++)
 	{
-		//////////////MONTAGEM DO VETOR DE ESFORÇOS DESBALANCEADOS//////////////////
-		//Toma do vetor de GL globais, a indexação de cada grau de liberdade global
+		//////////////MONTAGEM DO VETOR DE ESFORcOS DESBALANCEADOS//////////////////
+		//Toma do vetor de GL globais, a indexacao de cada grau de liberdade global
 		GL_global_1 = db.nodes[node - 1]->GLs[i];
 
 		//Caso o grau de liberdade seja livre:
@@ -412,7 +854,7 @@ void NURBSParticle::MountGlobal()
 		for (int j = 0; j < 6; j++)
 		{
 			//////////////////////MONTAGEM DA MATRIZ DE RIGIDEZ/////////////////////////
-			//Toma do vetor de GL globais, a indexação de cada grau de liberdade global
+			//Toma do vetor de GL globais, a indexacao de cada grau de liberdade global
 			GL_global_2 = db.nodes[node - 1]->GLs[j];
 			//Caso os graus de liberdade sejam ambos livres (Matriz Kaa)
 			if (GL_global_1 > 0 && GL_global_2 > 0)
@@ -646,10 +1088,10 @@ void NURBSParticle::MountFieldLoading()
 		}
 	}
 
-	//Outras contribuições de esforços de campo, colocar aqui...
+	//Outras contribuicões de esforcos de campo, colocar aqui...
 }
 
-//Calcula contribuições de inercia
+//Calcula contribuicões de inercia
 void NURBSParticle::InertialContributions()
 {
 	double value = 0.0;

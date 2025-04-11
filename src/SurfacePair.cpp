@@ -4,6 +4,7 @@
 #include "SSContactData.h"
 #include "Surface.h"
 #include "FlexibleArcExtrusion_1_RigidArcRevolution_1.h"
+#include "RigidNURBS_1_RigidNURBS_1.h"
 #include"Database.h"
 //Variaveis globais
 extern

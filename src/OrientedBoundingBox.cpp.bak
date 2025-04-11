@@ -1,0 +1,141 @@
+#include "OrientedBoundingBox.h"
+
+#include "Database.h"
+
+//Variáveis globais
+extern
+Database db;
+
+//extern
+//FILE *fdebug;
+
+OrientedBoundingBox::OrientedBoundingBox()
+{
+	bv_factor = 0.0f;
+	inc_len_factor = 0.0f;
+
+	x0 = new MatrixFloat(3);
+	x1 = new MatrixFloat(3);
+	x2 = new MatrixFloat(3);
+	x3 = new MatrixFloat(3);
+	x4 = new MatrixFloat(3);
+	x5 = new MatrixFloat(3);
+	x6 = new MatrixFloat(3);
+	x7 = new MatrixFloat(3);
+
+	prev_x0 = new MatrixFloat(3);
+	prev_x1 = new MatrixFloat(3);
+	prev_x2 = new MatrixFloat(3);
+	prev_x3 = new MatrixFloat(3);
+	prev_x4 = new MatrixFloat(3);
+	prev_x5 = new MatrixFloat(3);
+	prev_x6 = new MatrixFloat(3);
+	prev_x7 = new MatrixFloat(3);
+
+	orient = new MatrixFloat(3, 3);
+	prev_orient = new MatrixFloat(3, 3);
+
+	first_set = true;
+
+	factor_kin2 = 1.2f*1.2f;
+
+	x_center[0] = 0.0f;
+	x_center[1] = 0.0f;
+	x_center[2] = 0.0f;
+	size = 0.0f;
+
+	half_dis = new MatrixFloat(3);
+	prev_half_dis = new MatrixFloat(3);
+
+	center = new MatrixFloat(3);
+	prev_center = new MatrixFloat(3);
+
+}
+
+
+OrientedBoundingBox::~OrientedBoundingBox()
+{
+	delete x0;
+	delete x1;
+	delete x2;
+	delete x3;
+	delete x4;
+	delete x5;
+	delete x6;
+	delete x7;
+
+	delete prev_x0;
+	delete prev_x1;
+	delete prev_x2;
+	delete prev_x3;
+	delete prev_x4;
+	delete prev_x5;
+	delete prev_x6;
+	delete prev_x7;
+
+	delete orient;
+	delete prev_orient;
+
+	delete half_dis;
+	delete prev_half_dis;
+
+	delete center;
+	delete prev_center;
+
+}
+
+void OrientedBoundingBox::SaveConfiguration()
+{
+	//If first set, prior to update radius, updates the center
+	if (first_set)
+	{
+		*prev_x0 = *x0;
+		*prev_x1 = *x1;
+		*prev_x2 = *x2;
+		*prev_x3 = *x3;
+		*prev_x4 = *x4;
+		*prev_x5 = *x5;
+		*prev_x6 = *x6;
+		*prev_x7 = *x7;
+		x_center[0] = 0.125f * ((*x0)(0, 0) + (*x1)(0, 0) + (*x2)(0, 0) + (*x3)(0, 0) + (*x4)(0, 0) + (*x5)(0, 0) + (*x6)(0, 0) + (*x7)(0, 0));
+		x_center[1] = 0.125f * ((*x0)(1, 0) + (*x1)(1, 0) + (*x2)(1, 0) + (*x3)(1, 0) + (*x4)(1, 0) + (*x5)(1, 0) + (*x6)(1, 0) + (*x7)(1, 0));
+		x_center[2] = 0.125f * ((*x0)(2, 0) + (*x1)(2, 0) + (*x2)(2, 0) + (*x3)(2, 0) + (*x4)(2, 0) + (*x5)(2, 0) + (*x6)(2, 0) + (*x7)(2, 0));
+		first_set = false;
+		*prev_orient = *orient; 
+		*prev_half_dis = *half_dis;
+		*prev_center = *center;
+	}
+
+	float prevc[3];
+	prevc[0] = x_center[0];
+	prevc[1] = x_center[1];
+	prevc[2] = x_center[2];
+
+	x_center[0] = 0.125f * ((*x0)(0, 0) + (*x1)(0, 0) + (*x2)(0, 0) + (*x3)(0, 0) + (*x4)(0, 0) + (*x5)(0, 0) + (*x6)(0, 0) + (*x7)(0, 0));
+	x_center[1] = 0.125f * ((*x0)(1, 0) + (*x1)(1, 0) + (*x2)(1, 0) + (*x3)(1, 0) + (*x4)(1, 0) + (*x5)(1, 0) + (*x6)(1, 0) + (*x7)(1, 0));
+	x_center[2] = 0.125f * ((*x0)(2, 0) + (*x1)(2, 0) + (*x2)(2, 0) + (*x3)(2, 0) + (*x4)(2, 0) + (*x5)(2, 0) + (*x6)(2, 0) + (*x7)(2, 0));
+
+	last_center_change[0] = x_center[0] - prevc[0];
+	last_center_change[1] = x_center[1] - prevc[1];
+	last_center_change[2] = x_center[2] - prevc[2];
+
+	*prev_x0 = *x0;
+	*prev_x1 = *x1;
+	*prev_x2 = *x2;
+	*prev_x3 = *x3;
+	*prev_x4 = *x4;
+	*prev_x5 = *x5;
+	*prev_x6 = *x6;
+	*prev_x7 = *x7;
+
+	*prev_orient = *orient;
+	*prev_half_dis = *half_dis;
+	*prev_center = *center;
+}
+
+void OrientedBoundingBox::Report()
+{
+	db.myprintf("OrientedBoundingBox\n");
+	db.myprintf("Size\t%.6e\n", size);
+	db.myprintf("Center\t%.6e\t%.6e\t%.6e\n", x_center[0], x_center[1], x_center[2]);
+}

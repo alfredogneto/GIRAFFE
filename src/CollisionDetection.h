@@ -6,7 +6,9 @@ class BoundingCylinder;
 class BoundingTriangularBox;
 class BoundingBoxAxesOriented;
 class BoundingBoxAxesAligned;
+class OrientedBoundingBox; //Marina
 class MatrixFloat;
+class Matrix;
 
 bool CollisionDetection(BoundingVolume* bv_1, BoundingVolume* bv_2);
 
@@ -28,3 +30,7 @@ bool CollisionDetection(BoundingTriangularBox* bv_1, BoundingBoxAxesOriented* bv
 //Auxiliary functions
 bool RayTest(MatrixFloat& P0, MatrixFloat& P1, MatrixFloat& P2, MatrixFloat& S, MatrixFloat& T);
 float Clamp(float n, float min, float max);
+//Marina
+bool CollisionDetection(OrientedBoundingBox* bv_1, OrientedBoundingBox* bv_2);
+//Marina
+Matrix Support(Matrix& dir, Matrix& m);

@@ -232,6 +232,10 @@ bool ExplicitDynamic::Solve()
 	////////////////////////////////////////////////////////////////////////////////
 	while (time < end_time  && aborted == false)
 	{
+		//Marina
+		if (db.gcs_exist)
+			db.gcs->duration_mount_contact = 0.0;
+		high_resolution_clock::time_point t4 = high_resolution_clock::now();//Inicia a marcação de tempo de execução
 		//Setando variaveis no database
 		db.last_converged_time = time;
 		time += time_step;	//Incremento do time step, de acordo com a progressão da solução
@@ -242,7 +246,7 @@ bool ExplicitDynamic::Solve()
 		}
 		db.current_time_step = time_step;
 		db.myprintf("\nTime: %.9f\t\tTime step: %.9f\n\n", time, time_step);
-		Zeros();	//zera deslocamentos e rotações incrementais nos nós
+		Zeros();	//zera deslocamentos e rotações incrementais nos nós //Marina
 		
 		if (!strcmp(method, "Euler"))
 			Euler();
@@ -262,7 +266,7 @@ bool ExplicitDynamic::Solve()
 		{
 			steps_computed++;
 			steps_control++;
-			SaveConfiguration();	//Salva configuração convergida
+			SaveConfiguration();	//Salva configuração convergida //Marina
 			
 			//Analise da facilidade de convergência:
 			if (steps_computed >= steps_to_increase)
@@ -279,6 +283,10 @@ bool ExplicitDynamic::Solve()
 				if ((steps_control%sample == 0 || time == end_time))
 					WriteResults();								//salvando resultados
 				//Atualiza monitor
+				//Marina
+				high_resolution_clock::time_point t3 = high_resolution_clock::now();
+				auto duration3 = std::chrono::duration_cast<std::chrono::microseconds>(t3 - t4).count();
+				db.time_step_marina = duration3;
 				if (db.monitor_exist == true && (steps_control%db.monitor->sample == 0 || time == end_time))
 					db.monitor->UpdateMonitor(time);
 				//Atualiza analise concomitante
@@ -474,6 +482,12 @@ void ExplicitDynamic::RungeKutta4()
 	MountLoadsExplicit(time - time_step);
 	MontSpecialConstraintsExplicit(time - time_step);
 	MountContactsExplicit(time - time_step);
+	//Marina
+	/*for (int i = 0; i < db.gcs->contactPP_list[0].size(); i++) {
+		if (db.gcs->contactPP_list[0][i]->contact_pairs[0]->eligible && db.gcs->contactPP_list[0][i]->index2 == 1) {
+			db.myprintf("fn: %.6e %.6e %.6e\n", db.gcs->contactPP_list[0][i]->contact_pairs[0]->fn[0], db.gcs->contactPP_list[0][i]->contact_pairs[0]->fn[1], db.gcs->contactPP_list[0][i]->contact_pairs[0]->fn[2]);
+		}
+	}*/
 	MountGlobalExplicit();
 	//db.global_P_A.print();
 #pragma omp parallel
@@ -536,6 +550,12 @@ void ExplicitDynamic::RungeKutta4()
 	MountLoadsExplicit(time - time_step/2);
 	MontSpecialConstraintsExplicit(time - time_step/2);
 	MountContactsExplicit(time - time_step/2);
+	//Marina
+	/*for (int i = 0; i < db.gcs->contactPP_list[0].size(); i++) {
+		if (db.gcs->contactPP_list[0][i]->contact_pairs[0]->eligible && db.gcs->contactPP_list[0][i]->index2 == 1) {
+			db.myprintf("fn: %.6e %.6e %.6e\n", db.gcs->contactPP_list[0][i]->contact_pairs[0]->fn[0], db.gcs->contactPP_list[0][i]->contact_pairs[0]->fn[1], db.gcs->contactPP_list[0][i]->contact_pairs[0]->fn[2]);
+		}
+	}*/
 	MountGlobalExplicit();
 	//db.global_P_A.print();
 #pragma omp parallel
@@ -598,6 +618,12 @@ void ExplicitDynamic::RungeKutta4()
 	MountLoadsExplicit(time - time_step/2);
 	MontSpecialConstraintsExplicit(time - time_step/2);
 	MountContactsExplicit(time - time_step/2);
+	//Marina
+	/*for (int i = 0; i < db.gcs->contactPP_list[0].size(); i++) {
+		if (db.gcs->contactPP_list[0][i]->contact_pairs[0]->eligible && db.gcs->contactPP_list[0][i]->index2 == 1) {
+			db.myprintf("fn: %.6e %.6e %.6e\n", db.gcs->contactPP_list[0][i]->contact_pairs[0]->fn[0], db.gcs->contactPP_list[0][i]->contact_pairs[0]->fn[1], db.gcs->contactPP_list[0][i]->contact_pairs[0]->fn[2]);
+		}
+	}*/
 	MountGlobalExplicit();
 	//db.global_P_A.print();
 	//Evaluating accelerations - contributions stemming from particles
@@ -659,6 +685,12 @@ void ExplicitDynamic::RungeKutta4()
 	MountLoadsExplicit(time);
 	MontSpecialConstraintsExplicit(time);
 	MountContactsExplicit(time);
+	//Marina
+	/*for (int i = 0; i < db.gcs->contactPP_list[0].size(); i++) {
+		if (db.gcs->contactPP_list[0][i]->contact_pairs[0]->eligible && db.gcs->contactPP_list[0][i]->index2 == 1) {
+			db.myprintf("fn: %.6e %.6e %.6e\n", db.gcs->contactPP_list[0][i]->contact_pairs[0]->fn[0], db.gcs->contactPP_list[0][i]->contact_pairs[0]->fn[1], db.gcs->contactPP_list[0][i]->contact_pairs[0]->fn[2]);
+		}
+	}*/
 	MountGlobalExplicit();
 	//db.global_P_A.print();
 #pragma omp parallel

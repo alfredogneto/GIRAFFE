@@ -20,6 +20,8 @@
 #include "RigidNURBS_1.h"
 #include "FlexibleTriangularSurface_2.h"
 
+#include <iostream>
+
 #include"Database.h"
 //Variaveis globais
 extern

@@ -87,6 +87,7 @@ public:
 
 	//Post-processing variables
 	int n_active_PP;
+	int n_active_PP_deg; //Marina
 	int n_active_PB;
 	int n_active_BOBO;
 	int n_active_PBO;

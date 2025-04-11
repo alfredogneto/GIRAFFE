@@ -12,6 +12,8 @@ public:
 	int index2;				//index 2
 	int sub_index1;			//sub index 1
 	int sub_index2;			//sub index 2
+	//Marina
+	bool write_report;
 
 	//Degenerations to employ while considering contact
 	int deg_pointA;	//ID of the point in surface A to be considered in the degeneration (zero if no degeneration)
@@ -32,7 +34,9 @@ public:
 	void SetActive();
 	void SetUnnactive();
 	void Alloc();
+	//void AllocExplicit();
 	void Free();
+	//void FreeExplicit();
 	
 	virtual void EvaluateNormalGap() = 0;
 	virtual bool HaveErrors() = 0;
@@ -41,6 +45,8 @@ public:
 	virtual void FreeSpecific() = 0;
 	virtual void MountLocalContributions() = 0;
 
+	//virtual void AllocSpecificExplicit() = 0;
+	//virtual void FreeSpecificExplicit() = 0;
 	virtual void MountLocalContributionsExplicit(double t) = 0;
 	virtual void SetVariablesExplicit(double t) = 0;
 	virtual void FinalUpdateExplicit(double t) = 0;

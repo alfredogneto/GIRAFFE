@@ -6,6 +6,8 @@
 #include "Contact.h"
 #include "NodeSet.h"
 #include "Particle.h"
+#include "ContactParticleParticle.h"
+#include "SurfacePairGeneralContact.h"
 #include "SpecialConstraint.h"
 #include "GeneralContactSearch.h"
 #include "ConvergenceCriteria.h"
@@ -435,8 +437,13 @@ void Monitor::UpdateGlobalMonitor(double time)
 		fprintf(f_global[0], "ANG_MOM_Z\t");*/
 		if (db.gcs_exist)
 		{
+			fprintf(f_global[0], "FTX\t"); //Marina
+			fprintf(f_global[0], "FTY\t"); //Marina
+			fprintf(f_global[0], "FTZ\t"); //Marina
 			fprintf(f_global[0], "MONITORED_PP\t");
 			fprintf(f_global[0], "ACTIVE_PP\t");
+			//Marina
+			fprintf(f_global[0], "ACTIVE_PP_DEG\t");
 			fprintf(f_global[0], "MONITORED_PB\t");
 			fprintf(f_global[0], "ACTIVE_PB\t");
 			fprintf(f_global[0], "MONITORED_BOBO\t");
@@ -504,10 +511,24 @@ void Monitor::UpdateGlobalMonitor(double time)
 
 	if (db.gcs_exist)
 	{
-		fprintf(f_global[0], "%d\t%d\t%d\t%d\t%d\t%d\t%d\t%d\t", db.gcs->n_monitoring_PP, db.gcs->n_active_PP, db.gcs->n_monitoring_PB, db.gcs->n_active_PB,
+		//Marina
+		double ft[3];
+		ft[0] = 0;
+		ft[1] = 0;
+		ft[2] = 0;
+		for (int i = 0; i < db.gcs->contactPP_list[0].size(); i++) {
+			if (db.gcs->contactPP_list[0][i]->contact_pairs[0]->eligible) {
+				ft[0] = db.gcs->contactPP_list[0][i]->contact_pairs[0]->ft[0];
+				ft[1] = db.gcs->contactPP_list[0][i]->contact_pairs[0]->ft[1];
+				ft[2] = db.gcs->contactPP_list[0][i]->contact_pairs[0]->ft[2];
+			}
+		}
+		//Marina
+		fprintf(f_global[0], "%.6e\t%.6e\t%.6e\t%d\t%d\t%d\t%d\t%d\t%d\t%d\t%d\t%d\t", ft[0], ft[1], ft[2], db.gcs->n_monitoring_PP, db.gcs->n_active_PP, db.gcs->n_active_PP_deg, db.gcs->n_monitoring_PB, db.gcs->n_active_PB,
 			db.gcs->n_monitoring_BOBO, db.gcs->n_active_BOBO, db.gcs->n_monitoring_PBO, db.gcs->n_active_PBO);
 		if (print_times)
 		{
+			fprintf(f_global[0], "%d\t", db.time_step_marina); //Marina
 			fprintf(f_global[0], "%d\t", (int)db.gcs->duration_verlet);
 			fprintf(f_global[0], "%d\t", (int)db.gcs->duration_linkedcells);
 			fprintf(f_global[0], "%d\t", (int)db.gcs->duration_collision_detection);

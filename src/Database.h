@@ -122,6 +122,7 @@ class SurfacePairGeneralContact;
 class RigidTriangularFace_RigidTriangularFace;
 class FlexibleTriangularFace_FlexibleTriangularFace;
 class FlexibleTriangularFace_RigidTriangularFace;
+class RigidNURBSSurface_RigidNURBSSurface; //Marina
 
 //Section details
 class SectionDetails;
@@ -165,11 +166,13 @@ class PSYCoupling;
 class CADData;
 class STLSurface;
 class NURBSSurface;
+class NURBSMultipatchSurface; //Marina
 
 //ContactInterfaces
 class ContactInterface;
 class Interface_0;
 class Interface_1;
+class Interface_2; //Marina
 
 //BoundingVolumes
 class BoundingVolume;
@@ -178,6 +181,7 @@ class BoundingCylinder;
 class BoundingTriangularBox;
 class BoundingBoxAxesAligned;
 class BoundingBoxAxesOriented;
+class OrientedBoundingBox; //Marina
 
 class Encoding;
 class ExecutionData;
@@ -419,4 +423,6 @@ public:
 	//PSY
 	PSYCoupling* psy_coupling;
 	bool psy_coupling_exist;
+	//Marina
+	long long time_step_marina;
 };

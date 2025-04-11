@@ -118,4 +118,3 @@ void AerodynamicData::Write(FILE *f)
 	fprintf(f, "PitchCoefficientData\tNPoints\t%d\t(Alpha/CM)\n", CM->n_times);
 	CM->Write(f);
 }
-

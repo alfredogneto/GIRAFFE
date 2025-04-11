@@ -4,6 +4,7 @@
 class SSContactData;
 class Interface_0;
 class Interface_1;
+class Interface_2;
 
 using namespace std;
 

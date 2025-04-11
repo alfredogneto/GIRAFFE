@@ -25,7 +25,10 @@
 extern
 Database db;
 
-using namespace std::chrono;
+#include <chrono>
+using std::chrono::high_resolution_clock;
+using std::chrono::microseconds;
+using std::chrono::duration_cast;
 
 Solution::Solution()
 {

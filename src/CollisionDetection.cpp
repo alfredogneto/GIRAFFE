@@ -9,11 +9,13 @@
 #include "BoundingTriangularBox.h"
 #include "BoundingBoxAxesOriented.h"
 #include "BoundingBoxAxesAligned.h"
+#include "OrientedBoundingBox.h" //Marina
 #include "MatrixFloat.h"
 
 //extern
 //FILE *fdebug;
 
+using namespace std;
 bool CollisionDetection(BoundingVolume* bv_1, BoundingVolume* bv_2)
 {
 	int ref_ID = 0;
@@ -61,6 +63,9 @@ bool CollisionDetection(BoundingVolume* bv_1, BoundingVolume* bv_2)
 	if (typeid(*bv_1) == typeid(BoundingBoxAxesAligned) && typeid(*bv_2) == typeid(BoundingSphere))
 		ref_ID = 19;
 
+	//Marina
+	if (typeid(*bv_1) == typeid(OrientedBoundingBox) && typeid(*bv_2) == typeid(OrientedBoundingBox))
+		ref_ID = 20;
 	switch (ref_ID) 
 	{
 		case 0:
@@ -199,7 +204,14 @@ bool CollisionDetection(BoundingVolume* bv_1, BoundingVolume* bv_2)
 			ret_value = CollisionDetection(ptr_bv_2, ptr_bv_1);
 			break;
 		}
-		
+		//Marina
+		case 20:
+		{
+			OrientedBoundingBox* ptr_bv_1 = static_cast<OrientedBoundingBox*>(bv_1);
+			OrientedBoundingBox* ptr_bv_2 = static_cast<OrientedBoundingBox*>(bv_2);
+			ret_value = CollisionDetection(ptr_bv_2, ptr_bv_1);
+			break;
+		}		
 	}
 	return ret_value;
 }
@@ -639,4 +651,228 @@ bool CollisionDetection(BoundingBoxAxesAligned* bv_1, BoundingBoxAxesAligned* bv
 	if (bv_2->z_max_inf < bv_1->z_min_inf) return false;
 
 	return true; // boxes present overlap
+}
+
+
+bool CollisionDetection(OrientedBoundingBox * bv_1, OrientedBoundingBox * bv_2)
+{
+	// BV 1
+	MatrixFloat c1(3);
+	c1(0, 0) = (*bv_1->center)(0, 0);
+	c1(1, 0) = (*bv_1->center)(1, 0);
+	c1(2, 0) = (*bv_1->center)(2, 0);
+
+	MatrixFloat u1[3];
+	u1[0] = MatrixFloat(3);
+	u1[1] = MatrixFloat(3);
+	u1[2] = MatrixFloat(3);
+	u1[0](0, 0) = (*bv_1->orient)(0, 0);
+	u1[0](1, 0) = (*bv_1->orient)(1, 0);
+	u1[0](2, 0) = (*bv_1->orient)(2, 0);
+	u1[1](0, 0) = (*bv_1->orient)(0, 1);
+	u1[1](1, 0) = (*bv_1->orient)(1, 1);
+	u1[1](2, 0) = (*bv_1->orient)(2, 1);
+	u1[2](0, 0) = (*bv_1->orient)(0, 2);
+	u1[2](1, 0) = (*bv_1->orient)(1, 2);
+	u1[2](2, 0) = (*bv_1->orient)(2, 2);
+
+	MatrixFloat e1(3);
+	e1(0, 0) = (*bv_1->half_dis)(0, 0);
+	e1(1, 0) = (*bv_1->half_dis)(1, 0);
+	e1(2, 0) = (*bv_1->half_dis)(2, 0);
+
+	// BV 2
+	MatrixFloat c2(3);
+	c2(0, 0) = (*bv_2->center)(0, 0);
+	c2(1, 0) = (*bv_2->center)(1, 0);
+	c2(2, 0) = (*bv_2->center)(2, 0);
+
+	MatrixFloat u2[3];
+	u2[0] = MatrixFloat(3);
+	u2[1] = MatrixFloat(3);
+	u2[2] = MatrixFloat(3);
+	u2[0](0, 0) = (*bv_2->orient)(0, 0);
+	u2[0](1, 0) = (*bv_2->orient)(1, 0);
+	u2[0](2, 0) = (*bv_2->orient)(2, 0);
+	u2[1](0, 0) = (*bv_2->orient)(0, 1);
+	u2[1](1, 0) = (*bv_2->orient)(1, 1);
+	u2[1](2, 0) = (*bv_2->orient)(2, 1);
+	u2[2](0, 0) = (*bv_2->orient)(0, 2);
+	u2[2](1, 0) = (*bv_2->orient)(1, 2);
+	u2[2](2, 0) = (*bv_2->orient)(2, 2);
+
+	MatrixFloat e2(3);
+	e2(0, 0) = (*bv_2->half_dis)(0, 0);
+	e2(1, 0) = (*bv_2->half_dis)(1, 0);
+	e2(2, 0) = (*bv_2->half_dis)(2, 0);
+
+
+	// Ericson - Chapter 4 - OBB-OBB Intersection
+
+	float ra, rb;
+	MatrixFloat R(3, 3), AbsR(3, 3);
+
+	// Compute rotation matrix expressing b in a’s coordinate frame 
+	for (int i = 0; i < 3; i++)
+	{
+		for (int j = 0; j < 3; j++) {
+			R(i, j) = dot(u1[i], u2[j]);
+		}
+	}
+
+	// Compute translation vector t Vector
+	MatrixFloat t(3);
+	t = c2 - c1;
+
+	// Bring translation into a’s coordinate frame
+	MatrixFloat t_aux(3);
+	t_aux(0, 0) = dot(t, u1[0]);
+	t_aux(1, 0) = dot(t, u1[1]);
+	t_aux(2, 0) = dot(t, u1[2]);
+	t = t_aux;
+
+	// Compute common subexpressions. Add in an epsilon term to 
+	// counteract arithmetic errors when two edges are parallel and 
+	// their cross product is (near) null (see text for details)
+	float epsilon = pow(10, -10);
+	for (int i = 0; i < 3; i++)
+	{
+		for (int j = 0; j < 3; j++)
+		{
+			AbsR(i, j) = abs(R(i, j)) + epsilon;
+			if (AbsR(i, j) > 1) {
+				AbsR(i, j) = 1;
+			}
+		}
+	}
+
+	// Test axes L=A0,L=A1,L=A2
+	for (int i = 0; i < 3; i++)
+	{
+		ra = e1(i, 0);
+		rb = e2(0, 0) * AbsR(i, 0) + e2(1, 0) * AbsR(i, 1) + e2(2, 0) * AbsR(i, 2);
+		if (abs(t(i, 0)) > (ra + rb))
+			return false;
+	}
+
+	// Test axes L=B0,L=B1,L=B2
+	for (int i = 0; i < 3; i++)
+	{
+		ra = e1(0, 0) * AbsR(0, i) + e1(1, 0) * AbsR(1, i) + e1(2, 0) * AbsR(2, i);
+		rb = e2(i, 0);
+		if (abs(t(0, 0) * R(0, i) + t(1, 0) * R(1, i) + t(2, 0) * R(2, i)) > (ra + rb))
+			return false;
+	}
+
+
+	// Test axis L=A0xB0
+	ra = e1(1, 0) * AbsR(2, 0) + e1(2, 0) * AbsR(1, 0);
+	rb = e2(1, 0) * AbsR(0, 2) + e2(2, 0) * AbsR(0, 1);
+	if (abs(t(2, 0) * R(1, 0) - t(1, 0) * R(2, 0)) > (ra + rb))
+		return false;
+
+	// Test axis L=A0xB1
+	ra = e1(1, 0) * AbsR(2, 1) + e1(2, 0) * AbsR(1, 1);
+	rb = e2(0, 0) * AbsR(0, 2) + e2(2, 0) * AbsR(0, 0);
+	if (abs(t(2, 0) * R(1, 1) - t(1, 0) * R(2, 1)) > (ra + rb))
+		return false;
+
+	// Test axis L=A0xB2
+	ra = e1(1, 0) * AbsR(2, 2) + e1(2, 0) * AbsR(1, 2);
+	rb = e2(0, 0) * AbsR(0, 1) + e2(1, 0) * AbsR(0, 0);
+	if (abs(t(2, 0) * R(1, 2) - t(1, 0) * R(2, 2)) > (ra + rb))
+		return false;
+
+	// Test axis L=A1xB0
+	ra = e1(0, 0) * AbsR(2, 0) + e1(2, 0) * AbsR(0, 0);
+	rb = e2(1, 0) * AbsR(1, 2) + e2(2, 0) * AbsR(1, 1);
+	if (abs(t(0, 0) * R(2, 0) - t(2, 0) * R(0, 0)) > (ra + rb))
+		return false;
+
+	// Test axis L=A1xB1
+	ra = e1(0, 0) * AbsR(2, 1) + e1(2, 0) * AbsR(0, 1);
+	rb = e2(0, 0) * AbsR(1, 2) + e2(2, 0) * AbsR(1, 0);
+	if (abs(t(0, 0) * R(2, 1) - t(2, 0) * R(0, 1)) > (ra + rb))
+		return false;
+
+	// Test axis L=A1xB2
+	ra = e1(0, 0) * AbsR(2, 2) + e1(2, 0) * AbsR(0, 2);
+	rb = e2(0, 0) * AbsR(1, 1) + e2(1, 0) * AbsR(1, 0);
+	if (abs(t(0, 0) * R(2, 2) - t(2, 0) * R(0, 2)) > (ra + rb))
+		return false;
+
+	// Test axis L=A2xB0
+	ra = e1(0, 0) * AbsR(1, 0) + e1(1, 0) * AbsR(0, 0);
+	rb = e2(1, 0) * AbsR(2, 2) + e2(2, 0) * AbsR(2, 1);
+	if (abs(t(1, 0) * R(0, 0) - t(0, 0) * R(1, 0)) > (ra + rb))
+		return false;
+
+	// Test axis L=A2xB1
+	ra = e1(0, 0) * AbsR(1, 1) + e1(1, 0) * AbsR(0, 1);
+	rb = e2(0, 0) * AbsR(2, 2) + e2(2, 0) * AbsR(2, 0);
+	if (abs(t(1, 0) * R(0, 1) - t(0, 0) * R(1, 1)) > (ra + rb))
+		return false;
+
+	// Test axis L=A2xB2
+	ra = e1(0, 0) * AbsR(1, 2) + e1(1, 0) * AbsR(0, 2);
+	rb = e2(0, 0) * AbsR(2, 1) + e2(1, 0) * AbsR(2, 0);
+	if (abs(t(1, 0) * R(0, 2) - t(0, 0) * R(1, 2)) > (ra + rb))
+		return false;
+
+	return true;
+}
+
+Matrix Support(Matrix & dir, Matrix & m)
+{
+	Matrix point(3), pa(3), pb(3);
+	point(0, 0) = m(0, 0);
+	point(1, 0) = m(1, 0);
+	point(2, 0) = m(2, 0);
+	int i_aux = 0;
+	float maxdist = dot(dir, point);
+	bool test = false;
+	for (int i = 1; i < 8; i += 1)
+	{
+		pa(0, 0) = m(4 * i, 0);
+		pa(1, 0) = m(4 * i + 1, 0);
+		pa(2, 0) = m(4 * i + 2, 0);
+		if (dot(dir, pa) >= maxdist)
+		{
+			//if (m(4 * i + 3, 0) > 0) {
+				/*for (int j = i + 1; j < 8; j++)
+				{
+					pb(0, 0) = m(4 * j, 0);
+					pb(1, 0) = m(4 * j + 1, 0);
+					pb(2, 0) = m(4 * j + 2, 0);
+					if (m(4 * j + 3, 0) < 1.0 && (dot(dir, pb) >= dot(dir, pa) && dot(dir, pb) < (1 + pow(10,-10)) * dot(dir, pa))) {
+						i_aux = j;
+						test = true;
+						break;
+					}
+				}
+				if (test) {
+					maxdist = dot(dir, pb);
+					point(0, 0) = m(4 * i_aux, 0);
+					point(1, 0) = m(4 * i_aux + 1, 0);
+					point(2, 0) = m(4 * i_aux + 2, 0);
+				}
+				else {
+					maxdist = dot(dir, pa);
+					point(0, 0) = m(4 * i, 0);
+					point(1, 0) = m(4 * i + 1, 0);
+					point(2, 0) = m(4 * i + 2, 0);
+					i_aux = i;
+				}*/
+				//}
+				//else {
+			maxdist = dot(dir, pa);
+			point(0, 0) = m(4 * i, 0);
+			point(1, 0) = m(4 * i + 1, 0);
+			point(2, 0) = m(4 * i + 2, 0);
+			i_aux = i;
+			//}
+		}
+	}
+	m(4 * i_aux + 3, 0) = 1.0;
+	return point;
 }

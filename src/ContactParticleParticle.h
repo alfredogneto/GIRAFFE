@@ -39,5 +39,9 @@ public:
 
 	//Vector of contact pairs (to be alloced according to the particle - particle type)
 	vector<SurfacePairGeneralContact*> contact_pairs;
+	//Marina
+	bool *contact_detection; // Para cada iteração, essa variável guarda a informação se o contato entre as partículas já foi detectado (sem degeneração)
+	bool *contact_detectionA; // Para cada iteração, essa variável guarda a informação se o contato entre as partículas já foi detectado projetando-se o nó da partícula A na partícula B
+	bool *contact_detectionB; // Para cada iteração, essa variável guarda a informação se o contato entre as partículas já foi detectado projetando-se o nó da partícula B na partícula A
+	bool *contact_detectionAB; // Para cada iteração, essa variável guarda a informação se o contato entre as partículas já foi detectado através da distância entre os nós das partículas A e B
 };
-

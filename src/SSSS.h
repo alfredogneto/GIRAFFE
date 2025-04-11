@@ -4,6 +4,10 @@
 class SSContactData;
 class SurfacePair;
 class Matrix;
+#include "FlexibleSECylinder_1_FlexibleSECylinder_1.h"
+#include "FlexibleArcExtrusion_1_RigidArcRevolution_1.h"
+#include "RigidNURBS_1_RigidNURBS_1.h"
+#include "FlexibleSECylinder_1_FlexibleTriangularSurface_2.h"
 
 #include <typeinfo>
 

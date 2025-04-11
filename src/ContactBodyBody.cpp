@@ -8,6 +8,7 @@
 #include "BodyGeometry.h"
 #include "Interface_0.h"
 #include "Interface_1.h"
+#include "Interface_2.h"
 #include "Encoding.h"
 
 #include "Database.h"

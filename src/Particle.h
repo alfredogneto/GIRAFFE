@@ -1,8 +1,12 @@
 #pragma once
 #include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <math.h>
 
 class Matrix;
 class BoundingVolume;
+#define PI 3.1415926535897932384626433832795
 
 class Particle
 {
@@ -58,7 +62,7 @@ public:
 	BoundingVolume* bv;												//Bounding volume
 	int n_sub_bv;													//Number of sub bounding volumes
 	BoundingVolume** sub_bv;										//Sub bounding volumes
-
+	bool nullbv; //Marina
 	
 
 	Matrix* I3;

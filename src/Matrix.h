@@ -1,6 +1,16 @@
 #pragma once
 #include <stdio.h>
 #include <cmath>
+#include "arpack.h"
+#include <complex>
+#define QUARTIC_H_INCLUDED
+
+#include "mkl.h"
+#include "mkl_blas.h"
+#include "mkl_types.h"
+#include "mkl_lapack.h"
+#include "mkl_dss.h"
+#define PI 3.1415926535897932384626433832795
 
 class Matrix
 {
@@ -83,3 +93,23 @@ double Sin(double a);
 double Cos(double a);
 Matrix Dot(Matrix &matrix1, Matrix &matrix2);						//Produto de matrizes
 double operator + (double a, Matrix &matrix2);						//Operador Soma de matriz com um elemento e um vetor
+
+
+//Marina
+//const double PI = 3.141592653589793238463L;
+const double M_2PI = 2 * PI;
+const double eps = 1e-12;
+typedef std::complex<double> DComplex;
+//Polinômio de 3o grau
+//---------------------------------------------------------------------------
+// x - array of size 3
+// In case 3 real roots: => x[0], x[1], x[2], return 3
+//         2 real roots: x[0], x[1],          return 2
+//         1 real root : x[0], x[1] ± i*x[2], return 1
+unsigned int solveP3(double* x, double a, double b, double c);
+
+//Polinômio 4o grau
+//---------------------------------------------------------------------------
+// solve quartic equation x^4 + a*x^3 + b*x^2 + c*x + d
+// Attention - this function returns dynamically allocated array. It has to be released afterwards.
+DComplex* solve_quartic(double a, double b, double c, double d);

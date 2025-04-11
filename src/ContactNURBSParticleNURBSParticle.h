@@ -1,0 +1,60 @@
+#pragma once
+#include "ContactParticleParticle.h"
+class NURBSParticle;
+class NURBSMultipatchSurface;
+class Matrix;
+
+class ContactNURBSParticleNURBSParticle :
+	public ContactParticleParticle
+{
+public:
+	ContactNURBSParticleNURBSParticle();
+	~ContactNURBSParticleNURBSParticle();
+	void PreCalc();
+	void MountGlobal();
+	void MountGlobalExplicit();
+	void ProcessContactHierarchy();
+
+	NURBSParticle* pA;
+	NURBSParticle* pB;
+	NURBSMultipatchSurface* surfA;
+	NURBSMultipatchSurface* surfB;
+	//TriangularFace *faceA;
+	//TriangularFace *faceB;
+
+	Matrix* QAp;
+	Matrix* QBp;
+	Matrix* x0Ap;
+	Matrix* x0Bp;
+
+	Matrix* QAi;
+	Matrix* QBi;
+	Matrix* x0Ai;
+	Matrix* x0Bi;
+
+	Matrix* Q0A;
+	Matrix* Q0B;
+
+	//Degenerations
+	int deg_pointA;
+	int deg_curveA;
+	int deg_pointB;
+	int deg_curveB;
+
+	//Marina
+	void InsertNewContact(int deg_pointA, int deg_curveA, int deg_pointB, int deg_curveB);
+	int CreateSurfacePair(int deg_pointA, int deg_curveA, int deg_pointB, int deg_curveB);				//Returns the list index where the contact was created
+
+	void ProcessSurfacePair(int list_index);
+	void ProcessSurfacePairs();
+	//Explicit
+	void FinalProcessSurfacePairsExplicit(double t);
+	void FinalProcessSurfacePairExplicit(int list_index, double t);
+
+	//teste Marina
+	/*double ft[3];
+	ft[0] = 0;
+	ft[1] = 0;
+	ft[2] = 0;*/
+
+};

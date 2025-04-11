@@ -10,6 +10,7 @@
 #include "BodyGeometry.h"
 #include "Node.h"
 #include "Polyhedron.h"
+#include "NURBSParticle.h" //Marina
 #include "VEMPolyhedron.h"
 #include "STLBoundary.h"
 #include "SECylinder.h"
@@ -23,6 +24,8 @@
 //Particle pairs:
 #include "ContactPolyhedronPolyhedron.h"
 #include "ContactVEMPolyhedronVEMPolyhedron.h"
+#include "ContactNURBSParticleNURBSParticle.h"  //Marina
+
 //Particle-boundary pairs:
 #include "ContactPolyhedronSTLBoundary.h"
 #include "ContactVEMPolyhedronSTLBoundary.h"
@@ -87,6 +90,7 @@ GeneralContactSearch::GeneralContactSearch()
 	n_active_BOBO = 0;
 	n_monitoring_PBO = 0;
 	n_active_PBO = 0;
+	n_active_PP_deg = 0; //Marina
 
 	plot_solution_times = true;
 	duration_verlet = 0;
@@ -531,45 +535,63 @@ void GeneralContactSearch::AlltoAll()
 						for (int jj = 0; jj < db.particles[j]->n_sub_bv; jj++)
 						{
 							n_collisiondetection++;
-							if (CollisionDetection(db.particles[i]->sub_bv[ii], db.particles[j]->sub_bv[jj]))
-							{
-								//Search for already-existing contact
-								int index = CheckIfContactParticleParticleExists(i, j, ii, jj);
-								//New contact detected - creation of a new object
-								if (index == -1)
-								{
-									ContactParticleParticle* pair;
-									if (typeid(*db.particles[i]) == typeid(Polyhedron) && typeid(*db.particles[j]) == typeid(Polyhedron))
-									{
-										pair = new ContactPolyhedronPolyhedron();
-										pair->index1 = i;
-										pair->index2 = j;
-										pair->sub_index1 = ii;
-										pair->sub_index2 = jj;
-										pair->cur_active = true;
-										pair->PreCalc();
-										contactPP_list[i].push_back(pair);
-									}
-									if (typeid(*db.particles[i]) == typeid(VEMPolyhedron) && typeid(*db.particles[j]) == typeid(VEMPolyhedron))
-									{
-										pair = new ContactVEMPolyhedronVEMPolyhedron();
-										pair->index1 = i;
-										pair->index2 = j;
-										pair->sub_index1 = ii;
-										pair->sub_index2 = jj;
-										pair->cur_active = true;
-										pair->PreCalc();
-										contactPP_list[i].push_back(pair);
-									}
-									//outros tipos de pares de colisão entre diferentes tipos de particulas
-								}
-								//Previously existing contact is made active
-								else
-								{
-									contactPP_list[i][index]->cur_active = true;
-								}
-									
+							if (db.particles[i]->nullbv && db.particles[j]->nullbv) {
+
 							}
+							else {
+								if (CollisionDetection(db.particles[i]->sub_bv[ii], db.particles[j]->sub_bv[jj]))
+								{
+									//Search for already-existing contact
+									int index = CheckIfContactParticleParticleExists(i, j, ii, jj);
+									//New contact detected - creation of a new object
+									if (index == -1)
+									{
+										ContactParticleParticle* pair;
+										if (typeid(*db.particles[i]) == typeid(Polyhedron) && typeid(*db.particles[j]) == typeid(Polyhedron))
+										{
+											pair = new ContactPolyhedronPolyhedron();
+											pair->index1 = i;
+											pair->index2 = j;
+											pair->sub_index1 = ii;
+											pair->sub_index2 = jj;
+											pair->cur_active = true;
+											pair->PreCalc();
+											contactPP_list[i].push_back(pair);
+										}
+										if (typeid(*db.particles[i]) == typeid(VEMPolyhedron) && typeid(*db.particles[j]) == typeid(VEMPolyhedron))
+										{
+											pair = new ContactVEMPolyhedronVEMPolyhedron();
+											pair->index1 = i;
+											pair->index2 = j;
+											pair->sub_index1 = ii;
+											pair->sub_index2 = jj;
+											pair->cur_active = true;
+											pair->PreCalc();
+											contactPP_list[i].push_back(pair);
+										}
+										//Marina
+										if (typeid(*db.particles[i]) == typeid(NURBSParticle) && typeid(*db.particles[j]) == typeid(NURBSParticle))
+										{
+											pair = new ContactNURBSParticleNURBSParticle();
+											pair->index1 = i;
+											pair->index2 = j;
+											pair->sub_index1 = ii;
+											pair->sub_index2 = jj;
+											pair->cur_active = true;
+											contactPP_list[i].push_back(pair);
+											pair->PreCalc();
+										}
+										//outros tipos de pares de colisão entre diferentes tipos de partículas
+									}
+									//Previously existing contact is made active
+									else
+									{
+										contactPP_list[i][index]->cur_active = true;
+									}
+
+								}
+							}
+							
 
 						}
 					}
@@ -2140,11 +2162,33 @@ void GeneralContactSearch::MountContacts()
 #pragma omp parallel
 	{
 		//particle-particle
+		n_active_PP_deg = 0; //Marina
 #pragma omp for schedule(dynamic)
 		for (int i = 0; i < db.number_particles; i++)
+		{
 			for (int cont = 0; cont < contactPP_list[i].size(); cont++)
+			{
 				if (contactPP_list[i][cont]->cur_active)
+				{
 					contactPP_list[i][cont]->MountContacts();
+					//Marina
+					for (int cp = 0; cp < contactPP_list[i][cont]->contact_pairs.size(); cp++)
+					{
+						if (contactPP_list[i][cont]->contact_pairs[cp]->eligible == true)
+						{
+							if (*contactPP_list[i][cont]->contact_detectionA || *contactPP_list[i][cont]->contact_detectionB || *contactPP_list[i][cont]->contact_detectionAB)
+							{
+								n_active_PP_deg++;
+							}
+						}
+					}
+                }
+				(*contactPP_list[i][cont]->contact_detection) = false;
+				(*contactPP_list[i][cont]->contact_detectionA) = false;
+				(*contactPP_list[i][cont]->contact_detectionB) = false;
+				(*contactPP_list[i][cont]->contact_detectionAB) = false;
+			}
+    	}
 	}
 
 #pragma omp parallel
@@ -2178,7 +2222,7 @@ void GeneralContactSearch::MountContacts()
 	}
 
 	auto duration = std::chrono::duration_cast<std::chrono::microseconds>(high_resolution_clock::now() - t_begin).count();
-	duration_mount_contact = duration;
+	duration_mount_contact = duration_mount_contact + duration; //Marina
 }
 
 void GeneralContactSearch::FinalUpdateContactsExplicit(double t)
@@ -2256,6 +2300,8 @@ void GeneralContactSearch::FinalUpdateContactsExplicit(double t)
 					contactPBO_list[i][cont]->FinalProcessSurfacePairsExplicit(t);
 		}
 	}
+	auto duration = std::chrono::duration_cast<std::chrono::microseconds>(high_resolution_clock::now() - t_begin).count();
+	duration_mount_contact = duration_mount_contact + duration;
 }
 
 void GeneralContactSearch::MountContactsExplicit(double t)
@@ -2294,9 +2340,16 @@ void GeneralContactSearch::MountContactsExplicit(double t)
 		for (int i = 0; i < db.number_particles; i++)
 		{
 			for (int cont = 0; cont < contactPP_list[i].size(); cont++)
-				if (contactPP_list[i][cont]->cur_active)
+				if (contactPP_list[i][cont]->cur_active){
 					contactPP_list[i][cont]->ProcessSurfacePairs();
-		}
+					//if (contactPP_list[i].size() > 4) {
+						//cout << contactPP_list[0][3]->contact_pairs[0]->eligible;
+					//}
+					//if (contactPP_list[i][cont]->contact_pairs[0]->eligible) {
+						//test++;
+					//}
+				}	
+			}
 	}
 	ProcessContactHierarchy();
 #pragma omp parallel
@@ -2336,12 +2389,34 @@ void GeneralContactSearch::MountContactsExplicit(double t)
 #pragma omp parallel
 	{
 		//particle-particle
+		n_active_PP_deg = 0;
 #pragma omp for schedule(dynamic)
 		for (int i = 0; i < db.number_particles; i++)
+		{
 			for (int cont = 0; cont < contactPP_list[i].size(); cont++)
+			{
 				if (contactPP_list[i][cont]->cur_active)
+				{
 					contactPP_list[i][cont]->MountContactsExplicit(t);
-	}
+					//Marina
+					for (int cp = 0; cp < contactPP_list[i][cont]->contact_pairs.size(); cp++)
+					{
+						if (contactPP_list[i][cont]->contact_pairs[cp]->eligible == true)
+						{
+							if (*contactPP_list[i][cont]->contact_detectionA || *contactPP_list[i][cont]->contact_detectionB || *contactPP_list[i][cont]->contact_detectionAB)
+							{
+								n_active_PP_deg++;
+							}
+						}
+					}
+				}
+				(*contactPP_list[i][cont]->contact_detection) = false;
+				(*contactPP_list[i][cont]->contact_detectionA) = false;
+				(*contactPP_list[i][cont]->contact_detectionB) = false;
+				(*contactPP_list[i][cont]->contact_detectionAB) = false;
+			}
+    	}
+ 	}
 
 #pragma omp parallel
 	{
@@ -2374,7 +2449,7 @@ void GeneralContactSearch::MountContactsExplicit(double t)
 	}
 
 	auto duration = std::chrono::duration_cast<std::chrono::microseconds>(high_resolution_clock::now() - t_begin).count();
-	duration_mount_contact = duration;
+	duration_mount_contact = duration_mount_contact + duration; //Marina
 }
 
 void GeneralContactSearch::MountContactsGlobal()
@@ -2468,6 +2543,7 @@ void GeneralContactSearch::ReportContact()
 
 	db.myprintf("\nNumber of monitored contacts (P-P):\t%d\n", n_monitoring_PP);
 	db.myprintf("\nNumber of active contacts (P-P):\t%d\n", n_active_PP);
+	db.myprintf("\nNumber of degenerated active contacts (PP):\t%d\n", n_active_PP_deg); //Marina
 
 	n_monitoring_PB = 0;
 	n_active_PB = 0;
