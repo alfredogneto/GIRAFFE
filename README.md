@@ -1,5 +1,5 @@
 
-# **GIRAFFE**: Generic Interface Readilly Accessible for Finite Elements
+# **GIRAFFE**: Generic Interface Readily Accessible for Finite Elements
 <img src="./images/Giraffe.png" width="300">
 
 ## Table of contents

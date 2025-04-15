@@ -282,7 +282,7 @@ void Node::WriteMonitor(FILE *f, bool first_record, double time)
 	if (first_record == true)
 		fprintf(f, "TIME\tX\tY\tZ\tROTX\tROTY\tROTZ\tFX\tFY\tFZ\tMX\tMY\tMZ\tFXloc\tFYloc\tFZloc\tMXloc\tMYloc\tMZloc\tdX\tdY\tdZ\tdROTX\tdROTY\tdROTZ\tddX\tddY\tddZ\tddROTX\tddROTY\tddROTZ\n");
 	//Informações a serem salvas
-	fprintf(f, "%.6e\t%.6e\t%.6e\t%.6e\t%.6e\t%.6e\t%.6e\t%.6e\t%.6e\t%.6e\t%.6e\t%.6e\t%.6e\t%.6e\t%.6e\t%.6e\t%.6e\t%.6e\t%.6e\t%.6e\t%.6e\t%.6e\t%.6e\t%.6e\t%.6e\t%.6e\t%.6e\t%.6e\t%.6e\t%.6e\t%.6e\n",
+	fprintf(f, "%.12e\t%.12e\t%.12e\t%.12e\t%.12e\t%.12e\t%.12e\t%.12e\t%.12e\t%.12e\t%.12e\t%.12e\t%.12e\t%.12e\t%.12e\t%.12e\t%.12e\t%.12e\t%.12e\t%.12e\t%.12e\t%.12e\t%.12e\t%.12e\t%.12e\t%.12e\t%.12e\t%.12e\t%.12e\t%.12e\t%.12e\n",
 		time,
 		//Deslocamentos - global, rotações pode ser local ou global
 		copy_coordinates[0],
