@@ -403,9 +403,9 @@ void Polyhedron::WriteVTK_XMLRender(FILE *f)
 	pos(2, 0) = db.nodes[node - 1]->copy_coordinates[2];
 	
 	if (db.nodes[node - 1]->flag_material_description)
-		db.cad_data[CADDATA_ID - 1]->WriteVTK_XMLRender(f, pos, (*Q0) * (*db.nodes[node - 1]->Q), number);
+		db.cad_data[CADDATA_ID - 1]->WriteVTK_XMLRender(f, pos, (*Q0) * (*db.nodes[node - 1]->Q), number, material);
 	else
-		db.cad_data[CADDATA_ID - 1]->WriteVTK_XMLRender(f, pos, (*db.nodes[node - 1]->Q)*(*Q0), number);
+		db.cad_data[CADDATA_ID - 1]->WriteVTK_XMLRender(f, pos, (*db.nodes[node - 1]->Q)*(*Q0), number, material);
 }
 
 bool Polyhedron::CheckInside(Matrix& point, int other_particle_ID)

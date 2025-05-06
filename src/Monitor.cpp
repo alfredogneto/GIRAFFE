@@ -435,6 +435,7 @@ void Monitor::UpdateGlobalMonitor(double time)
 		fprintf(f_global[0], "ANG_MOM_Z\t");*/
 		if (db.gcs_exist)
 		{
+			fprintf(f_global[0], "CONTACT_ENERGY\t");
 			fprintf(f_global[0], "MONITORED_PP\t");
 			fprintf(f_global[0], "ACTIVE_PP\t");
 			fprintf(f_global[0], "MONITORED_PB\t");
@@ -504,7 +505,7 @@ void Monitor::UpdateGlobalMonitor(double time)
 
 	if (db.gcs_exist)
 	{
-		fprintf(f_global[0], "%d\t%d\t%d\t%d\t%d\t%d\t%d\t%d\t", db.gcs->n_monitoring_PP, db.gcs->n_active_PP, db.gcs->n_monitoring_PB, db.gcs->n_active_PB,
+		fprintf(f_global[0], "%.6e\t%d\t%d\t%d\t%d\t%d\t%d\t%d\t%d\t", db.gcs->EvaluateContactEnergy(), db.gcs->n_monitoring_PP, db.gcs->n_active_PP, db.gcs->n_monitoring_PB, db.gcs->n_active_PB,
 			db.gcs->n_monitoring_BOBO, db.gcs->n_active_BOBO, db.gcs->n_monitoring_PBO, db.gcs->n_active_PBO);
 		if (print_times)
 		{

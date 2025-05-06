@@ -37,6 +37,7 @@ public:
 	bool NightOwlContact();
 	void WriteVTK_XMLForces(FILE *f);
 	double TimeStepControl(double kin);
+	double EvaluateContactEnergy();
 
 	//Vector of contact pairs (to be alloced according to the particle - particle type)
 	vector<SurfacePairGeneralContact*> contact_pairs;

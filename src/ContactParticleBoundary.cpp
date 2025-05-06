@@ -10,6 +10,7 @@
 #include "Dynamic.h"
 #include "Boundary.h"
 #include "SSContactData.h"
+#include "Interface_1.h"
 #include "TimeStepControlData.h"
 
 #include "Database.h"
@@ -329,4 +330,16 @@ double ContactParticleBoundary::TimeStepControl(double kin)
 			return_step = try_step;
 	}
 	return return_step;
+}
+double ContactParticleBoundary::EvaluateContactEnergy()
+{
+	double return_value = 0.0;
+	for (int i = 0; i < contact_pairs.size(); i++)
+	{
+		double gap_i = contact_pairs[i]->inter->gnb;
+		double gap_f = (*contact_pairs[i]->cd).g_n[0];
+		return_value += contact_pairs[i]->inter->IntegralElasticForce(gap_i, gap_f);
+	}
+	return return_value;
+
 }

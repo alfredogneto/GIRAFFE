@@ -169,7 +169,7 @@ void RigidNURBS_1::WriteVTK_XMLRender(FILE *f)
 		pilot(1, 0) = db.post_files->mag_factor*(db.nodes[pilot_node - 1]->copy_coordinates[1] - db.nodes[pilot_node - 1]->ref_coordinates[1]) + db.nodes[pilot_node - 1]->ref_coordinates[1];
 		pilot(2, 0) = db.post_files->mag_factor*(db.nodes[pilot_node - 1]->copy_coordinates[2] - db.nodes[pilot_node - 1]->ref_coordinates[2]) + db.nodes[pilot_node - 1]->ref_coordinates[2];
 
-		surf->WriteVTK_XMLRender(f, pilot, Qi, number);
+		surf->WriteVTK_XMLRender(f, pilot, Qi, number,number);
 	}
 }
 

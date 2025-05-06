@@ -11,6 +11,7 @@
 #include "Matrix.h"
 #include "SSContactData.h"
 #include "TimeStepControlData.h"
+#include "Interface_1.h"
 #include "Database.h"
 //Variaveis globais
 extern
@@ -309,6 +310,7 @@ void ContactParticleParticle::WriteVTK_XMLForces(FILE *f)
 
 double ContactParticleParticle::TimeStepControl(double kin)
 {
+
 	double return_step = db.solution[db.current_solution_number - 1]->end_time;				//valor alto
 	for (int i = 0; i < contact_pairs.size(); i++)
 	{
@@ -324,4 +326,17 @@ double ContactParticleParticle::TimeStepControl(double kin)
 			return_step = try_step;
 	}
 	return return_step;
+}
+
+double ContactParticleParticle::EvaluateContactEnergy()
+{
+	double return_value = 0.0;
+	for (int i = 0; i < contact_pairs.size(); i++)
+	{
+		double gap_i = contact_pairs[i]->inter->gnb;
+		double gap_f = (*contact_pairs[i]->cd).g_n[0];
+		return_value+=contact_pairs[i]->inter->IntegralElasticForce(gap_i, gap_f);
+	}
+	return return_value;
+
 }

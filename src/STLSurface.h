@@ -28,7 +28,7 @@ public:
 
 	bool ReadCADFile();												//Leitura do arquivo de CAD
 	bool ReadMeshFile();											//Leitura do arquivo de malha (opcional)
-	void WriteVTK_XMLRender(FILE *f, Matrix& pos, Matrix& rot, int number);		//Plots CAD Data
+	void WriteVTK_XMLRender(FILE *f, Matrix& pos, Matrix& rot, int number, int matID);		//Plots CAD Data
 	void WriteVTK_XMLMesh(MatrixFloat& pos, MatrixFloat& rot);		//Plots CAD Data
 
 	void CreateVerticesEdges();

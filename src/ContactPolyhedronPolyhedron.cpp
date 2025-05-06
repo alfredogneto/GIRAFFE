@@ -23,6 +23,7 @@ ContactPolyhedronPolyhedron::ContactPolyhedronPolyhedron()
 	
 	prev_active = false;
 	cur_active = false;
+	invert = false;
 
 	I3 = new Matrix(3, 3);
 	(*I3)(0, 0) = 1.0;

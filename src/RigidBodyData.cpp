@@ -182,6 +182,6 @@ void RigidBodyData::WriteVTK_XMLRender(FILE *f, int pole_node, int cs)
 		xO(1, 0) = db.nodes[pole_node - 1]->copy_coordinates[1];
 		xO(2, 0) = db.nodes[pole_node - 1]->copy_coordinates[2];
 
-		db.cad_data[CADData_ID - 1]->WriteVTK_XMLRender(f, xO, Q, number);
+		db.cad_data[CADData_ID - 1]->WriteVTK_XMLRender(f, xO, Q, number, number);
 	}
 }

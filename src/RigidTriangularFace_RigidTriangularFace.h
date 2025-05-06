@@ -5,7 +5,7 @@
 class Polyhedron;
 class STLSurface;
 class TriangularFace;
-class Interface_1;
+
 
 class RigidTriangularFace_RigidTriangularFace :
 	public SurfacePairGeneralContact
@@ -119,23 +119,7 @@ public:
 	double** Q0A;
 	double** Q0B;
 	
-	//Contact model parameters
-	double(*epsn1);
-	double(*n1);
-	double(*n2);
-	double(*gnb);
-	double(*gnbb);
-	double(*zetan);
-	double(*meq);
-	double(*mus);
-	double(*mud);
-	double(*epst);
-	double(*ct);
-	Interface_1* inter;
-
-	//Interface work variables
-	double* Wnum;
-	double* Wteo;
+	
 };
 
 

@@ -13,7 +13,7 @@ public:
 	virtual bool Read(FILE *f) = 0;												//Leitura do arquivo de entrada
 	virtual void Write(FILE *f) = 0;											//Escrita do arquivo de saida
 	virtual void PreCalc() = 0;													//PreCalc
-	virtual void WriteVTK_XMLRender(FILE *f, Matrix& pos, Matrix& rot, int number) = 0;		//Plots CAD Data
+	virtual void WriteVTK_XMLRender(FILE *f, Matrix& pos, Matrix& rot, int number, int matID) = 0;		//Plots CAD Data
 
 	//Geometric evaluation functions
 	virtual void EvaluateVolume() = 0;

@@ -41,8 +41,8 @@ public:
 	void InitialEvaluations();
 
 	//Geometric entities
-	float deformed_volume;
-	MatrixFloat* deformed_barycenter;
+	double deformed_volume;
+	Matrix* deformed_barycenter;
 	float deformed_radius;
 	float* deformed_faces_radii;
 	float* deformed_edges_lengths;

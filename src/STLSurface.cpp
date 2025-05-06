@@ -349,7 +349,7 @@ bool  STLSurface::ReadCADFile()
 	return true;
 }
 
-void STLSurface::WriteVTK_XMLRender(FILE *f, Matrix& pos, Matrix& rot, int number)
+void STLSurface::WriteVTK_XMLRender(FILE *f, Matrix& pos, Matrix& rot, int number, int matID)
 {
 	std::vector<int> vint;
 	int c2 = 0, c3 = 0, k = 3, j = 0, c4 = 0;
@@ -407,15 +407,18 @@ void STLSurface::WriteVTK_XMLRender(FILE *f, Matrix& pos, Matrix& rot, int numbe
 	fprintf(f, "</DataArray>\n</Cells>\n");
 
 	//Opens CellData
-	fprintf(f, "\t\t\t<CellData FieldData=\"SurfaceData\">\n");
+	fprintf(f, "\t\t\t<CellData FieldData=\"ElementData\">\n");
 	vint.clear();
 	//Opens DataArray
-	fprintf(f, "\t\t\t\t<DataArray Name=\"SurfaceProperties\" type=\"Int32\" NumberOfComponents=\"%d\" format=\"binary\">\n", 1);
+	fprintf(f, "\t\t\t\t<DataArray Name=\"GeneralData\" type=\"Int32\" NumberOfComponents=\"%d\" format=\"binary\">\n", 4);
 	for (int cell = 0; cell < (n_CAD_points/3); cell++)
 	{
 		vint.push_back(number);		//Surface ID
+		vint.push_back(matID);		//Material ID
+		vint.push_back(0);
+		vint.push_back(0);
 	}
-	fprintf(f, encodeData(vint).c_str());
+	fprintf(f, encodeData<int>(vint).c_str());
 	fprintf(f, "\n");
 	//Closes DataArray
 	fprintf(f, "\t\t\t\t</DataArray>\n");

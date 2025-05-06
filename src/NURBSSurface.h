@@ -38,6 +38,6 @@ public:
 	void DersBasisFunctions(int &i, double &u, int &p, int &n, double* U, double** ders);
 	void NURBSPoint(double &u, double &v, Matrix &point);
 	void NURBSDerivatives(double &uc, double &vc, Matrix** &Skl, int &d);
-	void WriteVTK_XMLRender(FILE *f, Matrix& pos, Matrix& rot, int number);
+	void WriteVTK_XMLRender(FILE *f, Matrix& pos, Matrix& rot, int number, int matID);
 };
 

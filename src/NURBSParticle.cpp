@@ -208,7 +208,7 @@ void NURBSParticle::WriteVTK_XMLRender(FILE *f)
 	pos(1, 0) = db.nodes[node - 1]->copy_coordinates[1];
 	pos(2, 0) = db.nodes[node - 1]->copy_coordinates[2];
 
-	db.cad_data[CADDATA_ID - 1]->WriteVTK_XMLRender(f, pos, (*db.nodes[node - 1]->Q)*(*Q0), number);
+	db.cad_data[CADDATA_ID - 1]->WriteVTK_XMLRender(f, pos, (*db.nodes[node - 1]->Q)*(*Q0), number, material);
 }
 
 void NURBSParticle::Alloc()

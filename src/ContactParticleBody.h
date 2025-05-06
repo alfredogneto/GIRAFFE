@@ -82,6 +82,7 @@ public:
 	void Clear();
 	bool NightOwlContact();
 	void WriteVTK_XMLForces(FILE *f);
+	double EvaluateContactEnergy();
 
 	//Variables for contact evaluation:
 	SSContactData* cd;						//information of the contact between surfaces

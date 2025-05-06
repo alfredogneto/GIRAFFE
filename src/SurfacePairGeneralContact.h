@@ -2,6 +2,7 @@
 class SSContactData;
 class TimeStepControlData;
 class Matrix;
+class Interface_1;
 
 class SurfacePairGeneralContact
 {
@@ -66,6 +67,24 @@ public:
 
 
 	bool *impactcontrol;
+
+	//Contact model parameters
+	double(*epsn1);
+	double(*n1);
+	double(*n2);
+	double(*gnb);
+	double(*gnbb);
+	double(*zetan);
+	double(*meq);
+	double(*mus);
+	double(*mud);
+	double(*epst);
+	double(*ct);
+	Interface_1* inter;
+
+	//Interface work variables
+	double* Wnum;
+	double* Wteo;
 	
 protected:
 	bool active;			//Possible active/unnactive (due to neighboring contact)

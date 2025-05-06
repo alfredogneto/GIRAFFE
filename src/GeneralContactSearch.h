@@ -46,6 +46,7 @@ public:
 	void ReportContact();							//Saves a text file with contact data (debugging purposes)
 	void WriteVTK_XMLForces(FILE *f);				//writes forces on a Paraview post-processing file
 	double TimeStepControl();						//Returns the maximum time step required for contact well-resolution purposes
+	double EvaluateContactEnergy();					//Evaluates the energy on contact springs
 
 	void ProcessContactHierarchy();
 	//Cleaning variables

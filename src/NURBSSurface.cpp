@@ -611,7 +611,7 @@ void NURBSSurface::NURBSDerivatives(double &uc, double &vc, Matrix** &Skl, int &
 	delete[] Skl1;
 }
 
-void NURBSSurface::WriteVTK_XMLRender(FILE *f, Matrix& pos, Matrix& rot, int number)
+void NURBSSurface::WriteVTK_XMLRender(FILE *f, Matrix& pos, Matrix& rot, int number, int matID)
 {
 	//vetores para escrita no formato binario - usando a função 'enconde'
 	std::vector<float> float_vector;
@@ -742,10 +742,11 @@ void NURBSSurface::WriteVTK_XMLRender(FILE *f, Matrix& pos, Matrix& rot, int num
 	fprintf(f, "\t\t\t<CellData FieldData=\"SurfaceData\">\n");
 	int_vector.clear();
 	//Opens DataArray
-	fprintf(f, "\t\t\t\t<DataArray Name=\"SurfaceProperties\" type=\"Int32\" NumberOfComponents=\"%d\" format=\"binary\">\n", 1);
+	fprintf(f, "\t\t\t\t<DataArray Name=\"SurfaceProperties\" type=\"Int32\" NumberOfComponents=\"%d\" format=\"binary\">\n", 2);
 	for (int cell = 0; cell < n_cells; cell++)
 	{
 		int_vector.push_back(number);		//Surface ID
+		int_vector.push_back(matID);		//Material ID
 	}
 	fprintf(f, encodeData(int_vector).c_str());
 	fprintf(f, "\n");

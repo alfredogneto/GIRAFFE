@@ -3,6 +3,7 @@
 
 //#include "CollisionDetection.h"
 #include "SSContactData.h"
+#include "Interface_1.h"
 #include "Matrix.h"
 #include "Encoding.h"
 #include "Particle.h"
@@ -1705,4 +1706,17 @@ void ContactParticleBody::InitializeTRReport()
 
 		fclose(f_TR_report);			//fecha arquivo	
 	}
+}
+
+double ContactParticleBody::EvaluateContactEnergy()
+{
+	double return_value = 0.0;
+	if (interface_1_flag)
+	{
+		double gap_i = inter_1->gnb;
+		double gap_f = cd->g_n[0];
+		return_value = inter_1->IntegralElasticForce(gap_i, gap_f);
+	}
+	
+	return return_value;
 }

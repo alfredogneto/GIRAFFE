@@ -3,7 +3,6 @@
 
 class STLSurface;
 class TriangularFace;
-class Interface_1;
 class Matrix;
 
 class FlexibleTriangularFace_FlexibleTriangularFace :
@@ -104,19 +103,7 @@ public:
 	double* ddui2B;
 	double* ddui3B;
 
-	//Contact model parameters
-	double(*epsn1);
-	double(*n1);
-	double(*n2);
-	double(*gnb);
-	double(*gnbb);
-	double(*zetan);
-	double(*meq);
-	double(*mus);
-	double(*mud);
-	double(*epst);
-	double(*ct);
-	Interface_1* inter;
+	
 
 };
 

@@ -238,14 +238,14 @@ double Interface_1::IntegralElasticForce(double gap_i, double gap_f)
 	{
 		g_i = gap_i;
 		g_f = gap_f;
-		multiplier = +1.0;
+		multiplier = -1.0;
 	}
 		
 	else
 	{
 		g_i = gap_f;
 		g_f = gap_i;
-		multiplier = -1.0;
+		multiplier = +1.0;
 	}
 		
 	//-(epsn1 / (n1 + 1.0))*pow(gnb - gap_f, n1 + 1.0) + (epsn1 / (n1 + 1.0))*pow(gnb - gap_i, n1 + 1.0);

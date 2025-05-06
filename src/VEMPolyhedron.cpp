@@ -65,10 +65,11 @@ VEMPolyhedron::VEMPolyhedron()
 	local_mass = NULL;
 	local_damping = NULL;
 	
-	deformed_barycenter = new MatrixFloat(3);
+	deformed_barycenter = new Matrix(3);
+	
 	deformed_faces_radii = NULL;
 	deformed_edges_lengths = NULL;
-	deformed_volume = 0.0f;
+
 
 	domainData = NULL;														//Domain data
 	elementData = NULL;														//Element data
@@ -557,7 +558,7 @@ void VEMPolyhedron::UpdateVolumeAndBarycenter()
 
 	///////////VOLUME////////////
 	deformed_volume = 0.0;
-	MatrixFloat a(3), b(3), ab(3), bc(3), ca(3), c(3), n(3);
+	Matrix a(3), b(3), ab(3), bc(3), ca(3), c(3), n(3);
 	for (int i = 0; i < ptr_cad->n_faces; i++)
 	{
 		a = *vertices_p[ptr_cad->faces[i]->verticesIDs[0] - 1];
@@ -594,7 +595,7 @@ void VEMPolyhedron::UpdateGeometricEntities()
 	float temp_len = 0.0;
 	for (int i = 0; i < n_vertices; i ++)
 	{
-		temp_len = sqrt(dot((*vertices_p[i]) + (-1)*(*deformed_barycenter), (*vertices_p[i]) + (-1)*(*deformed_barycenter)));
+		temp_len = (float)sqrt(dot((*vertices_p[i]) + (-1)*(*deformed_barycenter), (*vertices_p[i]) + (-1)*(*deformed_barycenter)));
 		if (temp_len > deformed_radius)
 			deformed_radius = temp_len;
 	}
@@ -816,7 +817,7 @@ void VEMPolyhedron::WriteVTK_XMLRender(FILE *f)
 	int res_element = 26;
 	//Opens CellData
 	fprintf(f, "<CellData FieldData = \"ElementData\">\n");
-	//Opens DataArray
+	/*//Opens DataArray
 	fprintf(f, "<DataArray Name = \"ElementResults\" type = \"Float32\" NumberOfComponents=\"%d\" format=\"binary\">\n", res_element);
 	//Imprime os resultados do elemento
 	float_vector.clear();
@@ -831,17 +832,17 @@ void VEMPolyhedron::WriteVTK_XMLRender(FILE *f)
 	fprintf(f, "\n");
 	//Closes DataArray
 	fprintf(f, "</DataArray>\n");
-
+	*/
 	//Opens DataArray
-	fprintf(f, "\t\t\t\t<DataArray Name=\"ParticleData\" type=\"Int32\" NumberOfComponents=\"%d\" format=\"binary\">\n", 4);
+	fprintf(f, "\t\t\t\t<DataArray Name=\"GeneralData\" type=\"Int32\" NumberOfComponents=\"%d\" format=\"binary\">\n", 4);
 	//Imprime os dados da particula
 	vint.clear();
 	for (int i = 0; i < ptr_cad->n_faces; i++)
 	{
 		vint.push_back(number);
+		vint.push_back(material);
 		vint.push_back(super_node);
 		vint.push_back(CADDATA_ID);
-		vint.push_back(material);
 	}
 	fprintf(f, encodeData<int>(vint).c_str());
 	fprintf(f, "\n");

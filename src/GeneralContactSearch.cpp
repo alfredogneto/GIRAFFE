@@ -23,6 +23,7 @@
 //Particle pairs:
 #include "ContactPolyhedronPolyhedron.h"
 #include "ContactVEMPolyhedronVEMPolyhedron.h"
+#include "ContactVEMPolyhedronPolyhedron.h"
 //Particle-boundary pairs:
 #include "ContactPolyhedronSTLBoundary.h"
 #include "ContactVEMPolyhedronSTLBoundary.h"
@@ -561,6 +562,22 @@ void GeneralContactSearch::AlltoAll()
 										pair->PreCalc();
 										contactPP_list[i].push_back(pair);
 									}
+									if ((typeid(*db.particles[i]) == typeid(VEMPolyhedron) && typeid(*db.particles[j]) == typeid(Polyhedron)) ||
+										(typeid(*db.particles[i]) == typeid(Polyhedron) && typeid(*db.particles[j]) == typeid(VEMPolyhedron)))
+									{
+										pair = new ContactVEMPolyhedronPolyhedron();
+										pair->index1 = i;
+										pair->index2 = j;
+										pair->sub_index1 = ii;
+										pair->sub_index2 = jj;
+										pair->cur_active = true;
+										if (typeid(*db.particles[i]) == typeid(VEMPolyhedron) && typeid(*db.particles[j]) == typeid(Polyhedron))
+											pair->invert = false;
+										else
+											pair->invert = true;
+										pair->PreCalc();
+										contactPP_list[i].push_back(pair);
+									}
 									//outros tipos de pares de colisão entre diferentes tipos de particulas
 								}
 								//Previously existing contact is made active
@@ -879,6 +896,22 @@ void GeneralContactSearch::VerletMethod()
 									pair->sub_index1 = pii;
 									pair->sub_index2 = pjj;
 									pair->cur_active = true;
+									pair->PreCalc();
+									contactPP_list[i].push_back(pair);
+								}
+								if ((typeid(*db.particles[pi]) == typeid(VEMPolyhedron) && typeid(*db.particles[pj]) == typeid(Polyhedron)) || 
+									(typeid(*db.particles[pi]) == typeid(Polyhedron) && typeid(*db.particles[pj]) == typeid(VEMPolyhedron)))
+								{
+									pair = new ContactVEMPolyhedronPolyhedron();
+									pair->index1 = pi;
+									pair->index2 = pj;
+									pair->sub_index1 = pii;
+									pair->sub_index2 = pjj;
+									pair->cur_active = true;
+									if (typeid(*db.particles[pi]) == typeid(VEMPolyhedron) && typeid(*db.particles[pj]) == typeid(Polyhedron))
+										pair->invert = false;
+									else
+										pair->invert = true;
 									pair->PreCalc();
 									contactPP_list[i].push_back(pair);
 								}
@@ -1244,6 +1277,22 @@ void GeneralContactSearch::LinkedCellsMethod()
 																	pair->sub_index1 = ii;
 																	pair->sub_index2 = subID - 1;
 																	pair->cur_active = true;
+																	pair->PreCalc();
+																	contactPP_list[i].push_back(pair);
+																}
+																if ((typeid(*db.particles[i]) == typeid(VEMPolyhedron) && typeid(*db.particles[ID - 1]) == typeid(Polyhedron)) ||
+																	(typeid(*db.particles[i]) == typeid(Polyhedron) && typeid(*db.particles[ID - 1]) == typeid(VEMPolyhedron)))
+																{
+																	pair = new ContactVEMPolyhedronPolyhedron();
+																	pair->index1 = i;
+																	pair->index2 = ID - 1;
+																	pair->sub_index1 = ii;
+																	pair->sub_index2 = subID - 1;
+																	pair->cur_active = true;
+																	if (typeid(*db.particles[i]) == typeid(VEMPolyhedron) && typeid(*db.particles[ID - 1]) == typeid(Polyhedron))
+																		pair->invert = false;
+																	else
+																		pair->invert = true;
 																	pair->PreCalc();
 																	contactPP_list[i].push_back(pair);
 																}
@@ -2062,6 +2111,35 @@ void GeneralContactSearch::SaveConfiguration()
 	else
 		cleanup_count++;
 }
+
+//Evaluates the energy on contact springs
+double GeneralContactSearch::EvaluateContactEnergy()
+{
+	double temp_energy = 0.0;
+	//particle-particle
+	for (int i = 0; i < db.number_particles; i++)
+	{
+		for (int cont = 0; cont < contactPP_list[i].size(); cont++)
+			if (contactPP_list[i][cont]->cur_active)
+				temp_energy += contactPP_list[i][cont]->EvaluateContactEnergy();
+	}
+	//particle-boundary
+	for (int i = 0; i < db.number_particles; i++)
+	{
+		for (int cont = 0; cont < contactPB_list[i].size(); cont++)
+			if (contactPB_list[i][cont]->cur_active)
+				temp_energy += contactPB_list[i][cont]->EvaluateContactEnergy();
+	}
+	//particle-body
+	for (int i = 0; i < db.number_particles; i++)
+	{
+		for (int cont = 0; cont < contactPBO_list[i].size(); cont++)
+			if (contactPBO_list[i][cont]->cur_active)
+				temp_energy += contactPBO_list[i][cont]->EvaluateContactEnergy();
+	}
+	return temp_energy;
+}
+
 void GeneralContactSearch::MountContacts()
 {
 	//Solution time evaluation
