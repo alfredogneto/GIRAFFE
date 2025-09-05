@@ -1,5 +1,6 @@
 #include "Solution.h"
 #include <iostream>
+#include <chrono>
 
 #include "Node.h"
 #include "SuperNode.h"
@@ -35,7 +36,7 @@ Solution::~Solution()
 {
 }
 
-//Realiza a numeração dos graus de liberdade globais
+//Realiza a numeraÃ§Ã£o dos graus de liberdade globais
 void Solution::SetGlobalDOFs()
 {
 	db.flag_nGL_changed = false;
@@ -48,7 +49,7 @@ void Solution::SetGlobalDOFs()
 		db.nodes[i]->n_GL_free = 0;
 		db.nodes[i]->n_GL_fixed = 0;
 	}
-	//Varredura de nós
+	//Varredura de nÃ³s
 	for (int i = 0; i < db.number_nodes; i++)
 	{
 		for (int j = 0; j < db.number_GLs_node; j++)
@@ -57,15 +58,15 @@ void Solution::SetGlobalDOFs()
 			if (db.nodes[i]->constraints[j] == 0 && db.nodes[i]->active_GL[j] == 1)
 			{
 				GL_free++;//global
-				db.nodes[i]->GLs[j] = GL_free;//numeração do GL global
-				db.nodes[i]->n_GL_free++;//incrementa o numero de gls livres do nó
+				db.nodes[i]->GLs[j] = GL_free;//numeraÃ§Ã£o do GL global
+				db.nodes[i]->n_GL_free++;//incrementa o numero de gls livres do nÃ³
 			}
 			//se o GL for fixo e ativo
 			if (db.nodes[i]->constraints[j] == 1 && db.nodes[i]->active_GL[j] == 1)
 			{
 				GL_fixed--;//global
-				db.nodes[i]->GLs[j] = GL_fixed;//numeração do GL global
-				db.nodes[i]->n_GL_fixed++;//incrementa o numero de gls fixos do nó
+				db.nodes[i]->GLs[j] = GL_fixed;//numeraÃ§Ã£o do GL global
+				db.nodes[i]->n_GL_fixed++;//incrementa o numero de gls fixos do nÃ³
 			}
 		}
 	}
@@ -82,12 +83,12 @@ void Solution::SetGlobalDOFs()
 				if (db.super_nodes[i]->constraints[j] == false)
 				{
 					GL_free++;//global
-					db.super_nodes[i]->DOFs[j] = GL_free;//numeração do GL global
+					db.super_nodes[i]->DOFs[j] = GL_free;//numeraÃ§Ã£o do GL global
 				}
 				else
 				{
 					GL_fixed--;//global
-					db.super_nodes[i]->DOFs[j] = GL_fixed;//numeração do GL global
+					db.super_nodes[i]->DOFs[j] = GL_fixed;//numeraÃ§Ã£o do GL global
 				}
 			}
 		}
@@ -101,7 +102,7 @@ void Solution::SetGlobalDOFs()
 			if (db.special_constraints[i]->active_lambda[j] == 1)
 			{
 				GL_free++;//global
-				db.special_constraints[i]->GLs[j] = GL_free;//numeração do GL global
+				db.special_constraints[i]->GLs[j] = GL_free;//numeraÃ§Ã£o do GL global
 			}
 			else
 				db.special_constraints[i]->GLs[j] = 0;
@@ -130,17 +131,17 @@ void Solution::DOFsActive()
 		}
 			
 	}
-	//Desativa restrições dos super nodes
+	//Desativa restriÃ§Ãµes dos super nodes
 	for (int i = 0; i < db.number_super_nodes; i++)
 	{
 		for (int k = 0; k < db.super_nodes[i]->n_DOFs; k++)
 			db.super_nodes[i]->constraints[k] = false;
 	}
 	int temp_node = 0;
-	//Percorre elementos para ativar DOFs de acordo com a necessidade, para cada nó envolvido
+	//Percorre elementos para ativar DOFs de acordo com a necessidade, para cada nÃ³ envolvido
 	for (int i = 0; i < db.number_elements; i++)
 	{
-		//Percorre os nós do elemento "i"
+		//Percorre os nÃ³s do elemento "i"
 		for (int j = 0; j < db.elements[i]->n_nodes; j++)
 		{
 			temp_node = db.elements[i]->nodes[j];
@@ -151,7 +152,7 @@ void Solution::DOFsActive()
 			}
 		}
 	}
-	//Percorre particulas para ativar DOFs de acordo com a necessidade, para cada nó envolvido
+	//Percorre particulas para ativar DOFs de acordo com a necessidade, para cada nÃ³ envolvido
 	for (int i = 0; i < db.number_particles; i++)
 	{
 		temp_node = db.particles[i]->node;
@@ -163,7 +164,7 @@ void Solution::DOFsActive()
 					db.nodes[temp_node - 1]->active_GL[k] = 1;
 			}
 		}
-		//No caso de particulas associadas a super nodes, não ha necessidade de ativar ou desativar. 
+		//No caso de particulas associadas a super nodes, nÃ£o ha necessidade de ativar ou desativar. 
 		//No futuro pode ser modificado, introduzindo BoolTable na particula e ativando-a de acordo com o step, se for o caso
 	}
 	//Percorre superficies
@@ -217,12 +218,12 @@ void Solution::DOFsActive()
 	if (db.psy_coupling_exist)
 		db.psy_coupling->SetConstraints();
 
-	//Percorre carregamentos para setar dependência de graus de liberdade ativos 
+	//Percorre carregamentos para setar dependÃªncia de graus de liberdade ativos 
 	for (int i = 0; i < db.number_loads; i++)
 		db.loads[i]->UpdateforSolutionStep();
 } 
 
-//Montagem dos elementos (informações locais)
+//Montagem dos elementos (informaÃ§Ãµes locais)
 void Solution::MountLocal()
 {
 	high_resolution_clock::time_point t_last = high_resolution_clock::now();
@@ -246,7 +247,7 @@ void Solution::MountLocal()
 		cout << "MountLocal duration:\t" << duration / 1e6 << " sec." << "\n";
 }
 
-//Montagem dos elementos (informações locais)
+//Montagem dos elementos (informaÃ§Ãµes locais)
 void Solution::MountElementLoads()
 {
 	high_resolution_clock::time_point t_last = high_resolution_clock::now();
@@ -263,7 +264,7 @@ void Solution::MountElementLoads()
 		cout << "MountLocalLoads duration:\t" << duration / 1e6 << " sec." << "\n";
 }
 
-//Montagem das special constraints (informações locais)
+//Montagem das special constraints (informaÃ§Ãµes locais)
 void Solution::MountSpecialConstraints()
 {
 	high_resolution_clock::time_point t_last = high_resolution_clock::now();
@@ -284,7 +285,7 @@ void Solution::MountSpecialConstraints()
 		cout << "MountSpecialConstraints duration:\t" << duration / 1e6 << " sec." << "\n";
 }
 
-//Montagem dos contatos (informações locais)
+//Montagem dos contatos (informaÃ§Ãµes locais)
 void Solution::MountContacts()
 {
 	high_resolution_clock::time_point t_last = high_resolution_clock::now();
@@ -300,14 +301,14 @@ void Solution::MountContacts()
 				db.splines[i]->sp_element[j]->FillNodes();
 			}
 	}
-	//Paralelização feita dentro da função Mount
+	//ParalelizaÃ§Ã£o feita dentro da funÃ§Ã£o Mount
 	for (int i = 0; i < db.number_contacts; i++)
 	{
 		if (db.contacts[i]->bool_table.GetAt(db.current_solution_number - 1))
 			db.contacts[i]->Mount();
 	}
 
-	//Paralelização dentro da função SolveContacts
+	//ParalelizaÃ§Ã£o dentro da funÃ§Ã£o SolveContacts
 	if (db.gcs_exist)
 		if (db.gcs->bool_table.GetAt(db.current_solution_number - 1))
 			db.gcs->MountContacts();
@@ -317,7 +318,7 @@ void Solution::MountContacts()
 		cout << "MountContacts duration:\t" << duration / 1e6 << " sec." << "\n";
 }
 
-//Espalhamento das informações locais nas matrizes/vetores globais
+//Espalhamento das informaÃ§Ãµes locais nas matrizes/vetores globais
 void Solution::MountGlobal()
 {
 	high_resolution_clock::time_point t_last = high_resolution_clock::now();
@@ -328,11 +329,11 @@ void Solution::MountGlobal()
 	//Montagem da matriz global, passando por cada uma das particulas existentes
 	for (int i = 0; i < db.number_particles; i++)
 		db.particles[i]->MountGlobal();
-	//Para cada par de contato monta contribuições na matriz global
+	//Para cada par de contato monta contribuiÃ§Ãµes na matriz global
 	for (int contact_index = 0; contact_index < db.number_contacts; contact_index++)
 		if (db.contacts[contact_index]->bool_table.GetAt(db.current_solution_number - 1))
 			db.contacts[contact_index]->MountGlobal();
-	//Para cada special constraint monta contribuições na matriz global
+	//Para cada special constraint monta contribuiÃ§Ãµes na matriz global
 	for (int i = 0; i < db.number_special_constraints; i++)	
 		if (db.special_constraints[i]->bool_table.GetAt(db.current_solution_number - 1))
 			db.special_constraints[i]->MountGlobal();
@@ -388,7 +389,7 @@ void Solution::MountLoads()
 //Atualiza os deslocamentos nodais livres e multiplicadores de lagrange
 void Solution::UpdateDisps()
 {
-	//Percorre todos os nós, buscando os graus de liberdade para sua atualização - Newton-Raphson
+	//Percorre todos os nÃ³s, buscando os graus de liberdade para sua atualizaÃ§Ã£o - Newton-Raphson
 	for (int i = 0; i < db.number_nodes; i++)
 	{
 		for (int j = 0; j < db.number_GLs_node; j++)
@@ -399,7 +400,7 @@ void Solution::UpdateDisps()
 		}
 
 	}
-	//Percorre todos os super nodes, buscando os graus de liberdade para sua atualização - Newton-Raphson
+	//Percorre todos os super nodes, buscando os graus de liberdade para sua atualizaÃ§Ã£o - Newton-Raphson
 	for (int i = 0; i < db.number_super_nodes; i++)
 	{
 		for (int j = 0; j < db.super_nodes[i]->n_displacement_DOFs; j++)
@@ -410,7 +411,7 @@ void Solution::UpdateDisps()
 		}
 
 	}
-	//Percorre os special constraints para atualização dos graus de liberdade referentes aos multiplicadores de lagrange
+	//Percorre os special constraints para atualizaÃ§Ã£o dos graus de liberdade referentes aos multiplicadores de lagrange
 	for (int i = 0; i < db.number_special_constraints; i++)
 	{
 		for (int j = 0; j < db.special_constraints[i]->n_GL; j++)
@@ -421,7 +422,7 @@ void Solution::UpdateDisps()
 	}
 }
 
-//Salva configuração convergida
+//Salva configuraÃ§Ã£o convergida
 void Solution::SaveConfiguration()
 {
 #pragma omp parallel
@@ -445,7 +446,7 @@ void Solution::SaveConfiguration()
 #pragma omp parallel
 	{
 #pragma omp for
-		//Salvando variaveis de interesse de cada elemento, referentes a descrição lagrangiana atualizada - valores nos pontos de Gauss
+		//Salvando variaveis de interesse de cada elemento, referentes a descriÃ§Ã£o lagrangiana atualizada - valores nos pontos de Gauss
 		for (int i = 0; i < db.number_elements; i++)
 		{
 			db.elements[i]->SaveLagrange();
@@ -455,7 +456,7 @@ void Solution::SaveConfiguration()
 #pragma omp parallel
 	{
 #pragma omp for
-		//Salvando variaveis de interesse de cada contato, referentes a descrição lagrangiana atualizada
+		//Salvando variaveis de interesse de cada contato, referentes a descriÃ§Ã£o lagrangiana atualizada
 		for (int i = 0; i < db.number_contacts; i++)
 		{
 			if (db.contacts[i]->bool_table.GetAt(db.current_solution_number - 1))
@@ -466,7 +467,7 @@ void Solution::SaveConfiguration()
 #pragma omp parallel
 	{
 #pragma omp for
-		//Salvando variaveis de interesse de cada elemento, referentes a descrição lagrangiana atualizada - valores nos pontos de Gauss
+		//Salvando variaveis de interesse de cada elemento, referentes a descriÃ§Ã£o lagrangiana atualizada - valores nos pontos de Gauss
 		for (int i = 0; i < db.number_surfaces; i++)
 		{
 			db.surfaces[i]->SaveConfiguration();
@@ -483,7 +484,7 @@ void Solution::SaveConfiguration()
 #pragma omp parallel
 	{
 #pragma omp for
-		//Salvando variaveis de interesse de cada contato, referentes a descrição lagrangiana atualizada
+		//Salvando variaveis de interesse de cada contato, referentes a descriÃ§Ã£o lagrangiana atualizada
 		for (int i = 0; i < db.number_particles; i++)
 		{
 			db.particles[i]->SaveLagrange();
@@ -493,7 +494,7 @@ void Solution::SaveConfiguration()
 #pragma omp parallel
 	{
 #pragma omp for
-		//Salvando variaveis de interesse de cada contato, referentes a descrição lagrangiana atualizada
+		//Salvando variaveis de interesse de cada contato, referentes a descriÃ§Ã£o lagrangiana atualizada
 		for (int i = 0; i < db.number_boundaries; i++)
 		{
 			db.boundaries[i]->SaveLagrange();
@@ -527,10 +528,10 @@ void Solution::SaveConfiguration()
 
 }
 
-//Restaura a ultima configuração que convergiu
+//Restaura a ultima configuraÃ§Ã£o que convergiu
 void Solution::RestoreConfiguration()
 {
-	//Zera todos os deslocamentos dos nós, para que na próxima iteração, o chute inicial seja esse (Lag. Atualizado)
+	//Zera todos os deslocamentos dos nÃ³s, para que na prÃ³xima iteraÃ§Ã£o, o chute inicial seja esse (Lag. Atualizado)
 	for (int i = 0; i < db.number_nodes; i++)
 	{
 		for (int j = 0; j < 6; j++)
@@ -616,7 +617,7 @@ void Solution::SetGlobalSize()
 	db.global_stiffness_AB = SparseMatrix(db.n_GL_free, db.n_GL_fixed, temp_size_AB);
 	db.global_stiffness_BA = SparseMatrix(db.n_GL_fixed, db.n_GL_free, temp_size_AB);
 
-	//FORÇAS
+	//FORÃ‡AS
 	db.global_P_A.setLines(db.n_GL_free);
 	db.global_P_A.setColumns(1);
 	db.global_P_A.alloc();
@@ -634,7 +635,7 @@ void Solution::SetGlobalSize()
 	db.global_X_B.setColumns(1);
 	db.global_X_B.alloc();
 
-	//Vetores para avaliação de criterios de parada
+	//Vetores para avaliaÃ§Ã£o de criterios de parada
 	/*db.global_ABS_P_A.setLines(db.n_GL_free);
 	db.global_ABS_P_A.setColumns(1);
 	db.global_ABS_P_A.alloc();
@@ -657,7 +658,7 @@ void Solution::PinballCheck()
 	if (db.contacts_exist == true)
 	{
 		high_resolution_clock::time_point t_last = high_resolution_clock::now();
-		//Pinball check para contatos - paralelização feita dentro de cada função do Pinball
+		//Pinball check para contatos - paralelizaÃ§Ã£o feita dentro de cada funÃ§Ã£o do Pinball
 		for (int cc = 0; cc < db.number_contacts; cc++)
 			db.contacts[cc]->PinballCheck();
 
@@ -757,7 +758,7 @@ void Solution::MountDyn()
 		cout << "MountDyn duration:\t" << duration / 1e6 << " sec." << "\n";
 }
 
-//Verifica erros que impedem avança da analise, mesmo em caso de convergência
+//Verifica erros que impedem avanÃ§a da analise, mesmo em caso de convergÃªncia
 bool Solution::HaveErrors()
 {
 	//Updating bounding boxes of surfaces
@@ -798,7 +799,7 @@ void Solution::Zeros()
 {
 	for (int i = 0; i < db.number_nodes; i++)
 	{
-		//Zera deslocamentos e rotações para o inicio da próxima iteração
+		//Zera deslocamentos e rotaÃ§Ãµes para o inicio da prÃ³xima iteraÃ§Ã£o
 		for (int j = 0; j < 6; j++)
 			db.nodes[i]->displacements[j] = 0.0;
 		//Explicit
@@ -812,12 +813,12 @@ void Solution::Zeros()
 	}
 }
 
-//Zera velocidades e acelerações para realização de analise estatica (seguida da dinamica)
+//Zera velocidades e aceleraÃ§Ãµes para realizaÃ§Ã£o de analise estatica (seguida da dinamica)
 void Solution::ZerosVelAccel()
 {
 	for (int i = 0; i < db.number_nodes; i++)
 	{
-		//Zera deslocamentos e rotações para o inicio da próxima iteração
+		//Zera deslocamentos e rotaÃ§Ãµes para o inicio da prÃ³xima iteraÃ§Ã£o
 		for (int j = 0; j < 6; j++)
 		{
 			db.nodes[i]->copy_vel[j] = 0.0;
@@ -861,7 +862,7 @@ void Solution::MountSparse()
 		cout << "MountSparse duration:\t" << duration / 1e6 << " sec." << "\n";
 }
 
-//Computa as condições iniciais nodais impostas
+//Computa as condiÃ§Ãµes iniciais nodais impostas
 void Solution::ComputeInitialConditions(bool zero_IC)
 {
 	Zeros();
@@ -872,7 +873,7 @@ void Solution::ComputeInitialConditions(bool zero_IC)
 	}
 	for (int i = 0; i < db.number_IC; i++)
 		db.IC[i]->ComputeInitialCondition();
-	//Computa velocidade e aceleracao devido a imposição de restrições (salva na variavel vel e accel)
+	//Computa velocidade e aceleracao devido a imposiÃ§Ã£o de restriÃ§Ãµes (salva na variavel vel e accel)
 	for (int i = 0; i < db.number_special_constraints; i++)
 	{
 		db.special_constraints[i]->ComputeVelAccel();
