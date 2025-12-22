@@ -23,6 +23,7 @@ public:
 	void PreCalc();						//PreCalcs vertices for parameterizations and contact degenerations
 	void SetVariables();				//Sets variables for AceGen codes interfaces
 	void HessianPhase1(Matrix& mHes);
+	void HessianPhase1Explicit(Matrix& mHes);
 	void SurfacePoints();
 	void Report();
 	void CompactReport();
@@ -47,6 +48,7 @@ public:
 	double ObjectivePhase1(Matrix& mc, Matrix& patch);								//Calcula a função objetivo para um conjunto de coordenadas convectivas - Phase 1
 	void GradientPhase1(Matrix& mc, Matrix& patch, Matrix& mGra);					//Calcula o Gradiente da função objetivo - Phase 1
 	void HessianPhase1(Matrix& mc, Matrix& patch, Matrix& mHes);					//Calcula a Hessiana da função objetivo - Phase 1
+	void HessianPhase1Explicit(Matrix& mc, Matrix& patch, Matrix& mHes);			//Calcula a Hessiana da função objetivo - Phase 1 no método explícito
 	bool FindMinimumSolution(SSContactData* c_data, Matrix* solution, Matrix& patch, int &return_info, bool &conv_total);
 	bool GeneralFindMinimumSolution(SSContactData* c_data, Matrix* solution, Matrix& patch, int &return_info, int &number_patchesA, int &number_patchesB);
 	bool GeneralNURBSPointProjection(double &zeta, double &theta, int &patch, double p[3], int surf);
@@ -57,6 +59,7 @@ public:
 	bool EndStepCheck(SSContactData* c_data);
 	double Gap(Matrix& mc, Matrix& patch, bool fixed_normals, Matrix& nA, Matrix& nB);
 	void EvaluateInvertedHessian(SSContactData* c_data, int type);
+	void EvaluateInvertedHessianExplicit(SSContactData* c_data, int type);
 	int VerifyCriticalMultipatchNURBSRegion(SSContactData* c_data, Matrix* solution, Matrix& patch);
 	bool FindMinimumSolutionDegenerated(SSContactData* c_data, Matrix* P_0, Matrix* solution, Matrix& patch);
 	//Specific for NURBS

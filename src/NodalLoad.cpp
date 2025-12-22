@@ -20,6 +20,7 @@ NodalLoad::NodalLoad()
 	n_nodes_m = new int[3];			//numero de nós para divisão de momentos - 3 componentes
 	mult_f = new double[3];			//multiplicador para os esforços de força
 	mult_m = new double[3];			//multiplicador para os esforços de momento
+
 }
 
 NodalLoad::~NodalLoad()
@@ -268,12 +269,77 @@ void NodalLoad::UpdateforSolutionStep()
 void NodalLoad::EvaluateExplicit(double t)
 {
 	int node;
+	Matrix Qi;
 	Matrix f(3);
 	Matrix m(3);
+
+	
+
 	//For all nodes of the node set - Mounts contributions
 	for (int index = 0; index < db.node_sets[node_set - 1]->n_nodes; index++)
 	{
 		//Node number
+		node = db.node_sets[node_set - 1]->node_list[index];
+		//Coordinate transformation inclusion
+		Qi = transp(*db.nodes[node - 1]->Q) * transp(*db.nodes[node - 1]->Q0) * transp(*db.CS[cs - 1]->Q);
+		//Rotations 
+		/*alpha_escalar = norm(*db.nodes[node - 1]->alpha);
+		A = skew(alpha);
+		g = 4.0 / (4.0 + alpha_escalar * alpha_escalar);
+		//Calculo da matriz de rotação Q
+		Q = I + g * (A + 0.5 * (A * A));*/
+
+		//Evaluating input data at current time
+		for (int i = 0; i < 3; i++)
+		{
+			f(i, 0) = mult_f[i] * GetValueAt(t, i);
+			m(i, 0) = mult_m[i] * GetValueAt(t, i + 3);
+		}
+		//Forces and moments on current (trial) configuration
+		Matrix fip = /*Q **/ Qi * f;
+		Matrix mip = /*Q **/ Qi * m;
+
+		//Local contributions
+		/*for (int i = 0; i < 3; i++)
+		{
+			(*q[index])(i, 0) = fip(i, 0);
+			(*q[index])(i + 3, 0) = mip(i, 0);
+		}*/
+
+		//Global contributions
+		int GL_lin;
+		//Forces
+		for (int lin = 0; lin < 3; lin++)
+		{
+			GL_lin = db.nodes[node - 1]->GLs[lin];
+			if (db.nodes[node - 1]->active_GL[lin] == 1)
+			{
+				if (GL_lin > 0)	//Grau de liberdade livre e ativo
+				{
+					db.global_P_A(GL_lin - 1, 0) += 1.0 * fip(lin, 0);
+					db.global_I_A(GL_lin - 1, 0) += 1.0 * fip(lin, 0);
+				}
+				else
+					db.global_P_B(-GL_lin - 1, 0) += 1.0 * fip(lin, 0);
+			}
+		}
+		//Moments
+		for (int lin = 0; lin < 3; lin++)
+		{
+			GL_lin = db.nodes[node - 1]->GLs[lin + 3];
+			if (db.nodes[node - 1]->active_GL[lin + 3] == 1)
+			{
+				if (GL_lin > 0)	//Grau de liberdade livre e ativo
+				{
+					db.global_P_A(GL_lin - 1, 0) += 1.0 * mip(lin, 0);
+					db.global_I_A(GL_lin - 1, 0) += 1.0 * mip(lin, 0);
+				}
+				else
+					db.global_P_B(-GL_lin - 1, 0) += 1.0 * mip(lin, 0);
+			}
+		}
+
+		/*//Node number
 		node = db.node_sets[node_set - 1]->node_list[index];
 		//Evaluating input data at current time
 		for (int i = 0; i < 3; i++)
@@ -282,8 +348,9 @@ void NodalLoad::EvaluateExplicit(double t)
 			m(i, 0) = mult_m[i] * GetValueAt(t, i + 3);
 		}
 		//Coordinate transformation (to material (node))
-		f = transp(*db.nodes[node - 1]->Q0)*transp(*db.CS[cs - 1]->Q)*f;
-		m = transp(*db.nodes[node - 1]->Q0)*transp(*db.CS[cs - 1]->Q)*m;
+		f = transp(*db.nodes[node - 1]->Q0) * transp(*db.CS[cs - 1]->Q) * f;
+		m = transp(*db.nodes[node - 1]->Q0) * transp(*db.CS[cs - 1]->Q) * m;
+
 		//Global contributions
 		int GL_lin;
 		//Forces
@@ -315,7 +382,7 @@ void NodalLoad::EvaluateExplicit(double t)
 				else
 					db.global_P_B(-GL_lin - 1, 0) += 1.0*m(lin, 0);
 			}
-		}
+		}*/
 	}
 }
 

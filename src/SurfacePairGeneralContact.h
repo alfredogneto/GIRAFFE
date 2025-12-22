@@ -31,6 +31,7 @@ public:
 	
 	bool GetActive();
 	void EvaluateInvertedHessian();			//Calcula a inversa da Hessiana
+	void EvaluateInvertedHessianExplicit();	//Calcula a inversa da Hessiana no método explícito
 	void SetActive();
 	void SetUnnactive();
 	void Alloc();
@@ -54,6 +55,7 @@ public:
 	virtual void PreCalc() = 0;
 	virtual void SetVariables() = 0;					//Sets variables for AceGen codes interfaces
 	virtual void HessianPhase1(Matrix& mHes) = 0;
+	virtual void HessianPhase1Explicit(Matrix& mHes) = 0;
 	virtual void SurfacePoints() = 0;					//Sets GammaA and GammaB with contact positions on both surfaces
 	virtual void Report() = 0;
 	virtual void CompactReport() = 0;

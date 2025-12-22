@@ -8163,6 +8163,11 @@ void FlexibleTriangularFace_FlexibleTriangularFace::HessianPhase1(Matrix& mHes)
 			mHes(i, j) = Hes[i][j];
 }
 
+void FlexibleTriangularFace_FlexibleTriangularFace::HessianPhase1Explicit(Matrix& mHes)
+{
+	//TO DO 
+}
+
 void FlexibleTriangularFace_FlexibleTriangularFace::Report()
 {
 	if (active)

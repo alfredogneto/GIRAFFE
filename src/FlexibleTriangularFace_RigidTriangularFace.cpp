@@ -10990,6 +10990,11 @@ void FlexibleTriangularFace_RigidTriangularFace::HessianPhase1(Matrix& mHes)
 			mHes(i, j) = Hes[i][j];
 }
 
+void FlexibleTriangularFace_RigidTriangularFace::HessianPhase1Explicit(Matrix& mHes)
+{
+	//TO DO
+}
+
 void FlexibleTriangularFace_RigidTriangularFace::Report()
 {
 	if (active)

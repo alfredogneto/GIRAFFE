@@ -23,6 +23,12 @@ public:
 	int* n_nodes_f;							//numero de nós para divisão de forças - 3 componentes
 	int* n_nodes_m;							//numero de nós para divisão de momentos - 3 componentes
 	double* mult_f;							//multiplicador para os esforços de força
-	double* mult_m;							//multiplicador para os esforços de momento
+	double* mult_m;							//multiplicador para os esforços de 
+
+	//Matrix Q, Xi, alpha;
+	//double g, alpha_escalar;
+	//Matrix I, A;
+	//Matrix** q;
+	//Matrix dqdd;
 };
 

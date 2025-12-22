@@ -22,6 +22,7 @@ public:
 	void PreCalc();						//PreCalcs vertices for parameterizations and contact degenerations
 	void SetVariables();				//Sets variables for AceGen codes interfaces
 	void HessianPhase1(Matrix& mHes);
+	void HessianPhase1Explicit(Matrix& mHes);
 	void SurfacePoints();
 	void Report();
 	void CompactReport();

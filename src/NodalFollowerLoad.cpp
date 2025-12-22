@@ -185,11 +185,12 @@ void NodalFollowerLoad::UpdateforSolutionStep()
 void NodalFollowerLoad::EvaluateExplicit(double t)
 {
 	int node;
-	Matrix Qi;
+	//Matrix Qi;
+
 	//For all nodes of the node set - Mounts contributions
 	for (int index = 0; index < db.node_sets[node_set - 1]->n_nodes; index++)
 	{
-		//Node number
+		/*//Node number
 		node = db.node_sets[node_set - 1]->node_list[index];
 		
 		//Coordinate transformation inclusion
@@ -233,6 +234,50 @@ void NodalFollowerLoad::EvaluateExplicit(double t)
 
 				else
 					db.global_P_B(-GL_lin - 1, 0) += 1.0*(*q[index])(lin, 0);
+			}
+		}*/
+
+		//Node number
+		node = db.node_sets[node_set - 1]->node_list[index];
+		//Evaluating input data at current time
+		for (int i = 0; i < 3; i++)
+		{
+			f(i, 0) = mult_f[i] * GetValueAt(t, i);
+			m(i, 0) = mult_m[i] * GetValueAt(t, i + 3);
+		}
+		//Coordinate transformation (to material (node))
+		f = transp(*db.nodes[node - 1]->Q0) * transp(*db.CS[cs - 1]->Q) * f;
+		m = transp(*db.nodes[node - 1]->Q0) * transp(*db.CS[cs - 1]->Q) * m;
+		//Global contributions
+		int GL_lin;
+		//Forces
+		for (int lin = 0; lin < 3; lin++)
+		{
+			GL_lin = db.nodes[node - 1]->GLs[lin];
+			if (db.nodes[node - 1]->active_GL[lin] == 1)
+			{
+				if (GL_lin > 0)	//Grau de liberdade livre e ativo
+				{
+					db.global_P_A(GL_lin - 1, 0) += 1.0 * f(lin, 0);
+					db.global_I_A(GL_lin - 1, 0) += 1.0 * f(lin, 0);
+				}
+				else
+					db.global_P_B(-GL_lin - 1, 0) += 1.0 * f(lin, 0);
+			}
+		}
+		//Moments
+		for (int lin = 0; lin < 3; lin++)
+		{
+			GL_lin = db.nodes[node - 1]->GLs[lin + 3];
+			if (db.nodes[node - 1]->active_GL[lin + 3] == 1)
+			{
+				if (GL_lin > 0)	//Grau de liberdade livre e ativo
+				{
+					db.global_P_A(GL_lin - 1, 0) += 1.0 * m(lin, 0);
+					db.global_I_A(GL_lin - 1, 0) += 1.0 * m(lin, 0);
+				}
+				else
+					db.global_P_B(-GL_lin - 1, 0) += 1.0 * m(lin, 0);
 			}
 		}
 	}

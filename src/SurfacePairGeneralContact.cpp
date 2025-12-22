@@ -1,5 +1,5 @@
 #include "SurfacePairGeneralContact.h"
-#include"Database.h"
+#include "Database.h"
 #include "TimeStepControlData.h"
 #include "SSContactData.h"
 #include "Matrix.h"
@@ -102,6 +102,37 @@ void SurfacePairGeneralContact::EvaluateInvertedHessian()
 		invHes = (*cd->P_0[0])*P*D*transp(P)*transp(*cd->P_0[0]);
 	}
 	
+	for (int i = 0; i < 4; i++)
+		for (int j = 0; j < 4; j++)
+			cd->invHessian[0][i][j] = invHes(i, j);
+}
+
+void SurfacePairGeneralContact::EvaluateInvertedHessianExplicit()
+{
+	Matrix invHes(4, 4);
+	if (cd->P_0[0]->getColumns() != 0)
+	{
+		//Tolerance for precision of eigenvalues extraction
+		double tol_eig = 1e-14;
+		Matrix Hes(4, 4);
+		Matrix xk(4);
+		for (int i = 0; i < 4; i++)
+			xk(i, 0) = cd->convective[0][i];
+		HessianPhase1Explicit(Hes);
+
+		Matrix Hes_minor = transp(*cd->P_0[0]) * Hes * (*cd->P_0[0]);
+		int order_minor = cd->P_0[0]->getColumns();
+		Matrix P(order_minor, order_minor);
+		Matrix D(order_minor, order_minor);
+		fulleigen1(Hes_minor, P, D, tol_eig);
+		//Inversao da Hessiana
+		for (int i = 0; i < order_minor; i++)
+		{
+			D(i, i) = 1.0 / D(i, i);
+		}
+		invHes = (*cd->P_0[0]) * P * D * transp(P) * transp(*cd->P_0[0]);
+	}
+
 	for (int i = 0; i < 4; i++)
 		for (int j = 0; j < 4; j++)
 			cd->invHessian[0][i][j] = invHes(i, j);

@@ -143,12 +143,12 @@ void ContactParticleParticle::MountContactsExplicit(double t)
 			contact_pairs[i]->SetVariablesExplicit(t);					//Sets variables for next evaluations
 			
 			//Marina
-			/*if (typeid(*contact_pairs[i]) == typeid(RigidNURBSSurface_RigidNURBSSurface)) {
-				static_cast<RigidNURBSSurface_RigidNURBSSurface*>(contact_pairs[i])->EvaluateInvertedHessian(contact_pairs[i]->cd, 2);
+			if (typeid(*contact_pairs[i]) == typeid(RigidNURBSSurface_RigidNURBSSurface)) {
+				static_cast<RigidNURBSSurface_RigidNURBSSurface*>(contact_pairs[i])->EvaluateInvertedHessianExplicit(contact_pairs[i]->cd, 2);
 			}
 			else {
-				contact_pairs[i]->EvaluateInvertedHessian();
-			}*/
+				contact_pairs[i]->EvaluateInvertedHessianExplicit();
+			}
 			//contact_pairs[i]->EvaluateInvertedHessian();
 			contact_pairs[i]->MountLocalContributionsExplicit(t);		//Local contact contributions
 		}
