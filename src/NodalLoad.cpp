@@ -10,6 +10,15 @@
 
 NodalLoad::NodalLoad()
 {
+
+	Q = Matrix(3, 3);
+	I = Matrix(3, 3);
+	I(0, 0) = 1.0;
+	I(1, 1) = 1.0;
+	I(2, 2) = 1.0;
+	A = Matrix(3, 3);
+	g = 0;
+	alpha_escalar = 0;
 	number = 0;
 	table = NULL;
 	mcode = NULL;
@@ -283,11 +292,11 @@ void NodalLoad::EvaluateExplicit(double t)
 		//Coordinate transformation inclusion
 		Qi = transp(*db.nodes[node - 1]->Q) * transp(*db.nodes[node - 1]->Q0) * transp(*db.CS[cs - 1]->Q);
 		//Rotations 
-		/*alpha_escalar = norm(*db.nodes[node - 1]->alpha);
-		A = skew(alpha);
+		alpha_escalar = norm(*db.nodes[node - 1]->alpha);
+		A = skew(*db.nodes[node - 1]->alpha);
 		g = 4.0 / (4.0 + alpha_escalar * alpha_escalar);
 		//Calculo da matriz de rotação Q
-		Q = I + g * (A + 0.5 * (A * A));*/
+		Q = I + g * (A + 0.5 * (A * A));
 
 		//Evaluating input data at current time
 		for (int i = 0; i < 3; i++)
@@ -296,8 +305,8 @@ void NodalLoad::EvaluateExplicit(double t)
 			m(i, 0) = mult_m[i] * GetValueAt(t, i + 3);
 		}
 		//Forces and moments on current (trial) configuration
-		Matrix fip = /*Q **/ Qi * f;
-		Matrix mip = /*Q **/ Qi * m;
+		Matrix fip = transp(Q) * Qi * f;
+		Matrix mip = transp(Q) * Qi * m;
 
 		//Local contributions
 		/*for (int i = 0; i < 3; i++)

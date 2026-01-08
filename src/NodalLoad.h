@@ -1,5 +1,6 @@
 #pragma once
 #include "Load.h"
+#include "Matrix.h"
 
 class NodalLoad :
 	public Load
@@ -25,9 +26,9 @@ public:
 	double* mult_f;							//multiplicador para os esforços de força
 	double* mult_m;							//multiplicador para os esforços de 
 
-	//Matrix Q, Xi, alpha;
-	//double g, alpha_escalar;
-	//Matrix I, A;
+	Matrix Q;
+	double g, alpha_escalar;
+	Matrix I, A;
 	//Matrix** q;
 	//Matrix dqdd;
 };
