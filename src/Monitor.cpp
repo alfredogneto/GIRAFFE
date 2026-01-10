@@ -516,13 +516,13 @@ void Monitor::UpdateGlobalMonitor(double time)
 		ft[0] = 0;
 		ft[1] = 0;
 		ft[2] = 0;
-		for (int i = 0; i < db.gcs->contactPP_list[0].size(); i++) {
+		/*(voltar)for (int i = 0; i < db.gcs->contactPP_list[0].size(); i++) {
 			if (db.gcs->contactPP_list[0][i]->contact_pairs[0]->eligible) {
 				ft[0] = db.gcs->contactPP_list[0][i]->contact_pairs[0]->ft[0];
 				ft[1] = db.gcs->contactPP_list[0][i]->contact_pairs[0]->ft[1];
 				ft[2] = db.gcs->contactPP_list[0][i]->contact_pairs[0]->ft[2];
 			}
-		}
+		}*/
 		//Marina
 		fprintf(f_global[0], "%.6e\t%.6e\t%.6e\t%d\t%d\t%d\t%d\t%d\t%d\t%d\t%d\t%d\t", ft[0], ft[1], ft[2], db.gcs->n_monitoring_PP, db.gcs->n_active_PP, db.gcs->n_active_PP_deg, db.gcs->n_monitoring_PB, db.gcs->n_active_PB,
 			db.gcs->n_monitoring_BOBO, db.gcs->n_active_BOBO, db.gcs->n_monitoring_PBO, db.gcs->n_active_PBO);

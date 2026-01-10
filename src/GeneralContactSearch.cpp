@@ -2176,17 +2176,17 @@ void GeneralContactSearch::MountContacts()
 					{
 						if (contactPP_list[i][cont]->contact_pairs[cp]->eligible == true)
 						{
-							if (*contactPP_list[i][cont]->contact_detectionA || *contactPP_list[i][cont]->contact_detectionB || *contactPP_list[i][cont]->contact_detectionAB)
+							/*(voltar)if (*contactPP_list[i][cont]->contact_detectionA || *contactPP_list[i][cont]->contact_detectionB || *contactPP_list[i][cont]->contact_detectionAB)
 							{
 								n_active_PP_deg++;
-							}
+							}*/
 						}
 					}
                 }
-				(*contactPP_list[i][cont]->contact_detection) = false;
-				(*contactPP_list[i][cont]->contact_detectionA) = false;
-				(*contactPP_list[i][cont]->contact_detectionB) = false;
-				(*contactPP_list[i][cont]->contact_detectionAB) = false;
+				//(voltar)(*contactPP_list[i][cont]->contact_detection) = false;
+				//(voltar)(*contactPP_list[i][cont]->contact_detectionA) = false;
+				//(voltar)(*contactPP_list[i][cont]->contact_detectionB) = false;
+				//(voltar)(*contactPP_list[i][cont]->contact_detectionAB) = false;
 			}
     	}
 	}
@@ -2403,17 +2403,17 @@ void GeneralContactSearch::MountContactsExplicit(double t)
 					{
 						if (contactPP_list[i][cont]->contact_pairs[cp]->eligible == true)
 						{
-							if (*contactPP_list[i][cont]->contact_detectionA || *contactPP_list[i][cont]->contact_detectionB || *contactPP_list[i][cont]->contact_detectionAB)
+							/*(voltar) if (*contactPP_list[i][cont]->contact_detectionA || *contactPP_list[i][cont]->contact_detectionB || *contactPP_list[i][cont]->contact_detectionAB)
 							{
 								n_active_PP_deg++;
-							}
+							}*/
 						}
 					}
 				}
-				(*contactPP_list[i][cont]->contact_detection) = false;
-				(*contactPP_list[i][cont]->contact_detectionA) = false;
-				(*contactPP_list[i][cont]->contact_detectionB) = false;
-				(*contactPP_list[i][cont]->contact_detectionAB) = false;
+				//(voltar)(*contactPP_list[i][cont]->contact_detection) = false;
+				//(voltar)(*contactPP_list[i][cont]->contact_detectionA) = false;
+				//(voltar)(*contactPP_list[i][cont]->contact_detectionB) = false;
+				//(voltar)(*contactPP_list[i][cont]->contact_detectionAB) = false;
 			}
     	}
  	}

@@ -102,10 +102,10 @@ void ContactParticleParticle::SaveConfiguration()
 		}
 	}
 	//Marina
-	*contact_detection = false;
-	*contact_detectionA = false;
-	*contact_detectionB = false;
-	*contact_detectionAB = false;
+	//(voltar)*contact_detection = false;
+	//(voltar)*contact_detectionA = false;
+	//(voltar)*contact_detectionB = false;
+	//(voltar)*contact_detectionAB = false;
 
 }
 

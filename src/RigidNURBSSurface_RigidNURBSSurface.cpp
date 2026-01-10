@@ -405,7 +405,7 @@ void RigidNURBSSurface_RigidNURBSSurface::EvaluateNormalGap()
 	else {
 		surfA->patches[(*patches2[0])(0, 0)]->NormalExt(ptrQAp, &(*cNR2[/*i*/0])(0, 0), &(*cNR2[/*i*/0])(1, 0), &cur_nA);
 		surfB->patches[(*patches2[0])(1, 0)]->NormalExt(ptrQBp, &(*cNR2[/*i*/0])(2, 0), &(*cNR2[/*i*/0])(3, 0), &cur_nB);
-		if ((*pair_control->contact_detectionA)) {
+		/*(voltar)if ((*pair_control->contact_detectionA)) {
 			if (dot(*cd->g[0], cur_nB) < 0) {
 				cd->other_patch[0] = true;
 			}
@@ -420,7 +420,7 @@ void RigidNURBSSurface_RigidNURBSSurface::EvaluateNormalGap()
 			else {
 				cd->other_patch[0] = false;
 			}
-		}
+		}*/
 	}
 
 	//if (index1 == 48 && index2 == 131 /*&& sub_index1 == 5 && sub_index2 == 2*/ && (db.last_converged_time + db.current_time_step) > 1.035) {
@@ -458,7 +458,7 @@ void RigidNURBSSurface_RigidNURBSSurface::EvaluateNormalGapEligibleOrNot()
 		eligible = false;
 	}*/
 
-	if ((*pair_control->contact_detectionA)) {
+	/*(voltar)if ((*pair_control->contact_detectionA)) {
 		if (dot(*cd->g[0], cur_nB) < 0) {
 			eligible = true;
 		}
@@ -501,7 +501,7 @@ void RigidNURBSSurface_RigidNURBSSurface::EvaluateNormalGapEligibleOrNot()
 		else {
 			eligible = false;
 		}
-	}
+	}*/
 
 	//if (index1 == 48 && index2 == 131 /*&& sub_index1 == 5 && sub_index2 == 2*/ && (db.last_converged_time + db.current_time_step) > 1.03872) {
 		//db.myprintf("sub_index1 = %d\n", sub_index1);
@@ -668,7 +668,7 @@ void RigidNURBSSurface_RigidNURBSSurface::SolveLCP()
 	// Verificar se contato entre partículas já foi detectado sem degeneração
 	for (int i = 0; i < db.gcs->contactPP_list[index1].size(); i++)
 	{
-		if (db.gcs->contactPP_list[index1][i]->index2 == index2 && (db.gcs->contactPP_list[index1][i]->sub_index1 != sub_index1 || db.gcs->contactPP_list[index1][i]->sub_index2 != sub_index2) && *db.gcs->contactPP_list[index1][i]->contact_detection) {
+		if (db.gcs->contactPP_list[index1][i]->index2 == index2 && (db.gcs->contactPP_list[index1][i]->sub_index1 != sub_index1 || db.gcs->contactPP_list[index1][i]->sub_index2 != sub_index2) /*(voltar) && *db.gcs->contactPP_list[index1][i]->contact_detection*/) {
 			contact_aux = true;
 			cd->convective[/*i*/0][0] = db.gcs->contactPP_list[index1][i]->contact_pairs[0]->cd->convective[/*i*/0][0];
 			cd->convective[/*i*/0][1] = db.gcs->contactPP_list[index1][i]->contact_pairs[0]->cd->convective[/*i*/0][1];
@@ -832,13 +832,13 @@ void RigidNURBSSurface_RigidNURBSSurface::SolveLCP()
 				if (converged2 && (CharacterizeCriticalPoint(cNR2[/*i*/0], *patches2[/*i*/0]) == 0)) // para verificar se não virou mínimo
 				{
 					eligible = false;
-					(*pair_control->contact_detection) = true;
+					//(voltar)(*pair_control->contact_detection) = true;
 				}
 				else {
 					converged1 = true; // lidar com mínimo não convergido
 					eligible = true;
 					if (converged2) {
-						(*pair_control->contact_detection) = true;
+						//(voltar)(*pair_control->contact_detection) = true;
 							
 						cd->degenerated[0] = false;
 
@@ -933,7 +933,7 @@ void RigidNURBSSurface_RigidNURBSSurface::SolveLCP()
 
 						if (converged2) {
 							eligible = true;
-							(*pair_control->contact_detection) = true;
+							//(voltar)(*pair_control->contact_detection) = true;
 
 							cd->degenerated[0] = false;
 
@@ -1006,7 +1006,7 @@ void RigidNURBSSurface_RigidNURBSSurface::SolveLCP()
 						else {
 							for (int i = 0; i < db.gcs->contactPP_list[index1].size(); i++)
 							{
-								if (db.gcs->contactPP_list[index1][i]->index2 == index2 && (db.gcs->contactPP_list[index1][i]->sub_index1 != sub_index1 || db.gcs->contactPP_list[index1][i]->sub_index2 != sub_index2) && (*db.gcs->contactPP_list[index1][i]->contact_detectionA || *db.gcs->contactPP_list[index1][i]->contact_detectionB || *db.gcs->contactPP_list[index1][i]->contact_detectionAB)) {
+								if (db.gcs->contactPP_list[index1][i]->index2 == index2 && (db.gcs->contactPP_list[index1][i]->sub_index1 != sub_index1 || db.gcs->contactPP_list[index1][i]->sub_index2 != sub_index2) /*(voltar) && (*db.gcs->contactPP_list[index1][i]->contact_detectionA || *db.gcs->contactPP_list[index1][i]->contact_detectionB || *db.gcs->contactPP_list[index1][i]->contact_detectionAB)*/) {
 									contact_aux = true;
 									cd->convective[/*i*/0][0] = db.gcs->contactPP_list[index1][i]->contact_pairs[0]->cd->convective[/*i*/0][0];
 									cd->convective[/*i*/0][1] = db.gcs->contactPP_list[index1][i]->contact_pairs[0]->cd->convective[/*i*/0][1];
@@ -1058,7 +1058,7 @@ void RigidNURBSSurface_RigidNURBSSurface::SolveLCP()
 										if (converged3) { // Considera-se que não vai haver regiões patológicas, caso contrário já havia sido detectado antes
 											converged1 = true;
 											converged2 = converged1;
-											(*pair_control->contact_detectionA) = true;
+											//(voltar)(*pair_control->contact_detectionA) = true;
 											EvaluateNormalGapEligibleOrNot();
 										}
 										else {
@@ -1066,7 +1066,7 @@ void RigidNURBSSurface_RigidNURBSSurface::SolveLCP()
 											*patches2[/*i*/0] = *patches1[/*i*/0];
 											converged1 = true;
 											converged2 = converged1;
-											(*pair_control->contact_detectionA) = true;
+											//(voltar)(*pair_control->contact_detectionA) = true;
 											EvaluateNormalGapEligibleOrNot();
 										}
 									}
@@ -1077,7 +1077,7 @@ void RigidNURBSSurface_RigidNURBSSurface::SolveLCP()
 										if (converged3) {
 											converged1 = true;
 											converged2 = converged1;
-											(*pair_control->contact_detectionB) = true;
+											//(voltar)(*pair_control->contact_detectionB) = true;
 											EvaluateNormalGapEligibleOrNot();
 										}
 										else {
@@ -1085,7 +1085,7 @@ void RigidNURBSSurface_RigidNURBSSurface::SolveLCP()
 											*patches2[/*i*/0] = *patches1[/*i*/0];
 											converged1 = true;
 											converged2 = converged1;
-											(*pair_control->contact_detectionB) = true;
+											//(voltar)(*pair_control->contact_detectionB) = true;
 											EvaluateNormalGapEligibleOrNot();
 										}
 									}
@@ -1124,10 +1124,10 @@ void RigidNURBSSurface_RigidNURBSSurface::SolveLCP()
 											converged1 = true;
 											converged2 = converged1;
 											if (planeA) {
-												(*pair_control->contact_detectionA) = true;
+												//(voltar)(*pair_control->contact_detectionA) = true;
 											}
 											else {
-												(*pair_control->contact_detectionB) = true;
+												//(voltar)(*pair_control->contact_detectionB) = true;
 											}
 											EvaluateNormalGapEligibleOrNot();
 										}
@@ -1141,7 +1141,7 @@ void RigidNURBSSurface_RigidNURBSSurface::SolveLCP()
 											if (converged3) {
 												converged1 = true;
 												converged2 = converged1;
-												(*pair_control->contact_detectionAB) = true;
+												//(voltar)(*pair_control->contact_detectionAB) = true;
 												EvaluateNormalGapEligibleOrNot();
 											}
 											else {
@@ -1149,7 +1149,7 @@ void RigidNURBSSurface_RigidNURBSSurface::SolveLCP()
 												*patches2[/*i*/0] = *patches1[/*i*/0];
 												converged1 = true;
 												converged2 = converged1;
-												(*pair_control->contact_detectionAB) = true;
+												//(voltar)(*pair_control->contact_detectionAB) = true;
 												EvaluateNormalGapEligibleOrNot();
 											}
 										}
@@ -1167,14 +1167,14 @@ void RigidNURBSSurface_RigidNURBSSurface::SolveLCP()
 										if (converged3) { // Considera-se que não vai haver regiões patológicas, caso contrário já havia sido detectado antes
 											converged1 = true;
 											converged2 = converged1;
-											(*pair_control->contact_detectionA) = true;
+											//(voltar)(*pair_control->contact_detectionA) = true;
 											EvaluateNormalGapEligibleOrNot();
 										}
 										else {
 											*cNR2[/*i*/0] = *cNR1[/*i*/0];
 											converged1 = true;
 											converged2 = converged1;
-											(*pair_control->contact_detectionA) = true;
+											//(voltar)(*pair_control->contact_detectionA) = true;
 											EvaluateNormalGapEligibleOrNot();
 										}
 									}
@@ -1184,14 +1184,14 @@ void RigidNURBSSurface_RigidNURBSSurface::SolveLCP()
 										if (converged3) {
 											converged1 = true;
 											converged2 = converged1;
-											(*pair_control->contact_detectionB) = true;
+											//(voltar)(*pair_control->contact_detectionB) = true;
 											EvaluateNormalGapEligibleOrNot();
 										}
 										else {
 											*cNR2[/*i*/0] = *cNR1[/*i*/0];
 											converged1 = true;
 											converged2 = converged1;
-											(*pair_control->contact_detectionB) = true;
+											//(voltar)(*pair_control->contact_detectionB) = true;
 											EvaluateNormalGapEligibleOrNot();
 										}
 									}
@@ -1201,14 +1201,14 @@ void RigidNURBSSurface_RigidNURBSSurface::SolveLCP()
 										if (converged3) {
 											converged1 = true;
 											converged2 = converged1;
-											(*pair_control->contact_detectionAB) = true;
+											//(voltar)(*pair_control->contact_detectionAB) = true;
 											EvaluateNormalGapEligibleOrNot();
 										}
 										else {
 											*cNR2[/*i*/0] = *cNR1[/*i*/0];
 											converged1 = true;
 											converged2 = converged1;
-											(*pair_control->contact_detectionAB) = true;
+											//(voltar)(*pair_control->contact_detectionAB) = true;
 											EvaluateNormalGapEligibleOrNot();
 										}
 									}
@@ -1225,13 +1225,13 @@ void RigidNURBSSurface_RigidNURBSSurface::SolveLCP()
 					{
 						converged2 = converged1;
 						eligible = false;
-						(*pair_control->contact_detection) = true;
+						//(voltar)(*pair_control->contact_detection) = true;
 					}
 				}
 				else {
 					for (int i = 0; i < db.gcs->contactPP_list[index1].size(); i++)
 					{
-						if (db.gcs->contactPP_list[index1][i]->index2 == index2 && (db.gcs->contactPP_list[index1][i]->sub_index1 != sub_index1 || db.gcs->contactPP_list[index1][i]->sub_index2 != sub_index2) && (*db.gcs->contactPP_list[index1][i]->contact_detectionA || *db.gcs->contactPP_list[index1][i]->contact_detectionB || *db.gcs->contactPP_list[index1][i]->contact_detectionAB)) {
+						if (db.gcs->contactPP_list[index1][i]->index2 == index2 && (db.gcs->contactPP_list[index1][i]->sub_index1 != sub_index1 || db.gcs->contactPP_list[index1][i]->sub_index2 != sub_index2) /*(voltar) && (*db.gcs->contactPP_list[index1][i]->contact_detectionA || *db.gcs->contactPP_list[index1][i]->contact_detectionB || *db.gcs->contactPP_list[index1][i]->contact_detectionAB)*/) {
 							contact_aux = true;
 							cd->convective[/*i*/0][0] = db.gcs->contactPP_list[index1][i]->contact_pairs[0]->cd->convective[/*i*/0][0];
 							cd->convective[/*i*/0][1] = db.gcs->contactPP_list[index1][i]->contact_pairs[0]->cd->convective[/*i*/0][1];
@@ -1292,20 +1292,20 @@ void RigidNURBSSurface_RigidNURBSSurface::SolveLCP()
 											*cNR2[/*i*/0] = *cNR1[/*i*/0];
 											(*patches2[0])(0, 0) = (*patches1[0])(0, 0);
 											(*patches2[0])(1, 0) = (*patches1[0])(1, 0);
-											(*pair_control->contact_detectionA) = true;
+											//(voltar)(*pair_control->contact_detectionA) = true;
 											EvaluateNormalGapEligibleOrNot();
 										}
 										else {
 											converged1 = true;
 											converged2 = converged1;
-											(*pair_control->contact_detectionA) = true;
+											//(voltar)(*pair_control->contact_detectionA) = true;
 											EvaluateNormalGapEligibleOrNot();
 										}
 									}
 									else {
 										converged2 = converged3;
 										eligible = false;
-										(*pair_control->contact_detectionA) = true;
+										//(voltar)(*pair_control->contact_detectionA) = true;
 									}
 								}
 								else {
@@ -1330,20 +1330,20 @@ void RigidNURBSSurface_RigidNURBSSurface::SolveLCP()
 											*cNR2[/*i*/0] = *cNR1[/*i*/0];
 											(*patches2[0])(0, 0) = (*patches1[0])(0, 0);
 											(*patches2[0])(1, 0) = (*patches1[0])(1, 0);
-											(*pair_control->contact_detectionB) = true;
+											//(voltar)(*pair_control->contact_detectionB) = true;
 											EvaluateNormalGapEligibleOrNot();
 										}
 										else {
 											converged1 = true;
 											converged2 = converged1;
-											(*pair_control->contact_detectionB) = true;
+											//(voltar)(*pair_control->contact_detectionB) = true;
 											EvaluateNormalGapEligibleOrNot();
 										}
 									}
 									else {
 										converged2 = converged3;
 										eligible = false;
-										(*pair_control->contact_detectionB) = true;
+										//(voltar)(*pair_control->contact_detectionB) = true;
 									}
 								}
 								else {
@@ -1398,10 +1398,10 @@ void RigidNURBSSurface_RigidNURBSSurface::SolveLCP()
 											(*patches2[0])(0, 0) = (*patches1[0])(0, 0);
 											(*patches2[0])(1, 0) = (*patches1[0])(1, 0);
 											if (planeA) {
-												(*pair_control->contact_detectionA) = true;
+												//(voltar)(*pair_control->contact_detectionA) = true;
 											}
 											else {
-												(*pair_control->contact_detectionB) = true;
+												//(voltar)(*pair_control->contact_detectionB) = true;
 											}
 											EvaluateNormalGapEligibleOrNot();
 										}
@@ -1417,13 +1417,13 @@ void RigidNURBSSurface_RigidNURBSSurface::SolveLCP()
 													*cNR2[/*i*/0] = *cNR1[/*i*/0];
 													(*patches2[0])(0, 0) = (*patches1[0])(0, 0);
 													(*patches2[0])(1, 0) = (*patches1[0])(1, 0);
-													(*pair_control->contact_detectionA) = true;
+													//(voltar)(*pair_control->contact_detectionA) = true;
 													EvaluateNormalGapEligibleOrNot();
 												}
 												else {
 													converged1 = true;
 													converged2 = converged1;
-													(*pair_control->contact_detectionA) = true;
+													//(voltar)(*pair_control->contact_detectionA) = true;
 													EvaluateNormalGapEligibleOrNot();
 												}
 											}
@@ -1437,13 +1437,13 @@ void RigidNURBSSurface_RigidNURBSSurface::SolveLCP()
 													*cNR2[/*i*/0] = *cNR1[/*i*/0];
 													(*patches2[0])(0, 0) = (*patches1[0])(0, 0);
 													(*patches2[0])(1, 0) = (*patches1[0])(1, 0);
-													(*pair_control->contact_detectionB) = true;
+													//(voltar)(*pair_control->contact_detectionB) = true;
 													EvaluateNormalGapEligibleOrNot();
 												}
 												else {
 													converged1 = true;
 													converged2 = converged1;
-													(*pair_control->contact_detectionB) = true;
+													//(voltar)(*pair_control->contact_detectionB) = true;
 													EvaluateNormalGapEligibleOrNot();
 												}
 											}
@@ -1457,13 +1457,13 @@ void RigidNURBSSurface_RigidNURBSSurface::SolveLCP()
 													*cNR2[/*i*/0] = *cNR1[/*i*/0];
 													(*patches2[0])(0, 0) = (*patches1[0])(0, 0);
 													(*patches2[0])(1, 0) = (*patches1[0])(1, 0);
-													(*pair_control->contact_detectionAB) = true;
+													//(voltar)(*pair_control->contact_detectionAB) = true;
 													EvaluateNormalGapEligibleOrNot();
 												}
 												else {
 													converged1 = true;
 													converged2 = converged1;
-													(*pair_control->contact_detectionAB) = true;
+													//(voltar)(*pair_control->contact_detectionAB) = true;
 													EvaluateNormalGapEligibleOrNot();
 												}
 											}
@@ -1477,10 +1477,10 @@ void RigidNURBSSurface_RigidNURBSSurface::SolveLCP()
 										converged2 = converged3;
 										eligible = false;
 										if (planeA) {
-											(*pair_control->contact_detectionA) = true;
+											//(voltar)(*pair_control->contact_detectionA) = true;
 										}
 										else {
-											(*pair_control->contact_detectionB) = true;
+											//(voltar)(*pair_control->contact_detectionB) = true;
 										}
 									}
 								}
@@ -1504,20 +1504,20 @@ void RigidNURBSSurface_RigidNURBSSurface::SolveLCP()
 												*cNR2[/*i*/0] = *cNR1[/*i*/0];
 												(*patches2[0])(0, 0) = (*patches1[0])(0, 0);
 												(*patches2[0])(1, 0) = (*patches1[0])(1, 0);
-												(*pair_control->contact_detectionAB) = true;
+												//(voltar)(*pair_control->contact_detectionAB) = true;
 												EvaluateNormalGapEligibleOrNot();
 											}
 											else {
 												converged1 = true;
 												converged2 = converged1;
-												(*pair_control->contact_detectionAB) = true;
+												//(voltar)(*pair_control->contact_detectionAB) = true;
 												EvaluateNormalGapEligibleOrNot();
 											}
 										}
 										else {
 											converged2 = converged3;
 											eligible = false;
-											(*pair_control->contact_detectionAB) = true;
+											//(voltar)(*pair_control->contact_detectionAB) = true;
 										}
 									}
 									else {
@@ -1550,20 +1550,20 @@ void RigidNURBSSurface_RigidNURBSSurface::SolveLCP()
 											*cNR2[/*i*/0] = *cNR1[/*i*/0];
 											(*patches2[0])(0, 0) = (*patches1[0])(0, 0);
 											(*patches2[0])(1, 0) = (*patches1[0])(1, 0);
-											(*pair_control->contact_detectionA) = true;
+											//(voltar)(*pair_control->contact_detectionA) = true;
 											EvaluateNormalGapEligibleOrNot();
 										}
 										else {
 											converged1 = true;
 											converged2 = converged1;
-											(*pair_control->contact_detectionA) = true;
+											//(voltar)(*pair_control->contact_detectionA) = true;
 											EvaluateNormalGapEligibleOrNot();
 										}
 									}
 									else {
 										converged2 = converged3;
 										eligible = false;
-										(*pair_control->contact_detectionA) = true;
+										//(voltar)(*pair_control->contact_detectionA) = true;
 									}
 								}
 								else {
@@ -1590,20 +1590,20 @@ void RigidNURBSSurface_RigidNURBSSurface::SolveLCP()
 											*cNR2[/*i*/0] = *cNR1[/*i*/0];
 											(*patches2[0])(0, 0) = (*patches1[0])(0, 0);
 											(*patches2[0])(1, 0) = (*patches1[0])(1, 0);
-											(*pair_control->contact_detectionB) = true;
+											//(voltar)(*pair_control->contact_detectionB) = true;
 											EvaluateNormalGapEligibleOrNot();
 										}
 										else {
 											converged1 = true;
 											converged2 = converged1;
-											(*pair_control->contact_detectionB) = true;
+											//(voltar)(*pair_control->contact_detectionB) = true;
 											EvaluateNormalGapEligibleOrNot();
 										}
 									}
 									else {
 										converged2 = converged3;
 										eligible = false;
-										(*pair_control->contact_detectionB) = true;
+										//(voltar)(*pair_control->contact_detectionB) = true;
 									}
 								}
 								else {
@@ -1627,20 +1627,20 @@ void RigidNURBSSurface_RigidNURBSSurface::SolveLCP()
 											*cNR2[/*i*/0] = *cNR1[/*i*/0];
 											(*patches2[0])(0, 0) = (*patches1[0])(0, 0);
 											(*patches2[0])(1, 0) = (*patches1[0])(1, 0);
-											(*pair_control->contact_detectionAB) = true;
+											//(voltar)(*pair_control->contact_detectionAB) = true;
 											EvaluateNormalGapEligibleOrNot();
 										}
 										else {
 											converged1 = true;
 											converged2 = converged1;
-											(*pair_control->contact_detectionAB) = true;
+											//(voltar)(*pair_control->contact_detectionAB) = true;
 											EvaluateNormalGapEligibleOrNot();
 										}
 									}
 									else {
 										converged2 = converged3;
 										eligible = false;
-										(*pair_control->contact_detectionAB) = true;
+										//(voltar)(*pair_control->contact_detectionAB) = true;
 									}
 								}
 								else {
@@ -1683,29 +1683,29 @@ void RigidNURBSSurface_RigidNURBSSurface::SolveLCP()
 				//Correction (for not creating a not-strong candidate here!):
 				if (cd->return_value[/*i*/0] == 2) {
 					cd->return_value[/*i*/0] = 4;
-					(*pair_control->contact_detection) = false;
-					(*pair_control->contact_detectionA) = false;
-					(*pair_control->contact_detectionB) = false;
-					(*pair_control->contact_detectionAB) = false;
+					//(voltar)(*pair_control->contact_detection) = false;
+					//(voltar)(*pair_control->contact_detectionA) = false;
+					//(voltar)(*pair_control->contact_detectionB) = false;
+					//(voltar)(*pair_control->contact_detectionAB) = false;
 				}
 				if (cd->return_value[/*i*/0] == 4) {
 					eligible = false;
-					(*pair_control->contact_detection) = false;
-					(*pair_control->contact_detectionA) = false;
-					(*pair_control->contact_detectionB) = false;
-					(*pair_control->contact_detectionAB) = false;
+					//(voltar)(*pair_control->contact_detection) = false;
+					//(voltar)(*pair_control->contact_detectionA) = false;
+					//(voltar)(*pair_control->contact_detectionB) = false;
+					//(voltar)(*pair_control->contact_detectionAB) = false;
 				}
 				if (cd->return_value[/*i*/0] == 0) {
 					//cout << " ";
 
-					if (*pair_control->contact_detection) {
+					//(voltar)if (*pair_control->contact_detection) {
 						for (int i = 0; i < db.gcs->contactPP_list[index1].size(); i++)
 						{
-							if (db.gcs->contactPP_list[index1][i]->index2 == index2 && (db.gcs->contactPP_list[index1][i]->sub_index1 != sub_index1 || db.gcs->contactPP_list[index1][i]->sub_index2 != sub_index2) && (*db.gcs->contactPP_list[index1][i]->contact_detectionA || *db.gcs->contactPP_list[index1][i]->contact_detectionB || *db.gcs->contactPP_list[index1][i]->contact_detectionAB)) {
+							//(voltar)if (db.gcs->contactPP_list[index1][i]->index2 == index2 && (db.gcs->contactPP_list[index1][i]->sub_index1 != sub_index1 || db.gcs->contactPP_list[index1][i]->sub_index2 != sub_index2) && (*db.gcs->contactPP_list[index1][i]->contact_detectionA || *db.gcs->contactPP_list[index1][i]->contact_detectionB || *db.gcs->contactPP_list[index1][i]->contact_detectionAB)) {
 								db.gcs->contactPP_list[index1][i]->contact_pairs[0]->eligible = false;
-								*db.gcs->contactPP_list[index1][i]->contact_detectionA = false;
-								*db.gcs->contactPP_list[index1][i]->contact_detectionB = false;
-								*db.gcs->contactPP_list[index1][i]->contact_detectionAB = false;
+								//(voltar)*db.gcs->contactPP_list[index1][i]->contact_detectionA = false;
+								//(voltar)*db.gcs->contactPP_list[index1][i]->contact_detectionB = false;
+								//(voltar)*db.gcs->contactPP_list[index1][i]->contact_detectionAB = false;
 								db.gcs->contactPP_list[index1][i]->contact_pairs[0]->cd->convective[/*i*/0][0] = (*cNR2[/*i*/0])(0, 0);
 								db.gcs->contactPP_list[index1][i]->contact_pairs[0]->cd->convective[/*i*/0][1] = (*cNR2[/*i*/0])(1, 0);
 								db.gcs->contactPP_list[index1][i]->contact_pairs[0]->cd->convective[/*i*/0][2] = (*cNR2[/*i*/0])(2, 0);
@@ -1743,8 +1743,8 @@ void RigidNURBSSurface_RigidNURBSSurface::SolveLCP()
 
 								//Degenerative operator
 								db.gcs->contactPP_list[index1][i]->contact_pairs[0]->cd->MountDegenerativeOperator();
-							}
-						}
+								//(voltar)}
+							//(voltar)		}
 					}
 				}
 				//Teste - mudanca de solucao na propria superficie
@@ -1772,7 +1772,7 @@ void RigidNURBSSurface_RigidNURBSSurface::SolveLCP()
 						{
 						cd->return_value[/*i*/0] = 0;
 						eligible = false;
-						if ((*pair_control->contact_detection)) {
+						/*(voltar)if ((*pair_control->contact_detection)) {
 							(*pair_control->contact_detection) = false;
 							}
 						else if ((*pair_control->contact_detectionA)) {
@@ -1783,7 +1783,7 @@ void RigidNURBSSurface_RigidNURBSSurface::SolveLCP()
 							}
 						else if ((*pair_control->contact_detectionAB)) {
 							(*pair_control->contact_detectionAB) = false;
-							}
+							}*/
 						/*db.myprintf("Code 3. n1.n1 = %.6e, n2.n2 = %.6e\n", dot(cur_n1, prev_n1), dot(cur_n2, prev_n2));
 						db.myprintf("cur: %.6e,  %.6e,  %.6e , %.6e\n", (*cNR2[i])(0, 0), (*cNR2[i])(1, 0), (*cNR2[i])(2, 0), (*cNR2[i])(3, 0));
 						db.myprintf("pre: %.6e,  %.6e,  %.6e , %.6e\n", (*cNR1[i])(0, 0), (*cNR1[i])(1, 0), (*cNR1[i])(2, 0), (*cNR1[i])(3, 0));
@@ -1812,7 +1812,7 @@ void RigidNURBSSurface_RigidNURBSSurface::SolveLCP()
 				//}
 
 				eligible = false;
-				(*pair_control->contact_detection) = false;
+				//(voltar)(*pair_control->contact_detection) = false;
 				cd->return_value[/*i*/0] = 1;
 
 				//if (write_report)

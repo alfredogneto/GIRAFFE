@@ -37,10 +37,10 @@ ContactNURBSParticleNURBSParticle::ContactNURBSParticleNURBSParticle()
 	deg_curveB = 0;
 
 	//Marina
-	contact_detection = new bool(false);
-	contact_detectionA = new bool(false);
-	contact_detectionB = new bool(false);
-	contact_detectionAB = new bool(false);
+	//(voltar)contact_detection = new bool(false);
+	//(voltar)contact_detectionA = new bool(false);
+	//(voltar)contact_detectionB = new bool(false);
+	//(voltar)contact_detectionAB = new bool(false);
 }
 
 
@@ -54,10 +54,10 @@ ContactNURBSParticleNURBSParticle::~ContactNURBSParticleNURBSParticle()
 	delete I3;
 
 	//Marina
-	delete contact_detection;
-	delete contact_detectionA;
-	delete contact_detectionB;
-	delete contact_detectionAB;
+	//(voltar)delete contact_detection;
+	//(voltar)delete contact_detectionA;
+	//(voltar)delete contact_detectionB;
+	//(voltar)delete contact_detectionAB;
 }
 
 void ContactNURBSParticleNURBSParticle::PreCalc()
@@ -92,10 +92,10 @@ void ContactNURBSParticleNURBSParticle::PreCalc()
 	CreateSurfacePair(deg_pointA, deg_curveA, deg_pointB, deg_curveB);
 
 	//Marina
-	*contact_detection = false;
-	*contact_detectionA = false;
-	*contact_detectionB = false;
-	*contact_detectionAB = false;
+	//(voltar)*contact_detection = false;
+	//(voltar)*contact_detectionA = false;
+	//(voltar)*contact_detectionB = false;
+	//(voltar)*contact_detectionAB = false;
 }
 
 void ContactNURBSParticleNURBSParticle::MountGlobal()
