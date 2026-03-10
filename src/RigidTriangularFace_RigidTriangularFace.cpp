@@ -13787,7 +13787,7 @@ void RigidTriangularFace_RigidTriangularFace::MountLocalContributionsExplicit(do
 	v = DBG_NEW double[1000];
 	bool *previouscontact = &prev_eligible;
 	
-	int type_approach = 1;
+	int type_approach = 3;
 
 	if (type_approach == 1) { // simplificado
 

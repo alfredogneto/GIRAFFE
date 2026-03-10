@@ -268,14 +268,23 @@ bool ExplicitDynamic::Solve()
 			steps_control++;
 			SaveConfiguration();	//Salva configuração convergida //Marina
 			
-			//Analise da facilidade de convergência:
-			if (steps_computed >= steps_to_increase)
-			{
-				time_step = time_step * inc_factor;
-				if (time_step > max_time_step)
-					time_step = max_time_step;
-				steps_computed = 0;	//Zera o convergence counter
-			}
+			////Marina (time step)
+			//if (db.gcs_exist && db.gcs->TimeStep() != 0) {
+
+				//time_step = 0.1*db.gcs->TimeStep();
+				//if (time_step > max_time_step)
+					//time_step = max_time_step;
+			//}
+			//else {
+				//Analise da facilidade de convergência:
+				if (steps_computed >= steps_to_increase)
+				{
+					time_step = time_step * inc_factor;
+					if (time_step > max_time_step)
+						time_step = max_time_step;
+					steps_computed = 0;	//Zera o convergence counter
+				}
+			//}                               
 
 			//Escrita em arquivos de resultados
 			if (aborted == false)	//Salva o arquivo, de acordo com amostragem

@@ -25,6 +25,8 @@
 #include "ContactPolyhedronPolyhedron.h"
 #include "ContactVEMPolyhedronVEMPolyhedron.h"
 #include "ContactNURBSParticleNURBSParticle.h"  //Marina
+#include "RigidTriangularFace_RigidTriangularFace.h" //Marina
+#include "Interface_1.h" //Marina
 
 //Particle-boundary pairs:
 #include "ContactPolyhedronSTLBoundary.h"
@@ -1663,6 +1665,46 @@ int GeneralContactSearch::CheckIfContactParticleBodyExists(int i, int j, int ii,
 			return cont;
 	}
 	return -1;
+}
+
+double GeneralContactSearch::TimeStep()
+{
+	double TimeStep();
+	double mass = 0;
+	double stiffness = 0;
+	double time_s = 0;
+	double time_s_aux = 0;
+
+	for (int i = 0; i < db.number_particles; i++)
+	{
+		for (int cont = 0; cont < contactPP_list[i].size(); cont++)
+		{
+			if (contactPP_list[i][cont]->cur_active)
+			{
+				for (int cp = 0; cp < contactPP_list[i][cont]->contact_pairs.size(); cp++)
+				{
+					//if (contactPP_list[i][cont]->contact_pairs[cp]->eligible == true)
+					//{
+
+						mass = *static_cast<RigidTriangularFace_RigidTriangularFace*>(contactPP_list[i][cont]->contact_pairs[cp])->meq;
+						stiffness = static_cast<RigidTriangularFace_RigidTriangularFace*>(contactPP_list[i][cont]->contact_pairs[cp])->inter->EvaluateElasticStiffness(contactPP_list[i][cont]->contact_pairs[cp]->cd->g_n[0]);
+
+						time_s_aux = 2 * sqrt(mass / stiffness);
+
+						if (cp > 0) {
+							if (time_s_aux < time_s) {
+								time_s = time_s_aux;
+							}
+						}
+						else {
+							time_s = time_s_aux;
+						}
+					//}
+				}
+			}
+		}
+	}
+	return time_s;
 }
 
 void GeneralContactSearch::UpdateBoundingVolumes()

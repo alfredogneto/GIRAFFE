@@ -103,5 +103,9 @@ public:
 	long long duration_collision_detection;
 	long long duration_mount_contact;
 	long long global_n_collisiondetection;
+
+	//Time step
+	//Marina (time step)
+	double TimeStep();
 };
 

@@ -462,6 +462,10 @@ void Monitor::UpdateGlobalMonitor(double time)
 		}
 		
 		fprintf(f_global[0], "TIMESTEP\t");
+		if (db.gcs_exist)
+		{
+			fprintf(f_global[0], "TIMESTEP_CRIT\t"); //Marina
+		}
 		fprintf(f_global[0], "F_CRIT\t");
 		fprintf(f_global[0], "M_CRIT\t");
 		fprintf(f_global[0], "DISP_CRIT\t");
@@ -538,6 +542,13 @@ void Monitor::UpdateGlobalMonitor(double time)
 	}
 		
 	fprintf(f_global[0], "%.6e\t", db.current_time_step);
+	double teste = 0;
+	if (db.gcs_exist)
+	{
+		teste = db.gcs->TimeStep();
+		fprintf(f_global[0], "%.6d\t", teste);
+	}
+	
 	fprintf(f_global[0], "%.6e\t", db.conv_criteria->force_criterion);
 	fprintf(f_global[0], "%.6e\t", db.conv_criteria->moment_criterion);
 	fprintf(f_global[0], "%.6e\t", db.conv_criteria->disp_criterion);

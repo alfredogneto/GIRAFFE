@@ -513,7 +513,7 @@ void PostFiles::StartMultiplePartFiles(int sol_index)
 	//}
 }
 
-void PostFiles::UpdateSinglePartPostFiles(int sol_index, double time, int index)
+void PostFiles::UpdateSinglePartPostFiles (int sol_index, double time, int index)
 {
 	if (WriteMesh_flag == true)
 		WriteVTK_XMLBase(sol_index, time, index, 0);
