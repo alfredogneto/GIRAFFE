@@ -1,5 +1,6 @@
 #include "IO.h"
 #include <string.h>
+
 #include <direct.h>
 #define PI 3.1415926535897932384626433832795
 
@@ -183,6 +184,61 @@
 #include "ExecutionData.h"
 #include "ConfigurationSave.h"
 
+// Reads the input file and, if it has Linux (LF-only) line endings, writes a
+// temporary file with Windows (CRLF) line endings and returns a FILE* to it.
+// If the file already has CRLF endings, returns a FILE* to the original file.
+// The caller is responsible for closing the returned FILE*.
+// tmp_path (size >= 2000) is populated with the temporary file path when a
+// conversion was performed, or left unchanged otherwise.
+// Returns NULL on failure.
+// Reads the input file and, if it has Linux (LF-only) line endings, writes a
+// converted file with Windows (CRLF) line endings alongside the original:
+//   - <name>_crlf.inp  (strip trailing ".inp", append "_crlf.inp")
+// Returns a FILE* open for reading on the converted file, or on the original
+// if no conversion was needed. crlf_path (size >= 2000) receives the converted
+// file path when conversion occurred; left unchanged otherwise.
+// Returns NULL on failure.
+static FILE* OpenWithCRLF(const char* path, char* crlf_path)
+{
+	FILE* f = fopen(path, "rb");
+	if (!f) return NULL;
+	fseek(f, 0, SEEK_END);
+	long size = ftell(f);
+	rewind(f);
+	if (size <= 0) { fclose(f); return fopen(path, "r"); }
+
+	std::vector<char> data(size);
+	fread(data.data(), 1, size, f);
+	fclose(f);
+
+	bool needs_conversion = false;
+	for (long i = 0; i < size; i++) {
+		if (data[i] == '\n' && (i == 0 || data[i - 1] != '\r')) {
+			needs_conversion = true;
+			break;
+		}
+	}
+	if (!needs_conversion) return fopen(path, "r");
+
+	// <name>_crlf.inp  (replace trailing ".inp" with "_crlf.inp")
+	strcpy(crlf_path, path);
+	size_t len = strlen(crlf_path);
+	if (len >= 4 && strcmp(crlf_path + len - 4, ".inp") == 0)
+		crlf_path[len - 4] = '\0';
+	strcat(crlf_path, "_crlf.inp");
+
+	FILE* fw = fopen(crlf_path, "wb");
+	if (!fw) return NULL;
+	for (long i = 0; i < size; i++) {
+		if (data[i] == '\n' && (i == 0 || data[i - 1] != '\r'))
+			fputc('\r', fw);
+		fputc(data[i], fw);
+	}
+	fclose(fw);
+
+	return fopen(crlf_path, "r");
+}
+
 IO::IO(void)
 {
 }
@@ -278,6 +334,25 @@ bool IO::ReadFile(int argc, char* argv[])
 		}
 		else
 			readOK = true;
+	}
+	// If the input file has Linux (LF-only) line endings, a temporary file with
+	// Windows (CRLF) line endings is created and used for reading. The original
+	// file is never modified.
+	{
+		char name_conv[2000];
+		strcpy(name_conv, db.folder_name);
+		strcat(name_conv, db.file_name);
+		fclose(f);
+		char tmp_path[2000];
+		tmp_path[0] = '\0';
+		f = OpenWithCRLF(name_conv, tmp_path);
+		if (f == NULL) {
+			printf("Error reopening the input file after LF->CRLF conversion. Please try again.\n");
+			return false;
+		}
+		if (tmp_path[0] != '\0') {
+			db.myprintf("Input file has Linux line endings (LF).\nConverted files with Windows line endings (CRLF) were created for reading: %s\n\n", tmp_path);
+		}
 	}
 	char s[1000];
 	char last_key[1000];
@@ -771,7 +846,11 @@ void WriteDOFTable(FILE *f)
 void IO::WriteFile()
 {
 	//Fechamento do streaming para salvar output em arquivo de texto
-	fclose(db.console_output);
+	if (db.console_output != NULL)
+	{
+		fclose(db.console_output);
+		db.console_output = NULL;
+	}
 	char name[1000];
 	strcpy(name, db.folder_name);
 	strcat(name, "output.inp");

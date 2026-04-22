@@ -7,14 +7,14 @@ Database db;
 
 Node::Node(int e_nGL)
 {
-	nGL = e_nGL;						//Seta o numero de graus de liberdade por nó
-	ref_coordinates = new double[nGL];	//Coordenadas do nó na configuração de referência
-	copy_coordinates = new double[nGL];	//Coordenadas do nó na configuração de cópia (ultima convergida)
+	nGL = e_nGL;						//Seta o numero de graus de liberdade por nï¿½
+	ref_coordinates = new double[nGL];	//Coordenadas do nï¿½ na configuraï¿½ï¿½o de referï¿½ncia
+	copy_coordinates = new double[nGL];	//Coordenadas do nï¿½ na configuraï¿½ï¿½o de cï¿½pia (ultima convergida)
 	copy_rot_euler = new double[3];
-	displacements = new double[nGL];	//Deslocamentos do nó em relação a ultima cópia de coordenadas
+	displacements = new double[nGL];	//Deslocamentos do nï¿½ em relaï¿½ï¿½o a ultima cï¿½pia de coordenadas
 	vel = new double[nGL];				//Velocidades
 	copy_vel = new double[nGL];		
-	accel = new double[nGL];			//Acelerações
+	accel = new double[nGL];			//Aceleraï¿½ï¿½es
 	copy_accel = new double[nGL];
 
 	constraints = new int[nGL];
@@ -63,9 +63,9 @@ Node::Node(int e_nGL)
 	(*I3)(0, 0) = 1.0;
 	(*I3)(1, 1) = 1.0;
 	(*I3)(2, 2) = 1.0;
-	//Inicialização da matriz Q
+	//Inicializaï¿½ï¿½o da matriz Q
 	*Q = *I3;
-	//Inicialização da matriz Q0
+	//Inicializaï¿½ï¿½o da matriz Q0
 	*Q0 = *I3;
 
 	alpha_escalar = 0;
@@ -227,11 +227,11 @@ void Node::WriteVTK(FILE *f)
 }
 void Node::WriteMonitor(FILE *f, bool first_record, double time)
 {
-	//Calculo do angulo de rotação
+	//Calculo do angulo de rotaï¿½ï¿½o
 	(*rot_rodrigues)(0, 0) = displacements[3];
 	(*rot_rodrigues)(1, 0) = displacements[4];
 	(*rot_rodrigues)(2, 0) = displacements[5];
-	//Esforços
+	//Esforï¿½os
 	for (int j = 0; j < db.number_GLs_node; j++)
 	{
 		if (GLs[j] < 0 && active_GL[j] == 1)	//Se o grau de liberdade for fixo e ativo
@@ -253,10 +253,10 @@ void Node::WriteMonitor(FILE *f, bool first_record, double time)
 		
 	if (flag_pseudo_moment)
 	{
-		//Conversão do pseudo-momento para momento (parametros de rotação de Rodrigues)
+		//Conversï¿½o do pseudo-momento para momento (parametros de rotaï¿½ï¿½o de Rodrigues)
 		//Calculando o operador Xi
 		*A = skew(*rot_rodrigues);			//Matriz A
-		g = 4.0 / (4.0 + norm(*rot_rodrigues)*norm(*rot_rodrigues));		//função g(alpha) - em algumas ref. tb. chamado de h(alpha)
+		g = 4.0 / (4.0 + norm(*rot_rodrigues)*norm(*rot_rodrigues));		//funï¿½ï¿½o g(alpha) - em algumas ref. tb. chamado de h(alpha)
 		*Xi = g * (*I + 0.5*(*A));
 		*Xi_T_inv = invert3x3(transp(*Xi));
 		*moment = (*Xi_T_inv)*(*moment);
@@ -276,22 +276,64 @@ void Node::WriteMonitor(FILE *f, bool first_record, double time)
 		global_force = *force;
 		global_moment = *moment;
 	}
-		
 
-	//Cabeçalho
+	
+	// 
+	std::vector<std::vector<double>> vector_loads(6);
+
+	for (Pipe_1* pipe : attached_pipes) {
+		if (!pipe || !pipe->sigma_r[0] || !pipe->sigma_r[1]) continue;
+		const double delta_r = (std::sqrt(3.0) / 3.0) * pipe->jacobian * 2 ; 
+
+		for (int i = 0; i < 6; ++i) {
+			double sigma0 = (*(pipe->sigma_r[0]))(i, 0);
+			double sigma1 = (*(pipe->sigma_r[1]))(i, 0);
+			double slope = (sigma1 - sigma0) / delta_r;
+			double load = 0.0;
+
+			// Select the appropriate value based on node position
+			if (pipe->nodes[0] == number) {
+				load = sigma0 - slope * pipe->jacobian * (1 - std::sqrt(3.0) / 3.0);
+			}
+			else if (pipe->nodes[2] == number) {
+				load = sigma1 + slope * pipe->jacobian  * (1 - std::sqrt(3.0) / 3.0);
+			}
+			else if (pipe->nodes[1] == number) {
+				load = 0.5 * (sigma0 + sigma1);
+			}
+
+			vector_loads[i].push_back(load);
+		}
+	}
+	
+	std::vector<double> final_loads(6);
+
+	for (int i = 0; i < 6; ++i) {
+		double sum_load = 0.0;
+		for (auto j = 0; j < vector_loads[i].size(); j++) {
+			sum_load += vector_loads[i][j];
+		}
+		if (!vector_loads[i].empty()) {
+			final_loads[i] = sum_load /  static_cast<size_t>(vector_loads[i].size());
+		}
+		else
+			final_loads[i] = 0.0;
+	}
+
+	//Cabeï¿½alho
 	if (first_record == true)
 		fprintf(f, "TIME\tX\tY\tZ\tROTX\tROTY\tROTZ\tFX\tFY\tFZ\tMX\tMY\tMZ\tFXloc\tFYloc\tFZloc\tMXloc\tMYloc\tMZloc\tdX\tdY\tdZ\tdROTX\tdROTY\tdROTZ\tddX\tddY\tddZ\tddROTX\tddROTY\tddROTZ\n");
-	//Informações a serem salvas
+	//Informaï¿½ï¿½es a serem salvas
 	fprintf(f, "%.12e\t%.12e\t%.12e\t%.12e\t%.12e\t%.12e\t%.12e\t%.12e\t%.12e\t%.12e\t%.12e\t%.12e\t%.12e\t%.12e\t%.12e\t%.12e\t%.12e\t%.12e\t%.12e\t%.12e\t%.12e\t%.12e\t%.12e\t%.12e\t%.12e\t%.12e\t%.12e\t%.12e\t%.12e\t%.12e\t%.12e\n",
 		time,
-		//Deslocamentos - global, rotações pode ser local ou global
+		//Deslocamentos - global, rotaï¿½ï¿½es pode ser local ou global
 		copy_coordinates[0],
 		copy_coordinates[1],
 		copy_coordinates[2],
 		copy_rot_euler[0],
 		copy_rot_euler[1],
 		copy_rot_euler[2],
-		//Forças - global
+		//Forï¿½as - global
 		global_force(0, 0),
 		global_force(1, 0),
 		global_force(2, 0),
@@ -299,7 +341,7 @@ void Node::WriteMonitor(FILE *f, bool first_record, double time)
 		global_moment(0, 0),
 		global_moment(1, 0),
 		global_moment(2, 0),
-		//Forças e momentos - local
+		//Forï¿½as e momentos - local
 		(*load)(0, 0),
 		(*load)(1, 0),
 		(*load)(2, 0),
@@ -320,16 +362,132 @@ void Node::WriteMonitor(FILE *f, bool first_record, double time)
 		copy_accel[4],
 		copy_accel[5]
 		);
+		}
+
+void Node::WriteMonitorUserDef(FILE *f, bool first_record, double time, const UserDefMonitorParams& params)
+{
+	// Montagem dos esforï¿½os (idï¿½ntica ao WriteMonitor)
+	(*rot_rodrigues)(0, 0) = displacements[3];
+	(*rot_rodrigues)(1, 0) = displacements[4];
+	(*rot_rodrigues)(2, 0) = displacements[5];
+
+	for (int j = 0; j < db.number_GLs_node; j++)
+	{
+		if (GLs[j] < 0 && active_GL[j] == 1)
+			(*load)(j, 0) = db.global_P_B(-GLs[j] - 1, 0);
+		if (GLs[j] > 0 && active_GL[j] == 1)
+			(*load)(j, 0) = db.global_I_A(+GLs[j] - 1, 0);
+	}
+
+	for (int j = 0; j < 3; j++)
+	{
+		(*force)(j, 0) = (*load)(j, 0);
+		(*moment)(j, 0) = (*load)(j + 3, 0);
+	}
+
+	if (flag_pseudo_moment)
+	{
+		*A = skew(*rot_rodrigues);
+		g = 4.0 / (4.0 + norm(*rot_rodrigues) * norm(*rot_rodrigues));
+		*Xi = g * (*I + 0.5 * (*A));
+		*Xi_T_inv = invert3x3(transp(*Xi));
+		*moment = (*Xi_T_inv) * (*moment);
+		for (int j = 0; j < 3; j++)
+			(*load)(j + 3, 0) = (*moment)(j, 0);
+	}
+
+	// Interpolaï¿½ï¿½o dos esforï¿½os via tubos conectados (igual ao WriteMonitor)
+	std::vector<std::vector<double>> vector_loads(6);
+	for (Pipe_1* pipe : attached_pipes)
+	{
+		if (!pipe || !pipe->sigma_r[0] || !pipe->sigma_r[1]) continue;
+		const double delta_r = (std::sqrt(3.0) / 3.0) * pipe->jacobian * 2;
+		for (int i = 0; i < 6; ++i)
+		{
+			double sigma0 = (*(pipe->sigma_r[0]))(i, 0);
+			double sigma1 = (*(pipe->sigma_r[1]))(i, 0);
+			double slope  = (sigma1 - sigma0) / delta_r;
+			double load   = 0.0;
+			if      (pipe->nodes[0] == number) load = sigma0 - slope * pipe->jacobian * (1 - std::sqrt(3.0) / 3.0);
+			else if (pipe->nodes[2] == number) load = sigma1 + slope * pipe->jacobian * (1 - std::sqrt(3.0) / 3.0);
+			else if (pipe->nodes[1] == number) load = 0.5 * (sigma0 + sigma1);
+			vector_loads[i].push_back(load);
+		}
+	}
+	std::vector<double> final_loads(6);
+	for (int i = 0; i < 6; ++i)
+	{
+		double sum = 0.0;
+		for (auto& v : vector_loads[i]) sum += v;
+		final_loads[i] = vector_loads[i].empty() ? 0.0 : sum / (double)vector_loads[i].size();
+	}
+
+	// Cabeï¿½alho
+	if (first_record)
+	{
+		fprintf(f, "TIME\t");
+		if (params.X)   fprintf(f, "X\t");
+		if (params.Y)   fprintf(f, "Y\t");
+		if (params.Z)   fprintf(f, "Z\t");
+		if (params.dX)  fprintf(f, "dX\t");
+		if (params.dY)  fprintf(f, "dY\t");
+		if (params.dZ)  fprintf(f, "dZ\t");
+		if (params.ddX) fprintf(f, "ddX\t");
+		if (params.ddY) fprintf(f, "ddY\t");
+		if (params.ddZ) fprintf(f, "ddZ\t");
+		if (params.FX)  fprintf(f, "FX\t");
+		if (params.FY)  fprintf(f, "FY\t");
+		if (params.FZ)  fprintf(f, "FZ\t");
+		if (params.MX)  fprintf(f, "MX\t");
+		if (params.MY)  fprintf(f, "MY\t");
+		if (params.MZ)  fprintf(f, "MZ\t");
+		fprintf(f, "\n");
+	}
+
+	// Dados
+	fprintf(f, "%.6e\t", time);
+	if (params.X)   fprintf(f, "%.6e\t", copy_coordinates[0]);
+	if (params.Y)   fprintf(f, "%.6e\t", copy_coordinates[1]);
+	if (params.Z)   fprintf(f, "%.6e\t", copy_coordinates[2]);
+	if (params.dX)  fprintf(f, "%.6e\t", copy_vel[0]);
+	if (params.dY)  fprintf(f, "%.6e\t", copy_vel[1]);
+	if (params.dZ)  fprintf(f, "%.6e\t", copy_vel[2]);
+	if (params.ddX) fprintf(f, "%.6e\t", copy_accel[0]);
+	if (params.ddY) fprintf(f, "%.6e\t", copy_accel[1]);
+	if (params.ddZ) fprintf(f, "%.6e\t", copy_accel[2]);
+	if (params.FX)  fprintf(f, "%.6e\t", final_loads[0]);
+	if (params.FY)  fprintf(f, "%.6e\t", final_loads[1]);
+	if (params.FZ)  fprintf(f, "%.6e\t", final_loads[2]);
+	if (params.MX)  fprintf(f, "%.6e\t", final_loads[3]);
+	if (params.MY)  fprintf(f, "%.6e\t", final_loads[4]);
+	if (params.MZ)  fprintf(f, "%.6e\t", final_loads[5]);
+	fprintf(f, "\n");
+}
+
+void Node::PreCalc()
+{
+	for (int i = 0; i < db.number_elements; i++) {
+		//Verifica se o nï¿½ pertence a um elemento do tipo Pipe_1
+		Pipe_1* pipe = dynamic_cast<Pipe_1*>(db.elements[i]);
+		if (pipe != nullptr)
+		{
+			//Verifica se o nï¿½ pertence ao elemento
+			if (pipe->nodes[0] == this->number || pipe->nodes[1] == this->number || pipe->nodes[2] == this->number)
+			{
+				attached_pipes.push_back(pipe);
+			}
+		}
+	}
 }
 
 void Node::SaveConfiguration()
 {
-	//Atualização de deslocamentos (descrição lagrangiana atualizada - incremental)
+	//Atualizaï¿½ï¿½o de deslocamentos (descriï¿½ï¿½o lagrangiana atualizada - incremental)
 	copy_coordinates[0] += displacements[0];
 	copy_coordinates[1] += displacements[1];
 	copy_coordinates[2] += displacements[2];
 
-	//Atualização de rotações (descrição lagrangiana atualizada - incremental)
+	//Atualizaï¿½ï¿½o de rotaï¿½ï¿½es (descriï¿½ï¿½o lagrangiana atualizada - incremental)
 	alpha_1(0, 0) = copy_coordinates[3];
 	alpha_1(1, 0) = copy_coordinates[4];
 	alpha_1(2, 0) = copy_coordinates[5];
@@ -337,18 +495,18 @@ void Node::SaveConfiguration()
 	alpha_2(1, 0) = displacements[4];
 	alpha_2(2, 0) = displacements[5];
 
-	//Fórmula de Rodrigues
+	//Fï¿½rmula de Rodrigues
 	if (flag_material_description == false)
-		alpha_3 = 4.0 / (4.0 - dot(alpha_2, alpha_1))*(alpha_2 + alpha_1 + 0.5*cross(alpha_2, alpha_1));	//Vetor rotação de Rodrigues - atualização de descrição espacial
+		alpha_3 = 4.0 / (4.0 - dot(alpha_2, alpha_1))*(alpha_2 + alpha_1 + 0.5*cross(alpha_2, alpha_1));	//Vetor rotaï¿½ï¿½o de Rodrigues - atualizaï¿½ï¿½o de descriï¿½ï¿½o espacial
 	else
-		alpha_3 = 4.0 / (4.0 - dot(alpha_1, alpha_2))*(alpha_1 + alpha_2 + 0.5*cross(alpha_1, alpha_2));	//Vetor rotação de Rodrigues - atualização de descrição material
+		alpha_3 = 4.0 / (4.0 - dot(alpha_1, alpha_2))*(alpha_1 + alpha_2 + 0.5*cross(alpha_1, alpha_2));	//Vetor rotaï¿½ï¿½o de Rodrigues - atualizaï¿½ï¿½o de descriï¿½ï¿½o material
 			
 	copy_coordinates[3] = alpha_3(0, 0);
 	copy_coordinates[4] = alpha_3(1, 0);
 	copy_coordinates[5] = alpha_3(2, 0);
 	
 
-	////////////////////Salvando rotações de Euler////////////////////
+	////////////////////Salvando rotaï¿½ï¿½es de Euler////////////////////
 	theta_escalar3 = 2.0*atan(norm(alpha_3) / 2.0);
 	if (norm(alpha_3) != 0.0)
 		theta3 = (theta_escalar3 / norm(alpha_3))*(alpha_3);
@@ -366,13 +524,13 @@ void Node::SaveConfiguration()
 	*Q = *I + g * (*A + 0.5*(*A)*(*A));
 	////////////////////////////////////////////////////////////////////////////////////////
 	
-	//Atualização de outros graus de liberdade (descrição lagrangiana total)
+	//Atualizaï¿½ï¿½o de outros graus de liberdade (descriï¿½ï¿½o lagrangiana total)
 	for (int j = 6; j < db.number_GLs_node; j++)
 	{
 		copy_coordinates[j] = displacements[j];
 	}
 
-	//Atualização das velocidades e acelerações
+	//Atualizaï¿½ï¿½o das velocidades e aceleraï¿½ï¿½es
 	for (int j = 0; j < db.number_GLs_node; j++)
 	{
 		copy_accel[j] = accel[j];

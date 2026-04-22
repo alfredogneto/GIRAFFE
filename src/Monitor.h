@@ -1,6 +1,8 @@
 #pragma once
 #include <stdio.h>
 #include <vector>
+#include "MonitorNodesUserDefined.h"
+#include "MonitorElementsUserDefined.h"
 
 using namespace std;
 
@@ -36,15 +38,25 @@ public:
 	bool monitor_global_exists;
 	bool monitor_particles_exists;
 	bool monitor_special_constraints_exists;
+	bool monitor_userdef_exists;
+	bool monitor_elemuserdef_exists;
+
+	vector<UserDefMonitorEntry>     userdef_entries;
+	vector<UserDefElemMonitorEntry> userdef_elem_entries;
 
 	int sample;
 
-	bool first_record;	//Flag que indica que e a primeira vez que a função UpdateMonitor e chamada (para gravar cabeçalhos nos arquivos)
+	bool first_record;	//Flag que indica que e a primeira vez que a funï¿½ï¿½o UpdateMonitor e chamada (para gravar cabeï¿½alhos nos arquivos)
 	bool contact_special_output;
 	bool print_times;
 
 	bool Read(FILE *f);
 	bool ReadIntTable(FILE *f, vector<int> *data_table);
+	bool ReadUserDefEntry(FILE *f);
+	bool ReadUserDefParams(FILE *f, UserDefMonitorParams& p);
+	bool ReadElemUserDefEntry(FILE *f);
+	bool ReadElemUserDefParams(FILE *f, UserDefElemMonitorParams& p);
+	static bool ReadElemUserDefParams_B(const char* s, UserDefElemMonitorParams& p);
 	void Write(FILE *f);
 
 	void StartMonitor();

@@ -1,5 +1,6 @@
 #pragma once
 #include "Element.h"
+#include "MonitorElementsUserDefined.h"
 
 class LagrangeSave;
 
@@ -9,34 +10,35 @@ class Pipe_1 :
 public:
 	Pipe_1();
 	~Pipe_1();
-	bool Check();				//Checa inconsistências no elemento para evitar erros de execução
+	bool Check();				//Checa inconsistï¿½ncias no elemento para evitar erros de execuï¿½ï¿½o
 	bool Read(FILE *f);
 	void Write(FILE *f);
 	void WriteResults(FILE *f);//Escreve arquivo de resultados
 	void WriteVTK_XMLBase(std::vector<float> *float_vector);
 	void WriteVTK_XMLRender(FILE *f);
 	void WriteMonitor(FILE *f, bool first_record, double time);	//Escreve no monitor do elemento
+	void WriteMonitorUserDef(FILE *f, bool first_record, double time, const UserDefElemMonitorParams& params);	//Escreve no monitor definido pelo usuario
 	void Mount();						//Monta elementos
 	void MountElementLoads();			//Monta carregamentos associados ao elemento
 	void MountMass();					//Monta a matriz de massa
-	void MountMassModal();				//Monta a matriz de massa para realização da analise modal
-	void MountDampingModal();			//Monta a matriz de amortecimento para realização da analise modal
+	void MountMassModal();				//Monta a matriz de massa para realizaï¿½ï¿½o da analise modal
+	void MountDampingModal();			//Monta a matriz de amortecimento para realizaï¿½ï¿½o da analise modal
 	void MountDamping(bool update_rayleigh);	//Monta a matriz de amortecimento
 	void MountDyn();					//Montagens - Newmark
-	void MountDynModal();				//Montagens para analise modal - inserção da matriz de massa e amortecimento na matriz de rigidez para posterior montagem global
+	void MountDynModal();				//Montagens para analise modal - inserï¿½ï¿½o da matriz de massa e amortecimento na matriz de rigidez para posterior montagem global
 	void MountFieldLoading();			//Monta carregamentos de campo
-	void MountSeaCurrentLoading();		//Monta a parte estatica dos esforços de Morison - correnteza maritima
-	void MountPipeSpecialLoads(int l_number);//Monta carregamentos de pressão interna/externa no tubo
-	void TransformMatrix();				//Monta matriz de transformação de coordenadas
-	void MountGlobal();					//Preenche a contribuição do elemento nas matrizes globais
-	void SaveLagrange();				//Salva variaveis nos pontos de Gauss uteis para descrição lagrangiana atualizada
+	void MountSeaCurrentLoading();		//Monta a parte estatica dos esforï¿½os de Morison - correnteza maritima
+	void MountPipeSpecialLoads(int l_number);//Monta carregamentos de pressï¿½o interna/externa no tubo
+	void TransformMatrix();				//Monta matriz de transformaï¿½ï¿½o de coordenadas
+	void MountGlobal();					//Preenche a contribuiï¿½ï¿½o do elemento nas matrizes globais
+	void SaveLagrange();				//Salva variaveis nos pontos de Gauss uteis para descriï¿½ï¿½o lagrangiana atualizada
 	void PreCalc();						//Pre-calculo de variaveis que e feito uma unica vez no inicio
 	double CalculateLength();			//Calcula o comprimento indeformado
 	void Zeros();						//Zera algumas matrizes utilizadas nos calculos
 
 	void EvaluateMassModal(double* v, double* alphai, double** Jr, double** Mr, double* br, double** matrixm);
 	
-	//Calcula as contribuições inerciais para a analise dinamica - inclui todas as contribuições para a forma fraca e para o operador tangente
+	//Calcula as contribuiï¿½ï¿½es inerciais para a analise dinamica - inclui todas as contribuiï¿½ï¿½es para a forma fraca e para o operador tangente
 	void EvaluateInertialContributions(double* v, double(*a1)
 		, double(*a2), double(*a3), double(*a4), double(*a5), double(*a6)
 		, double* alphai, double* alphad, double* ui, double* ud, double* omegai
@@ -49,15 +51,15 @@ public:
 		, double* force, double** stiffness);
 	double rho_adt;	//massa adicional
 	double rho_adn;	//massa adicional
-	//Variaveis para funçõa gerada no AceGen
+	//Variaveis para funï¿½ï¿½a gerada no AceGen
 	double temp_v[2000];				//variavel temporaria para calculos internos
-	double** pJr;						//Ponteiro double** - conversão de matriz
-	double** pMr;						//Ponteiro double** - conversão de matriz
+	double** pJr;						//Ponteiro double** - conversï¿½o de matriz
+	double** pMr;						//Ponteiro double** - conversï¿½o de matriz
 	Matrix *br;
 	Matrix *DdT;
 	Matrix *dT;
 	double** pDdT;
-	Matrix* inertial_loading;			//Vetor de esforços internos
+	Matrix* inertial_loading;			//Vetor de esforï¿½os internos
 	Matrix* morison_loading;
 	double** pL;						//Loading stiffness (ponteiro)
 
@@ -66,16 +68,16 @@ public:
 	double jacobian;					//Jacobiano 
 	double alpha_escalar_delta;
 	double g;
-	double* N1;							//Funções de forma e suas derivadas
+	double* N1;							//Funï¿½ï¿½es de forma e suas derivadas
 	double* N2;
 	double* N3;
 	double* dN1;
 	double* dN2;
 	double* dN3;
 	double* csi;						//Coordenada natural do elemento isoparametrico em cada ponto de Gauss
-	//Variaveis salvas em cada ponto de Gauss para posterior pós-processamento e facilidade ao lidar com Lag. Atualizado
-	Matrix** N;							//Matriz das funções de forma
-	Matrix** deltaN;					//Matriz com as derivadas das funções de forma e com as funções de forma
+	//Variaveis salvas em cada ponto de Gauss para posterior pï¿½s-processamento e facilidade ao lidar com Lag. Atualizado
+	Matrix** N;							//Matriz das funï¿½ï¿½es de forma
+	Matrix** deltaN;					//Matriz com as derivadas das funï¿½ï¿½es de forma e com as funï¿½ï¿½es de forma
 	Matrix** alpha_delta;
 	Matrix** d_alpha_delta;
 	Matrix** u_delta;
@@ -112,11 +114,11 @@ public:
 	Matrix* damping_modal;								//Matriz de amortecimento
 	Matrix* damping_loading;						//Matriz de amortecimento
 	Matrix* rayleigh_damping;						//Matriz de amortecimento inicial do problema
-	Matrix* i_loading;								//Vetor de esforços internos
-	Matrix* e_loading;								//Vetor de esforços externos
-	Matrix* P_loading;								//Vetor esforço desbalanceado
-	Matrix* transform;								//Matriz de transformação de coordenadas
-	Matrix* transform3;								//Matriz de transformação de coordenadas 3x3
+	Matrix* i_loading;								//Vetor de esforï¿½os internos
+	Matrix* e_loading;								//Vetor de esforï¿½os externos
+	Matrix* P_loading;								//Vetor esforï¿½o desbalanceado
+	Matrix* transform;								//Matriz de transformaï¿½ï¿½o de coordenadas
+	Matrix* transform3;								//Matriz de transformaï¿½ï¿½o de coordenadas 3x3
 	Matrix* V_alpha_dz_n;
 	Matrix* V_alpha_m;
 	Matrix* d_V_dalpha_apha_m;
@@ -127,9 +129,9 @@ public:
 	Matrix* G_alpha_d_alpha_transp;
 	Matrix* B;
 	Matrix* G;
-	LagrangeSave* lag_save;							//Para salvar as variaveis devidas quando ha convergência (acesso atraves da função SaveLagrange())
+	LagrangeSave* lag_save;							//Para salvar as variaveis devidas quando ha convergï¿½ncia (acesso atraves da funï¿½ï¿½o SaveLagrange())
 
-	//Variaveis internas para o esforço de correnteza maritima
+	//Variaveis internas para o esforï¿½o de correnteza maritima
 	Matrix** e3ip;
 	Matrix** zi;
 	Matrix** vel;
@@ -165,7 +167,7 @@ public:
 	double C1t;
 	double C1n;
 
-	//Variaveis internas para o esforço pipe load
+	//Variaveis internas para o esforï¿½o pipe load
 	Matrix** kip;
 	Matrix** temp_f;
 	Matrix** temp_m;
@@ -198,7 +200,7 @@ public:
 	//Variaveis para calculo de steps
 	int t1, t2;
 	double load_multiplier, l_factor, mult;
-	//Funções Pipe:
+	//Funï¿½ï¿½es Pipe:
 	double De();								//Retorna o diametro externo
 };
 

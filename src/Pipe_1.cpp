@@ -45,7 +45,7 @@ Pipe_1::Pipe_1()
 	rho_adt = 0;
 	rho_adn = 0;
 
-	//Rotina para ativar os GLS de cada nó do elemento
+	//Rotina para ativar os GLS de cada nï¿½ do elemento
 	for (int i = 0; i < n_nodes; i++)
 	{
 		for (int j = 0; j < db.number_GLs_node; j++)
@@ -65,7 +65,7 @@ Pipe_1::Pipe_1()
 	jacobian = 0;
 	alpha_escalar_delta = 0;
 	g = 0;
-	//Cada variavel carregara a informação para seu ponto de Gauss
+	//Cada variavel carregara a informaï¿½ï¿½o para seu ponto de Gauss
 	N1 = new double[2];
 	N2 = new double[2];
 	N3 = new double[2];
@@ -153,7 +153,7 @@ Pipe_1::Pipe_1()
 	B = new Matrix(6, 9);
 	G = new Matrix(9, 9);
 	lag_save = new LagrangeSave();
-	//Variaveis internas para o esforço de correnteza maritima
+	//Variaveis internas para o esforï¿½o de correnteza maritima
 	e3ip = new Matrix*[2];
 	zi = new Matrix*[2];
 	vel = new Matrix*[2];
@@ -210,7 +210,7 @@ Pipe_1::Pipe_1()
 	Cdn = 0;
 	Aext = 0;
 	rho_f = 0;
-	//Variaveis internas para o esforço pipe load
+	//Variaveis internas para o esforï¿½o pipe load
 	kip = new Matrix*[2];
 	temp_f = new Matrix*[2];
 	temp_m = new Matrix*[2];
@@ -260,7 +260,7 @@ Pipe_1::Pipe_1()
 	Mr = new Matrix(3, 3);
 	Jr = new Matrix(3, 3);
 
-	//Ponteiros double** - conversão de matriz
+	//Ponteiros double** - conversï¿½o de matriz
 	pJr = new double*[3];
 	for (int i = 0; i < 3; i++)
 		pJr[i] = new double[3];
@@ -381,7 +381,7 @@ Pipe_1::~Pipe_1()
 	delete B;
 	delete G;
 	delete lag_save;
-	//Variaveis internas para o esforço de correnteza maritima
+	//Variaveis internas para o esforï¿½o de correnteza maritima
 	//Loop nos pontos de Gauss
 	for (int i = 0; i < 2; i++)
 	{
@@ -427,7 +427,7 @@ Pipe_1::~Pipe_1()
 	delete[] Mdn;
 	delete[] Md2;
 	delete e3rg;
-	//Variaveis internas para o esforço pipe load
+	//Variaveis internas para o esforï¿½o pipe load
 	//Loop nos pontos de Gauss
 	for (int i = 0; i < 2; i++)
 	{
@@ -496,7 +496,7 @@ Pipe_1::~Pipe_1()
 	
 }
 
-//Checa inconsistências no elemento para evitar erros de execução
+//Checa inconsistï¿½ncias no elemento para evitar erros de execuï¿½ï¿½o
 bool Pipe_1::Check()
 {
 	for (int i = 0; i < n_nodes; i++)
@@ -508,13 +508,13 @@ bool Pipe_1::Check()
 		return false;
 	if (section > db.number_pipe_sections)
 		return false;
-	//Checagem do alinhamento dos eixos do CS com direção dos nós
+	//Checagem do alinhamento dos eixos do CS com direï¿½ï¿½o dos nï¿½s
 	Matrix e1r = *db.CS[cs - 1]->E1;
 	Matrix e2r = *db.CS[cs - 1]->E2;
 	Matrix e3r = *db.CS[cs - 1]->E3;
 	double tolortho = 1e-8;
 	Matrix e3_check(3);
-	//Versor e3_check (configuração de referência)
+	//Versor e3_check (configuraï¿½ï¿½o de referï¿½ncia)
 	e3_check(0, 0) = db.nodes[nodes[2] - 1]->ref_coordinates[0] - db.nodes[nodes[0] - 1]->ref_coordinates[0];
 	e3_check(1, 0) = db.nodes[nodes[2] - 1]->ref_coordinates[1] - db.nodes[nodes[0] - 1]->ref_coordinates[1];
 	e3_check(2, 0) = db.nodes[nodes[2] - 1]->ref_coordinates[2] - db.nodes[nodes[0] - 1]->ref_coordinates[2];
@@ -608,14 +608,14 @@ void Pipe_1::WriteVTK_XMLBase(std::vector<float> *float_vector)
 	float_vector->push_back((float)((*sigma_r[0])(3, 0) + (*sigma_r[1])(3, 0)) / 2);
 	float_vector->push_back((float)((*sigma_r[0])(4, 0) + (*sigma_r[1])(4, 0)) / 2);
 	float_vector->push_back((float)((*sigma_r[0])(5, 0) + (*sigma_r[1])(5, 0)) / 2);
-	//Imprime valores nulos para resultados que não fazem sentido para esse tipo de elemento
+	//Imprime valores nulos para resultados que nï¿½o fazem sentido para esse tipo de elemento
 	for (int i = res_element; i < db.n_element_results; i++)
 		float_vector->push_back(0.0);
 }
 
 void Pipe_1::WriteVTK_XMLRender(FILE *f)
 {
-	//vetores para escrita no formato binario - usando a função 'enconde'
+	//vetores para escrita no formato binario - usando a funï¿½ï¿½o 'enconde'
 	std::vector<float> float_vector;
 	std::vector<int> int_vector;
 
@@ -637,9 +637,9 @@ void Pipe_1::WriteVTK_XMLRender(FILE *f)
 			fprintf(f, "\t\t\t\t<DataArray type = \"Float32\" NumberOfComponents = \"3\" format=\"binary\">\n");
 			float_vector.clear();
 			//Preenchendo as coordenadas dos pontos
-			for (int i = 0; i < n_nodes; i++)//percorrendo os 3 nós do elemento
+			for (int i = 0; i < n_nodes; i++)//percorrendo os 3 nï¿½s do elemento
 			{
-				//Para cada nó do elemento, calcula o tensor rotação
+				//Para cada nï¿½ do elemento, calcula o tensor rotaï¿½ï¿½o
 				alpha_1(0, 0) = db.nodes[nodes[i] - 1]->copy_coordinates[3];
 				alpha_1(1, 0) = db.nodes[nodes[i] - 1]->copy_coordinates[4];
 				alpha_1(2, 0) = db.nodes[nodes[i] - 1]->copy_coordinates[5];
@@ -647,30 +647,30 @@ void Pipe_1::WriteVTK_XMLRender(FILE *f)
 				A = skew(alpha_1);
 				g = 4.0 / (4.0 + alpha_escalar*alpha_escalar);
 				Q = *I3 + g*(A + 0.5*A*A);
-				Q = Q*transp(*transform3);//Matriz de transformação para trazer o vetor da ST do plano xy para o plano atual em que ela se encontra
+				Q = Q*transp(*transform3);//Matriz de transformaï¿½ï¿½o para trazer o vetor da ST do plano xy para o plano atual em que ela se encontra
 
-				for (int point = 0; point < db.pipe_sections[section - 1]->sec_details->n_points; point++)//Percorre os nós que descrevem o perimetro da ST - diametro externo
+				for (int point = 0; point < db.pipe_sections[section - 1]->sec_details->n_points; point++)//Percorre os nï¿½s que descrevem o perimetro da ST - diametro externo
 				{
-					//Posição de cada ponto P no plano xy (referência)
+					//Posiï¿½ï¿½o de cada ponto P no plano xy (referï¿½ncia)
 					vec_P(0, 0) = db.pipe_sections[section - 1]->sec_details->points[point][0];
 					vec_P(1, 0) = db.pipe_sections[section - 1]->sec_details->points[point][1];
 					vec_P(2, 0) = 0.0;
 					vec_P = Q*vec_P;//Operando rotacionando para o sistema da barra
 					for (int c = 0; c < 3; c++)
-						vec_P(c, 0) += db.nodes[nodes[i] - 1]->ref_coordinates[c] + db.post_files->mag_factor*(db.nodes[nodes[i] - 1]->copy_coordinates[c] - db.nodes[nodes[i] - 1]->ref_coordinates[c]);//Translação - soma a posição do centro da barra (do ponto em questão)
+						vec_P(c, 0) += db.nodes[nodes[i] - 1]->ref_coordinates[c] + db.post_files->mag_factor*(db.nodes[nodes[i] - 1]->copy_coordinates[c] - db.nodes[nodes[i] - 1]->ref_coordinates[c]);//Translaï¿½ï¿½o - soma a posiï¿½ï¿½o do centro da barra (do ponto em questï¿½o)
 					float_vector.push_back((float)(vec_P(0, 0)));
 					float_vector.push_back((float)(vec_P(1, 0)));
 					float_vector.push_back((float)(vec_P(2, 0)));
 				}
-				for (int point = 0; point < db.pipe_sections[section - 1]->sec_details->n_points; point++)//Percorre os nós que descrevem o perimetro da ST - diametro interno
+				for (int point = 0; point < db.pipe_sections[section - 1]->sec_details->n_points; point++)//Percorre os nï¿½s que descrevem o perimetro da ST - diametro interno
 				{
-					//Posição de cada ponto P no plano xy (referência)
+					//Posiï¿½ï¿½o de cada ponto P no plano xy (referï¿½ncia)
 					vec_P(0, 0) = db.pipe_sections[section - 1]->sec_details->points[point][0] * factor;
 					vec_P(1, 0) = db.pipe_sections[section - 1]->sec_details->points[point][1] * factor;
 					vec_P(2, 0) = 0.0;
 					vec_P = Q*vec_P;//Operando rotacionando para o sistema da barra
 					for (int c = 0; c < 3; c++)
-						vec_P(c, 0) += db.nodes[nodes[i] - 1]->ref_coordinates[c] + db.post_files->mag_factor*(db.nodes[nodes[i] - 1]->copy_coordinates[c] - db.nodes[nodes[i] - 1]->ref_coordinates[c]);//Translação - soma a posição do centro da barra (do ponto em questão)
+						vec_P(c, 0) += db.nodes[nodes[i] - 1]->ref_coordinates[c] + db.post_files->mag_factor*(db.nodes[nodes[i] - 1]->copy_coordinates[c] - db.nodes[nodes[i] - 1]->ref_coordinates[c]);//Translaï¿½ï¿½o - soma a posiï¿½ï¿½o do centro da barra (do ponto em questï¿½o)
 					float_vector.push_back((float)(vec_P(0, 0)));
 					float_vector.push_back((float)(vec_P(1, 0)));
 					float_vector.push_back((float)(vec_P(2, 0)));
@@ -692,7 +692,7 @@ void Pipe_1::WriteVTK_XMLRender(FILE *f)
 		int_vector.clear();
 		for (int cell = 0; cell < db.pipe_sections[section - 1]->sec_details->n_points; cell++)
 		{
-			//Se não for a ultima celula ao longo do perimetro
+			//Se nï¿½o for a ultima celula ao longo do perimetro
 			if (cell != db.pipe_sections[section - 1]->sec_details->n_points-1)
 			{
 				nodes[0] = cell;
@@ -788,7 +788,7 @@ void Pipe_1::WriteVTK_XMLRender(FILE *f)
 				((*sigma_r[0])(0, 0) + (*sigma_r[1])(0, 0)) / 2, ((*sigma_r[0])(1, 0) + (*sigma_r[1])(1, 0)) / 2, ((*sigma_r[0])(2, 0) + (*sigma_r[1])(2, 0)) / 2,
 				((*sigma_r[0])(3, 0) + (*sigma_r[1])(3, 0)) / 2, ((*sigma_r[0])(4, 0) + (*sigma_r[1])(4, 0)) / 2, ((*sigma_r[0])(5, 0) + (*sigma_r[1])(5, 0)) / 2
 				);*/
-			//Imprime valores nulos para resultados que não fazem sentido para esse tipo de elemento
+			//Imprime valores nulos para resultados que nï¿½o fazem sentido para esse tipo de elemento
 			for (int i = res_element; i < db.n_element_results; i++)
 				float_vector.push_back(0.0);
 		}
@@ -821,15 +821,410 @@ void Pipe_1::WriteVTK_XMLRender(FILE *f)
 //Escreve no monitor do elemento//Escreve no monitor do elemento
 void Pipe_1::WriteMonitor(FILE *f, bool first_record, double time)
 {
-	//Cabeçalho
+	//Cabeï¿½alho
 	if (first_record == true)
 		fprintf(f, "TIME\tnx1r\tny1r\tnz1r\tmx1r\tmy1r\tmz1r\tnx2r\tny2r\tnz2r\tmx2r\tmy2r\tmz2r\n");
-	//Informações a serem salvas
+	//Informaï¿½ï¿½es a serem salvas
 	fprintf(f, "%.6e\t%.6e\t%.6e\t%.6e\t%.6e\t%.6e\t%.6e\t%.6e\t%.6e\t%.6e\t%.6e\t%.6e\t%.6e\n",
 		time,
 		(*sigma_r[0])(0, 0), (*sigma_r[0])(1, 0), (*sigma_r[0])(2, 0), (*sigma_r[0])(3, 0), (*sigma_r[0])(4, 0), (*sigma_r[0])(5, 0),
 		(*sigma_r[1])(0, 0), (*sigma_r[1])(1, 0), (*sigma_r[1])(2, 0), (*sigma_r[1])(3, 0), (*sigma_r[1])(4, 0), (*sigma_r[1])(5, 0)
 		);
+}
+// --- Helpers genï¿½ricos de desmembramento para WriteMonitorUserDef ---
+
+// Tipo 1: Matrix** (array nos n_gp pontos de Gauss)
+static void WriteGPMatHeader(FILE* f, const char* name, Matrix** mat, int n_gp)
+{
+	for (int g = 0; g < n_gp; g++)
+	{
+		long rows = mat[g]->m_lines;
+		long cols = mat[g]->m_columns;
+		for (long r = 0; r < rows; r++)
+			for (long c = 0; c < cols; c++)
+			{
+				if (cols == 1)
+					fprintf(f, "%s_GP%d_%ld\t", name, g + 1, r);
+				else if (rows == 1)
+					fprintf(f, "%s_GP%d_%ld\t", name, g + 1, c);
+				else
+					fprintf(f, "%s_GP%d_%ld%ld\t", name, g + 1, r, c);
+			}
+	}
+}
+static void WriteGPMatData(FILE* f, Matrix** mat, int n_gp)
+{
+	for (int g = 0; g < n_gp; g++)
+	{
+		long rows = mat[g]->m_lines;
+		long cols = mat[g]->m_columns;
+		for (long r = 0; r < rows; r++)
+			for (long c = 0; c < cols; c++)
+				fprintf(f, "%.6e\t", (*mat[g])(r, c));
+	}
+}
+
+// Tipo 2: double* (array nos n_gp pontos de Gauss)
+static void WriteGPDoubleHeader(FILE* f, const char* name, int n_gp)
+{
+	for (int g = 0; g < n_gp; g++)
+		fprintf(f, "%s_GP%d\t", name, g + 1);
+}
+static void WriteGPDoubleData(FILE* f, double* arr, int n_gp)
+{
+	for (int g = 0; g < n_gp; g++)
+		fprintf(f, "%.6e\t", arr[g]);
+}
+
+// Tipo 3: double (escalar)
+static void WriteScalarHeader(FILE* f, const char* name)
+{
+	fprintf(f, "%s\t", name);
+}
+static void WriteScalarData(FILE* f, double val)
+{
+	fprintf(f, "%.6e\t", val);
+}
+
+// Tipo 4: Matrix* (matriz ï¿½nica de qualquer dimensï¿½o)
+static void WriteMatHeader(FILE* f, const char* name, Matrix* mat)
+{
+	long rows = mat->m_lines;
+	long cols = mat->m_columns;
+	for (long r = 0; r < rows; r++)
+		for (long c = 0; c < cols; c++)
+		{
+			if (cols == 1)
+				fprintf(f, "%s_%ld\t", name, r);
+			else if (rows == 1)
+				fprintf(f, "%s_%ld\t", name, c);
+			else
+				fprintf(f, "%s_%ld%ld\t", name, r, c);
+		}
+}
+static void WriteMatData(FILE* f, Matrix* mat)
+{
+	long rows = mat->m_lines;
+	long cols = mat->m_columns;
+	for (long r = 0; r < rows; r++)
+		for (long c = 0; c < cols; c++)
+			fprintf(f, "%.6e\t", (*mat)(r, c));
+}
+
+// Tipo 5: std::vector<double> (tamanho variï¿½vel)
+static void WriteVecDoubleHeader(FILE* f, const char* name, const std::vector<double>& v)
+{
+	for (int i = 0; i < (int)v.size(); i++)
+		fprintf(f, "%s_%d\t", name, i);
+}
+static void WriteVecDoubleData(FILE* f, const std::vector<double>& v)
+{
+	for (int i = 0; i < (int)v.size(); i++)
+		fprintf(f, "%.6e\t", v[i]);
+}
+
+void Pipe_1::WriteMonitorUserDef(FILE* f, bool first_record, double time, const UserDefElemMonitorParams& params)
+{
+	const int n_gp = 2;
+
+	// Cabeï¿½alho (escrito apenas na primeira gravaï¿½ï¿½o deste arquivo)
+	if (first_record)
+	{
+		fprintf(f, "TIME\t");
+		// Componentes individuais de sigma_r
+		if (params.nx1r) fprintf(f, "nx1r\t"); if (params.ny1r) fprintf(f, "ny1r\t"); if (params.nz1r) fprintf(f, "nz1r\t");
+		if (params.mx1r) fprintf(f, "mx1r\t"); if (params.my1r) fprintf(f, "my1r\t"); if (params.mz1r) fprintf(f, "mz1r\t");
+		if (params.nx2r) fprintf(f, "nx2r\t"); if (params.ny2r) fprintf(f, "ny2r\t"); if (params.nz2r) fprintf(f, "nz2r\t");
+		if (params.mx2r) fprintf(f, "mx2r\t"); if (params.my2r) fprintf(f, "my2r\t"); if (params.mz2r) fprintf(f, "mz2r\t");
+		// Matrix** (2 GPs)
+		if (params.sigma_r)         WriteGPMatHeader(f, "sigma_r",          sigma_r,       n_gp);
+		if (params.eta_r)           WriteGPMatHeader(f, "eta_r",            eta_r,         n_gp);
+		if (params.kappa_r)         WriteGPMatHeader(f, "kappa_r",          kappa_r,       n_gp);
+		if (params.epsilon_r)       WriteGPMatHeader(f, "epsilon_r",        epsilon_r,     n_gp);
+		if (params.n_r)             WriteGPMatHeader(f, "n_r",              n_r,           n_gp);
+		if (params.m_r)             WriteGPMatHeader(f, "m_r",              m_r,           n_gp);
+		if (params.n_global)        WriteGPMatHeader(f, "n",                n,             n_gp);
+		if (params.m_global)        WriteGPMatHeader(f, "m",                m,             n_gp);
+		if (params.alpha_delta)     WriteGPMatHeader(f, "alpha_delta",      alpha_delta,   n_gp);
+		if (params.d_alpha_delta)   WriteGPMatHeader(f, "d_alpha_delta",    d_alpha_delta, n_gp);
+		if (params.u_delta)         WriteGPMatHeader(f, "u_delta",          u_delta,       n_gp);
+		if (params.d_u_delta)       WriteGPMatHeader(f, "d_u_delta",        d_u_delta,     n_gp);
+		if (params.A_delta)         WriteGPMatHeader(f, "A_delta",          A_delta,       n_gp);
+		if (params.Q_delta)         WriteGPMatHeader(f, "Q_delta",          Q_delta,       n_gp);
+		if (params.d_z)             WriteGPMatHeader(f, "d_z",              d_z,           n_gp);
+		if (params.d_Z)             WriteGPMatHeader(f, "d_Z",              d_Z,           n_gp);
+		if (params.Xi_delta)        WriteGPMatHeader(f, "Xi_delta",         Xi_delta,      n_gp);
+		if (params.d_A_delta)       WriteGPMatHeader(f, "d_A_delta",        d_A_delta,     n_gp);
+		if (params.d_Xi_delta)      WriteGPMatHeader(f, "d_Xi_delta",       d_Xi_delta,    n_gp);
+		if (params.N_gp)            WriteGPMatHeader(f, "N",                N,             n_gp);
+		if (params.deltaN_gp)       WriteGPMatHeader(f, "deltaN",           deltaN,        n_gp);
+		if (params.e3ip)            WriteGPMatHeader(f, "e3ip",             e3ip,          n_gp);
+		if (params.zi)              WriteGPMatHeader(f, "zi",               zi,            n_gp);
+		if (params.vel)             WriteGPMatHeader(f, "vel",              vel,           n_gp);
+		if (params.velr)            WriteGPMatHeader(f, "velr",             velr,          n_gp);
+		if (params.element_vel)     WriteGPMatHeader(f, "element_vel",      element_vel,   n_gp);
+		if (params.ut_gp)           WriteGPMatHeader(f, "ut",               ut,            n_gp);
+		if (params.un_gp)           WriteGPMatHeader(f, "un",               un,            n_gp);
+		if (params.d_e3_d_alpha)    WriteGPMatHeader(f, "d_e3_d_alpha",     d_e3_d_alpha,  n_gp);
+		if (params.Lt)              WriteGPMatHeader(f, "Lt",               Lt,            n_gp);
+		if (params.Ln)              WriteGPMatHeader(f, "Ln",               Ln,            n_gp);
+		if (params.L_u_alpha)       WriteGPMatHeader(f, "L_u_alpha",        L_u_alpha,     n_gp);
+		if (params.f_current)       WriteGPMatHeader(f, "f_current",        f_current,     n_gp);
+		if (params.L_gp)            WriteGPMatHeader(f, "L",                L,             n_gp);
+		if (params.t_e)             WriteGPMatHeader(f, "t_e",              t_e,           n_gp);
+		if (params.n_e)             WriteGPMatHeader(f, "n_e",              n_e,           n_gp);
+		if (params.vtr)             WriteGPMatHeader(f, "vtr",              vtr,           n_gp);
+		if (params.vnr)             WriteGPMatHeader(f, "vnr",              vnr,           n_gp);
+		if (params.Mdt)             WriteGPMatHeader(f, "Mdt",              Mdt,           n_gp);
+		if (params.Mdn)             WriteGPMatHeader(f, "Mdn",              Mdn,           n_gp);
+		if (params.Md2)             WriteGPMatHeader(f, "Md2",              Md2,           n_gp);
+		if (params.kip)             WriteGPMatHeader(f, "kip",              kip,           n_gp);
+		if (params.temp_f)          WriteGPMatHeader(f, "temp_f",           temp_f,        n_gp);
+		if (params.temp_m)          WriteGPMatHeader(f, "temp_m",           temp_m,        n_gp);
+		if (params.temp_l)          WriteGPMatHeader(f, "temp_l",           temp_l,        n_gp);
+		if (params.Kip)             WriteGPMatHeader(f, "Kip",              Kip,           n_gp);
+		if (params.E3ip)            WriteGPMatHeader(f, "E3ip",             E3ip,          n_gp);
+		if (params.UpsilonN)        WriteGPMatHeader(f, "UpsilonN",         UpsilonN,      n_gp);
+		if (params.Xi_dot)          WriteGPMatHeader(f, "Xi_dot",           Xi_dot,        n_gp);
+		if (params.Mip_gp)          WriteGPMatHeader(f, "Mip",              Mip,           n_gp);
+		if (params.Jip_gp)          WriteGPMatHeader(f, "Jip",              Jip,           n_gp);
+		if (params.M_dyn)           WriteGPMatHeader(f, "M",                M,             n_gp);
+		if (params.Md1)             WriteGPMatHeader(f, "Md1",              Md1,           n_gp);
+		if (params.alpha_dot)       WriteGPMatHeader(f, "alpha_dot",        alpha_dot,     n_gp);
+		// double* (2 GPs)
+		if (params.pressure)        WriteGPDoubleHeader(f, "pressure",         n_gp);
+		if (params.rho)             WriteGPDoubleHeader(f, "rho",              n_gp);
+		if (params.temperature)     WriteGPDoubleHeader(f, "temperature",      n_gp);
+		if (params.flow_velocity)   WriteGPDoubleHeader(f, "flow_velocity",    n_gp);
+		if (params.flow_rate)       WriteGPDoubleHeader(f, "flow_rate",        n_gp);
+		if (params.internal_pressure) WriteGPDoubleHeader(f, "internal_pressure", n_gp);
+		if (params.N1)              WriteGPDoubleHeader(f, "N1",                n_gp);
+		if (params.N2)              WriteGPDoubleHeader(f, "N2",                n_gp);
+		if (params.N3)              WriteGPDoubleHeader(f, "N3",                n_gp);
+		if (params.dN1)             WriteGPDoubleHeader(f, "dN1",               n_gp);
+		if (params.dN2)             WriteGPDoubleHeader(f, "dN2",               n_gp);
+		if (params.dN3)             WriteGPDoubleHeader(f, "dN3",               n_gp);
+		if (params.csi)             WriteGPDoubleHeader(f, "csi",               n_gp);
+		// double (escalar)
+		if (params.length)          WriteScalarHeader(f, "length");
+		if (params.jacobian)        WriteScalarHeader(f, "jacobian");
+		if (params.alpha1)          WriteScalarHeader(f, "alpha1");
+		if (params.p0i)             WriteScalarHeader(f, "p0i");
+		if (params.p0e)             WriteScalarHeader(f, "p0e");
+		if (params.rhoi)            WriteScalarHeader(f, "rhoi");
+		if (params.rhoe)            WriteScalarHeader(f, "rhoe");
+		if (params.Aint)            WriteScalarHeader(f, "Aint");
+		if (params.rho_adt)         WriteScalarHeader(f, "rho_adt");
+		if (params.rho_adn)         WriteScalarHeader(f, "rho_adn");
+		if (params.load_multiplier) WriteScalarHeader(f, "load_multiplier");
+		if (params.alpha_escalar_delta) WriteScalarHeader(f, "alpha_escalar_delta");
+		if (params.g)               WriteScalarHeader(f, "g");
+		if (params.signal_t)        WriteScalarHeader(f, "signal_t");
+		if (params.Cdt)             WriteScalarHeader(f, "Cdt");
+		if (params.Cdn)             WriteScalarHeader(f, "Cdn");
+		if (params.Aext)            WriteScalarHeader(f, "Aext");
+		if (params.rho_f)           WriteScalarHeader(f, "rho_f");
+		if (params.depth)           WriteScalarHeader(f, "depth");
+		if (params.Un_)             WriteScalarHeader(f, "Un_");
+		if (params.un_scalar)       WriteScalarHeader(f, "un_");
+		if (params.Ut_)             WriteScalarHeader(f, "Ut_");
+		if (params.ut_scalar)       WriteScalarHeader(f, "ut_");
+		if (params.C1t)             WriteScalarHeader(f, "C1t");
+		if (params.C1n)             WriteScalarHeader(f, "C1n");
+		if (params.l_factor)        WriteScalarHeader(f, "l_factor");
+		if (params.mult)            WriteScalarHeader(f, "mult");
+		if (params.t1)              WriteScalarHeader(f, "t1");
+		if (params.t2)              WriteScalarHeader(f, "t2");
+		// Matrix* (matriz ï¿½nica)
+		if (params.e3r)             WriteMatHeader(f, "e3r",             e3r);
+		if (params.e3rg)            WriteMatHeader(f, "e3rg",            e3rg);
+		if (params.i_loading)       WriteMatHeader(f, "i_loading",       i_loading);
+		if (params.e_loading)       WriteMatHeader(f, "e_loading",       e_loading);
+		if (params.P_loading)       WriteMatHeader(f, "P_loading",       P_loading);
+		if (params.inertial_loading)WriteMatHeader(f, "inertial_loading",inertial_loading);
+		if (params.morison_loading) WriteMatHeader(f, "morison_loading", morison_loading);
+		if (params.transform3)      WriteMatHeader(f, "transform3",      transform3);
+		if (params.Mr_mat)          WriteMatHeader(f, "Mr",              Mr);
+		if (params.Jr_mat)          WriteMatHeader(f, "Jr",              Jr);
+		if (params.stiffness_mat)   WriteMatHeader(f, "stiffness",       stiffness);
+		if (params.D_mat)           WriteMatHeader(f, "D",               D);
+		if (params.I3)              WriteMatHeader(f, "I3",              I3);
+		if (params.B1)              WriteMatHeader(f, "B1",              B1);
+		if (params.Qtransp)         WriteMatHeader(f, "Qtransp",         Qtransp);
+		if (params.B2)              WriteMatHeader(f, "B2",              B2);
+		if (params.B2temp)          WriteMatHeader(f, "B2temp",          B2temp);
+		if (params.constitutive_stiffness) WriteMatHeader(f, "constitutive_stiffness", constitutive_stiffness);
+		if (params.geometric_stiffness)    WriteMatHeader(f, "geometric_stiffness",    geometric_stiffness);
+		if (params.loading_stiffness)      WriteMatHeader(f, "loading_stiffness",      loading_stiffness);
+		if (params.mass)            WriteMatHeader(f, "mass",            mass);
+		if (params.damping)         WriteMatHeader(f, "damping",         damping);
+		if (params.mass_modal)      WriteMatHeader(f, "mass_modal",      mass_modal);
+		if (params.damping_modal)   WriteMatHeader(f, "damping_modal",   damping_modal);
+		if (params.damping_loading) WriteMatHeader(f, "damping_loading", damping_loading);
+		if (params.rayleigh_damping)WriteMatHeader(f, "rayleigh_damping",rayleigh_damping);
+		if (params.transform)       WriteMatHeader(f, "transform",       transform);
+		if (params.V_alpha_dz_n)    WriteMatHeader(f, "V_alpha_dz_n",   V_alpha_dz_n);
+		if (params.V_alpha_m)       WriteMatHeader(f, "V_alpha_m",      V_alpha_m);
+		if (params.d_V_dalpha_apha_m) WriteMatHeader(f, "d_V_dalpha_apha_m", d_V_dalpha_apha_m);
+		if (params.G_d_u_alpha)     WriteMatHeader(f, "G_d_u_alpha",    G_d_u_alpha);
+		if (params.G_d_u_alpha_transp) WriteMatHeader(f, "G_d_u_alpha_transp", G_d_u_alpha_transp);
+		if (params.G_alpha_alpha)   WriteMatHeader(f, "G_alpha_alpha",  G_alpha_alpha);
+		if (params.G_alpha_d_alpha) WriteMatHeader(f, "G_alpha_d_alpha",G_alpha_d_alpha);
+		if (params.G_alpha_d_alpha_transp) WriteMatHeader(f, "G_alpha_d_alpha_transp", G_alpha_d_alpha_transp);
+		if (params.B_mat)           WriteMatHeader(f, "B",               B);
+		if (params.G_mat)           WriteMatHeader(f, "G",               G);
+		if (params.K1ua)            WriteMatHeader(f, "K1ua",            K1ua);
+		if (params.K1aa)            WriteMatHeader(f, "K1aa",            K1aa);
+		if (params.K2ua)            WriteMatHeader(f, "K2ua",            K2ua);
+		if (params.K2au)            WriteMatHeader(f, "K2au",            K2au);
+		if (params.Kext)            WriteMatHeader(f, "Kext",            Kext);
+		if (params.O1)              WriteMatHeader(f, "O1",              O1);
+		fprintf(f, "\n");
+	}
+
+	// Dados
+	fprintf(f, "%.6e\t", time);
+	// Componentes individuais de sigma_r
+	if (params.nx1r) fprintf(f, "%.6e\t", (*sigma_r[0])(0, 0)); if (params.ny1r) fprintf(f, "%.6e\t", (*sigma_r[0])(1, 0)); if (params.nz1r) fprintf(f, "%.6e\t", (*sigma_r[0])(2, 0));
+	if (params.mx1r) fprintf(f, "%.6e\t", (*sigma_r[0])(3, 0)); if (params.my1r) fprintf(f, "%.6e\t", (*sigma_r[0])(4, 0)); if (params.mz1r) fprintf(f, "%.6e\t", (*sigma_r[0])(5, 0));
+	if (params.nx2r) fprintf(f, "%.6e\t", (*sigma_r[1])(0, 0)); if (params.ny2r) fprintf(f, "%.6e\t", (*sigma_r[1])(1, 0)); if (params.nz2r) fprintf(f, "%.6e\t", (*sigma_r[1])(2, 0));
+	if (params.mx2r) fprintf(f, "%.6e\t", (*sigma_r[1])(3, 0)); if (params.my2r) fprintf(f, "%.6e\t", (*sigma_r[1])(4, 0)); if (params.mz2r) fprintf(f, "%.6e\t", (*sigma_r[1])(5, 0));
+	// Matrix** (2 GPs)
+	if (params.sigma_r)         WriteGPMatData(f, sigma_r,       n_gp);
+	if (params.eta_r)           WriteGPMatData(f, eta_r,         n_gp);
+	if (params.kappa_r)         WriteGPMatData(f, kappa_r,       n_gp);
+	if (params.epsilon_r)       WriteGPMatData(f, epsilon_r,     n_gp);
+	if (params.n_r)             WriteGPMatData(f, n_r,           n_gp);
+	if (params.m_r)             WriteGPMatData(f, m_r,           n_gp);
+	if (params.n_global)        WriteGPMatData(f, n,             n_gp);
+	if (params.m_global)        WriteGPMatData(f, m,             n_gp);
+	if (params.alpha_delta)     WriteGPMatData(f, alpha_delta,   n_gp);
+	if (params.d_alpha_delta)   WriteGPMatData(f, d_alpha_delta, n_gp);
+	if (params.u_delta)         WriteGPMatData(f, u_delta,       n_gp);
+	if (params.d_u_delta)       WriteGPMatData(f, d_u_delta,     n_gp);
+	if (params.A_delta)         WriteGPMatData(f, A_delta,       n_gp);
+	if (params.Q_delta)         WriteGPMatData(f, Q_delta,       n_gp);
+	if (params.d_z)             WriteGPMatData(f, d_z,           n_gp);
+	if (params.d_Z)             WriteGPMatData(f, d_Z,           n_gp);
+	if (params.Xi_delta)        WriteGPMatData(f, Xi_delta,      n_gp);
+	if (params.d_A_delta)       WriteGPMatData(f, d_A_delta,     n_gp);
+	if (params.d_Xi_delta)      WriteGPMatData(f, d_Xi_delta,    n_gp);
+	if (params.N_gp)            WriteGPMatData(f, N,             n_gp);
+	if (params.deltaN_gp)       WriteGPMatData(f, deltaN,        n_gp);
+	if (params.e3ip)            WriteGPMatData(f, e3ip,          n_gp);
+	if (params.zi)              WriteGPMatData(f, zi,            n_gp);
+	if (params.vel)             WriteGPMatData(f, vel,           n_gp);
+	if (params.velr)            WriteGPMatData(f, velr,          n_gp);
+	if (params.element_vel)     WriteGPMatData(f, element_vel,   n_gp);
+	if (params.ut_gp)           WriteGPMatData(f, ut,            n_gp);
+	if (params.un_gp)           WriteGPMatData(f, un,            n_gp);
+	if (params.d_e3_d_alpha)    WriteGPMatData(f, d_e3_d_alpha,  n_gp);
+	if (params.Lt)              WriteGPMatData(f, Lt,            n_gp);
+	if (params.Ln)              WriteGPMatData(f, Ln,            n_gp);
+	if (params.L_u_alpha)       WriteGPMatData(f, L_u_alpha,     n_gp);
+	if (params.f_current)       WriteGPMatData(f, f_current,     n_gp);
+	if (params.L_gp)            WriteGPMatData(f, L,             n_gp);
+	if (params.t_e)             WriteGPMatData(f, t_e,           n_gp);
+	if (params.n_e)             WriteGPMatData(f, n_e,           n_gp);
+	if (params.vtr)             WriteGPMatData(f, vtr,           n_gp);
+	if (params.vnr)             WriteGPMatData(f, vnr,           n_gp);
+	if (params.Mdt)             WriteGPMatData(f, Mdt,           n_gp);
+	if (params.Mdn)             WriteGPMatData(f, Mdn,           n_gp);
+	if (params.Md2)             WriteGPMatData(f, Md2,           n_gp);
+	if (params.kip)             WriteGPMatData(f, kip,           n_gp);
+	if (params.temp_f)          WriteGPMatData(f, temp_f,        n_gp);
+	if (params.temp_m)          WriteGPMatData(f, temp_m,        n_gp);
+	if (params.temp_l)          WriteGPMatData(f, temp_l,        n_gp);
+	if (params.Kip)             WriteGPMatData(f, Kip,           n_gp);
+	if (params.E3ip)            WriteGPMatData(f, E3ip,          n_gp);
+	if (params.UpsilonN)        WriteGPMatData(f, UpsilonN,      n_gp);
+	if (params.Xi_dot)          WriteGPMatData(f, Xi_dot,        n_gp);
+	if (params.Mip_gp)          WriteGPMatData(f, Mip,           n_gp);
+	if (params.Jip_gp)          WriteGPMatData(f, Jip,           n_gp);
+	if (params.M_dyn)           WriteGPMatData(f, M,             n_gp);
+	if (params.Md1)             WriteGPMatData(f, Md1,           n_gp);
+	if (params.N1)              WriteGPDoubleData(f, N1,                n_gp);
+	if (params.N2)              WriteGPDoubleData(f, N2,                n_gp);
+	if (params.N3)              WriteGPDoubleData(f, N3,                n_gp);
+	if (params.dN1)             WriteGPDoubleData(f, dN1,               n_gp);
+	if (params.dN2)             WriteGPDoubleData(f, dN2,               n_gp);
+	if (params.dN3)             WriteGPDoubleData(f, dN3,               n_gp);
+	if (params.csi)             WriteGPDoubleData(f, csi,               n_gp);
+	// double (escalar)
+	if (params.length)          WriteScalarData(f, length);
+	if (params.jacobian)        WriteScalarData(f, jacobian);
+	if (params.alpha1)          WriteScalarData(f, alpha1);
+	if (params.p0i)             WriteScalarData(f, p0i);
+	if (params.p0e)             WriteScalarData(f, p0e);
+	if (params.rhoi)            WriteScalarData(f, rhoi);
+	if (params.rhoe)            WriteScalarData(f, rhoe);
+	if (params.Aint)            WriteScalarData(f, Aint);
+	if (params.rho_adt)         WriteScalarData(f, rho_adt);
+	if (params.rho_adn)         WriteScalarData(f, rho_adn);
+	if (params.load_multiplier) WriteScalarData(f, load_multiplier);
+	if (params.alpha_escalar_delta) WriteScalarData(f, alpha_escalar_delta);
+	if (params.g)               WriteScalarData(f, g);
+	if (params.signal_t)        WriteScalarData(f, signal_t);
+	if (params.Cdt)             WriteScalarData(f, Cdt);
+	if (params.Cdn)             WriteScalarData(f, Cdn);
+	if (params.Aext)            WriteScalarData(f, Aext);
+	if (params.rho_f)           WriteScalarData(f, rho_f);
+	if (params.depth)           WriteScalarData(f, depth);
+	if (params.Un_)             WriteScalarData(f, Un_);
+	if (params.un_scalar)       WriteScalarData(f, un_);
+	if (params.Ut_)             WriteScalarData(f, Ut_);
+	if (params.ut_scalar)       WriteScalarData(f, ut_);
+	if (params.C1t)             WriteScalarData(f, C1t);
+	if (params.C1n)             WriteScalarData(f, C1n);
+	if (params.l_factor)        WriteScalarData(f, l_factor);
+	if (params.mult)            WriteScalarData(f, mult);
+	if (params.t1)              WriteScalarData(f, (double)t1);
+	if (params.t2)              WriteScalarData(f, (double)t2);
+	// Matrix* (matriz ï¿½nica)
+	if (params.e3r)             WriteMatData(f, e3r);
+	if (params.e3rg)            WriteMatData(f, e3rg);
+	if (params.i_loading)       WriteMatData(f, i_loading);
+	if (params.e_loading)       WriteMatData(f, e_loading);
+	if (params.P_loading)       WriteMatData(f, P_loading);
+	if (params.inertial_loading)WriteMatData(f, inertial_loading);
+	if (params.morison_loading) WriteMatData(f, morison_loading);
+	if (params.transform3)      WriteMatData(f, transform3);
+	if (params.Mr_mat)          WriteMatData(f, Mr);
+	if (params.Jr_mat)          WriteMatData(f, Jr);
+	if (params.stiffness_mat)   WriteMatData(f, stiffness);
+	if (params.D_mat)           WriteMatData(f, D);
+	if (params.I3)              WriteMatData(f, I3);
+	if (params.B1)              WriteMatData(f, B1);
+	if (params.Qtransp)         WriteMatData(f, Qtransp);
+	if (params.B2)              WriteMatData(f, B2);
+	if (params.B2temp)          WriteMatData(f, B2temp);
+	if (params.constitutive_stiffness) WriteMatData(f, constitutive_stiffness);
+	if (params.geometric_stiffness)    WriteMatData(f, geometric_stiffness);
+	if (params.loading_stiffness)      WriteMatData(f, loading_stiffness);
+	if (params.mass)            WriteMatData(f, mass);
+	if (params.damping)         WriteMatData(f, damping);
+	if (params.mass_modal)      WriteMatData(f, mass_modal);
+	if (params.damping_modal)   WriteMatData(f, damping_modal);
+	if (params.damping_loading) WriteMatData(f, damping_loading);
+	if (params.rayleigh_damping)WriteMatData(f, rayleigh_damping);
+	if (params.transform)       WriteMatData(f, transform);
+	if (params.V_alpha_dz_n)    WriteMatData(f, V_alpha_dz_n);
+	if (params.V_alpha_m)       WriteMatData(f, V_alpha_m);
+	if (params.d_V_dalpha_apha_m) WriteMatData(f, d_V_dalpha_apha_m);
+	if (params.G_d_u_alpha)     WriteMatData(f, G_d_u_alpha);
+	if (params.G_d_u_alpha_transp) WriteMatData(f, G_d_u_alpha_transp);
+	if (params.G_alpha_alpha)   WriteMatData(f, G_alpha_alpha);
+	if (params.G_alpha_d_alpha) WriteMatData(f, G_alpha_d_alpha);
+	if (params.G_alpha_d_alpha_transp) WriteMatData(f, G_alpha_d_alpha_transp);
+	if (params.B_mat)           WriteMatData(f, B);
+	if (params.G_mat)           WriteMatData(f, G);
+	if (params.K1ua)            WriteMatData(f, K1ua);
+	if (params.K1aa)            WriteMatData(f, K1aa);
+	if (params.K2ua)            WriteMatData(f, K2ua);
+	if (params.K2au)            WriteMatData(f, K2au);
+	if (params.Kext)            WriteMatData(f, Kext);
+	if (params.O1)              WriteMatData(f, O1);
+	fprintf(f, "\n");
 }
 
 //Monta elementos
@@ -879,16 +1274,16 @@ void Pipe_1::Mount()
 		(*d_u_delta[gauss])(2, 0) = (db.nodes[nodes[0] - 1]->displacements[2])* dN1[gauss] +
 									(db.nodes[nodes[1] - 1]->displacements[2])* dN2[gauss] +
 									(db.nodes[nodes[2] - 1]->displacements[2])* dN3[gauss] ;
-		//Transformação para o sistema local do elemento
+		//Transformaï¿½ï¿½o para o sistema local do elemento
 		*alpha_delta[gauss] = (*transform3)*(*alpha_delta[gauss]);
 		*d_alpha_delta[gauss] = (*transform3)*(*d_alpha_delta[gauss]);
 		*u_delta[gauss] = (*transform3)*(*u_delta[gauss]);
 		*d_u_delta[gauss] = (*transform3)*(*d_u_delta[gauss]);
-		//Calculo de tensores de rotação e outros
+		//Calculo de tensores de rotaï¿½ï¿½o e outros
 		alpha_escalar_delta = norm(*alpha_delta[gauss]);																	//Valor escalar do parametro alpha
 		*A_delta[gauss] = skew(*alpha_delta[gauss]);																		//Matriz A_delta
-		g = 4.0 / (4.0 + alpha_escalar_delta*alpha_escalar_delta);															//função g(alpha) - em algumas ref. tb. chamado de h(alpha)
-		*Q_delta[gauss] = *I3 + g*(*A_delta[gauss] + 0.5*((*A_delta[gauss])*(*A_delta[gauss])));							//Tensor de rotação
+		g = 4.0 / (4.0 + alpha_escalar_delta*alpha_escalar_delta);															//funï¿½ï¿½o g(alpha) - em algumas ref. tb. chamado de h(alpha)
+		*Q_delta[gauss] = *I3 + g*(*A_delta[gauss] + 0.5*((*A_delta[gauss])*(*A_delta[gauss])));							//Tensor de rotaï¿½ï¿½o
 		*Xi_delta[gauss] = g*(*I3 + 0.5*(*A_delta[gauss]));
 		*d_A_delta[gauss] = skew(*d_alpha_delta[gauss]);																	//Derivada do vetor d_alpha
 		*d_Xi_delta[gauss] = -0.5*g*((dot(*alpha_delta[gauss], *d_alpha_delta[gauss]))*(*Xi_delta[gauss]) - (*d_A_delta[gauss]));		//Derivada do tensor Xi
@@ -914,17 +1309,17 @@ void Pipe_1::Mount()
 		(*B) = (*B1)*(*B2);
 		//Matriz de rigidez constitutiva
 		(*constitutive_stiffness) = (transp(*deltaN[gauss])) * ((((transp(*B)) * (*D)) * (*B)) * (*deltaN[gauss]));
-		//Deformações retro-rotacionadas
+		//Deformaï¿½ï¿½es retro-rotacionadas
 		*eta_r[gauss] = transp((*Q_delta[gauss]) * (*lag_save->Q_i[gauss]))*(*d_z[gauss]) - *e3r;
 		*kappa_r[gauss] = transp(*lag_save->Q_i[gauss])*transp(*Xi_delta[gauss])*(*d_alpha_delta[gauss]) + (*lag_save->kappa_i_ref[gauss]);
-		//Vetor deformação generalizada retro-rotacionada
+		//Vetor deformaï¿½ï¿½o generalizada retro-rotacionada
 		(*epsilon_r[gauss])(0, 0) = (*eta_r[gauss])(0, 0);
 		(*epsilon_r[gauss])(1, 0) = (*eta_r[gauss])(1, 0);
 		(*epsilon_r[gauss])(2, 0) = (*eta_r[gauss])(2, 0);
 		(*epsilon_r[gauss])(3, 0) = (*kappa_r[gauss])(0, 0);
 		(*epsilon_r[gauss])(4, 0) = (*kappa_r[gauss])(1, 0);
 		(*epsilon_r[gauss])(5, 0) = (*kappa_r[gauss])(2, 0);
-		//Forças e momentos internos retro-rotacionados
+		//Forï¿½as e momentos internos retro-rotacionados
 		(*sigma_r[gauss]) = (*D)*(*epsilon_r[gauss]);
 		(*n_r[gauss])(0, 0) = (*sigma_r[gauss])(0, 0);
 		(*n_r[gauss])(1, 0) = (*sigma_r[gauss])(1, 0);
@@ -932,7 +1327,7 @@ void Pipe_1::Mount()
 		(*m_r[gauss])(0, 0) = (*sigma_r[gauss])(3, 0);
 		(*m_r[gauss])(1, 0) = (*sigma_r[gauss])(4, 0);
 		(*m_r[gauss])(2, 0) = (*sigma_r[gauss])(5, 0);
-		//Forças e momentos internos não retro-rotacionados
+		//Forï¿½as e momentos internos nï¿½o retro-rotacionados
 		(*n[gauss]) = ((*Q_delta[gauss])* (*lag_save->Q_i[gauss]))*(*n_r[gauss]);
 		(*m[gauss]) = ((*Q_delta[gauss])* (*lag_save->Q_i[gauss]))*(*m_r[gauss]);
 		//Calculo da matriz G
@@ -964,21 +1359,21 @@ void Pipe_1::Mount()
 		(*geometric_stiffness) = (transp(*deltaN[gauss]))*((*G)*(*deltaN[gauss]));
 		//Atualiza a matriz de rigidez do elemento
 		(*stiffness) = (*stiffness) + (alpha1*jacobian)*((*constitutive_stiffness) + (*geometric_stiffness));
-		//Esforços internos calculados
+		//Esforï¿½os internos calculados
 		(*i_loading) = (*i_loading) + (alpha1*jacobian)*(((transp(*deltaN[gauss])) * (transp(*B))) * (*sigma_r[gauss]));
 	}//end of gauss loop
-	//Transformações de coordenadas, para o sistema global - matriz de rigidez
+	//Transformaï¿½ï¿½es de coordenadas, para o sistema global - matriz de rigidez
 	(*stiffness) = (transp(*transform)*(*stiffness))*(*transform);
 	(*i_loading) = transp(*transform)*(*i_loading);
 }
 //Monta carregamentos associados ao elemento
 void Pipe_1::MountElementLoads()
 {
-	MountFieldLoading();		//Inclui atualizações no vetor e_loading
-	MountSeaCurrentLoading();	//Inclui atualizações no vetor e_loading e matriz loading_stiffness e stiffness
-	(*P_loading) = (*i_loading) - (*e_loading);		//Vetor esforço desbalanceado
+	MountFieldLoading();		//Inclui atualizaï¿½ï¿½es no vetor e_loading
+	MountSeaCurrentLoading();	//Inclui atualizaï¿½ï¿½es no vetor e_loading e matriz loading_stiffness e stiffness
+	(*P_loading) = (*i_loading) - (*e_loading);		//Vetor esforï¿½o desbalanceado
 }
-//Monta matriz de transformação de coordenadas
+//Monta matriz de transformaï¿½ï¿½o de coordenadas
 void Pipe_1::TransformMatrix()
 {
 	Matrix e1(3);
@@ -990,7 +1385,7 @@ void Pipe_1::TransformMatrix()
 	Matrix e1r = *db.CS[cs - 1]->E1;
 	Matrix e2r = *db.CS[cs - 1]->E2;
 	Matrix e3r = *db.CS[cs - 1]->E3;
-	//Preenche a matriz de transformação de coordenadas
+	//Preenche a matriz de transformaï¿½ï¿½o de coordenadas
 	for (int i = 0; i<18; i = i + 3)
 	{
 		//Preenche tambem a matriz transform3
@@ -1023,17 +1418,17 @@ void Pipe_1::TransformMatrix()
 	}
 }
 
-//Preenche a contribuição do elemento nas matrizes globais
+//Preenche a contribuiï¿½ï¿½o do elemento nas matrizes globais
 void Pipe_1::MountGlobal()
 {
-	//Variaveis temporarias para salvar a indexação global dos graus de liberdade a serem setados na matriz de rigidez global
+	//Variaveis temporarias para salvar a indexaï¿½ï¿½o global dos graus de liberdade a serem setados na matriz de rigidez global
 	int GL_global_1 = 0;
 	int GL_global_2 = 0;
 	double anterior = 0;
 	for (int i = 0; i<18; i++)
 	{
-		//////////////MONTAGEM DO VETOR DE ESFORÇOS DESBALANCEADOS//////////////////
-		//Toma do vetor de GL globais, a indexação de cada grau de liberdade global
+		//////////////MONTAGEM DO VETOR DE ESFORï¿½OS DESBALANCEADOS//////////////////
+		//Toma do vetor de GL globais, a indexaï¿½ï¿½o de cada grau de liberdade global
 		if (i<6)
 			GL_global_1 = db.nodes[nodes[0] - 1]->GLs[i];
 		if (i > 5 && i < 12)
@@ -1057,7 +1452,7 @@ void Pipe_1::MountGlobal()
 		for (int j = 0; j<18; j++)
 		{
 			//////////////////////MONTAGEM DA MATRIZ DE RIGIDEZ/////////////////////////
-			//Toma do vetor de GL globais, a indexação de cada grau de liberdade global
+			//Toma do vetor de GL globais, a indexaï¿½ï¿½o de cada grau de liberdade global
 			if (j<6)
 				GL_global_2 = db.nodes[nodes[0] - 1]->GLs[j];
 			if (j > 5 && j < 12)
@@ -1088,17 +1483,17 @@ void Pipe_1::MountGlobal()
 		}
 	}
 }
-//Salva variaveis nos pontos de Gauss uteis para descrição lagrangiana atualizada
+//Salva variaveis nos pontos de Gauss uteis para descriï¿½ï¿½o lagrangiana atualizada
 void Pipe_1::SaveLagrange()
 {
 	//Loop nos pontos de Gauss
 	for (int gauss = 0; gauss < 2; gauss++)
 	{
-		(*lag_save->Q_i[gauss]) = (*Q_delta[gauss])*(*lag_save->Q_i[gauss]);										//Tensor de rotação
+		(*lag_save->Q_i[gauss]) = (*Q_delta[gauss])*(*lag_save->Q_i[gauss]);										//Tensor de rotaï¿½ï¿½o
 		(*lag_save->u_i[gauss]) = (*lag_save->u_i[gauss]) + *u_delta[gauss];										//Deslocamento
-		(*lag_save->kappa_i_ref[gauss]) = *kappa_r[gauss];															//Rotação por unidade de comprimento 
+		(*lag_save->kappa_i_ref[gauss]) = *kappa_r[gauss];															//Rotaï¿½ï¿½o por unidade de comprimento 
 		(*lag_save->alpha_i[gauss]) = 4.0 / (4.0 - dot(*alpha_delta[gauss], *lag_save->alpha_i[gauss]))* (*alpha_delta[gauss] +
-			(*lag_save->alpha_i[gauss]) + 0.5*cross(*alpha_delta[gauss], *lag_save->alpha_i[gauss]));				//Vetor rotação de Rodrigues
+			(*lag_save->alpha_i[gauss]) + 0.5*cross(*alpha_delta[gauss], *lag_save->alpha_i[gauss]));				//Vetor rotaï¿½ï¿½o de Rodrigues
 		(*lag_save->dz_i[gauss]) = *d_z[gauss];
 	}
 }
@@ -1119,26 +1514,26 @@ void Pipe_1::PreCalc()
 	(*B2)(0, 0) = 1.0;
 	(*B2)(1, 1) = 1.0;
 	(*B2)(2, 2) = 1.0;
-	//Monta as matrizes de rotação
+	//Monta as matrizes de rotaï¿½ï¿½o
 	TransformMatrix();
-	//Versor e3r (configuração de referência) - escrito no sistema local do elemento
+	//Versor e3r (configuraï¿½ï¿½o de referï¿½ncia) - escrito no sistema local do elemento
 	(*e3r)(0, 0) = db.nodes[nodes[2] - 1]->ref_coordinates[0] - db.nodes[nodes[0] - 1]->ref_coordinates[0];
 	(*e3r)(1, 0) = db.nodes[nodes[2] - 1]->ref_coordinates[1] - db.nodes[nodes[0] - 1]->ref_coordinates[1];
 	(*e3r)(2, 0) = db.nodes[nodes[2] - 1]->ref_coordinates[2] - db.nodes[nodes[0] - 1]->ref_coordinates[2];
-	*e3r = (1.0 / (norm(*e3r)))*(*e3r);							//Normalização
-	*e3rg = *e3r;												//Cópia do e3r (preservado no sistema global)
+	*e3r = (1.0 / (norm(*e3r)))*(*e3r);							//Normalizaï¿½ï¿½o
+	*e3rg = *e3r;												//Cï¿½pia do e3r (preservado no sistema global)
 	*e3r = (*transform3)*(*e3r);								//e3r escrito no sistema local do elemento
-	//Massa por unidade de comprimento na configuração de referência
+	//Massa por unidade de comprimento na configuraï¿½ï¿½o de referï¿½ncia
 	(*Mr)(0, 0) = db.pipe_sections[section - 1]->Rho;
 	(*Mr)(1, 1) = db.pipe_sections[section - 1]->Rho;
 	(*Mr)(2, 2) = db.pipe_sections[section - 1]->Rho;
 	Mr->MatrixToPtr(pMr, 3);//salvando ptr para uso na dinamica
-	//Inercia por unidade de comprimento na configuração de referência
+	//Inercia por unidade de comprimento na configuraï¿½ï¿½o de referï¿½ncia
 	(*Jr)(0, 0) = (db.pipe_sections[section - 1]->Rho*((db.pipe_sections[section - 1]->De / 2.0)*(db.pipe_sections[section - 1]->De / 2.0) - (db.pipe_sections[section - 1]->Di / 2.0)*(db.pipe_sections[section - 1]->Di / 2.0)) / 4.0);
 	(*Jr)(1, 1) = (db.pipe_sections[section - 1]->Rho*((db.pipe_sections[section - 1]->De / 2.0)*(db.pipe_sections[section - 1]->De / 2.0) - (db.pipe_sections[section - 1]->Di / 2.0)*(db.pipe_sections[section - 1]->Di / 2.0)) / 4.0);
 	(*Jr)(2, 2) = (db.pipe_sections[section - 1]->Rho*((db.pipe_sections[section - 1]->De / 2.0)*(db.pipe_sections[section - 1]->De / 2.0) - (db.pipe_sections[section - 1]->Di / 2.0)*(db.pipe_sections[section - 1]->Di / 2.0)) / 2.0);
 	Jr->MatrixToPtr(pJr, 3);//salvando ptr para uso na dinamica
-	//Termos de transporte - alterar em situações em que o baricentro não e o polo utilizado no calculo do momento de inercia
+	//Termos de transporte - alterar em situaï¿½ï¿½es em que o baricentro nï¿½o e o polo utilizado no calculo do momento de inercia
 	(*br)(0, 0) = 0.0;
 	(*br)(1, 0) = 0.0;
 	(*br)(2, 0) = 0.0;
@@ -1289,7 +1684,7 @@ void Pipe_1::MountFieldLoading()
 			{
 				if (db.environment->ocean_data_exist == true)
 				{
-					//Posição do ponto de Gauss
+					//Posiï¿½ï¿½o do ponto de Gauss
 					(*zi[gauss])(0, 0) = (db.nodes[nodes[0] - 1]->copy_coordinates[0])* N1[gauss] +
 						(db.nodes[nodes[1] - 1]->copy_coordinates[0])* N2[gauss] +
 						(db.nodes[nodes[2] - 1]->copy_coordinates[0])* N3[gauss] +
@@ -1338,7 +1733,7 @@ void Pipe_1::MountFieldLoading()
 	}
 }
 
-//Monta a parte estatica dos esforços de Morison - correnteza maritima
+//Monta a parte estatica dos esforï¿½os de Morison - correnteza maritima
 void Pipe_1::MountSeaCurrentLoading()
 {
 	if (db.environment_exist == true)
@@ -1372,7 +1767,7 @@ void Pipe_1::MountSeaCurrentLoading()
 				//Loop nos pontos de Gauss
 				for (int gauss = 0; gauss < 2; gauss++)
 				{
-					//Posição do ponto de Gauss
+					//Posiï¿½ï¿½o do ponto de Gauss
 					(*zi[gauss])(0, 0) = (db.nodes[nodes[0] - 1]->copy_coordinates[0])* N1[gauss] +
 						(db.nodes[nodes[1] - 1]->copy_coordinates[0])* N2[gauss] +
 						(db.nodes[nodes[2] - 1]->copy_coordinates[0])* N3[gauss] +
@@ -1431,17 +1826,17 @@ void Pipe_1::MountSeaCurrentLoading()
 				
 				}//end of gauss loop
 				(*stiffness) = (*stiffness) - transp(*transform)*(*loading_stiffness)*(*transform);	//Acrescimo na matriz de rigidez
-				(*e_loading) = (*e_loading) + transp(*transform)*(*morison_loading);				//Forças de Morison
+				(*e_loading) = (*e_loading) + transp(*transform)*(*morison_loading);				//Forï¿½as de Morison
 			}
 		}
 	}
 }
 
-//Monta carregamentos de pressão interna/externa no tubo
+//Monta carregamentos de pressï¿½o interna/externa no tubo
 void Pipe_1::MountPipeSpecialLoads(int l_number)
 {
-	//Função para montar carregamentos de pressão em tubos. Atende simulações estatica e dinamica
-	//////////////////Efeito da Pressão////////////////////////////
+	//Funï¿½ï¿½o para montar carregamentos de pressï¿½o em tubos. Atende simulaï¿½ï¿½es estatica e dinamica
+	//////////////////Efeito da Pressï¿½o////////////////////////////
 	p0i = db.loads[l_number - 1]->GetValueAt(db.last_converged_time + db.current_time_step, 0);
 	p0e = db.loads[l_number - 1]->GetValueAt(db.last_converged_time + db.current_time_step, 1);
 	rhoi = db.loads[l_number - 1]->GetValueAt(db.last_converged_time + db.current_time_step, 2);
@@ -1453,13 +1848,13 @@ void Pipe_1::MountPipeSpecialLoads(int l_number)
 	//Loop nos pontos de Gauss
 	for (int gauss = 0; gauss < 2; gauss++)
 	{
-		*kip[gauss] = ((*Q_delta[gauss])* (*lag_save->Q_i[gauss]))*(*kappa_r[gauss]);	//Rotação especifica no ponto de gauss no instante i+1 (Lag. Atualizada)
-		*e3ip[gauss] = ((*Q_delta[gauss])* (*lag_save->Q_i[gauss]))*(*e3r);				//Orientação do elemento no ponto de gauss no instante i+1 (Lag. Atualizada)
-		//Forças - sistema local (elemento)
+		*kip[gauss] = ((*Q_delta[gauss])* (*lag_save->Q_i[gauss]))*(*kappa_r[gauss]);	//Rotaï¿½ï¿½o especifica no ponto de gauss no instante i+1 (Lag. Atualizada)
+		*e3ip[gauss] = ((*Q_delta[gauss])* (*lag_save->Q_i[gauss]))*(*e3r);				//Orientaï¿½ï¿½o do elemento no ponto de gauss no instante i+1 (Lag. Atualizada)
+		//Forï¿½as - sistema local (elemento)
 		*temp_f[gauss] = -p0i*Aint*cross(*kip[gauss], *e3ip[gauss]);
 		//Momentos - sistema local (elemento)
 		*temp_m[gauss] = -p0i*Aint*transp(*Xi_delta[gauss])*cross(*d_z[gauss], *e3ip[gauss]);
-		//Vetor de esforços externos generalizados - sistema local (elemento)
+		//Vetor de esforï¿½os externos generalizados - sistema local (elemento)
 		(*temp_l[gauss])(0, 0) = (*temp_f[gauss])(0, 0);
 		(*temp_l[gauss])(1, 0) = (*temp_f[gauss])(1, 0);
 		(*temp_l[gauss])(2, 0) = (*temp_f[gauss])(2, 0);
@@ -1486,9 +1881,9 @@ void Pipe_1::MountPipeSpecialLoads(int l_number)
 		for (int j = 0; j < 3; j++)
 			(*Kext)(i + 3, j + 6) = (*K2au)(i, j);
 		//Carregamentos no elemento
-		(*P_loading) = (*P_loading) - mult* transp(*transform)*(transp(*N[gauss]))*(*temp_l[gauss]);	//Esforço desbalanceado
-		(*e_loading) = (*e_loading) + mult* transp(*transform)*(transp(*N[gauss]))*(*temp_l[gauss]);	//Esforço externo
-		//Contribuição para a matriz de rigidez
+		(*P_loading) = (*P_loading) - mult* transp(*transform)*(transp(*N[gauss]))*(*temp_l[gauss]);	//Esforï¿½o desbalanceado
+		(*e_loading) = (*e_loading) + mult* transp(*transform)*(transp(*N[gauss]))*(*temp_l[gauss]);	//Esforï¿½o externo
+		//Contribuiï¿½ï¿½o para a matriz de rigidez
 		(*stiffness) = (*stiffness) - mult*p0i*Aint* transp(*transform) * ((transp(*N[gauss]))*(*Kext)*(*UpsilonN[gauss])) * (*transform);
 	}
 }
@@ -1536,8 +1931,8 @@ void Pipe_1::MountMassModal()
 	{
 		if (db.environment_exist == true && db.environment->ocean_data_exist == true && db.environment->g_exist)
 		{
-			//Avalia se o tubo esta imerso ou não para modificar a massa adicional
-			//Posição do ponto de Gauss
+			//Avalia se o tubo esta imerso ou nï¿½o para modificar a massa adicional
+			//Posiï¿½ï¿½o do ponto de Gauss
 			(*zi[gauss])(0, 0) = (db.nodes[nodes[0] - 1]->copy_coordinates[0])* N1[gauss] +
 				(db.nodes[nodes[1] - 1]->copy_coordinates[0])* N2[gauss] +
 				(db.nodes[nodes[2] - 1]->copy_coordinates[0])* N3[gauss] +
@@ -1561,14 +1956,14 @@ void Pipe_1::MountMassModal()
 			depth = dot((*zi[gauss] - db.environment->surface_position), db.environment->G)*(1.0 / norm(db.environment->G));
 			if (depth > 0)
 			{
-				//Massa por unidade de comprimento na configuração de referência
+				//Massa por unidade de comprimento na configuraï¿½ï¿½o de referï¿½ncia
 				(*Mr)(0, 0) = db.pipe_sections[section - 1]->Rho + rho_adn;
 				(*Mr)(1, 1) = db.pipe_sections[section - 1]->Rho + rho_adn;
 				(*Mr)(2, 2) = db.pipe_sections[section - 1]->Rho + rho_adt;
 			}
 			else
 			{
-				//Massa por unidade de comprimento na configuração de referência
+				//Massa por unidade de comprimento na configuraï¿½ï¿½o de referï¿½ncia
 				(*Mr)(0, 0) = db.pipe_sections[section - 1]->Rho;
 				(*Mr)(1, 1) = db.pipe_sections[section - 1]->Rho;
 				(*Mr)(2, 2) = db.pipe_sections[section - 1]->Rho;
@@ -1577,7 +1972,7 @@ void Pipe_1::MountMassModal()
 		}
 		else
 		{
-			//Massa por unidade de comprimento na configuração de referência
+			//Massa por unidade de comprimento na configuraï¿½ï¿½o de referï¿½ncia
 			(*Mr)(0, 0) = db.pipe_sections[section - 1]->Rho;
 			(*Mr)(1, 1) = db.pipe_sections[section - 1]->Rho;
 			(*Mr)(2, 2) = db.pipe_sections[section - 1]->Rho;
@@ -1589,11 +1984,11 @@ void Pipe_1::MountMassModal()
 		DdT->PtrToMatrix(pDdT, 6);
 		(*mass_modal) = (*mass_modal) + (alpha1*jacobian)*transp(*N[gauss])*(*DdT)*(*N[gauss]);
 	}//end of gauss
-	//Conversão para o sistema global
+	//Conversï¿½o para o sistema global
 	(*mass_modal) = (transp(*transform)*(*mass_modal))*(*transform);
 }
 
-//Monta a matriz de amortecimento para realização da analise modal
+//Monta a matriz de amortecimento para realizaï¿½ï¿½o da analise modal
 void Pipe_1::MountDampingModal()
 {
 	zeros(mass_modal);
@@ -1757,8 +2152,8 @@ void Pipe_1::MountMass()
 		ddu_i = (*transform3)*ddu_i;
 		if (db.environment_exist == true && db.environment->ocean_data_exist == true && db.environment->g_exist)
 		{
-			//Avalia se o tubo esta imerso ou não para modificar a massa adicional
-			//Posição do ponto de Gauss
+			//Avalia se o tubo esta imerso ou nï¿½o para modificar a massa adicional
+			//Posiï¿½ï¿½o do ponto de Gauss
 			(*zi[gauss])(0, 0) = (db.nodes[nodes[0] - 1]->copy_coordinates[0])* N1[gauss] +
 				(db.nodes[nodes[1] - 1]->copy_coordinates[0])* N2[gauss] +
 				(db.nodes[nodes[2] - 1]->copy_coordinates[0])* N3[gauss] +
@@ -1782,14 +2177,14 @@ void Pipe_1::MountMass()
 			depth = dot((*zi[gauss] - db.environment->surface_position), db.environment->G)*(1.0 / norm(db.environment->G));
 			if (depth > 0)
 			{
-				//Massa por unidade de comprimento na configuração de referência
+				//Massa por unidade de comprimento na configuraï¿½ï¿½o de referï¿½ncia
 				(*Mr)(0, 0) = db.pipe_sections[section - 1]->Rho + rho_adn;
 				(*Mr)(1, 1) = db.pipe_sections[section - 1]->Rho + rho_adn;
 				(*Mr)(2, 2) = db.pipe_sections[section - 1]->Rho + rho_adt;
 			}
 			else
 			{
-				//Massa por unidade de comprimento na configuração de referência
+				//Massa por unidade de comprimento na configuraï¿½ï¿½o de referï¿½ncia
 				(*Mr)(0, 0) = db.pipe_sections[section - 1]->Rho;
 				(*Mr)(1, 1) = db.pipe_sections[section - 1]->Rho;
 				(*Mr)(2, 2) = db.pipe_sections[section - 1]->Rho;
@@ -1797,7 +2192,7 @@ void Pipe_1::MountMass()
 		}
 		else
 		{
-			//Massa por unidade de comprimento na configuração de referência
+			//Massa por unidade de comprimento na configuraï¿½ï¿½o de referï¿½ncia
 			(*Mr)(0, 0) = db.pipe_sections[section - 1]->Rho;
 			(*Mr)(1, 1) = db.pipe_sections[section - 1]->Rho;
 			(*Mr)(2, 2) = db.pipe_sections[section - 1]->Rho;
@@ -1813,7 +2208,7 @@ void Pipe_1::MountMass()
 		(*inertial_loading) = (*inertial_loading) + (alpha1*jacobian)*transp(*N[gauss])*(*dT);
 		(*mass) = (*mass) + (alpha1*jacobian)*transp(*N[gauss])*(*DdT)*(*N[gauss]);
 	}//end of gauss
-	//Conversão para o sistema global
+	//Conversï¿½o para o sistema global
 	(*inertial_loading) = transp(*transform)*(*inertial_loading);
 	(*mass) = (transp(*transform)*(*mass))*(*transform);
 }
@@ -1830,10 +2225,10 @@ void Pipe_1::MountDamping(bool update_rayleigh)
 			MountMassModal();
 			(*rayleigh_damping) = ptr_sol->alpha*(*mass_modal) + ptr_sol->beta*(*stiffness);
 		}
-		(*damping) = (*damping) + ptr_sol->a4*(*rayleigh_damping);	//Atualizando a matriz de amortecimento - inclusão do efeito de Rayleigh
+		(*damping) = (*damping) + ptr_sol->a4*(*rayleigh_damping);	//Atualizando a matriz de amortecimento - inclusï¿½o do efeito de Rayleigh
 
 		Matrix v_ipp(18);
-		//Calculo dos esforços de amortecimento - utilização de informação das velocidades nos GL do elemento
+		//Calculo dos esforï¿½os de amortecimento - utilizaï¿½ï¿½o de informaï¿½ï¿½o das velocidades nos GL do elemento
 		for (int node = 0; node < 3; node++)
 		{
 			for (int GL = 0; GL<6; GL++)
@@ -1843,20 +2238,20 @@ void Pipe_1::MountDamping(bool update_rayleigh)
 	}
 }
 
-//Composição da forma fraca e operador tangente - contribuições inerciais e amortecimento
+//Composiï¿½ï¿½o da forma fraca e operador tangente - contribuiï¿½ï¿½es inerciais e amortecimento
 void Pipe_1::MountDyn()
 {
 	(*P_loading) = (*P_loading) + (*inertial_loading) + (*damping_loading);
 	(*i_loading) = (*i_loading) + (*inertial_loading) + (*damping_loading);
 	(*stiffness) = (*stiffness) + (*mass) + (*damping);
 }
-//Montagens para analise modal - inserção da matriz de massa e amortecimento na matriz de rigidez para posterior montagem global
+//Montagens para analise modal - inserï¿½ï¿½o da matriz de massa e amortecimento na matriz de rigidez para posterior montagem global
 void Pipe_1::MountDynModal()
 {
 	(*stiffness) = (*mass_modal) + (*damping_modal);
 }
 
-//Calcula as contribuições inerciais para a analise dinamica - inclui todas as contribuições para a forma fraca e para o operador tangente
+//Calcula as contribuiï¿½ï¿½es inerciais para a analise dinamica - inclui todas as contribuiï¿½ï¿½es para a forma fraca e para o operador tangente
 void Pipe_1::EvaluateInertialContributions(double* v, double(*a1)
 	, double(*a2), double(*a3), double(*a4), double(*a5), double(*a6)
 	, double* alphai, double* alphad, double* ui, double* ud, double* omegai

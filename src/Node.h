@@ -1,53 +1,59 @@
 #pragma once
 #include <stdio.h>
+#include "Pipe_1.h"
 #include "Matrix.h"
+#include "MonitorNodesUserDefined.h"
+
+#ifdef I
+#undef I
+#endif
 
 class Node
 {
 public:
 	Node(int e_nGL);
 	~Node();
-	//[0] X - coordenada do nó
-	//[1] Y - coordenada do nó
-	//[2] Z - coordenada do nó
-	//[3] RX - coordenada do nó
-	//[4] RY - coordenada do nó
-	//[5] RZ - coordenada do nó
+	//[0] X - coordenada do nï¿½
+	//[1] Y - coordenada do nï¿½
+	//[2] Z - coordenada do nï¿½
+	//[3] RX - coordenada do nï¿½
+	//[4] RY - coordenada do nï¿½
+	//[5] RZ - coordenada do nï¿½
 
-	double* ref_coordinates;	//Coordenadas do nó na configuração de referência
-	double* copy_coordinates;	//Coordenadas do nó na configuração de cópia (ultima convergida)
-	double* copy_rot_euler;		//Coordenadas de rotação (Euler) do nó na configuração de cópia (ultima convergida)
+	double* ref_coordinates;	//Coordenadas do nï¿½ na configuraï¿½ï¿½o de referï¿½ncia
+	double* copy_coordinates;	//Coordenadas do nï¿½ na configuraï¿½ï¿½o de cï¿½pia (ultima convergida)
+	double* copy_rot_euler;		//Coordenadas de rotaï¿½ï¿½o (Euler) do nï¿½ na configuraï¿½ï¿½o de cï¿½pia (ultima convergida)
 	//double* rot_axes;
-	double* displacements;		//Deslocamentos do nó em relação a ultima cópia de coordenadas
+	double* displacements;		//Deslocamentos do nï¿½ em relaï¿½ï¿½o a ultima cï¿½pia de coordenadas
 	double* vel;				//Velocidades
-	double* copy_vel;			//Velocidades (cópia da ultima convergida)
-	double* accel;				//Acelerações
-	double* copy_accel;			//Acelerações (cópia da ultima convergida)
+	double* copy_vel;			//Velocidades (cï¿½pia da ultima convergida)
+	double* accel;				//Aceleraï¿½ï¿½es
+	double* copy_accel;			//Aceleraï¿½ï¿½es (cï¿½pia da ultima convergida)
 
 	int* constraints;
-	//[0] Constraint em X - restrição do nó
-	//[1] Constraint em Y - restrição do nó
-	//[2] Constraint em Z - restrição do nó
-	//[3] Constraint em RX - restrição do nó
-	//[4] Constraint em RY - restrição do nó
-	//[5] Constraint em RZ - restrição do nó
+	//[0] Constraint em X - restriï¿½ï¿½o do nï¿½
+	//[1] Constraint em Y - restriï¿½ï¿½o do nï¿½
+	//[2] Constraint em Z - restriï¿½ï¿½o do nï¿½
+	//[3] Constraint em RX - restriï¿½ï¿½o do nï¿½
+	//[4] Constraint em RY - restriï¿½ï¿½o do nï¿½
+	//[5] Constraint em RZ - restriï¿½ï¿½o do nï¿½
 
 	int* GLs;
-	//Possui numerações dos graus de liberdade do nó:
+	//Possui numeraï¿½ï¿½es dos graus de liberdade do nï¿½:
 	//Positivo - GL livre
 	//Negativo - GL prescrito
-	//Não ha valor ZERO, tanto os GL livres, como prescritos iniciam sua numeração do numero UM
+	//Nï¿½o ha valor ZERO, tanto os GL livres, como prescritos iniciam sua numeraï¿½ï¿½o do numero UM
 	/*
-	[0] X  -  GL do nó
-	[1] Y  -  GL do nó
-	[2] Z  -  GL do nó
-	[3] RX  -  GL do nó
-	[4] RY  -  GL do nó
-	[5] RZ  -  GL do nó
+	[0] X  -  GL do nï¿½
+	[1] Y  -  GL do nï¿½
+	[2] Z  -  GL do nï¿½
+	[3] RX  -  GL do nï¿½
+	[4] RY  -  GL do nï¿½
+	[5] RZ  -  GL do nï¿½
 	[6]... - outros graus de liberdade possiveis
 	*/
 	int* active_GL;
-	//Possui informações da utilização do GL
+	//Possui informaï¿½ï¿½es da utilizaï¿½ï¿½o do GL
 	/*
 	1 - ativo
 	0 - inativo
@@ -55,22 +61,25 @@ public:
 	int n_GL_free;
 	int n_GL_fixed;
 
-	int number;	//Numero do nó - diretamente relacionado com a indexação do vetor de nós do database - informação redundante para facilitar possiveis verificações
+	int number;	//Numero do nï¿½ - diretamente relacionado com a indexaï¿½ï¿½o do vetor de nï¿½s do database - informaï¿½ï¿½o redundante para facilitar possiveis verificaï¿½ï¿½es
 
 	bool Read(FILE *f);
+	void PreCalc();
 	void Write(FILE *f);
 	void WriteUpdated(FILE *f);
 	void WriteInitialConditions(FILE *f);
 	void WriteResults(FILE *f);
 	void WriteVTK(FILE *f);
 	void WriteMonitor(FILE *f, bool first_record, double time);
+	void WriteMonitorUserDef(FILE *f, bool first_record, double time, const UserDefMonitorParams& params);
 	void SaveConfiguration();
 	void ZeroIC();
 	Matrix InvXi(Matrix& alpha);
 
-	int nGL;	//Numero de graus de liberdade presentes no nó
 
-	//Variaveis internas para conversão de rotação e calculos do monitor
+	int nGL;	//Numero de graus de liberdade presentes no nï¿½
+
+	//Variaveis internas para conversï¿½o de rotaï¿½ï¿½o e calculos do monitor
 	double theta;
 	Matrix* rot_euler;
 	Matrix* rot_rodrigues;
@@ -86,7 +95,7 @@ public:
 	Matrix* I3;
 	bool flag_material_description;
 	bool flag_pseudo_moment;
-	Matrix* Q0; //Descrição material (transformação de coordenadas inicial)
+	Matrix* Q0; //Descriï¿½ï¿½o material (transformaï¿½ï¿½o de coordenadas inicial)
 
 
 	double alpha_escalar;
@@ -111,5 +120,7 @@ public:
 	Matrix* alpha;
 	Matrix* omega;
 	Matrix* domega;
+
+	std::vector<Pipe_1*> attached_pipes;
 };
 
