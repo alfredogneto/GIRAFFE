@@ -279,6 +279,10 @@ void DisplacementField::MountEulerVector(Matrix* euler, Matrix* rodrigues, int t
 	double trQd = Qd(0, 0) + Qd(1, 1) + Qd(2, 2);
 	Matrix skewQd = 0.5 * (Qd - transp(Qd));
 
+	//Preventing numerical errors
+	//When employing a non-identity Q from CS, one can experience such a problem
+	if (trQd > 3.0)
+		trQd = 3.0;
 	//Extraction of euler
 	double theta = 2.0 * asin(sqrt((3.0 - trQd) / 4.0));
 	if (theta != 0.0)
