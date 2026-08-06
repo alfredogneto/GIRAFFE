@@ -3,7 +3,7 @@ name: Deploy documentation to GitHub Pages
 on:
   push:
     branches:
-      - Mac-version
+      - MacVersion
   workflow_dispatch:
 
 permissions:
