@@ -11,14 +11,14 @@
 #include "Node.h"
 
 #include"Database.h"
-//Variaveis globais
+//Global variables
 extern
 Database db;
 
 #define PI 3.1415926535897932384626433832795
 NSSS::NSSS()
 {
-	type_name = new char[20];		//Nome do tipo do contato
+	type_name = new char[20];		//Name of the type of the contact
 	sprintf(type_name, "NSSS");
 	number = 0;
 	n_SS = 0;
@@ -33,7 +33,7 @@ NSSS::NSSS()
 	number_pointwise_interactions = 5;	
 	
 
-	//Abaixo as variaveis que dependem do numero de elementos para serem alocadas - Alocação feita na função Alloc, quando chamada durante o PreCalc
+	//Below the variables that dependem of the number of elements for to be allocated - Allocation done in the function Alloc, when called durante the PreCalc
 	typeOK1 = NULL;
 	typeOK2 = NULL;
 	activate = NULL;
@@ -79,13 +79,13 @@ void NSSS::Alloc()
 		{
 			cd[i][j] = new NSContactData();
 			cd[i][j]->n_solutions = number_pointwise_interactions;
-			//Alocação de cada um dos cd[i][j] sera feita de acordo com a proximidade de contato - função Pinball
+			//Allocation of each a of the cd[i][j] will be done according to the proximidade of contact - function Pinball
 		}
 	}
 	
 	DOFs_surfaces = new int[number_surfaces];
 
-	//Alocação parcial de matrizes
+	//Allocation partial of matrices
 	i_loading = new Matrix***[number_nodes];
 	for (int i = 0; i < number_nodes; i++)
 	{
@@ -134,24 +134,24 @@ void NSSS::Alloc()
 			uS[i][j] = new Matrix(3);
 	}
 
-	//Atribuição de valores iniciais
+	//Assignment of values initial
 	for (int i = 0; i < number_nodes; i++)
 	{
 		for (int j = 0; j < number_surfaces; j++)
 		{
 			activate[i][j] = false;
 			for (int k = 0; k < number_pointwise_interactions; k++)
-				alloc_control[i][j][k] = false;	//Não ha alocação no inicio
+				alloc_control[i][j][k] = false;	//Not there is allocation in the start
 		}
 	}
 	for (int j = 0; j < number_surfaces; j++)
 		DOFs_surfaces[j] = 0;
 }
 
-//Alocação especifica para o contato node_index, surface_index
+//Allocation specifies for the contact node_index, surface_index
 void NSSS::AllocSpecific(int node_index, int surface_index, int sol_index)
 {
-	//Caso não esteja ainda alocado, realiza a alocação
+	//Case not esteja still allocated, performs the allocation
 	if (alloc_control[node_index][surface_index][sol_index] == false)
 	{
 		i_loading[node_index][surface_index][sol_index] = new Matrix(6 + DOFs_surfaces[surface_index]);
@@ -165,10 +165,10 @@ void NSSS::AllocSpecific(int node_index, int surface_index, int sol_index)
 	}
 }
 
-//Liberação especifica para o contato node_index, surface_index
+//Liberação specifies for the contact node_index, surface_index
 void NSSS::FreeSpecific(int node_index, int surface_index, int sol_index)
 {
-	//Caso esteja alocado, realiza a desalocação
+	//Case esteja allocated, performs the desalocação
 	if (alloc_control[node_index][surface_index][sol_index] == true)
 	{
 		delete i_loading[node_index][surface_index][sol_index];
@@ -285,7 +285,7 @@ NSSS::~NSSS()
 
 void NSSS::WriteVTK_XMLRender(FILE *f)
 {
-	//Plota superficies
+	//Plots surfaces
 	int temp_surf = 0;
 	for (int j = 0; j < number_surfaces; j++)
 	{
@@ -297,10 +297,10 @@ void NSSS::WriteVTK_XMLRender(FILE *f)
 
 void NSSS::WriteVTK_XMLForces(FILE *f)
 {
-	//Plotagem de forças de contato
+	//Plotting of contact forces
 	if (db.post_files->WriteContactForces_flag == true)
 	{
-		//vetores para escrita no formato binario - usando a função 'enconde'
+		//vectors for writing in the formato binary - using the function 'enconde'
 		std::vector<float> float_vector;
 		std::vector<int> int_vector;
 		int count = 0;
@@ -316,7 +316,7 @@ void NSSS::WriteVTK_XMLForces(FILE *f)
 		//Opens DataArray
 		fprintf(f, "\t\t\t\t<DataArray type=\"Float32\" NumberOfComponents=\"3\" format=\"binary\">\n");
 		float_vector.clear();
-		//Preenchendo as coordenadas dos pontos
+		//Filling the coordinates of the points
 		for (int surf_index = 0; surf_index < number_surfaces; surf_index++)
 		for (int node_index = 0; node_index < number_nodes; node_index++)
 		for (int sol_index = 0; sol_index < number_pointwise_interactions; sol_index++)
@@ -497,7 +497,7 @@ bool NSSS::Read(FILE *f)
 	}
 	else
 		return false;
-	//Salva a posição (stream)
+	//Saves the position (stream)
 	fpos_t pos;
 	fgetpos(f, &pos);
 	fscanf(f, "%s", s);
@@ -518,7 +518,7 @@ void NSSS::Write(FILE *f)
 	bool_table.Write(f);
 }
 
-//Checa inconsistências no elemento para evitar erros de execução
+//Checks inconsistencies in the element for avoid errors of execution
 bool NSSS::Check()
 {
 	if (n_SS > db.number_surface_sets || n_NS > db.number_node_sets)
@@ -529,16 +529,16 @@ bool NSSS::Check()
 	return true;
 }
 
-//Escreve arquivo de resultados
+//Writes file of results
 void NSSS::WriteResults(FILE *f)
 {
-	//TODO
+	//ALL
 }
 
-//Escreve no monitor do contato
+//Writes in the monitor of the contact
 void NSSS::WriteMonitor(FILE *f, bool first_record, double time)
 {
-	//Cabeçalho
+	//Header
 	if (first_record == true)
 	{
 		fprintf(f, "\t");
@@ -596,25 +596,25 @@ void NSSS::Mount()
 					(*xS_p[node_index][surf_index])(0, 0) = db.nodes[tempnode - 1]->copy_coordinates[0] + db.nodes[tempnode - 1]->displacements[0];
 					(*xS_p[node_index][surf_index])(1, 0) = db.nodes[tempnode - 1]->copy_coordinates[1] + db.nodes[tempnode - 1]->displacements[1];
 					(*xS_p[node_index][surf_index])(2, 0) = db.nodes[tempnode - 1]->copy_coordinates[2] + db.nodes[tempnode - 1]->displacements[2];
-					//Seta na primeira posição do 'convective' os ultimos valores convergidos
+					//Sets in the first position of the 'convective' the ultimos values convergidos
 					cd[node_index][surf_index]->convective[0][0] = cd[node_index][surf_index]->copy_convective[0][0];
 					cd[node_index][surf_index]->convective[0][1] = cd[node_index][surf_index]->copy_convective[0][1];
-					//Chute inicial para a determinação da projeção ortogonal - seta somente na primeira posição do convective
+					//Initial guess for the determination of the projeção orthogonal - sets only in the first position of the convective
 					if (cd[node_index][surf_index]->copy_g_n[0] == 1.0)
 						db.surfaces[tempsurf - 1]->InitialGuess(xS_p[node_index][surf_index], cd[node_index][surf_index]->convective, cd[node_index][surf_index]->n_solutions);
-					//Solução do problema de minima distancia
+					//Solution of the problem of minimum distance
 					db.surfaces[tempsurf - 1]->FindMinimimumParameters(xS_p[node_index][surf_index], cd[node_index][surf_index]);
-					//Se a projeção cair na faixa do dominio de interesse ou nas proximidades
-					//Varredura nos possiveis pontos de interação pointwise
+					//If the projeção cair in the faixa of the domain of interest or in the proximidades
+					//Sweep in the possiveis points of interação pointwise
 					for (int sol_index = 0; sol_index < number_pointwise_interactions; sol_index++)
 					{
-						//Se não for uma raiz repetida (ja computada anteriormente)
+						//If not for a raiz repetida (already computada anteriormente)
 						if (cd[node_index][surf_index]->repeated[sol_index] == false)
 						{
 							//printf("not repeated node %d surf %d sol_index %d\n", tempnode, tempsurf, sol_index);
 							if (cd[node_index][surf_index]->return_value[sol_index] == 0 || cd[node_index][surf_index]->return_value[sol_index] == 3)
 							{
-								//Calculo da função gap (escalar)
+								//Calculation of the function gap (scalar)
 								db.surfaces[tempsurf - 1]->Gamma_and_Triad(cd[node_index][surf_index]->G_p[sol_index], cd[node_index][surf_index]->t1_p[sol_index],
 									cd[node_index][surf_index]->t2_p[sol_index], cd[node_index][surf_index]->n_p[sol_index], cd[node_index][surf_index]->G_i[sol_index],
 									cd[node_index][surf_index]->t1_i[sol_index], cd[node_index][surf_index]->t2_i[sol_index], cd[node_index][surf_index]->n_i[sol_index],
@@ -623,51 +623,51 @@ void NSSS::Mount()
 								cd[node_index][surf_index]->g_n[sol_index] = dot(*cd[node_index][surf_index]->n_p[sol_index], *xS_p[node_index][surf_index] - *cd[node_index][surf_index]->G_p[sol_index]) - radius;
 							}
 							else
-								cd[node_index][surf_index]->g_n[sol_index] = 1.0;//valor para indicar que não ha contato
-							//se houver penetração e o range de coordenadas convectivas for valido monta a contribuição do contato na forma fraca e operador tangente
+								cd[node_index][surf_index]->g_n[sol_index] = 1.0;//value for indicate that not there is contact
+							//if there is penetração and the range of convective coordinates for valid assembles the contribution of the contact in the way fraca and operator tangent
 							if (cd[node_index][surf_index]->g_n[sol_index] <= 0.0 && (cd[node_index][surf_index]->return_value[sol_index] == 0 || cd[node_index][surf_index]->return_value[sol_index] == 3))
 							{
 								//ReportContact(node_index, surf_index, sol_index);
-								//Aloca espaço para salvar a matriz de rigidez e vetor de esforços
+								//Allocates espaço for save the stiffness matrix and vector of internal forces
 								AllocSpecific(node_index, surf_index,sol_index);
-								//Se o contato ja tiver sido estabelecido - avalia gap tangencial. Caso contrario, o gap tangencial e nulo.
+								//If the contact already tiver sido estabelecido - evaluates gap tangential. Case contrario, the gap tangential and null.
 								if (cd[node_index][surf_index]->copy_g_n[sol_index] < 0.0)
 									EvaluateTangentialGap(node_index, surf_index, sol_index);
 								else
 								{
-									//Seta cópias de convectivas iguais as atuais, para que o gap tangencial seja nulo
+									//Sets cópias of convective iguais the current, for that the gap tangential be null
 									cd[node_index][surf_index]->copy_convective[sol_index][0] = cd[node_index][surf_index]->convective[sol_index][0];
 									cd[node_index][surf_index]->copy_convective[sol_index][1] = cd[node_index][surf_index]->convective[sol_index][1];
 								}
-								//Verificação de stick/slide
+								//Check of stick/slide
 								double FatMax = mu*epn*abs(cd[node_index][surf_index]->g_n[sol_index]);
 								double FatTry = ept*norm(*cd[node_index][surf_index]->g_t[sol_index]);
-								//Monta esforços de contato e rigidez - efeito da penetração e atrito
+								//Assembles internal forces of contact and stiffness - effect of the penetração and atrito
 								//if (FatTry < FatMax)//sticking
-								if (FatTry < FatMax && cd[node_index][surf_index]->copy_g_n[sol_index] < 0.0)//sticking e ja havia contato previo (mesmo de elemento vizinho)
+								if (FatTry < FatMax && cd[node_index][surf_index]->copy_g_n[sol_index] < 0.0)//sticking and already there was contact previo (same of element vizinho)
 								{
-									//Função contact stick
+									//Function contact stick
 									db.surfaces[tempsurf - 1]->ContactSphereSurfaceSticking(i_loading[node_index][surf_index][sol_index]->getMatrix(), contact_stiffness[node_index][surf_index][sol_index], cd[node_index][surf_index]->convective[sol_index][0], cd[node_index][surf_index]->convective[sol_index][1], cd[node_index][surf_index]->copy_convective[sol_index][0], cd[node_index][surf_index]->copy_convective[sol_index][1], cd[node_index][surf_index]->copy_g_t[sol_index]->getMatrix(), tempnode, &epn, &ept, &cn, &ct, &mu, &radius);
 								}
 								else
 								{
 									//if (mu == 0.0)
-									if (mu == 0.0 || cd[node_index][surf_index]->copy_g_n[sol_index] >= 0.0)//atrito nulo ou primeiro contato
+									if (mu == 0.0 || cd[node_index][surf_index]->copy_g_n[sol_index] >= 0.0)//atrito null or first contact
 									{
 										double temp_ept = 0.0;
 										double temp_ct = 0.0;
-										//Função contact stick - chamada com ept e ct nulos
+										//Function contact stick - called with ept and ct null
 										db.surfaces[tempsurf - 1]->ContactSphereSurfaceSticking(i_loading[node_index][surf_index][sol_index]->getMatrix(), contact_stiffness[node_index][surf_index][sol_index], cd[node_index][surf_index]->convective[sol_index][0], cd[node_index][surf_index]->convective[sol_index][1], cd[node_index][surf_index]->copy_convective[sol_index][0], cd[node_index][surf_index]->copy_convective[sol_index][1], cd[node_index][surf_index]->copy_g_t[sol_index]->getMatrix(), tempnode, &epn, &temp_ept, &cn, &temp_ct, &mu, &radius);
 										zeros(cd[node_index][surf_index]->g_t[sol_index]);
 									}
 									else
 									{
-										//Função contact slide
+										//Function contact slide
 										db.surfaces[tempsurf - 1]->ContactSphereSurfaceSliding(i_loading[node_index][surf_index][sol_index]->getMatrix(), contact_stiffness[node_index][surf_index][sol_index], cd[node_index][surf_index]->convective[sol_index][0], cd[node_index][surf_index]->convective[sol_index][1], cd[node_index][surf_index]->copy_convective[sol_index][0], cd[node_index][surf_index]->copy_convective[sol_index][1], cd[node_index][surf_index]->copy_g_t[sol_index]->getMatrix(), tempnode, &epn, &ept, &cn, &ct, &mu, &radius);
-										//Atualização do gap tangencial acumulado (elastico) - tirando o efeito do deslizamento ocorrido nesse passo
+										//Update of the gap tangential acumulado (elastico) - tirando the effect of the deslizamento ocorrido in this step
 										double delta_lambda = (FatTry - FatMax) / ept;
 										Matrix gTslide = (delta_lambda / norm(*cd[node_index][surf_index]->g_t[sol_index]))*(*cd[node_index][surf_index]->g_t[sol_index]);	//deslizamento
-										*cd[node_index][surf_index]->g_t[sol_index] = *cd[node_index][surf_index]->g_t[sol_index] - gTslide;								//atualização do gap - tirando efeito de deslizamentos
+										*cd[node_index][surf_index]->g_t[sol_index] = *cd[node_index][surf_index]->g_t[sol_index] - gTslide;								//update of the gap - tirando effect of deslizamentos
 									}
 								}
 							}
@@ -681,15 +681,15 @@ void NSSS::Mount()
 	}
 }
 
-//Montagens - Newmark
+//Assemblies - Newmark
 void NSSS::MountDyn()
 {
 	//NOT USED (dynamic effects added inside the function Mount())
 }
-//Preenche a contribuição do contato nas matrizes globais
+//Fills the contribution of the contact in the matrices global
 void NSSS::MountGlobal()
 {
-	//Variaveis temporarias para salvar a indexação global dos graus de liberdade a serem setados na matriz de rigidez global
+	//Temporary variables for save the indexing global of the degrees of freedom the to be set in the stiffness matrix global
 	int GL_global_1 = 0;
 	int GL_global_2 = 0;
 	double anterior = 0;
@@ -702,10 +702,10 @@ void NSSS::MountGlobal()
 		{
 			if (activate[node_index][surf_index] == 1)
 			{
-				temp_node = db.node_sets[n_NS - 1]->node_list[node_index];	//Nó 1 - referente ao node set
+				temp_node = db.node_sets[n_NS - 1]->node_list[node_index];	//Node 1 - referring to to the node set
 				for (int sol_index = 0; sol_index < number_pointwise_interactions; sol_index++)
 				{
-					//Se não for uma raiz repetida (ja computada anteriormente)
+					//If not for a raiz repetida (already computada anteriormente)
 					if (cd[node_index][surf_index]->repeated[sol_index] == false)
 					{
 						//ReportContact(node_index, surf_index, sol_index);
@@ -714,12 +714,12 @@ void NSSS::MountGlobal()
 							//ReportContact(node_index, surf_index, sol_index);
 							for (int i = 0; i < (6 + DOFs_surfaces[surf_index]); i++)
 							{
-								//Nó da esfera
+								//Node of the sphere
 								if (i < 6)
 									GL_global_1 = db.nodes[temp_node - 1]->GLs[i];
 								else
 									GL_global_1 = *db.surfaces[tempsurf - 1]->GLs[i - 6];
-								//Caso o grau de liberdade seja livre:
+								//Case the degree of freedom be free:
 								if (GL_global_1 > 0)
 								{
 									anterior = db.global_P_A(GL_global_1 - 1, 0);
@@ -729,7 +729,7 @@ void NSSS::MountGlobal()
 								}
 								else
 								{
-									if (GL_global_1 != 0)//se o GL e ativo
+									if (GL_global_1 != 0)//if the GL and active
 									{
 										anterior = db.global_P_B(-GL_global_1 - 1, 0);
 										db.global_P_B(-GL_global_1 - 1, 0) = anterior + (*i_loading[node_index][surf_index][sol_index])(i, 0);
@@ -738,21 +738,21 @@ void NSSS::MountGlobal()
 								}
 								for (int j = 0; j < (6 + DOFs_surfaces[surf_index]); j++)
 								{
-									//Nó da esfera
+									//Node of the sphere
 									if (j < 6)
 										GL_global_2 = db.nodes[temp_node - 1]->GLs[j];
 									else
 										GL_global_2 = *db.surfaces[tempsurf - 1]->GLs[j - 6];
-									//Caso os graus de liberdade sejam ambos livres (Matriz Kaa)
+									//Case the degrees of freedom be both free (Matrix Kaa)
 									if (GL_global_1 > 0 && GL_global_2 > 0)
 										db.global_stiffness_AA.setValue(GL_global_1 - 1, GL_global_2 - 1, contact_stiffness[node_index][surf_index][sol_index][i][j]);
-									//Caso os graus de liberdade sejam ambos fixos (Matriz Kbb)
+									//Case the degrees of freedom be both fixed (Matrix Kbb)
 									if (GL_global_1 < 0 && GL_global_2 < 0)
 										db.global_stiffness_BB.setValue(-GL_global_1 - 1, -GL_global_2 - 1, contact_stiffness[node_index][surf_index][sol_index][i][j]);
-									//Caso os graus de liberdade sejam livre e fixo (Matriz Kab)
+									//Case the degrees of freedom be free and fixed (Matrix Kab)
 									if (GL_global_1 > 0 && GL_global_2 < 0)
 										db.global_stiffness_AB.setValue(GL_global_1 - 1, -GL_global_2 - 1, contact_stiffness[node_index][surf_index][sol_index][i][j]);
-									//Caso os graus de liberdade sejam fixo e livre (Matriz Kba)
+									//Case the degrees of freedom be fixed and free (Matrix Kba)
 									if (GL_global_1 < 0 && GL_global_2 > 0)
 										db.global_stiffness_BA.setValue(-GL_global_1 - 1, GL_global_2 - 1, contact_stiffness[node_index][surf_index][sol_index][i][j]);
 								}
@@ -765,18 +765,18 @@ void NSSS::MountGlobal()
 	}
 }
 
-//Calcula a banda na matriz global devido a esse contato
+//Calculates the band in the matrix global due the this contact
 void NSSS::Band(int* band_fixed, int* band_free)
 {
 	//NOT IMPLEMENTED
 }
 
-//Pre-calculo de variaveis que e feito uma unica vez no inicio
+//Pre-calculation of variables that and done a single time in the start
 void NSSS::PreCalc()
 {
 	number_nodes = db.node_sets[n_NS - 1]->n_nodes;
 	number_surfaces = db.surface_sets[n_SS - 1]->n_surf;
-	Alloc();	//Alocação dinamica
+	Alloc();	//Allocation dynamics
 	int temp_surf = 0;
 	for (int j = 0; j < number_surfaces; j++)
 	{
@@ -785,7 +785,7 @@ void NSSS::PreCalc()
 	}
 }
 
-//checagem inicial do contato  - inicio de cada incremento
+//check initial of the contact  - start of each increment
 void NSSS::BeginStepCheck()
 {
 
@@ -807,28 +807,28 @@ void NSSS::PinballCheck()
 			for (int node_index = 0; node_index < number_nodes; node_index++)
 			{
 				int tempnode = db.node_sets[n_NS - 1]->node_list[node_index];
-				//Check for proximity - calcular "distance"
+				//Check for proximity - calculate "distance"
 				distance(0, 0) = center(0, 0) - db.nodes[tempnode - 1]->copy_coordinates[0];
 				distance(1, 0) = center(1, 0) - db.nodes[tempnode - 1]->copy_coordinates[1];
 				distance(2, 0) = center(2, 0) - db.nodes[tempnode - 1]->copy_coordinates[2];
 				if (norm(distance) <= pinball)
 				{
 					activate[node_index][surf_index] = true;	//Near to contact
-					cd[node_index][surf_index]->Alloc();		//Aloca - caso não haja pre-alocação, atribui valores iniciais a todas as variaveis
+					cd[node_index][surf_index]->Alloc();		//Allocates - case not haja pre-allocation, assigns values initial the all the variables
 				}
 					
 				else
 				{
 					activate[node_index][surf_index] = false;				//Far to contact
 					for (int sol_index = 0; sol_index < number_pointwise_interactions;sol_index++)
-						FreeSpecific(node_index, surf_index,sol_index);		//Libera memória RAM
-					cd[node_index][surf_index]->Free();						//Desaloca
+						FreeSpecific(node_index, surf_index,sol_index);		//Frees memory RAM
+					cd[node_index][surf_index]->Free();						//Deallocates
 				}
 			}
 		}
 	}
 }
-//Salva variaveis para descrição lagrangiana atualizada
+//Saves variables for description lagrangiana updated
 void NSSS::SaveLagrange()
 {
 	int temp_surf = 0;
@@ -856,7 +856,7 @@ void NSSS::SaveLagrange()
 	}
 }
 
-//Pode ser inserido algum criterio impeditivo de convergência aqui
+//Can be inserted some criterion impeditivo of convergence here
 bool NSSS::HaveErrors()
 {
 	for (int surf_index = 0; surf_index < number_surfaces; surf_index++)
@@ -869,7 +869,7 @@ bool NSSS::HaveErrors()
 				{
 					if (cd[node_index][surf_index]->repeated[sol] == false)
 					{
-						//Se algum dos pares ativos apresentou divergência do metodo de otimização
+						//If some of the pairs active apresentou divergence of the method of optimization
 						if (cd[node_index][surf_index]->return_value[sol] == 1)
 						{
 							//data.myprintf("Node %d\n", data.node_sets[n_NS - 1]->node_list[node_index]);
@@ -883,13 +883,13 @@ bool NSSS::HaveErrors()
 	return false;
 }
 
-//Calcula matriz com gap tangencial
+//Calculates matrix with gap tangential
 void NSSS::EvaluateTangentialGap(int node_index, int surf_index, int sol_index)
 {
 	Matrix gtdelta(3);
 	Matrix QM(3, 3);
 	int temp_node = db.node_sets[n_NS - 1]->node_list[node_index];
-	//Calculo do QS - rotação do slave node
+	//Calculation of the QS - rotation of the slave node
 	(*alphaS[node_index][surf_index])(0, 0) = db.nodes[temp_node - 1]->displacements[3];
 	(*alphaS[node_index][surf_index])(1, 0) = db.nodes[temp_node - 1]->displacements[4];
 	(*alphaS[node_index][surf_index])(2, 0) = db.nodes[temp_node - 1]->displacements[5];
@@ -901,7 +901,7 @@ void NSSS::EvaluateTangentialGap(int node_index, int surf_index, int sol_index)
 	(*uS[node_index][surf_index])(2, 0) = db.nodes[temp_node - 1]->displacements[2];
 	gtdelta = *uS[node_index][surf_index] + radius*(*I3 - *QS[node_index][surf_index])*(*cd[node_index][surf_index]->n_p[sol_index]) + *cd[node_index][surf_index]->G_i[sol_index] - *cd[node_index][surf_index]->G_ip[sol_index];
 	gtdelta = gtdelta - dot(gtdelta, *cd[node_index][surf_index]->n_p[sol_index])*(*cd[node_index][surf_index]->n_p[sol_index]);
-	//Rotação da normal de contato para convecção do gap tangencial acumulado dos passos anteriores
+	//Rotation of the normal of contact for convecção of the gap tangential acumulado of the passos anteriores
 	Matrix to_i = -1.0*cross(*cd[node_index][surf_index]->t1_i[sol_index], *cd[node_index][surf_index]->n_i[sol_index]);
 	Matrix to_p = -1.0*cross(*cd[node_index][surf_index]->t1_p[sol_index], *cd[node_index][surf_index]->n_p[sol_index]);
 	QM(0, 0) = dot(*cd[node_index][surf_index]->t1_p[sol_index], *cd[node_index][surf_index]->t1_i[sol_index]);
@@ -926,7 +926,7 @@ void NSSS::EvaluateTangentialGap(int node_index, int surf_index, int sol_index)
 	*cd[node_index][surf_index]->g_t[sol_index] = gtdelta + (Q*QM*transp(Q))*(*cd[node_index][surf_index]->copy_g_t[sol_index]);
 }
 
-//Imprime na tela informações do par de contato
+//Prints in the tela information of the contact pair
 void NSSS::ReportContact(int node_index, int surf_index, int sol_index)
 {
 	db.myprintf("Contact number %d\n", number);

@@ -1,7 +1,7 @@
 #include "Particle.h"
 #include"Database.h"
 
-//Variaveis globais
+//Global variables
 extern
 Database db;
 
@@ -15,13 +15,13 @@ Particle::~Particle()
 {
 }
 
-//Escreve no monitor da particula
+//Writes in the monitor of the particle
 void Particle::WriteMonitor(FILE *f, bool first_record, double time)
 {
-	//Cabeçalho
+	//Header
 	if (first_record == true)
 		fprintf(f, "TIME\tkinetic\tang_mom_x\tang_mom_y\tang_mom_z\tang_mom_norm\n");
-	//Informações a serem salvas
+	//Information the to be saved
 	fprintf(f, "%.6e\t%.6e\t%.6e\t%.6e\t%.6e\t%.6e\n", time,
 		kinetic_energy, angular_momentum[0], angular_momentum[1], angular_momentum[2], angular_momentum_mag);
 }

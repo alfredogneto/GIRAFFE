@@ -1,6 +1,6 @@
 #include "ContactBodyBody.h"
 
-#include <direct.h>
+#include "PlatformCompat.h"
 
 //#include "CollisionDetection.h"
 #include "SSContactData.h"
@@ -11,7 +11,7 @@
 #include "Encoding.h"
 
 #include "Database.h"
-//Variaveis globais
+//Global variables
 extern
 Database db;
 
@@ -54,7 +54,7 @@ void ContactBodyBody::SaveConfiguration()
 	{
 		Free();
 	}*/
-	//Zera o gap tangencial se contato não e eligible
+	//Zeroes the gap tangential if contact not and eligible
 	if (eligible == false)
 	{
 		zeros(cd->g_t[0]);
@@ -92,7 +92,7 @@ void ContactBodyBody::MountContact()
 
 void ContactBodyBody::MountContactExplicit(double t)
 {
-	//TODO-Explicit
+	//ALL-Explicit
 }
 
 bool ContactBodyBody::NightOwlContact()
@@ -241,11 +241,11 @@ void ContactBodyBody::PreCalc()
 
 void ContactBodyBody::EvaluateNormalGap()
 {
-	//Calculo da função gap (escalar)
+	//Calculation of the function gap (scalar)
 	SurfacePoints();
-	//Gap vetorial
+	//Gap cross
 	*cd->g[0] = *GammaA - *GammaB;
-	//Normal do contato
+	//Normal of the contact
 	if (norm(*cd->g[0]) != 0.0)
 		*cd->n[0] = (1.0 / norm(*cd->g[0]))*(*cd->g[0]);
 	else
@@ -258,7 +258,7 @@ void ContactBodyBody::EvaluateNormalGap()
 	}
 	if (interface_0_flag)
 	{
-		//Gap escalar - tentativa de calculo com base na normal anterior (se a mesma existir)
+		//Gap scalar - attempt of calculation with base in the normal previous (if the same exist)
 		bool previouscontact = false;
 		bool contact = false;
 		if (cd->copy_g_n[0] <= 0)
@@ -302,8 +302,8 @@ void ContactBodyBody::SolveLCP()
 	int info = 0;
 	Matrix cb(4);
 
-	//Initial guess - no caso de divergência anterior ou primeiro calculo
-	//Tambem entra se no passo anterior a solução encontrada era uma intersecção fora do range - evita soluções "viciadas" por anteriores inadequadas.
+	//Initial guess - in the case of divergence previous or first calculation
+	//Tambem enters if in the step previous the solution encontrada era a intersection outside of the range - avoids solutions "viciadas" by anteriores inadequadas.
 	if (cd->return_value[0] == 1 || cd->return_value[0] == 2 || (cd->copy_characterization_index[0] == 1 && cd->return_value[0] == 4) || cd->return_value[0] == 3 || cd->copy_convergedLCP[0]==false || cd->convergedLCP[0]==false)
 	{
 		InitialGuess();
@@ -312,7 +312,7 @@ void ContactBodyBody::SolveLCP()
 		cb(2, 0) = cd->convective[0][2];
 		cb(3, 0) = cd->convective[0][3];
 	}
-	//Se não, toma solução anterior no convective. Obs: no caso de primeira entrada após sucesso de convergência em passo anterior, convective = copy_convective
+	//If not, takes solution previous in the convective. Note: in the case of first input after sucesso of convergence in step previous, convective = copy_convective
 	else
 	{
 		cb(0, 0) = cd->convective[0][0];
@@ -344,7 +344,7 @@ void ContactBodyBody::SolveLCP()
 	////////////////////////////LCP solution////////////////////////
 	////////////////////////////////////////////////////////////////
 
-	//Busca de ponto de minimo ou sela - de acordo com o tipo de problema e degeneração
+	//Search of point of minimum or saddle - according to the type of problem and degeneration
 	if (interface_0_flag)
 	{
 		//No degeneration
@@ -358,17 +358,17 @@ void ContactBodyBody::SolveLCP()
 				converged2 = FindSaddleSolution(cd, &cb, info, false);
 			}
 
-			//Se não entrou no if anterior ou se não convergiu o if anterior
+			//If not entrou in the if previous or if not converged the if previous
 			if (converged2 == false)
 			{
 				if (write_report)
 					fprintf(f_TR_report, "Search for minimum\n");
-				//Determinação de minimo ou intersecção
+				//Determination of minimum or intersection
 				converged1 = FindMinimumSolution(cd, &cb, info);
-				//Se for intersecção - busca o ponto de sela
+				//If for intersection - search the point of saddle
 				if (CharacterizeCriticalPoint(&cb) == 1)
 					converged2 = FindSaddleSolution(cd, &cb, info, false);
-				//Se nao, retorna o minimo
+				//If not, returns the minimum
 				else
 					converged2 = converged1;
 			}
@@ -386,14 +386,14 @@ void ContactBodyBody::SolveLCP()
 				else
 					converged2 = FindMinimumSolutionDegenerated(cd, cd->P_0[0], &cb);
 			}
-			//Se não entrou no if anterior ou se não convergiu o if anterior
+			//If not entrou in the if previous or if not converged the if previous
 			if (converged2 == false)
 			{
-				//Determinação de minimo ou intersecção
+				//Determination of minimum or intersection
 				converged1 = FindMinimumSolutionDegenerated(cd, cd->P_0[0], &cb);
 				if (cd->P_0[0]->getColumns() == 3)
 				{
-					//Busca do ponto de sela
+					//Search of the point of saddle
 					if (CharacterizeCriticalPointDegenerated(&cb, cd->P_0[0]) == 1)
 						converged2 = FindSaddleSolutionDegenerated(cd, cd->P_0[0], &cb, false);
 					else
@@ -404,7 +404,7 @@ void ContactBodyBody::SolveLCP()
 			}
 		}
 	}
-	//Busca sempre ponto de minimo - mas não pode ser um ponto de intersecção por conta do metodo Barrier
+	//Search always point of minimum - but not can be a point of intersection by conta of the method Barrier
 
 	//bool intersection = false;
 	if (interface_1_flag)
@@ -437,7 +437,7 @@ void ContactBodyBody::SolveLCP()
 		cd->convective[0][1] = cb(1, 0);
 		cd->convective[0][2] = cb(2, 0);
 		cd->convective[0][3] = cb(3, 0);
-		//Preenche return value com 0 ou 4
+		//Fills return value with 0 or 4
 		cd->return_value[0] = VerifyConvectiveRange(cb);
 		cd->convergedLCP[0] = converged2;
 		if (converged2 == true)
@@ -462,7 +462,7 @@ void ContactBodyBody::SolveLCP()
 		cd->copy_convective[0][1] = cb(1, 0);
 		cd->copy_convective[0][2] = cb(2, 0);
 		cd->copy_convective[0][3] = cb(3, 0);
-		//Preenche return value com 0 ou 4
+		//Fills return value with 0 or 4
 		cd->copy_return_value[0] = VerifyConvectiveRange(cb);
 		cd->copy_convergedLCP[0] = converged2;
 		if (converged2 == true)
@@ -544,9 +544,9 @@ void ContactBodyBody::SolvePreviousContact()
 	//LCP
 	SolveLCP();
 	SurfacePoints();
-	//Gap vetorial
+	//Gap cross
 	*cd->copy_g[0] = *GammaA - *GammaB;
-	//Normal do contato
+	//Normal of the contact
 	if (norm(*cd->copy_g[0]) != 0.0)
 		*cd->copy_n[0] = (1.0 / norm(*cd->copy_g[0]))*(*cd->copy_g[0]);
 	else
@@ -557,7 +557,7 @@ void ContactBodyBody::SolvePreviousContact()
 
 	if (interface_0_flag)
 	{
-		//Verificação de normais 
+		//Check of normal 
 		bool passed_normal_test = false;
 		Matrix nA(3);
 		Matrix nB(3);
@@ -628,12 +628,12 @@ void ContactBodyBody::FinalProcessSurfacePairsExplicit(double t)
 	eligible = false;
 	SolveLCP();
 	EvaluateNormalGap();
-	//TODO - function to update tangential gap, etc. (based on AceGen code)
+	//ALL - function to update tangential gap, etc. (based on AceGen code)
 }
 
 void ContactBodyBody::WriteVTK_XMLForces(FILE *f)
 {
-	//vetores para escrita no formato binario - usando a função 'enconde'
+	//vectors for writing in the formato binary - using the function 'enconde'
 	std::vector<float> float_vector;
 	std::vector<int> int_vector;
 
@@ -746,7 +746,7 @@ void ContactBodyBody::WriteVTK_XMLForces(FILE *f)
 	}
 }
 
-//Calcula a inversa da Hessiana
+//Calculates the inversa of the Hessian
 void ContactBodyBody::EvaluateInvertedHessian()
 {
 	Matrix invHes(4, 4);
@@ -765,7 +765,7 @@ void ContactBodyBody::EvaluateInvertedHessian()
 		Matrix P(order_minor, order_minor);
 		Matrix D(order_minor, order_minor);
 		fulleigen1(Hes_minor, P, D, tol_eig);
-		//Inversão da Hessiana
+		//Inversão of the Hessian
 		for (int i = 0; i < order_minor; i++)
 		{
 			D(i, i) = 1.0 / D(i, i);
@@ -785,7 +785,7 @@ void ContactBodyBody::MountGlobal()
 	//Geometry* surf1 = static_cast<Geometry*>(db.body_geometries[index1]->ptr_geom[sub_index1]);
 	//Geometry* surf2 = static_cast<Geometry*>(db.body_geometries[index2]->ptr_geom[sub_index2]);
 
-	//Variaveis temporarias para salvar a indexação global dos graus de liberdade a serem setados na matriz de rigidez global
+	//Temporary variables for save the indexing global of the degrees of freedom the to be set in the stiffness matrix global
 	int GL_global_1 = 0;
 	int GL_global_2 = 0;
 	double anterior = 0;
@@ -799,10 +799,10 @@ void ContactBodyBody::MountGlobal()
 		{
 
 			if (i < sA->nDOFs)
-				GL_global_1 = *sA->GLs[i];															//GLs da superficie 1
+				GL_global_1 = *sA->GLs[i];															//GLs of the surface 1
 			else
-				GL_global_1 = *sB->GLs[i - sA->nDOFs];											//GLs da superficie 2
-			//Caso o grau de liberdade seja livre:
+				GL_global_1 = *sB->GLs[i - sA->nDOFs];											//GLs of the surface 2
+			//Case the degree of freedom be free:
 			if (GL_global_1 > 0)
 			{
 				anterior = db.global_P_A(GL_global_1 - 1, 0);
@@ -812,7 +812,7 @@ void ContactBodyBody::MountGlobal()
 			}
 			else
 			{
-				if (GL_global_1 != 0)//se o GL e ativo
+				if (GL_global_1 != 0)//if the GL and active
 				{
 					anterior = db.global_P_B(-GL_global_1 - 1, 0);
 					db.global_P_B(-GL_global_1 - 1, 0) = anterior + Rc[i];
@@ -822,20 +822,20 @@ void ContactBodyBody::MountGlobal()
 			for (int j = 0; j < (sA->nDOFs + sB->nDOFs); j++)
 			{
 				if (j < sA->nDOFs)
-					GL_global_2 = *sA->GLs[j];									//GLs da superficie 1
+					GL_global_2 = *sA->GLs[j];									//GLs of the surface 1
 				else
-					GL_global_2 = *sB->GLs[j - sA->nDOFs];					//GLs da superficie 2
+					GL_global_2 = *sB->GLs[j - sA->nDOFs];					//GLs of the surface 2
 
-				//Caso os graus de liberdade sejam ambos livres (Matriz Kaa)
+				//Case the degrees of freedom be both free (Matrix Kaa)
 				if (GL_global_1 > 0 && GL_global_2 > 0)
 					db.global_stiffness_AA.setValue(GL_global_1 - 1, GL_global_2 - 1, Kc[i][j]);
-				//Caso os graus de liberdade sejam ambos fixos (Matriz Kbb)
+				//Case the degrees of freedom be both fixed (Matrix Kbb)
 				if (GL_global_1 < 0 && GL_global_2 < 0)
 					db.global_stiffness_BB.setValue(-GL_global_1 - 1, -GL_global_2 - 1, Kc[i][j]);
-				//Caso os graus de liberdade sejam livre e fixo (Matriz Kab)
+				//Case the degrees of freedom be free and fixed (Matrix Kab)
 				if (GL_global_1 > 0 && GL_global_2 < 0)
 					db.global_stiffness_AB.setValue(GL_global_1 - 1, -GL_global_2 - 1, Kc[i][j]);
-				//Caso os graus de liberdade sejam fixo e livre (Matriz Kba)
+				//Case the degrees of freedom be fixed and free (Matrix Kba)
 				if (GL_global_1 < 0 && GL_global_2 > 0)
 					db.global_stiffness_BA.setValue(-GL_global_1 - 1, GL_global_2 - 1, Kc[i][j]);
 			}
@@ -845,17 +845,17 @@ void ContactBodyBody::MountGlobal()
 
 void ContactBodyBody::MountGlobalExplicit()
 {
-	//TODO-Explicit
+	//ALL-Explicit
 }
 
-//Otimização - determinação de minimo
+//Optimization - determination of minimum
 bool ContactBodyBody::FindMinimumSolution(SSContactData* c_data, Matrix* solution, int &return_info)
 {
-	//Dados - trust region
-	double Deltamax = 1e4;			//maximo raio da trust region permitido
-	double Deltak = 0.1;			//atual raio de trust region
-	double etha = 0.15;				//valor entre 0 e 0.15 - indica que a aproximação e ruim e veta o incremento
-	double rhok = 0.0;				//razão entre a diferença na função objetivo e a diferença da aproximação utilizada
+	//Data - trust region
+	double Deltamax = 1e4;			//maximum radius of the trust region allowed
+	double Deltak = 0.1;			//current radius of trust region
+	double etha = 0.15;				//value between 0 and 0.15 - indicates that the approximation and ruim and veta the increment
+	double rhok = 0.0;				//reason between the difference in the objective function and the difference of the approximation used
 	double actual_reduction = 0.0;
 	double predicted_reduction = 0.0;
 	int max_it = max_it_1;
@@ -872,11 +872,11 @@ bool ContactBodyBody::FindMinimumSolution(SSContactData* c_data, Matrix* solutio
 	Matrix D(4, 4);
 	Matrix cHes(4, 4);
 
-	//Inicialização do metodo - chute inicial
+	//Initialization of the method - initial guess
 	for (int i = 0; i < 4; i++)
 		xk(i, 0) = (*solution)(i, 0);
 
-	//Criterio de parada
+	//Stopping criterion
 	HessianPhase1(xk, Hes);
 	fulleigen1(Hes, P, D, tol_eig);
 	double max_eig = -1e100;
@@ -888,7 +888,7 @@ bool ContactBodyBody::FindMinimumSolution(SSContactData* c_data, Matrix* solutio
 	double tol_ortho = tol_convective * abs(max_eig);
 	double tol_small = tol_small_1;
 
-	//Criterio para identificar uma intersecção
+	//Criterion for identify a intersection
 	double tol_intersect = max_eig * tol_convective*tol_convective;
 
 	if (write_report)
@@ -896,13 +896,13 @@ bool ContactBodyBody::FindMinimumSolution(SSContactData* c_data, Matrix* solutio
 	char c = 'I';
 
 	int it = 1;
-	//Objetivo
+	//Objective
 	double ob = ObjectivePhase1(xk);
-	//Gradiente
+	//Gradient
 	GradientPhase1(xk, Gra);
-	//Hessiana
+	//Hessian
 	HessianPhase1(xk, Hes);
-	//Erro - forçando primeira entrada
+	//Error - forcing first input
 	double error = tol_ortho + 1.0;
 	//Initial guess report
 	if (write_report)
@@ -911,12 +911,12 @@ bool ContactBodyBody::FindMinimumSolution(SSContactData* c_data, Matrix* solutio
 
 	while ((error > tol_ortho || (norm(pk) > tol_convective && ob > tol_intersect)) && it <= max_it)
 	{
-		//Determinação do ponto de Cauchy
+		//Determination of the point of Cauchy
 		double gragra = (transp(Gra)*Gra)(0, 0);
 		double grahesgra = (transp(Gra)*Hes*Gra)(0, 0);
 		double normgra = norm(Gra);
-		Matrix pc;	//direção do Cauchy point
-		/////////////////Ponto de Cauchy///////////////////////
+		Matrix pc;	//direction of the Cauchy point
+		/////////////////Point of Cauchy///////////////////////
 		if (grahesgra <= 0.0)
 			pc = -(Deltak / normgra)*Gra;
 		else
@@ -930,34 +930,34 @@ bool ContactBodyBody::FindMinimumSolution(SSContactData* c_data, Matrix* solutio
 		}
 		else//Cauchy point inside the TR
 		{
-			//Calculando direções principais e curvaturas principais da função objetivo
+			//Calculating directions main and curvatures main of the objective function
 			cHes = Hes;
 			fulleigen1(cHes, P, D, tol_eig);
-			//Escrevendo gradiente nas direções principais
+			//Writing gradient in the directions main
 			pGra = transp(P)*Gra;
-			//Determinação do menor autovalor (min_eig)
+			//Determination of the smallest eigenvalue (min_eig)
 			double min_eig = 1e100;
 			for (int i = 0; i < 4; i++)
 			{
 				if (D(i, i) < min_eig)
 					min_eig = D(i, i);
 			}
-			//Construção da direção de busca
-			//Direção de busca baseada em NR - modificada pelo menor autovalor
+			//Construction of the direction of search
+			//Direction of search based in NR - modificada through the smallest eigenvalue
 			zeros(&pb);
-			//Se o menor autovalor e menor ou igual a zero (tol_small) - modifica a direção de NR para garantir direção descendente
+			//If the smallest eigenvalue and smaller or igual the zero (tol_small) - modifies the direction of NR for garantir direction descendente
 			if (min_eig < tol_small)
 			{
 				for (int i = 0; i < 4; i++)
 					pb(i, 0) = -pGra(i, 0) / (D(i, i) - (min_eig - abs(min_eig)*tol_ascent));
 			}
-			//Se o menor autovalor e maior que zero (tol_small) - direção de NR e escolhida
+			//If the smallest eigenvalue and larger that zero (tol_small) - direction of NR and chosen
 			else
 			{
 				for (int i = 0; i < 4; i++)
 					pb(i, 0) = -pGra(i, 0) / D(i, i);
 			}
-			//Escrevendo direção de busca nas coordenadas originais
+			//Writing direction of search in the coordinates originais
 
 			pb = P * pb;
 			double normpb = norm(pb);
@@ -976,14 +976,14 @@ bool ContactBodyBody::FindMinimumSolution(SSContactData* c_data, Matrix* solutio
 				b1 = 2 * (transp(pc)*(pb - pc))(0, 0);
 				c1 = normpc * normpc - Deltak * Deltak;
 				thetak = (-b1 + sqrt(b1*b1 - 4 * a1*c1)) / (2 * a1);
-				//Determinação do path
+				//Determination of the path
 				pk = pc + thetak * (pb - pc);
 				c = 'D';
 			}
 		}
 
 		//////////////////////////UPDATING SOLUTION////////////////////////////////
-		//Calculo de rhok
+		//Calculation of rhok
 		actual_reduction = ObjectivePhase1(xk) - ObjectivePhase1(xk + pk);
 		predicted_reduction = -(transp(Gra)*pk + 0.5*transp(pk)*Hes*pk)(0, 0);
 		rhok = actual_reduction / predicted_reduction;
@@ -1010,15 +1010,15 @@ bool ContactBodyBody::FindMinimumSolution(SSContactData* c_data, Matrix* solutio
 		}
 		if (rhok >= etha)
 			xk = xk + pk;
-		//Incrementa iterações
+		//Increments iterations
 		it++;
-		//Objetivo
+		//Objective
 		ob = ObjectivePhase1(xk);
-		//Gradiente
+		//Gradient
 		GradientPhase1(xk, Gra);
-		//Hessiana
+		//Hessian
 		HessianPhase1(xk, Hes);
-		//Erro - norma do gradiente
+		//Error - norm of the gradient
 		error = norm(Gra);
 		if (write_report)
 			fprintf(f_TR_report, "%d\t%.12e\t%.12e\t%.12e\t%.12e\t%.6e\t%.6e\t%.6e\t%c\t%.6e\t%.6e\t%.6e\n", it, xk(0, 0), xk(1, 0), xk(2, 0), xk(3, 0), ob, error, Deltak, c, rhok, actual_reduction, predicted_reduction);
@@ -1028,26 +1028,26 @@ bool ContactBodyBody::FindMinimumSolution(SSContactData* c_data, Matrix* solutio
 
 	for (int i = 0; i < 4; i++)
 		(*solution)(i, 0) = xk(i, 0);
-	//Retorno da função
+	//Return of the function
 	if (error < tol_ortho)
 		return true;
 	else
 		return false;
 }
 
-//Otimização - determinação de sela
+//Optimization - determination of saddle
 bool ContactBodyBody::FindSaddleSolution(SSContactData* c_data, Matrix* solution, int &return_info, bool return_gap)
 {
-	//Dados - trust region
-	double Deltamax = 10;			//maximo raio da trust region permitido
-	double Deltak = 0.01;			//atual raio de trust region
-	double etha = 0.15;				//valor entre 0 e 0.15 - indica que a aproximação e ruim e veta o incremento
-	double rhok = 0.0;				//razão entre a diferença na função objetivo e a diferença da aproximação utilizada
+	//Data - trust region
+	double Deltamax = 10;			//maximum radius of the trust region allowed
+	double Deltak = 0.01;			//current radius of trust region
+	double etha = 0.15;				//value between 0 and 0.15 - indicates that the approximation and ruim and veta the increment
+	double rhok = 0.0;				//reason between the difference in the objective function and the difference of the approximation used
 	double actual_change = 0.0;
 	double predicted_change = 0.0;
 	double tol_small = tol_small_1;
 	int max_it = max_it_2;			//max iterations
-	//Variaveis internas de uso geral
+	//Variables internal of use geral
 	Matrix Hes(4, 4);
 	Matrix Gra(4, 1);
 	Matrix pGra(4, 1);
@@ -1057,20 +1057,20 @@ bool ContactBodyBody::FindSaddleSolution(SSContactData* c_data, Matrix* solution
 	Matrix pk(4);
 	Matrix pb(4);
 	Matrix xk(4);
-	//Inicialização do metodo - chute inicial - obtido da solução anterior - problema de minima distancia
+	//Initialization of the method - initial guess - obtained of the solution previous - problem of minimum distance
 	for (int i = 0; i < 4; i++)
 		xk(i, 0) = (*solution)(i, 0);
 
-	//Erro da minima distancia
+	//Error of the minimum distance
 	GradientPhase1(xk, Gra);
 	double ob = ObjectivePhase1(xk);
-	//Hessiana da função objetivo
+	//Hessian of the objective function
 	HessianPhase1(xk, Hes);
-	//Calculando direções principais e curvaturas principais da função objetivo
+	//Calculating directions main and curvatures main of the objective function
 	cHes = Hes;
 	fulleigen1(cHes, P, D, tol_eig);
 
-	//Criterio de parada
+	//Stopping criterion
 	double max_eig = -1e100;
 	for (int i = 0; i < 4; i++)
 	{
@@ -1079,7 +1079,7 @@ bool ContactBodyBody::FindSaddleSolution(SSContactData* c_data, Matrix* solution
 	}
 	double tol_ortho = tol_convective * abs(max_eig);
 
-	bool saddle_basin = false;		//variavel booleana que indica que a bacia de atração da sela foi localizada
+	bool saddle_basin = false;		//variable boolean that indicates that the bacia of attraction of the saddle was localizada
 	int it = 1;
 	bool conv1 = false;
 	saddle_basin = false;
@@ -1103,42 +1103,42 @@ bool ContactBodyBody::FindSaddleSolution(SSContactData* c_data, Matrix* solution
 		surf2->NormalExt(xk(2, 0), xk(3, 0), &nB, true);
 		bool normal_fixed = false;
 
-		//Degeneraçao local
+		//Degeneration local
 		Matrix P_0(4, 2);
 		for (int i = 0; i < 4; i++)
-			P_0(i, 0) = P(i, 0);//primeiro autovetor
+			P_0(i, 0) = P(i, 0);//first eigenvector
 		for (int i = 0; i < 4; i++)
-			P_0(i, 1) = P(i, 1);//segundo autovetor
+			P_0(i, 1) = P(i, 1);//second eigenvector
 		return_info = 0;
-		//Busca bi-direcional
+		//Search bi-direcional
 		conv1 = FindMinimumGapDegenerated(c_data, &P_0, &xk, return_info, normal_fixed, nA, nB);
 
 		///////
-		////Hessiana da função objetivo
+		////Hessian of the objective function
 		//HessianPhase1(xk, Hes);
-		////Calculando direções principais e curvaturas principais da função objetivo
+		////Calculating directions main and curvatures main of the objective function
 		//cHes = Hes;
 		//fulleigen1(cHes, P, D, tol_eig);
-		////Degeneraçao local
+		////Degeneration local
 		//for (int i = 0; i < 4; i++)
-		//	P_0(i, 0) = P(i, 0);//primeiro autovetor
+		//	P_0(i, 0) = P(i, 0);//first eigenvector
 		//for (int i = 0; i < 4; i++)
-		//	P_0(i, 1) = P(i, 1);//segundo autovetor
-		//conv1 = FindMinimumGapDegenerated(c_data, &P_0, &xk, return_info, normal_fixed, nA, nB);
+		//	P_0(i, 1) = P(i, 1);//second eigenvector
+		//conv1 = FindMinimumGapDegenerated(c_data, &P_0, &xk, return_info, normal_fixed, in the, nB);
 		///////
 
 		///////
-		////Hessiana da função objetivo
+		////Hessian of the objective function
 		//HessianPhase1(xk, Hes);
-		////Calculando direções principais e curvaturas principais da função objetivo
+		////Calculating directions main and curvatures main of the objective function
 		//cHes = Hes;
 		//fulleigen1(cHes, P, D, tol_eig);
-		////Degeneraçao local
+		////Degeneration local
 		//for (int i = 0; i < 4; i++)
-		//	P_0(i, 0) = P(i, 0);//primeiro autovetor
+		//	P_0(i, 0) = P(i, 0);//first eigenvector
 		//for (int i = 0; i < 4; i++)
-		//	P_0(i, 1) = P(i, 1);//segundo autovetor
-		//conv1 = FindMinimumGapDegenerated(c_data, &P_0, &xk, return_info, normal_fixed, nA, nB);
+		//	P_0(i, 1) = P(i, 1);//second eigenvector
+		//conv1 = FindMinimumGapDegenerated(c_data, &P_0, &xk, return_info, normal_fixed, in the, nB);
 		///////
 
 
@@ -1148,7 +1148,7 @@ bool ContactBodyBody::FindSaddleSolution(SSContactData* c_data, Matrix* solution
 		{
 			if (return_gap == true)
 			{
-				//Salva resultado em solution
+				//Saves result in solution
 				for (int i = 0; i < 4; i++)
 					(*solution)(i, 0) = xk(i, 0);
 				return true;
@@ -1166,12 +1166,12 @@ bool ContactBodyBody::FindSaddleSolution(SSContactData* c_data, Matrix* solution
 			fprintf(f_TR_report, "After FindMinimumGap, initial guess is not in saddle basin\n");
 	}
 
-	//Calculos de erro e objetivo
+	//Calculations of error and objective
 	GradientPhase1(xk, Gra);
-	//Erro - forçando primeira entrada
+	//Error - forcing first input
 	double error = tol_ortho + 1.0;
 	ob = ObjectivePhase1(xk);
-	//Hessiana
+	//Hessian
 	HessianPhase1(xk, Hes);
 	int flag_error = 0;
 	if (write_report)
@@ -1179,13 +1179,13 @@ bool ContactBodyBody::FindSaddleSolution(SSContactData* c_data, Matrix* solution
 	char c = 'I';
 	if (write_report)
 		fprintf(f_TR_report, "%d\t%.12e\t%.12e\t%.12e\t%.12e\t%.6e\t%.6e\t%.6e\t%c\t%.6e\t%.6e\t%.6e\n", it, xk(0, 0), xk(1, 0), xk(2, 0), xk(3, 0), ob, error, Deltak, c, rhok, actual_change, predicted_change);
-	/////////////////////////////////Passo de analise da bacia de atração do ponto de sela/////////////////////////////////////
+	/////////////////////////////////Step of analysis of the bacia of attraction of the point of saddle/////////////////////////////////////
 	while ((error > tol_ortho || norm(pk) > tol_convective) && it <= max_it)
 	{
 
 		cHes = Hes;
 		pGra = Gra;
-		//Resolve sistema linear
+		//Solves linear system
 		pb = fullsystem(cHes, -1.0*pGra, &flag_error);
 		//Limita TR
 		pk = pb;
@@ -1195,7 +1195,7 @@ bool ContactBodyBody::FindSaddleSolution(SSContactData* c_data, Matrix* solution
 			pk = (Deltak / norminc)*pk;
 		c = 'N';
 		//////////////////////////UPDATING SOLUTION////////////////////////////////
-		//Calculo de rhok
+		//Calculation of rhok
 		actual_change = ObjectivePhase1(xk) - ObjectivePhase1(xk + pk);
 		predicted_change = -(transp(Gra)*(pk)+0.5*transp(pk)*Hes*(pk))(0, 0);
 		rhok = actual_change / predicted_change;
@@ -1206,7 +1206,7 @@ bool ContactBodyBody::FindSaddleSolution(SSContactData* c_data, Matrix* solution
 		if (predicted_change < tol_small)
 			rhok = 1.0;
 
-		//atualização - caso a model function represente bem a região. Isso evita sair da bacia de atração da sela
+		//update - case the model function represente bem the região. This avoids exit of the bacia of attraction of the saddle
 		if (rhok >= 0.9 && rhok <= 1.1)
 		{
 			xk = xk + pk;
@@ -1216,14 +1216,14 @@ bool ContactBodyBody::FindSaddleSolution(SSContactData* c_data, Matrix* solution
 		}
 		else
 			Deltak = Deltak / 4;
-		//incrementa iterações
+		//increments iterations
 		it++;
-		//Calculos que serão utilizados para verificar saida do loop - ou na próxima iteração, caso não saia
-		//Objetivo
+		//Calculations that will be used for check output of the loop - or in the next iteration, case not saia
+		//Objective
 		ob = ObjectivePhase1(xk);
-		//Gradiente
+		//Gradient
 		GradientPhase1(xk, Gra);
-		//Hessiana
+		//Hessian
 		HessianPhase1(xk, Hes);
 		error = norm(Gra);
 		if (write_report)
@@ -1232,14 +1232,14 @@ bool ContactBodyBody::FindSaddleSolution(SSContactData* c_data, Matrix* solution
 	if (write_report)
 		fprintf(f_TR_report, "Error\t%.6e\tTolerance\t%.6e\n", error, tol_ortho);
 
-	////////////////////////////////Verificação final - se a solução e ponto de sela/////////////////////////////////////
-	//Salva resultado em solution
+	////////////////////////////////Check final - if the solution and point of saddle/////////////////////////////////////
+	//Saves result in solution
 	for (int i = 0; i < 4; i++)
 		(*solution)(i, 0) = xk(i, 0);
-	//Retorno da função
+	//Return of the function
 	if (error < tol_ortho)
 	{
-		//Verifica o tipo de solucao encontrada
+		//Checks the solution type encontrada
 		int character = CharacterizeCriticalPoint(&xk);
 		if (character == 3)
 			return true;
@@ -1250,14 +1250,14 @@ bool ContactBodyBody::FindSaddleSolution(SSContactData* c_data, Matrix* solution
 		return false;
 }
 
-//Otimização - determinação de minimo
+//Optimization - determination of minimum
 bool ContactBodyBody::FindMinimumSolutionDegenerated(SSContactData* c_data, Matrix* P_0, Matrix* solution)
 {
-	//Dados - trust region
-	double Deltamax = 1e4;			//maximo raio da trust region permitido
-	double Deltak = 0.1;			//atual raio de trust region
-	double etha = 0.15;				//valor entre 0 e 0.15 - indica que a aproximação e ruim e veta o incremento
-	double rhok = 0.0;				//razão entre a diferença na função objetivo e a diferença da aproximação utilizada
+	//Data - trust region
+	double Deltamax = 1e4;			//maximum radius of the trust region allowed
+	double Deltak = 0.1;			//current radius of trust region
+	double etha = 0.15;				//value between 0 and 0.15 - indicates that the approximation and ruim and veta the increment
+	double rhok = 0.0;				//reason between the difference in the objective function and the difference of the approximation used
 	double actual_reduction = 0.0;
 	double predicted_reduction = 0.0;
 	int max_it = max_it_1;
@@ -1278,11 +1278,11 @@ bool ContactBodyBody::FindMinimumSolutionDegenerated(SSContactData* c_data, Matr
 	Matrix D(order, order);
 	Matrix cHes(order, order);
 
-	//Inicialização do metodo - chute inicial - obtido da solução anterior - problema de minima distancia
+	//Initialization of the method - initial guess - obtained of the solution previous - problem of minimum distance
 	for (int i = 0; i < 4; i++)
 		xk(i, 0) = (*solution)(i, 0);
 
-	//Criterio de parada
+	//Stopping criterion
 	HessianPhase1(xk, Hes);
 	deg_Hes = transp(*P_0)*Hes*(*P_0);
 	fulleigen1(deg_Hes, P, D, tol_eig);
@@ -1302,16 +1302,16 @@ bool ContactBodyBody::FindMinimumSolutionDegenerated(SSContactData* c_data, Matr
 	char c = 'I';
 
 	int it = 1;
-	//Objetivo
+	//Objective
 	double ob = ObjectivePhase1(xk);
-	//Gradiente
+	//Gradient
 	GradientPhase1(xk, Gra);
-	//Hessiana
+	//Hessian
 	HessianPhase1(xk, Hes);
-	//Transformações - degeneração
+	//Transformações - degeneration
 	deg_Gra = transp(*P_0)*Gra;
 	deg_Hes = transp(*P_0)*Hes*(*P_0);
-	//Erro - forçando primeira entrada
+	//Error - forcing first input
 	double error = tol_ortho + 1.0;
 	//Initial guess report
 	if (write_report)
@@ -1319,12 +1319,12 @@ bool ContactBodyBody::FindMinimumSolutionDegenerated(SSContactData* c_data, Matr
 	/////////////////////////////////////////////////////BEGIN///////////////////////////////////////////////
 	while ((error > tol_ortho || norm((*P_0)*pk) > tol_convective) && it <= max_it)
 	{
-		//Determinação do ponto de Cauchy
+		//Determination of the point of Cauchy
 		double gragra = (transp(deg_Gra)*deg_Gra)(0, 0);
 		double grahesgra = (transp(deg_Gra)*deg_Hes*deg_Gra)(0, 0);
 		double normgra = norm(deg_Gra);
-		Matrix pc;	//direção do Cauchy point
-		/////////////////Ponto de Cauchy///////////////////////
+		Matrix pc;	//direction of the Cauchy point
+		/////////////////Point of Cauchy///////////////////////
 		if (grahesgra <= 0.0)
 			pc = -(Deltak / normgra)*deg_Gra;
 		else
@@ -1339,34 +1339,34 @@ bool ContactBodyBody::FindMinimumSolutionDegenerated(SSContactData* c_data, Matr
 
 		else//Cauchy point inside the TR
 		{
-			//Calculando direções principais e curvaturas principais da função objetivo
+			//Calculating directions main and curvatures main of the objective function
 			cHes = deg_Hes;
 			fulleigen1(cHes, P, D, tol_eig);
-			//Escrevendo gradiente nas direções principais
+			//Writing gradient in the directions main
 			pGra = transp(P)*deg_Gra;
-			//Determinação do menor autovalor (min_eig)
+			//Determination of the smallest eigenvalue (min_eig)
 			double min_eig = 1e100;
 			for (int i = 0; i < order; i++)
 			{
 				if (D(i, i) < min_eig)
 					min_eig = D(i, i);
 			}
-			//Construção da direção de busca
-			//Direção de busca baseada em NR - modificada pelo menor autovalor
+			//Construction of the direction of search
+			//Direction of search based in NR - modificada through the smallest eigenvalue
 			zeros(&pb);
-			//Se o menor autovalor e menor ou igual a zero (tol_small) - modifica a direção de NR para garantir direção descendente
+			//If the smallest eigenvalue and smaller or igual the zero (tol_small) - modifies the direction of NR for garantir direction descendente
 			if (min_eig < tol_small)
 			{
 				for (int i = 0; i < order; i++)
 					pb(i, 0) = -pGra(i, 0) / (D(i, i) - (min_eig - abs(min_eig)*tol_ascent));
 			}
-			//Se o menor autovalor e maior que zero (tol_small) - direção de NR e escolhida
+			//If the smallest eigenvalue and larger that zero (tol_small) - direction of NR and chosen
 			else
 			{
 				for (int i = 0; i < order; i++)
 					pb(i, 0) = -pGra(i, 0) / D(i, i);
 			}
-			//Escrevendo direção de busca nas coordenadas originais
+			//Writing direction of search in the coordinates originais
 			pb = P * pb;
 			double normpb = norm(pb);
 			double thetak;
@@ -1384,14 +1384,14 @@ bool ContactBodyBody::FindMinimumSolutionDegenerated(SSContactData* c_data, Matr
 				b = 2 * (transp(pc)*(pb - pc))(0, 0);
 				c = normpc * normpc - Deltak * Deltak;
 				thetak = (-b + sqrt(b*b - 4 * a*c)) / (2 * a);
-				//Determinação do path
+				//Determination of the path
 				pk = pc + thetak * (pb - pc);
 				c = 'D';
 			}
 		}
 
 		//////////////////////////UPDATING SOLUTION////////////////////////////////
-		//Calculo de rhok
+		//Calculation of rhok
 		double actual_reduction = ObjectivePhase1(xk) - ObjectivePhase1(xk + (*P_0)*pk);
 		double predicted_reduction = -(transp(deg_Gra)*pk + 0.5*transp(pk)*deg_Hes*pk)(0, 0);
 		rhok = actual_reduction / predicted_reduction;
@@ -1416,18 +1416,18 @@ bool ContactBodyBody::FindMinimumSolutionDegenerated(SSContactData* c_data, Matr
 			}
 		}
 		if (rhok >= etha)
-			xk = xk + (*P_0)*pk;	//Incrementa iterações
+			xk = xk + (*P_0)*pk;	//Increments iterations
 		it++;
-		//Objetivo
+		//Objective
 		ob = ObjectivePhase1(xk);
-		//Gradiente
+		//Gradient
 		GradientPhase1(xk, Gra);
-		//Hessiana
+		//Hessian
 		HessianPhase1(xk, Hes);
-		//Transformações - degeneração
+		//Transformações - degeneration
 		deg_Gra = transp(*P_0)*Gra;
 		deg_Hes = transp(*P_0)*Hes*(*P_0);
-		//Erro - norma do gradiente
+		//Error - norm of the gradient
 		error = norm(deg_Gra);
 		//Initial guess report
 		if (write_report)
@@ -1436,24 +1436,24 @@ bool ContactBodyBody::FindMinimumSolutionDegenerated(SSContactData* c_data, Matr
 	if (write_report)
 		fprintf(f_TR_report, "Error\t%.6e\tTolerance\t%.6e\n", error, tol_ortho);
 
-	//Salva resultado em solution
+	//Saves result in solution
 	for (int i = 0; i < 4; i++)
 		(*solution)(i, 0) = xk(i, 0);
-	//Retorno da função
+	//Return of the function
 	if (error < tol_ortho)
 		return true;
 	else
 		return false;
 }
 
-//Otimização - determinação de minimo
+//Optimization - determination of minimum
 bool ContactBodyBody::FindMinimumGapDegenerated(SSContactData* c_data, Matrix* P_0, Matrix* solution, int &return_info, bool fixed_normals, Matrix& nA, Matrix& nB)
 {
-	//Dados - trust region   
-	double Deltak = minimum_convective_range / 1000;		//atual raio de trust region
-	double Deltamax = 100;									//maximo raio da trust region permitido
-	double etha = 0.15;										//valor entre 0 e 0.15 - indica que a aproximação e ruim e veta o incremento
-	double rhok = 0.0;										//razão entre a diferença na função objetivo e a diferença da aproximação utilizada
+	//Data - trust region   
+	double Deltak = minimum_convective_range / 1000;		//current radius of trust region
+	double Deltamax = 100;									//maximum radius of the trust region allowed
+	double etha = 0.15;										//value between 0 and 0.15 - indicates that the approximation and ruim and veta the increment
+	double rhok = 0.0;										//reason between the difference in the objective function and the difference of the approximation used
 	double last_reduction = 0.0;
 	double reduction = 0.0;
 	double actual_reduction = 0;
@@ -1474,11 +1474,11 @@ bool ContactBodyBody::FindMinimumGapDegenerated(SSContactData* c_data, Matrix* P
 	Matrix D(order, order);
 	Matrix cHes(order, order);
 
-	//	//Inicialização do metodo - chute inicial
+	//	//Initialization of the method - initial guess
 	for (int i = 0; i < 4; i++)
 		xk(i, 0) = (*solution)(i, 0);
 
-	//Criterio de parada
+	//Stopping criterion
 	HessianGap(xk, Hes, fixed_normals, nA, nB);
 	deg_Hes = transp(*P_0)*Hes*(*P_0);
 	fulleigen1(deg_Hes, P, D, tol_eig);
@@ -1495,15 +1495,15 @@ bool ContactBodyBody::FindMinimumGapDegenerated(SSContactData* c_data, Matrix* P
 	char c = 'I';
 
 	int it = 1;
-	//Objetivo
+	//Objective
 	double ob = Gap(xk, fixed_normals, nA, nB);
-	//Gradiente
+	//Gradient
 	GradientGap(xk, Gra, fixed_normals, nA, nB);
-	//Hessiana
+	//Hessian
 	HessianGap(xk, Hes, fixed_normals, nA, nB);
 	deg_Gra = transp(*P_0)*Gra;
 	deg_Hes = transp(*P_0)*Hes*(*P_0);
-	//Erro - forçando primeira entrada
+	//Error - forcing first input
 	double error = tol_ortho + 1.0;
 	//Initial guess report
 	if (write_report)
@@ -1511,12 +1511,12 @@ bool ContactBodyBody::FindMinimumGapDegenerated(SSContactData* c_data, Matrix* P
 	/////////////////////////////////////////////////////BEGIN///////////////////////////////////////////////
 	while ((error > tol_ortho || norm((*P_0)*pk) > tol_convective) && it <= max_it)
 	{
-		//Determinação do ponto de Cauchy
+		//Determination of the point of Cauchy
 		double gragra = (transp(deg_Gra)*deg_Gra)(0, 0);
 		double grahesgra = (transp(deg_Gra)*deg_Hes*deg_Gra)(0, 0);
 		double normgra = norm(deg_Gra);
-		Matrix pc;	//direção do Cauchy point
-		/////////////////Ponto de Cauchy///////////////////////
+		Matrix pc;	//direction of the Cauchy point
+		/////////////////Point of Cauchy///////////////////////
 		if (grahesgra <= 0.0)
 			pc = -(Deltak / normgra)*deg_Gra;
 		else
@@ -1530,34 +1530,34 @@ bool ContactBodyBody::FindMinimumGapDegenerated(SSContactData* c_data, Matrix* P
 		}
 		else//Cauchy point inside the TR
 		{
-			//Calculando direções principais e curvaturas principais da função objetivo
+			//Calculating directions main and curvatures main of the objective function
 			cHes = deg_Hes;
 			fulleigen1(cHes, P, D, tol_eig);
-			//Escrevendo gradiente nas direções principais
+			//Writing gradient in the directions main
 			pGra = transp(P)*deg_Gra;
-			//Determinação do menor autovalor (min_eig)
+			//Determination of the smallest eigenvalue (min_eig)
 			double min_eig = 1e100;
 			for (int i = 0; i < order; i++)
 			{
 				if (D(i, i) < min_eig)
 					min_eig = D(i, i);
 			}
-			//Construção da direção de busca
-			//Direção de busca baseada em NR - modificada pelo menor autovalor
+			//Construction of the direction of search
+			//Direction of search based in NR - modificada through the smallest eigenvalue
 			zeros(&pb);
-			//Se o menor autovalor e menor ou igual a zero (tol_small) - modifica a direção de NR para garantir direção descendente
+			//If the smallest eigenvalue and smaller or igual the zero (tol_small) - modifies the direction of NR for garantir direction descendente
 			if (min_eig < tol_small)
 			{
 				for (int i = 0; i < order; i++)
 					pb(i, 0) = -pGra(i, 0) / (D(i, i) - (min_eig - abs(min_eig)*tol_ascent));
 			}
-			//Se o menor autovalor e maior que zero (tol_small) - direção de NR e escolhida
+			//If the smallest eigenvalue and larger that zero (tol_small) - direction of NR and chosen
 			else
 			{
 				for (int i = 0; i < order; i++)
 					pb(i, 0) = -pGra(i, 0) / D(i, i);
 			}
-			//Escrevendo direção de busca nas coordenadas originais
+			//Writing direction of search in the coordinates originais
 			pb = P * pb;
 			double normpb = norm(pb);
 			double thetak;
@@ -1576,13 +1576,13 @@ bool ContactBodyBody::FindMinimumGapDegenerated(SSContactData* c_data, Matrix* P
 				b1 = 2 * (transp(pc)*(pb - pc))(0, 0);
 				c1 = normpc * normpc - Deltak * Deltak;
 				thetak = (-b1 + sqrt(b1*b1 - 4 * a1*c1)) / (2 * a1);
-				//Determinação do path
+				//Determination of the path
 				pk = pc + thetak * (pb - pc);
 				c = 'D';
 			}
 		}
 		//////////////////////////UPDATING SOLUTION////////////////////////////////
-		//Calculo de rhok
+		//Calculation of rhok
 		actual_reduction = Gap(xk, fixed_normals, nA, nB) - Gap(xk + (*P_0)*pk, fixed_normals, nA, nB);
 		predicted_reduction = -(transp(deg_Gra)*pk + 0.5*transp(pk)*deg_Hes*pk)(0, 0);
 		rhok = actual_reduction / predicted_reduction;
@@ -1615,17 +1615,17 @@ bool ContactBodyBody::FindMinimumGapDegenerated(SSContactData* c_data, Matrix* P
 		else
 			Deltak = Deltak / 2.0;
 
-		//Incrementa iterações
+		//Increments iterations
 		it++;
-		//Objetivo
+		//Objective
 		ob = Gap(xk, fixed_normals, nA, nB);
-		//Gradiente
+		//Gradient
 		GradientGap(xk, Gra, fixed_normals, nA, nB);
-		//Hessiana
+		//Hessian
 		HessianGap(xk, Hes, fixed_normals, nA, nB);
 		deg_Gra = transp(*P_0)*Gra;
 		deg_Hes = transp(*P_0)*Hes*(*P_0);
-		//Erro - norma do gradiente
+		//Error - norm of the gradient
 		error = norm(deg_Gra);
 		//Initial guess report
 		if (write_report)
@@ -1635,10 +1635,10 @@ bool ContactBodyBody::FindMinimumGapDegenerated(SSContactData* c_data, Matrix* P
 		fprintf(f_TR_report, "Error\t%.6e\tTolerance\t%.6e\n", error, tol_ortho);
 
 
-	//Retorno da função
+	//Return of the function
 	if (error < tol_ortho)
 	{
-		//Salva resultado em solution
+		//Saves result in solution
 		for (int i = 0; i < 4; i++)
 			(*solution)(i, 0) = xk(i, 0);
 		return true;
@@ -1647,25 +1647,25 @@ bool ContactBodyBody::FindMinimumGapDegenerated(SSContactData* c_data, Matrix* P
 		return false;
 }
 
-//Otimização - determinação de sela
+//Optimization - determination of saddle
 bool ContactBodyBody::FindSaddleSolutionDegenerated(SSContactData* c_data, Matrix* P_0, Matrix* solution, bool return_gap)
 {
-	//Função desenvolvida para degeneração de ordem 3
-	//Ordem 4 - chamar função FindSaddleSolution
-	//Ordem 2 - chamar função FindMinimumSolution (não e necessario determinar o ponto de sela)
+	//Function desenvolvida for degeneration of order 3
+	//Order 4 - call function FindSaddleSolution
+	//Order 2 - call function FindMinimumSolution (not and necessary determine the point of saddle)
 
-	//Dados - trust region
-	double Deltamax = 10;			//maximo raio da trust region permitido
-	double Deltak = 0.01;			//atual raio de trust region
-	double etha = 0.15;				//valor entre 0 e 0.15 - indica que a aproximação e ruim e veta o incremento
-	double rhok = 0.0;				//razão entre a diferença na função objetivo e a diferença da aproximação utilizada
+	//Data - trust region
+	double Deltamax = 10;			//maximum radius of the trust region allowed
+	double Deltak = 0.01;			//current radius of trust region
+	double etha = 0.15;				//value between 0 and 0.15 - indicates that the approximation and ruim and veta the increment
+	double rhok = 0.0;				//reason between the difference in the objective function and the difference of the approximation used
 	double actual_change = 0.0;
 	double predicted_change = 0.0;
 
 	double tol_small = tol_small_1;
 	int max_it = max_it_2;			//max iterations
 
-	//Variaveis internas de uso geral
+	//Variables internal of use geral
 	Matrix Hes(4, 4);
 	Matrix Gra(4, 1);
 	Matrix pGra(3, 1);
@@ -1687,26 +1687,26 @@ bool ContactBodyBody::FindSaddleSolutionDegenerated(SSContactData* c_data, Matri
 	if (write_report)
 		fprintf(f_TR_report, "FindSaddleSolutionDegenerated\n");
 
-	//Inicialização do metodo - chute inicial - obtido da solução anterior - problema de minima distancia
+	//Initialization of the method - initial guess - obtained of the solution previous - problem of minimum distance
 	for (int i = 0; i < 4; i++)
 		xk(i, 0) = (*solution)(i, 0);
 
-	//Erro da minima distancia
+	//Error of the minimum distance
 	GradientPhase1(xk, Gra);
 	double error = norm(Gra);
 	double ob = ObjectivePhase1(xk);
 
-	bool saddle_basin = false;		//variavel booleana que indica que a bacia de atração da sela foi localizada
+	bool saddle_basin = false;		//variable boolean that indicates that the bacia of attraction of the saddle was localizada
 	int it = 1;
 
-	//Hessiana da função objetivo
+	//Hessian of the objective function
 	HessianPhase1(xk, Hes);
 	dHes = transp(*P_0)*Hes*(*P_0);
-	//Calculando direções principais e curvaturas principais da função objetivo
+	//Calculating directions main and curvatures main of the objective function
 	cHes = dHes;
 	fulleigen1(cHes, P, D, tol_eig);
 
-	//Criterio de parada
+	//Stopping criterion
 	double max_eig = -1e100;
 	for (int i = 0; i < 3; i++)
 	{
@@ -1738,8 +1738,8 @@ bool ContactBodyBody::FindSaddleSolutionDegenerated(SSContactData* c_data, Matri
 
 		int info = 0;
 
-		//Degeneraçao local
-		//Direção de busca formada pelo autovetor associado ao menor autovalor
+		//Degeneration local
+		//Direction of search formada through the eigenvector associated to the smallest eigenvalue
 		Matrix P_0local(3, 1);
 		for (int i = 0; i < 3; i++)
 			P_0local(i, 0) = P(i, 0);
@@ -1752,7 +1752,7 @@ bool ContactBodyBody::FindSaddleSolutionDegenerated(SSContactData* c_data, Matri
 		//{
 		//	if (return_gap == true)
 		//	{
-		//		//Salva resultado em solution
+		//		//Saves result in solution
 		//		for (int i = 0; i < 4; i++)
 		//			(*solution)(i, 0) = xk(i, 0);
 		//		return true;
@@ -1766,19 +1766,19 @@ bool ContactBodyBody::FindSaddleSolutionDegenerated(SSContactData* c_data, Matri
 
 		//	normal_fixed = true;
 		//	info = 0;
-		//	//Hessiana da função objetivo
+		//	//Hessian of the objective function
 		//	HessianPhase1(xk, Hes);
 		//	dHes = transp(*P_0)*Hes*(*P_0);
-		//	//Calculando direções principais e curvaturas principais da função objetivo
+		//	//Calculating directions main and curvatures main of the objective function
 		//	cHes = dHes;
 		//	fulleigen1(cHes, P, D, tol_eig);
-		//	//Degeneraçao local
-		//	//Direção de busca formada pelos autovetor associado ao menor autovalor
+		//	//Degeneration local
+		//	//Direction of search formada through the eigenvector associated to the smallest eigenvalue
 
 		//	for (int i = 0; i < 3; i++)
 		//		P_0local(i, 0) = P(i, 0);
 		//	composed_P_0 = (*P_0)*P_0local;
-		//	conv1 = FindMinimumGapDegenerated(c_data, &composed_P_0, &xk, info, normal_fixed, nA, nB);
+		//	conv1 = FindMinimumGapDegenerated(c_data, &composed_P_0, &xk, info, normal_fixed, in the, nB);
 
 		//	//////////
 
@@ -1796,15 +1796,15 @@ bool ContactBodyBody::FindSaddleSolutionDegenerated(SSContactData* c_data, Matri
 			fprintf(f_TR_report[seq_number], "After FindMinimumGap, initial guess is not in saddle basin\n");
 	}*/
 
-	//Calculos de erro e objetivo
+	//Calculations of error and objective
 	GradientPhase1(xk, Gra);
-	//Gradiente degenerado
+	//Gradient degenerated
 	dGra = transp(*P_0)*Gra;
-	//Hessiana
+	//Hessian
 	HessianPhase1(xk, Hes);
-	//Hessiana degenerada
+	//Hessian degenerated
 	dHes = transp(*P_0)*Hes*(*P_0);
-	//Erro - forçando primeira entrada
+	//Error - forcing first input
 	error = tol_ortho + 1.0;
 	ob = ObjectivePhase1(xk);
 	int flag_error = 0;
@@ -1813,14 +1813,14 @@ bool ContactBodyBody::FindSaddleSolutionDegenerated(SSContactData* c_data, Matri
 	char c = 'I';
 	if (write_report)
 		fprintf(f_TR_report, "%d\t%.12e\t%.12e\t%.12e\t%.12e\t%.6e\t%.6e\t%.6e\t%c\t%.6e\t%.6e\t%.6e\n", it, xk(0, 0), xk(1, 0), xk(2, 0), xk(3, 0), ob, error, Deltak, c, rhok, actual_change, predicted_change);
-	/////////////////////////////////Passo de analise da bacia de atração do ponto de sela/////////////////////////////////////
+	/////////////////////////////////Step of analysis of the bacia of attraction of the point of saddle/////////////////////////////////////
 	while ((error > tol_ortho || norm(pk) > tol_convective) && it <= max_it)
 	{
-		//Calculando direções principais e curvaturas principais da função objetivo
+		//Calculating directions main and curvatures main of the objective function
 		cHes = dHes;
-		//Resolve sistema linear - pb
+		//Solves linear system - pb
 		pb = fullsystem(cHes, -1.0*dGra, &flag_error);
-		//Escrevendo direção de busca nas coordenadas originais
+		//Writing direction of search in the coordinates originais
 		pk = (*P_0)*pb;
 		double normpb = norm(pb);
 		//Limita TR
@@ -1829,7 +1829,7 @@ bool ContactBodyBody::FindSaddleSolutionDegenerated(SSContactData* c_data, Matri
 			pk = (Deltak / norminc)*pk;
 		c = 'N';
 		//////////////////////////UPDATING SOLUTION////////////////////////////////
-		//Calculo de rhok
+		//Calculation of rhok
 		double actual_change = ObjectivePhase1(xk) - ObjectivePhase1(xk + pk);
 		double predicted_change = -(transp(Gra)*(pk)+0.5*transp(pk)*Hes*(pk))(0, 0);
 		rhok = actual_change / predicted_change;
@@ -1840,7 +1840,7 @@ bool ContactBodyBody::FindSaddleSolutionDegenerated(SSContactData* c_data, Matri
 		if (predicted_change < tol_small)
 			rhok = 1.0;
 
-		//atualização - caso a model function represente bem a região. Isso evita sair da bacia de atração da sela
+		//update - case the model function represente bem the região. This avoids exit of the bacia of attraction of the saddle
 		if (rhok >= 0.9 && rhok <= 1.1)
 		{
 			xk = xk + pk;
@@ -1850,20 +1850,20 @@ bool ContactBodyBody::FindSaddleSolutionDegenerated(SSContactData* c_data, Matri
 		}
 		else
 			Deltak = Deltak / 4;
-		//incrementa iterações
+		//increments iterations
 		it++;
-		//Calculos que serão utilizados para verificar saida do loop - ou na próxima iteração, caso não saia
-		//Objetivo
+		//Calculations that will be used for check output of the loop - or in the next iteration, case not saia
+		//Objective
 		ob = ObjectivePhase1(xk);
-		//Gradiente
+		//Gradient
 		GradientPhase1(xk, Gra);
-		//Gradiente degenerado
+		//Gradient degenerated
 		dGra = transp(*P_0)*Gra;
-		//Hessiana
+		//Hessian
 		HessianPhase1(xk, Hes);
-		//Hessiana degenerada
+		//Hessian degenerated
 		dHes = transp(*P_0)*Hes*(*P_0);
-		//Erro - norma do gradiente
+		//Error - norm of the gradient
 		error = norm(dGra);
 		if (write_report)
 			fprintf(f_TR_report, "%d\t%.12e\t%.12e\t%.12e\t%.12e\t%.6e\t%.6e\t%.6e\t%c\t%.6e\t%.6e\t%.6e\n", it, xk(0, 0), xk(1, 0), xk(2, 0), xk(3, 0), ob, error, Deltak, c, rhok, actual_change, predicted_change);
@@ -1872,20 +1872,20 @@ bool ContactBodyBody::FindSaddleSolutionDegenerated(SSContactData* c_data, Matri
 		fprintf(f_TR_report, "Error\t%.6e\tTolerance\t%.6e\n", error, tol_ortho);
 
 
-	////////////////////////////////Verificação final - se a solução e ponto de sela/////////////////////////////////////
-	//Salva resultado em solution
+	////////////////////////////////Check final - if the solution and point of saddle/////////////////////////////////////
+	//Saves result in solution
 	for (int i = 0; i < 4; i++)
 		(*solution)(i, 0) = xk(i, 0);
-	//Retorno da função
+	//Return of the function
 	if (error < tol_ortho)
 	{
-		//Verifica o tipo de solucao encontrada
+		//Checks the solution type encontrada
 		int character = CharacterizeCriticalPointDegenerated(&xk, P_0);
 		if (character == 3)
 			return true;
 		else
 		{
-			//Testes adicionais - convergiu mas a saddle nao foi encontrada
+			//Tests adicionais - converged but the saddle not was encontrada
 			return false;
 		}
 	}
@@ -1896,13 +1896,13 @@ bool ContactBodyBody::FindSaddleSolutionDegenerated(SSContactData* c_data, Matri
 
 int ContactBodyBody::CharacterizeCriticalPoint(Matrix* solution)
 {
-	///////////////////////////////Ponteiros e variaveis para facilitar acesso//////////////////////////////////////////
-	//Surface* surf1 = db.surfaces[surf1_ID - 1];		//Ponteiro para a superficie 1
-	//Surface* surf2 = db.surfaces[surf2_ID - 1];		//Ponteiro para a superficie 2
+	///////////////////////////////Pointers and variables to make access easier//////////////////////////////////////////
+	//Surface* surf1 = db.surfaces[surf1_ID - 1];		//Pointer to the surface 1
+	//Surface* surf2 = db.surfaces[surf2_ID - 1];		//Pointer to the surface 2
 
-	//0 - minimo estrito
-	//1 - minimo não estrito (intersecção)
-	//2 - transição minimo-sela (just-touch)
+	//0 - minimum strict
+	//1 - minimum not strict (intersection)
+	//2 - transition minimum-saddle (just-touch)
 	//3 - saddle 2 negative eigenvalues
 	//4 - other
 	Matrix xk(4);
@@ -1913,9 +1913,9 @@ int ContactBodyBody::CharacterizeCriticalPoint(Matrix* solution)
 	for (int i = 0; i < 4; i++)
 		xk(i, 0) = (*solution)(i, 0);
 	double ob = ObjectivePhase1(xk);
-	//Hessiana da função objetivo
+	//Hessian of the objective function
 	HessianPhase1(xk, Hes);
-	//Calculando direções principais e curvaturas principais da função objetivo
+	//Calculating directions main and curvatures main of the objective function
 	fulleigen1(Hes, P, D, tol_eig);
 
 	double max_eig = -1e100;
@@ -1927,28 +1927,28 @@ int ContactBodyBody::CharacterizeCriticalPoint(Matrix* solution)
 	double tol_intersect = max_eig * tol_convective*tol_convective;
 	double tol_small = max_eig * tol_small_1;
 
-	//minimo não estrito (intersecção)
+	//minimum not strict (intersection)
 	if (ob < tol_intersect)
 	{
 		if (write_report)
 			fprintf(f_TR_report, "Intersection found (tolerance %.6e). Eigenvalues are %.6e\t%.6e\t%.6e\t%.6e\n", tol_intersect, D(0, 0), D(1, 1), D(2, 2), D(3, 3));
 		return 1;
 	}
-	//minimo estrito
+	//minimum strict
 	if (D(0, 0) >= tol_small && D(1, 1) >= tol_small && D(2, 2) >= tol_small && D(3, 3) >= tol_small)
 	{
 		if (write_report)
 			fprintf(f_TR_report, "Strict minimum found. Eigenvalues are %.6e\t%.6e\t%.6e\t%.6e\n", D(0, 0), D(1, 1), D(2, 2), D(3, 3));
 		return 0;
 	}
-	////transição minimo-sela (just-touch)
+	////transition minimum-saddle (just-touch)
 	//if (D(0, 0) >= -tol_small && D(0, 0) <= +tol_small && D(1, 1) >= -tol_small && D(1, 1) <= +tol_small && D(2, 2) >= tol_small && D(3, 3) >= tol_small)
 	//{
 	//	if (write_report)
 	//		fprintf(f_TR_report, "Just-touch found. Eigenvalues are %.6e\t%.6e\t%.6e\t%.6e\n", D(0, 0), D(1, 1), D(2, 2), D(3, 3));
 	//	return 2;
 	//}
-	//transição minimo-sela (just-touch)
+	//transition minimum-saddle (just-touch)
 	if (D(0, 0) <= tol_small && D(1, 1) <= tol_small && D(2, 2) >= tol_small && D(3, 3) >= tol_small)
 	{
 		if (write_report)
@@ -1962,13 +1962,13 @@ int ContactBodyBody::CharacterizeCriticalPoint(Matrix* solution)
 
 int ContactBodyBody::CharacterizeCriticalPointDegenerated(Matrix* solution, Matrix* P_0, bool print)
 {
-	///////////////////////////////Ponteiros e variaveis para facilitar acesso//////////////////////////////////////////
-	//Surface* surf1 = db.surfaces[surf1_ID - 1];		//Ponteiro para a superficie 1
-	//Surface* surf2 = db.surfaces[surf2_ID - 1];		//Ponteiro para a superficie 2
+	///////////////////////////////Pointers and variables to make access easier//////////////////////////////////////////
+	//Surface* surf1 = db.surfaces[surf1_ID - 1];		//Pointer to the surface 1
+	//Surface* surf2 = db.surfaces[surf2_ID - 1];		//Pointer to the surface 2
 
-	//0 - minimo estrito
-	//1 - minimo não estrito (intersecção)
-	//2 - transição minimo-sela (just-touch)
+	//0 - minimum strict
+	//1 - minimum not strict (intersection)
+	//2 - transition minimum-saddle (just-touch)
 	//3 - saddle 2 negative eigenvalues
 	//4 - other
 	Matrix xk(4);
@@ -1979,7 +1979,7 @@ int ContactBodyBody::CharacterizeCriticalPointDegenerated(Matrix* solution, Matr
 	for (int i = 0; i < 4; i++)
 		xk(i, 0) = (*solution)(i, 0);
 	double ob = ObjectivePhase1(xk);
-	//Hessiana da função objetivo
+	//Hessian of the objective function
 	HessianPhase1(xk, Hes);
 	dHes = transp(*P_0)*Hes*(*P_0);
 	fulleigen1(dHes, P, D, tol_eig);
@@ -2000,21 +2000,21 @@ int ContactBodyBody::CharacterizeCriticalPointDegenerated(Matrix* solution, Matr
 	double tol_intersect = max_eig * tol_convective*tol_convective;
 	double tol_small = max_eig * tol_small_1;
 
-	//minimo não estrito (intersecção)
+	//minimum not strict (intersection)
 	if (ob < tol_intersect)
 	{
 		if (write_report)
 			fprintf(f_TR_report, "Intersection found. Eigenvalues are %.6e\t%.6e\t%.6e\n", D(0, 0), D(1, 1), D(2, 2));
 		return 1;
 	}
-	//minimo estrito
+	//minimum strict
 	if (D(0, 0) >= tol_small && D(1, 1) >= tol_small && D(2, 2) >= tol_small)
 	{
 		if (write_report)
 			fprintf(f_TR_report, "Strict minimum found. Eigenvalues are %.6e\t%.6e\t%.6e. Tolerance is %.6e.\n", D(0, 0), D(1, 1), D(2, 2), tol_small);
 		return 0;
 	}
-	////transição minimo-sela (just-touch)
+	////transition minimum-saddle (just-touch)
 	//if (D(0, 0) >= -tol_small && D(0, 0) <= +tol_small && D(1, 1) >= tol_small && D(2, 2) >= tol_small)
 	//{
 	//	if (write_report)
@@ -2035,30 +2035,30 @@ int ContactBodyBody::CharacterizeCriticalPointDegenerated(Matrix* solution, Matr
 
 void ContactBodyBody::OpenTRReport()
 {
-	//Escrevendo o nome do par de contato
+	//Writing the name of the contact pair
 	char pair_name[100];
 	sprintf(pair_name, "TR_report_surf_%d_surf_%d", db.body_geometries[index1]->ptr_geom[sub_index1]->number, db.body_geometries[index2]->ptr_geom[sub_index2]->number);
-	strcpy(name, db.folder_name);	//pasta do job
-	strcat(name, "TR/");			//diretório TR
-	_mkdir(name);					//criando diretório TR
-	strcat(name, pair_name);		//nome do arquivo
-	strcat(name, ".txt");			//criando arquivo
-	f_TR_report = fopen(name, "a");	//abre arquivo
+	strcpy(name, db.folder_name);	//folder of the job
+	strcat(name, "TR/");			//directory TR
+	GIRAFFE_MKDIR(name);					//creating directory TR
+	strcat(name, pair_name);		//file name
+	strcat(name, ".txt");			//creating file
+	f_TR_report = fopen(name, "a");	//opens file
 }
 
 void ContactBodyBody::InitializeTRReport()
 {
 	if (write_report)
 	{
-		//Escrevendo o nome do par de contato
+		//Writing the name of the contact pair
 		char pair_name[100];
 		sprintf(pair_name, "TR_report_surf_%d_surf_%d", db.body_geometries[index1]->ptr_geom[sub_index1]->number, db.body_geometries[index2]->ptr_geom[sub_index2]->number);
-		strcpy(name, db.folder_name);	//pasta do job
-		strcat(name, "TR/");			//diretório TR
-		_mkdir(name);					//criando diretório TR
-		strcat(name, pair_name);		//nome do arquivo
-		strcat(name, ".txt");			//criando arquivo
-		f_TR_report = fopen(name, "w");	//abre arquivo
+		strcpy(name, db.folder_name);	//folder of the job
+		strcat(name, "TR/");			//directory TR
+		GIRAFFE_MKDIR(name);					//creating directory TR
+		strcat(name, pair_name);		//file name
+		strcat(name, ".txt");			//creating file
+		f_TR_report = fopen(name, "w");	//opens file
 
 		fprintf(f_TR_report, "///////////////////////////////////////////////////////////////////////\n");
 		fprintf(f_TR_report, "InitializeConvectiveRange\n");
@@ -2068,6 +2068,6 @@ void ContactBodyBody::InitializeTRReport()
 		fprintf(f_TR_report, "Convective 4:\t%.6e\tto\t%.6e.\tRange:\t%.6e\n", (*convective_min)(3, 0), (*convective_max)(3, 0), (*convective_range)(3, 0));
 		fclose(f_TR_report);
 
-		fclose(f_TR_report);			//fecha arquivo	
+		fclose(f_TR_report);			//closes file	
 	}
 }

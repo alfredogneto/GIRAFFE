@@ -1,0 +1,123 @@
+site_name: Giraffe Documentation
+site_description: Documentation for Giraffe - Generic Interface Readily Accessible for Finite Elements
+site_url: https://www.harishlab.com/GIRAFFE/
+repo_url: https://github.com/Harish-Research-Lab/GIRAFFE
+repo_name: Harish-Research-Lab/GIRAFFE
+docs_dir: docs
+
+theme:
+  name: material
+  logo: assets/giraffe-logo.png
+  favicon: assets/giraffe-logo.png
+  palette:
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      primary: indigo
+      toggle:
+        icon: material/brightness-7
+        name: Switch to dark mode
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      primary: indigo
+      toggle:
+        icon: material/brightness-4
+        name: Switch to light mode
+  features:
+    - navigation.tabs
+    - navigation.top
+    - navigation.indexes
+    - toc.follow
+    - search.suggest
+    - content.code.copy
+
+markdown_extensions:
+  - tables
+  - attr_list
+  - md_in_html
+  - footnotes
+  - admonition
+  - pymdownx.tabbed:
+      alternate_style: true
+  - pymdownx.arithmatex:
+      generic: true
+  - pymdownx.superfences
+  - pymdownx.details
+  - toc:
+      permalink: true
+
+extra_javascript:
+  - javascripts/mathjax.js
+  - https://unpkg.com/mathjax@3/es5/tex-mml-chtml.js
+
+nav:
+  - Home: index.md
+  - Introduction: manual/introduction.md
+  - General information: manual/general-information.md
+  - Tutorials:
+      - tutorials/index.md
+      - "1. Cantilever beam statics": tutorials/tutorial01.md
+      - "2. Modal analysis of a circular plate": tutorials/tutorial02.md
+      - "3. Buckling of a pipe (follower load)": tutorials/tutorial03.md
+      - "4. Buckling of a pipe (internal pressure)": tutorials/tutorial04.md
+      - "5. Cantilever plate statics & dynamics": tutorials/tutorial05.md
+      - "6. Cantilever plate with a rigid edge": tutorials/tutorial06.md
+      - "7. Several solution steps": tutorials/tutorial07.md
+      - "8. Modal analysis during statics": tutorials/tutorial08.md
+      - "9. Modal analysis during buckling": tutorials/tutorial09.md
+      - "10. Transient dynamics of a beam": tutorials/tutorial10.md
+      - "11. Two-DOF lumped system": tutorials/tutorial11.md
+      - "12. Simplified bogie dynamics": tutorials/tutorial12.md
+      - "13. Baseball bat hitting the ball": tutorials/tutorial13.md
+      - "14. Contact between cantilever beams": tutorials/tutorial14.md
+      - "15. Lateral buckling of a pipeline": tutorials/tutorial15.md
+      - "16. Catenary mooring line": tutorials/tutorial16.md
+      - Acknowledgements & References: tutorials/references.md
+  - Model Definition:
+      - Nodes: manual/nodes.md
+      - SuperNodes: manual/supernodes.md
+      - Elements: manual/elements.md
+      - Particles: manual/particles.md
+      - Boundaries: manual/boundaries.md
+      - Body Geometries: manual/bodygeometries.md
+      - Materials: manual/materials.md
+      - Coordinate Systems: manual/coordinatesystems.md
+      - CAD Data: manual/caddata.md
+      - Contact Interfaces: manual/contactinterfaces.md
+      - Sections: manual/sections.md
+      - Section Details: manual/sectiondetails.md
+      - Pipe Sections: manual/pipesections.md
+      - Shell Sections: manual/shellsections.md
+      - Rigid Body Data: manual/rigidbodydata.md
+  - Sets & Utilities:
+      - Element Sets: manual/elementsets.md
+      - Node Sets: manual/nodesets.md
+      - Surface Sets: manual/surfacesets.md
+      - Bool Table: manual/booltable.md
+      - Math Code: manual/mathcode.md
+      - Environment: manual/environment.md
+  - Loads & Constraints:
+      - Loads: manual/loads.md
+      - Displacements: manual/displacements.md
+      - Constraints: manual/constraints.md
+      - Special Constraints: manual/specialconstraints.md
+      - Contacts: manual/contacts.md
+      - General Contact Search: manual/generalcontactsearch.md
+      - Initial Conditions: manual/initialconditions.md
+  - Geometry Primitives:
+      - Points: manual/points.md
+      - Arcs: manual/arcs.md
+      - Surfaces: manual/surfaces.md
+      - Geometries: manual/geometries.md
+      - Splines: manual/splines.md
+  - Monitoring & Output:
+      - Monitors: manual/monitors.md
+      - Post Files: manual/postfiles.md
+  - Solver:
+      - Solver Options: manual/solveroptions.md
+      - Solution Steps: manual/solutionsteps.md
+      - Concomitant Solution: manual/concomitantsolution.md
+      - Convergence Criteria: manual/convergencecriteria.md
+  - Reference:
+      - Acknowledgements: manual/acknowledgements.md
+      - References: manual/references.md
+      - Appendix: manual/appendix.md

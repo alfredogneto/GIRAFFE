@@ -45,7 +45,7 @@ bool ShellSectionComposite::Read(FILE *f)
 void ShellSectionComposite::Write(FILE *f)
 {
 	fprintf(f, "Composite\t%d\tLaminas\t%d\n", number, n_laminas);
-	//Escrita da tabela
+	//Writing of the table
 	for (int i = 0; i < n_laminas; i++)
 	{
 		fprintf(f, "%d\t%.6e\t%.6e\n", db_laminas[i].id, db_laminas[i].thickness, db_laminas[i].angle);

@@ -25,7 +25,7 @@
 #include "LineRegion.h"
 #include "SurfaceRegion.h"
 
-//Elementos
+//Elements
 #include "Element.h"
 #include "Beam_1.h"
 #include "Pipe_1.h"
@@ -37,7 +37,7 @@
 #include "Truss_1.h"
 #include "TwoNodeConnector_1.h"
 
-//Materiais
+//Materials
 #include "Material.h"
 #include "Hooke.h"
 #include "ElasticPlasticIsoHardening.h"
@@ -70,7 +70,7 @@
 #include "Spline.h"
 #include "SplineElement.h"
 
-//Contatos
+//Contacts
 #include "Contact.h"
 #include "LRLR.h"
 #include "GeneralPLR.h"
@@ -81,7 +81,7 @@
 //GeneralContactSearch
 #include "GeneralContactSearch.h"
 
-//Seções transversais
+//Sections transversais
 #include "Section.h"
 #include "SecGeneral.h"
 #include "SecRectangle.h"
@@ -105,7 +105,7 @@
 #include "TranslationalJoint.h"
 #include "NodalConstraintDOF.h"
 
-//Partículas
+//Particles
 #include "Particle.h"
 #include "Sphere.h"
 #include "Polyhedron.h"
@@ -147,7 +147,7 @@
 #include "PipeLoad.h"
 #include "SuperNodalLoad.h"
 
-//Deslocamentos prescritos
+//Displacements prescritos
 #include "Displacement.h"
 #include "NodalDisplacement.h"
 #include "DisplacementField.h"
@@ -186,7 +186,7 @@ Database::Database()
 {
 	//Maximum number of DOFs/node
 	number_GLs_node = 6;
-	//Versão do GIRAFFE
+	//Version of the GIRAFFE
 	sprintf(version,"2.0.135");
 	
 	number_solutions = 0;
@@ -271,13 +271,13 @@ Database::Database()
 	concomitant_solution = NULL;
 	psy_coupling = NULL;
 
-	//Objetos que sempre existem no Database
+	//Objetos that always existem in the Database
 	conv_criteria = new ConvergenceCriteria();
 	post_files = new PostFiles();
 	solver_options = new SolverOptions();
 	execution_data = new ExecutionData();
 
-	//Variaveis booleanas de controle
+	//Variables booleanas of control
 	solution_exist = false;
 	nodes_exist = false;
 	super_nodes_exist = false;
@@ -297,7 +297,7 @@ Database::Database()
 	solver_options_exist = true;
 	analytical_surfaces_exist = false;
 	surfaces_exist = false;
-	splines = false;
+	splines_exist = false;
 	line_regions_exist = false;
 	surface_regions_exist = false;
 	contacts_exist = false;
@@ -328,9 +328,9 @@ Database::Database()
 	n_GL_free = 0;
 	n_GL_fixed = 0;
 	
-	last_converged_time = 0.0;				//ultimo instante convergido
-	current_time_step = 0.0;				//Incremento de tempo atual
-	current_solution_number = 0;			//Atual solution
+	last_converged_time = 0.0;				//last instant converged
+	current_time_step = 0.0;				//Time increment current
+	current_solution_number = 0;			//Current solution
 	current_iteration_number = 0;
 	plot_times = false; 
 	
@@ -626,20 +626,20 @@ int Database::myprintf(const char* format, ...)
 	if (execution_data->print_console)
 	{
 		va_start(args, format);
-		ret_status = vprintf(format, args);		//impressão na tela
+		ret_status = vprintf(format, args);		//printing in the tela
 		va_end(args);
 	}
 	
 	if (console_output != NULL && execution_data->print_file)
 	{
 		va_start(args, format);
-		ret_status = vfprintf(console_output, format, args);		//impressão no arquivo de texto
+		ret_status = vfprintf(console_output, format, args);		//printing in the file of text
 		va_end(args);
 	}
 	return ret_status;
 }
 
-//Imprime na tela o conteudo do ponteiro ptr (matriz de duas dimensões)
+//Prints in the tela the content of the pointer ptr (matrix of two dimensions)
 void Database::PrintPtr(double* ptr, int lines)
 {
 	myprintf("\n");
@@ -653,7 +653,7 @@ void Database::PrintPtr(double* ptr, int lines)
 	}
 	myprintf("\n");
 }
-//Imprime na tela o conteudo do ponteiro ptr (matriz de duas dimensões)
+//Prints in the tela the content of the pointer ptr (matrix of two dimensions)
 void Database::PrintPtr(double** ptr, int lines, int columns)
 {
 	myprintf("\n");
@@ -671,7 +671,7 @@ void Database::PrintPtr(double** ptr, int lines, int columns)
 	myprintf("\n");
 }
 
-//Calcula uma dimensão caracteristica da geometria do modelo - de todos os nós existentes - com base em suas posições atuais
+//Calculates a dimension caracteristica of the geometry of the modelo - of all the nodes existentes - with base in its positions current
 double Database::EvaluateBoundingBoxDiag()
 {
 	//Verify bounding box size
@@ -681,7 +681,7 @@ double Database::EvaluateBoundingBoxDiag()
 	double min_y = 0;
 	double max_z = 0;
 	double min_z = 0;
-	//Determinação do bounding box
+	//Determination of the bounding box
 	for (int i = 0; i < number_nodes; i++)
 	{
 		if (nodes[i]->copy_coordinates[0]>max_x)
@@ -697,10 +697,10 @@ double Database::EvaluateBoundingBoxDiag()
 		if (nodes[i]->copy_coordinates[2]<min_z)
 			min_z = nodes[i]->copy_coordinates[2];
 	}
-	//calcula a diagonal do bounding box e retorna
+	//calculates the diagonal of the bounding box and returns
 	return sqrt((max_x - min_x)*(max_x - min_x) + (max_y - min_y)*(max_y - min_y) + (max_z - min_z)*(max_z - min_z));
 }
-//Realiza pre-calculo em todos os elementos
+//Performs pre-calculation in all the elements
 void Database::PreCalc()
 {
 #pragma omp for
@@ -752,7 +752,7 @@ void Database::PreCalc()
 	if (gcs_exist)
 		gcs->PreCalc();
 
-	//Aloca soluções do PostFiles
+	//Allocates solutions of the PostFiles
 	post_files->AllocFiles(number_solutions + 1);	//the last is only the pvd file pointing to all other solutions
 	if (monitor_exist == true)
 		monitor->AllocFiles();

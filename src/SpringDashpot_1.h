@@ -8,43 +8,43 @@ class SpringDashpot_1 :
 public:
 	SpringDashpot_1();
 	~SpringDashpot_1();
-	bool Check();				//Checa inconsistências no elemento para evitar erros de execução
+	bool Check();				//Checks inconsistencies in the element for avoid errors of execution
 	bool Read(FILE *f);
 	void Write(FILE *f);
-	void WriteResults(FILE *f);//Escreve arquivo de resultados
-	void WriteMonitor(FILE *f, bool first_record, double time);	//Escreve no monitor do elemento
+	void WriteResults(FILE *f);//Writes file of results
+	void WriteMonitor(FILE *f, bool first_record, double time);	//Writes in the monitor of the element
 	void WriteVTK_XMLBase(std::vector<float> *float_vector);
 	void WriteVTK_XMLRender(FILE *f);
-	void Mount();			//Monta elementos
-	void MountElementLoads();			//Monta carregamentos associados ao elemento
-	void MountMass();					//Monta a matriz de massa
-	void MountMassModal();				//Monta a matriz de massa para realização da analise modal
-	void MountDamping(bool update_rayleigh);				//Monta a matriz de amortecimento
-	void MountDampingModal();			//Monta a matriz de amortecimento para realização da analise modal
-	void MountDyn();					//Montagens - Newmark
-	void MountDynModal();				//Montagens para analise modal - inserção da matriz de massa e amortecimento na matriz de rigidez para posterior montagem global
-	void TransformMatrix();	//Monta matriz de transformação de coordenadas
-	void MountGlobal();		//Preenche a contribuição do elemento nas matrizes globais
+	void Mount();			//Assembles elements
+	void MountElementLoads();			//Assembles loadings associated to the element
+	void MountMass();					//Assembles the mass matrix
+	void MountMassModal();				//Assembles the mass matrix for performing of the analysis modal
+	void MountDamping(bool update_rayleigh);				//Assembles the damping matrix
+	void MountDampingModal();			//Assembles the damping matrix for performing of the analysis modal
+	void MountDyn();					//Assemblies - Newmark
+	void MountDynModal();				//Assemblies for analysis modal - insertion of the mass matrix and damping in the stiffness matrix for subsequent assembly global
+	void TransformMatrix();	//Assembles transformation matrix of coordinates
+	void MountGlobal();		//Fills the contribution of the element in the matrices global
 
-	void SaveLagrange();	//Salva variaveis nos pontos de Gauss uteis para descrição lagrangiana atualizada
-	void PreCalc();		//Pre-calculo de variaveis que e feito uma unica vez no inicio
-	void Zeros();			//Zera matrizes locais do elemento
+	void SaveLagrange();	//Saves variables in the gauss points useful for description lagrangiana updated
+	void PreCalc();		//Pre-calculation of variables that and done a single time in the start
+	void Zeros();			//Zeroes matrices local of the element
 
-	//Variaveis do elemento
+	//Variables of the element
 	double k;	//Stiffness
 	double c;	//Damping
 	double initial_distance;
 	double gn;		//gap normal
-	Matrix z1, z2;	//Posições dos nós
-	Matrix xd1, xd2;//Velocidades dos nós
-	Matrix c_stiffness;									//Matriz de rigidez
-	Matrix c_damping;									//Matriz de amortecimento
-	Matrix c_damping_modal;									//Matriz de amortecimento
-	Matrix c_stiffness_force;							//Vetor de esforços elasticos
-	Matrix c_damping_force;								//Vetor de esforços de amortecimento
+	Matrix z1, z2;	//Positions of the nodes
+	Matrix xd1, xd2;//Velocities of the nodes
+	Matrix c_stiffness;									//Stiffness matrix
+	Matrix c_damping;									//Damping matrix
+	Matrix c_damping_modal;									//Damping matrix
+	Matrix c_stiffness_force;							//Vector of internal forces elasticos
+	Matrix c_damping_force;								//Vector of internal forces of damping
 	Matrix I3;
-	Matrix z1z2;	//distancia atual entre nós
-	Matrix n;		//direção normal da mola
+	Matrix z1z2;	//distance current between nodes
+	Matrix n;		//normal direction of the spring
 	
 	Matrix non;
 	double f;
@@ -56,7 +56,7 @@ public:
 	double elastic_force;
 	double damping_force;
 
-	Matrix last_n;	//ultima direção normal convergida da mola
+	Matrix last_n;	//last normal direction converged of the spring
 	bool first_evaluation;
 };
 

@@ -17,7 +17,7 @@ public:
 
 	double Get_Diagonal_Size();
 
-	void SetVertices(double* e_x, double* e_y, double* e_z);					//seta vertices e prepara retorno de maximos e minimos
+	void SetVertices(double* e_x, double* e_y, double* e_z);					//sets vertices and prepara return of maximos and minimos
 
 protected:
 	//Coordinates of 8 vertices of box
@@ -25,10 +25,10 @@ protected:
 	double y[8];
 	double z[8];
 
-	double center[3];	//Coordenadas do centro geometrico dos 8 vertices do bounding box
+	double center[3];	//Coordinates of the center geometrico of the 8 vertices of the bounding box
 
 	double xmax, ymax, zmax, xmin, ymin, zmin;
 };
 
-bool BoxOverlap(Box& b1, Box & b2, double inflation_factor);			//Checa overlap entre dois boxes
+bool BoxOverlap(Box& b1, Box & b2, double inflation_factor);			//Checks overlap between two boxes
 

@@ -4,7 +4,7 @@
 class Matrix;
 class NSContactData;
 
-////////Contato do tipo NSSS - "Node Set to Surface Set"///////////
+////////Contact of the type NSSS - "Node Set to Surface Set"///////////
 class NSSS:
 	public Contact
 {
@@ -13,53 +13,53 @@ public:
 	~NSSS();
 	int n_NS;		//Node set ID
 	int n_SS;		//Surface set ID
-	double mu;		//Coef. de atrito
-	double ept;		//penalidade tangencial
+	double mu;		//Coef. of atrito
+	double ept;		//penalidade tangential
 	double epn;		//penalidade normal
-	double cn;		//coef. de dissipação normal
-	double ct;		//coef. de dissipação tangencial
+	double cn;		//coef. of dissipação normal
+	double ct;		//coef. of dissipação tangential
 	double pinball;	//pinball radius
 	double radius;
 
-	bool Check();				//Checa inconsistências no elemento para evitar erros de execução
+	bool Check();				//Checks inconsistencies in the element for avoid errors of execution
 	bool Read(FILE *f);
 	void Write(FILE *f);
-	void WriteResults(FILE *f);									//Escreve arquivo de resultados
-	void WriteMonitor(FILE *f, bool first_record, double time);	//Escreve no monitor do contato
-	void WriteVTK_XMLRender(FILE *f);							//Plota superficies de contato
-	void WriteVTK_XMLForces(FILE *f);							//Plota forças de contato
-	void SaveLagrange();										//Salva variaveis para descrição lagrangiana atualizada
-	bool HaveErrors();											//Retorna 1 - ha algum erro, mesmo que tenha convergido. Ex: penetração excessiva
-	void MountDyn();											//Montagens - Newmark
+	void WriteResults(FILE *f);									//Writes file of results
+	void WriteMonitor(FILE *f, bool first_record, double time);	//Writes in the monitor of the contact
+	void WriteVTK_XMLRender(FILE *f);							//Plots contact surfaces
+	void WriteVTK_XMLForces(FILE *f);							//Plots contact forces
+	void SaveLagrange();										//Saves variables for description lagrangiana updated
+	bool HaveErrors();											//Returns 1 - there is some error, same that tenha converged. Ex: penetração excessiva
+	void MountDyn();											//Assemblies - Newmark
 	void Mount();
-	void MountGlobal();								//Preenche a contribuição do contato nas matrizes globais
-	void Band(int* band_fixed, int* band_free);		//Calcula a banda gerada na matriz global pelo contato
-	void PreCalc();									//Pre-calculo de variaveis que e feito uma unica vez no inicio
+	void MountGlobal();								//Fills the contribution of the contact in the matrices global
+	void Band(int* band_fixed, int* band_free);		//Calculates the band generated in the matrix global through the contact
+	void PreCalc();									//Pre-calculation of variables that and done a single time in the start
 	void PinballCheck();							//Checks proximity between each beam from LR to AS
-	void Alloc();									//Aloca na memória
-	void BeginStepCheck();											//checagem inicial do contato  - inicio de cada incremento
+	void Alloc();									//Allocates in the memory
+	void BeginStepCheck();											//check initial of the contact  - start of each increment
 	
-	void AllocSpecific(int node_index, int surface_index, int sol_index);				//Alocação especifica para o contato node_index, surface_index
-	void FreeSpecific (int node_index, int surface_index, int sol_index);				//Liberação especifica para o contato node_index, surface_index
-	void EvaluateTangentialGap(int node_index, int surf_index, int sol_index);			//Calcula matriz com gap tangencial
+	void AllocSpecific(int node_index, int surface_index, int sol_index);				//Allocation specifies for the contact node_index, surface_index
+	void FreeSpecific (int node_index, int surface_index, int sol_index);				//Liberação specifies for the contact node_index, surface_index
+	void EvaluateTangentialGap(int node_index, int surf_index, int sol_index);			//Calculates matrix with gap tangential
 
-	void ReportContact(int node_index, int surf_index, int sol_index);					//Imprime na tela informações do par de contato
-	int number_nodes;								//Numero de nós do NodeSet
-	int number_surfaces;							//Numero de superficies do SurfaceSet
+	void ReportContact(int node_index, int surf_index, int sol_index);					//Prints in the tela information of the contact pair
+	int number_nodes;								//Number of nodes of the NodeSet
+	int number_surfaces;							//Number of surfaces of the SurfaceSet
 
-	bool*** alloc_control;							//Controle de alocação dinamica
+	bool*** alloc_control;							//Control of allocation dynamics
 	
-	//Variaveis internas
-	int number_pointwise_interactions;			//Numero maximo de interações pontuais por par nó-superficie
-	NSContactData*** cd;						//Dados das soluções de contato
+	//Variables internal
+	int number_pointwise_interactions;			//Maximum number of interações pontuais by pair node-surface
+	NSContactData*** cd;						//Data of the solutions of contact
 	Matrix*** xS_p;
 	Matrix*** QS;
 	Matrix*** alphaS;
 	Matrix*** uS;
-	Matrix**** i_loading;						//Vetor de esforços internos
-	double***** contact_stiffness;				//Matriz de rigidez
+	Matrix**** i_loading;						//Vector of internal forces internal
+	double***** contact_stiffness;				//Stiffness matrix
 	
-	int * DOFs_surfaces;						//Numero de graus de liberdade que cada uma das superficies no Surface Set possui - influência no vetor de residuos e na regidez tangente			
+	int * DOFs_surfaces;						//Number of degrees of freedom that each a of the surfaces in the Surface Set has - influência in the vector of residuals and in the regidez tangent			
 
 	Matrix* I3;
 

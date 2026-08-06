@@ -16,7 +16,7 @@ public:
 	Matrix du;
 	Matrix omega;
 
-	int solution;						//ID da solution para aplicar o IC
+	int solution;						//ID of the solution for apply the IC
 	
 	void ComputeInitialCondition();
 };

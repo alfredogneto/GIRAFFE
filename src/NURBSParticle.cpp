@@ -13,7 +13,7 @@
 #include "Dynamic.h"
 
 #include"Database.h"
-//Variaveis globais
+//Global variables
 extern
 Database db;
 
@@ -127,8 +127,8 @@ void NURBSParticle::WriteModifyingParameters(FILE *f, int e_material, int e_node
 void NURBSParticle::PreCalc()
 {
 	////////////////////////////////////////////////////////////////
-	//Matriz para transformação de coordenadas  local-global
-	//vlocal = (sistema do CAD)
+	//Matrix for transformation of coordinates  local-global
+	//vlocal = (system of the CAD)
 	// Q0*vlocal = vglobal
 	////////////////////////////////////////////////////////////////
 	(*Q0)(0, 0) = (*db.CS[cs - 1]->E1)(0, 0);
@@ -141,27 +141,27 @@ void NURBSParticle::PreCalc()
 	(*Q0)(1, 2) = (*db.CS[cs - 1]->E3)(1, 0);
 	(*Q0)(2, 2) = (*db.CS[cs - 1]->E3)(2, 0);
 
-	//Calculando valores do br. Feito apenas uma vez no inicio. 
-	//A origem do CAD coincide com o Polo, então G-O = G
-	//Como G e dado no sistema do CAD, então G precisa ser transformado
+	//Calculating values of the br. Done only once in the start. 
+	//A origin of the CAD coincides with the Pole, then G-O = G
+	//As G and data in the system of the CAD, then G needs be transformed
 	Matrix local_b = *db.cad_data[CADDATA_ID - 1]->G;
 	Matrix global_b = (*Q0) * local_b;
 	br[0] = global_b(0, 0);
 	br[1] = global_b(1, 0);
 	br[2] = global_b(2, 0);
 
-	//Atualizando J_O para o sistema global e copiando valores para Jr. Feito apenas uma vez no inicio
+	//Updating J_O for the system global and copying values for Jr. Done only once in the start
 	Matrix global_J = db.materials[material - 1]->rho * (*Q0) * (*db.cad_data[CADDATA_ID - 1]->J_O)*transp(*Q0);
 	global_J.MatrixToPtr(Jr, 3);
 	mass = db.cad_data[CADDATA_ID - 1]->volume * db.materials[material - 1]->rho;
 
 	//////////////////////////////////////Bounding Volume////////////////////////////////////
-	//PreCalc do CAD e chamado antes do PreCalc das particulas
+	//PreCalc of the CAD and called before of the PreCalc of the particles
 	BoundingSphere* ptr_bv = static_cast<BoundingSphere*>(bv);
 	NURBSSurface* ptr_cad = static_cast<NURBSSurface*>(db.cad_data[CADDATA_ID - 1]);
 	ptr_bv->radius = ptr_cad->radius;
 	
-	//TODO subdivisions
+	//ALL subdivisions
 	
 	UpdateBoundingVolumes();
 }
@@ -186,7 +186,7 @@ void NURBSParticle::UpdateBoundingVolumes()
 	double g = 4.0 / (4.0 + alpha_escalar * alpha_escalar);
 	Matrix Qd = *I3 + g * (A + 0.5*((A)*(A)));
 
-	//TODO - update subdivisions
+	//ALL - update subdivisions
 }
 
 void NURBSParticle::SaveLagrange()
@@ -223,23 +223,23 @@ void NURBSParticle::Alloc()
 	cs = 0;
 
 	DOFs = new int[db.number_GLs_node];
-	type_name = new char[20];//Nome do tipo da particula
+	type_name = new char[20];//Name of the type of the particle
 
-	//Rotina para ativar os GLS do nó da particula
+	//Routine for activate the GLS of the node of the particle
 	for (int j = 0; j < db.number_GLs_node; j++)
 	{
 		DOFs[j] = 0;
 	}
-	//Translação
+	//Translation
 	DOFs[0] = 1;
 	DOFs[1] = 1;
 	DOFs[2] = 1;
-	//Rotação
+	//Rotation
 	DOFs[3] = 1;
 	DOFs[4] = 1;
 	DOFs[5] = 1;
 
-	//Variaveis internas
+	//Variables internal
 	mass = 0.0;
 
 	I3 = new Matrix(3, 3);
@@ -339,7 +339,7 @@ void NURBSParticle::UpdateVariables()
 
 void NURBSParticle::Mount()
 {
-	//Zera matrizes diversas
+	//Zeroes matrices diversas
 	for (int i = 0; i < 6; i++)
 	{
 		dfield[i] = 0.0;
@@ -350,7 +350,7 @@ void NURBSParticle::Mount()
 			DdT[i][j] = 0.0;
 		}
 	}
-	//Valores de variaveis cinematicas - atribuição
+	//Values of variables cinematicas - assignment
 	for (int i = 0; i < 3; i++)
 	{
 		alphai[i] = db.nodes[node - 1]->copy_coordinates[i + 3];
@@ -386,17 +386,17 @@ void NURBSParticle::InitialEvaluations()
 
 void NURBSParticle::MountGlobal()
 {
-	//Variaveis temporarias para salvar a indexação global dos graus de liberdade a serem setados na matriz de rigidez global
+	//Temporary variables for save the indexing global of the degrees of freedom the to be set in the stiffness matrix global
 	int GL_global_1 = 0;
 	int GL_global_2 = 0;
 	double anterior = 0;
 	for (int i = 0; i < 6; i++)
 	{
-		//////////////MONTAGEM DO VETOR DE ESFORÇOS DESBALANCEADOS//////////////////
-		//Toma do vetor de GL globais, a indexação de cada grau de liberdade global
+		//////////////ASSEMBLY OF THE VECTOR OF INTERNAL FORCES UNBALANCED//////////////////
+		//Takes of the global-DOF vector, the indexing of each global degree of freedom
 		GL_global_1 = db.nodes[node - 1]->GLs[i];
 
-		//Caso o grau de liberdade seja livre:
+		//Case the degree of freedom be free:
 		if (GL_global_1 > 0)
 		{
 			anterior = db.global_P_A(GL_global_1 - 1, 0);
@@ -411,19 +411,19 @@ void NURBSParticle::MountGlobal()
 		}
 		for (int j = 0; j < 6; j++)
 		{
-			//////////////////////MONTAGEM DA MATRIZ DE RIGIDEZ/////////////////////////
-			//Toma do vetor de GL globais, a indexação de cada grau de liberdade global
+			//////////////////////ASSEMBLY OF THE STIFFNESS MATRIX/////////////////////////
+			//Takes of the global-DOF vector, the indexing of each global degree of freedom
 			GL_global_2 = db.nodes[node - 1]->GLs[j];
-			//Caso os graus de liberdade sejam ambos livres (Matriz Kaa)
+			//Case the degrees of freedom be both free (Matrix Kaa)
 			if (GL_global_1 > 0 && GL_global_2 > 0)
 				db.global_stiffness_AA.setValue(GL_global_1 - 1, GL_global_2 - 1, (DdT[i][j] - Ddfield[i][j]));
-			//Caso os graus de liberdade sejam ambos fixos (Matriz Kbb)
+			//Case the degrees of freedom be both fixed (Matrix Kbb)
 			if (GL_global_1 < 0 && GL_global_2 < 0)
 				db.global_stiffness_BB.setValue(-GL_global_1 - 1, -GL_global_2 - 1, (DdT[i][j] - Ddfield[i][j]));
-			//Caso os graus de liberdade sejam livre e fixo (Matriz Kab)
+			//Case the degrees of freedom be free and fixed (Matrix Kab)
 			if (GL_global_1 > 0 && GL_global_2 < 0)
 				db.global_stiffness_AB.setValue(GL_global_1 - 1, -GL_global_2 - 1, (DdT[i][j] - Ddfield[i][j]));
-			//Caso os graus de liberdade sejam fixo e livre (Matriz Kba)
+			//Case the degrees of freedom be fixed and free (Matrix Kba)
 			if (GL_global_1 < 0 && GL_global_2 > 0)
 				db.global_stiffness_BA.setValue(-GL_global_1 - 1, GL_global_2 - 1, (DdT[i][j] - Ddfield[i][j]));
 		}
@@ -432,15 +432,15 @@ void NURBSParticle::MountGlobal()
 
 void NURBSParticle::MountFieldLoading()
 {
-	//Ponteiro para o valor da massa
+	//Pointer for the value of the mass
 	double* m = &mass;
-	double v[1000];													//Variavel necessaria para o AceGen		
-	//Variaveis para calculo de steps
+	double v[1000];													//Variable necessary for the AceGen		
+	//Variables for calculation of steps
 	double l_factor;
 	bool in_gcs_domain = true;
 	if (db.environment_exist == true)
 	{
-		//Se existe campo gravitacional
+		//If exists field gravitacional
 		if (db.environment->g_exist == true)
 		{
 			if (db.gcs_exist)
@@ -469,7 +469,7 @@ void NURBSParticle::MountFieldLoading()
 			if (in_gcs_domain)
 			{
 				l_factor = db.environment->bool_g.GetLinearFactorAtCurrentTime();
-				double g[3];					//Vetor gravidade
+				double g[3];					//Vector gravidade
 				g[0] = l_factor * db.environment->G(0, 0);
 				g[1] = l_factor * db.environment->G(1, 0);
 				g[2] = l_factor * db.environment->G(2, 0);
@@ -646,10 +646,10 @@ void NURBSParticle::MountFieldLoading()
 		}
 	}
 
-	//Outras contribuições de esforços de campo, colocar aqui...
+	//Other contributions of internal forces of field, place here...
 }
 
-//Calcula contribuições de inercia
+//Calculates contributions of inertia
 void NURBSParticle::InertialContributions()
 {
 	double value = 0.0;
@@ -667,7 +667,7 @@ void NURBSParticle::InertialContributions()
 	if (typeid(*db.solution[db.current_solution_number - 1]) == typeid(Dynamic))
 	{
 		Dynamic* ptr_sol = static_cast<Dynamic*>(db.solution[db.current_solution_number - 1]);
-		//Ponteiros para parametros do Newmark
+		//Pointers for parameters of the Newmark
 		a1 = &ptr_sol->a1;
 		a2 = &ptr_sol->a2;
 		a3 = &ptr_sol->a3;
@@ -685,9 +685,9 @@ void NURBSParticle::InertialContributions()
 		a6 = &value;
 	}
 
-	//Ponteiro para o valor da massa
+	//Pointer for the value of the mass
 	double* m = &mass;
-	double v[1000];													//Variavel necessaria para o AceGen		
+	double v[1000];													//Variable necessary for the AceGen		
 	//AceGen
 	v[134] = Power(alphai[0], 2);
 	v[132] = 0.5e0*alphai[0] * alphai[1];

@@ -1,7 +1,24 @@
 #include "BandMatrix.h"
+#ifdef GIRAFFE_USE_MKL
 #include <mkl.h>
+#else
+// Non-MKL LAPACK (OpenBLAS/Accelerate/reference LAPACK) exports the classic
+// Fortran-mangled names (trailing underscore) instead of MKL's bare C aliases.
+extern "C" {
+	void dgbtrf_(int *m, int *n, int *kl, int *ku, double *ab, int *ldab, int *ipiv, int *info);
+	void dgbtrs_(char *trans, int *n, int *kl, int *ku, int *nrhs, double *ab, int *ldab, int *ipiv, double *b, int *ldb, int *info);
+}
+static inline void dgbtrf(int *m, int *n, int *kl, int *ku, double *ab, int *ldab, int *ipiv, int *info)
+{
+	dgbtrf_(m, n, kl, ku, ab, ldab, ipiv, info);
+}
+static inline void dgbtrs(char *trans, int *n, int *kl, int *ku, int *nrhs, double *ab, int *ldab, int *ipiv, double *b, int *ldb, int *info)
+{
+	dgbtrs_(trans, n, kl, ku, nrhs, ab, ldab, ipiv, b, ldb, info);
+}
+#endif
 
-//Construtor Padrão
+//Standard constructor
 BandMatrix::BandMatrix(void)
 {
 	m_lines_deleted = true;
@@ -9,12 +26,12 @@ BandMatrix::BandMatrix(void)
 	m_columns = 1;
 	m_band_s = 0;
 	m_band_i = 0;
-	//Inicializa a matriz como null e tenta aloca-la
+	//Initializes the matrix as null and tries allocates-it
 	m_matrix = NULL;
 	if(!alloc())
 		printf("Not possible to alloc matrix\n");
 }
-//Construtor Parametrico
+//Parametric constructor
 BandMatrix::BandMatrix(long band_s,long band_i,long columns)
 {
 	m_lines_deleted = true;
@@ -22,15 +39,15 @@ BandMatrix::BandMatrix(long band_s,long band_i,long columns)
 	m_columns = columns;
 	m_band_s = band_s;
 	m_band_i = band_i;
-	//Inicializa a matriz como null e tenta aloca-la
+	//Initializes the matrix as null and tries allocates-it
 	m_matrix = NULL;
 	if(!alloc())
 		printf("Not possible to alloc matrix\n");
 }
-//Construtor de cópia
+//Constructor of copy
 BandMatrix::BandMatrix(BandMatrix &copied)
 {
-	//Verifica dimensões da matriz - se necessario, faz re-alocação
+	//Checks dimensions of the matrix - if necessary, does re-alocation
 	//if (copied.m_alloced_lines != m_alloced_lines)
 //	{
 		flush();
@@ -38,12 +55,12 @@ BandMatrix::BandMatrix(BandMatrix &copied)
 		m_columns = copied.m_columns;
 		m_band_s = copied.m_band_s;
 		m_band_i = copied.m_band_i;
-		//Inicializa a matriz como null e tenta aloca-la
+		//Initializes the matrix as null and tries allocates-it
 		m_matrix = NULL;
 		if(!alloc())
 			printf("Not possible to alloc matrix\n");
 //	}
-	//Copia os valores na nova matriz
+	//Copies the values in the new matrix
 	for(long i=0; i < copied.m_alloced_lines; i++)
 		m_matrix[i] = copied.m_matrix[i];	
 }
@@ -51,7 +68,7 @@ BandMatrix::~BandMatrix(void)
 {
 	flush();
 }
-//Imprime a matriz na tela
+//Prints the matrix in the tela
 void BandMatrix::print()
 {
 	printf("\n");
@@ -69,7 +86,7 @@ void BandMatrix::print()
 	}
 	printf("\n");
 }
-//Imprime a matriz em um arquivo de texto, cujo nome esta no char s
+//Prints the matrix in a file of text, whose name this in the char s
 void BandMatrix::fprint(char* s)
 {
 	FILE *file1 = fopen(s,"w");
@@ -89,7 +106,7 @@ void BandMatrix::fprint(char* s)
 	fclose(file1);
 }
 
-//Imprime a matriz em um arquivo de texto, cujo nome esta no char s (em formato quadrada)
+//Prints the matrix in a file of text, whose name this in the char s (in formato quadrada)
 void BandMatrix::fprintSquare(char* s)
 {
 	FILE *file1 = fopen(s,"w");
@@ -97,7 +114,7 @@ void BandMatrix::fprintSquare(char* s)
 	{
 		for(long j=0; j < m_columns; j++)
 		{
-			//Se esta na região de valores não nulos
+			//If this in the regiï¿½o of values nï¿½o null
 			if(i-j <= m_band_i && j-i <= m_band_s)
 				fprintf(file1," %.20e\t",this->getValue(i,j));
 			else
@@ -109,15 +126,15 @@ void BandMatrix::fprintSquare(char* s)
 }
 
 
-//Aloca a matriz
+//Allocates the matrix
 bool BandMatrix::alloc()
 {
 	flush();
-	//Tenta alocar a matriz
+	//Tries allocate the matrix
 	if(!(m_matrix = new double[m_columns*(2*m_band_i+m_band_s+1)]))
 			//Falha
 			return false;
-	//Caso consiga
+	//Case consiga
 	else
 	{
 		m_alloced_lines = m_columns*(2*m_band_i+m_band_s+1);
@@ -128,16 +145,16 @@ bool BandMatrix::alloc()
 		return true;
 	}	
 }
-//Libera a memória ocupada pela matriz
+//Frees the memï¿½ria occupied through the matrix
 bool BandMatrix::flush()
 {
-	//Percorre as linhas
-	//Se ha linhas para desalocar
+	//Iterates over the rows
+	//If there is rows for deallocate
 	if (m_lines_deleted == false)
 	{
 		delete[]m_matrix;
-		//Desalocada com sucesso
-		m_lines_deleted = true;	//para evitar desalocação novamente
+		//Desalocada with sucesso
+		m_lines_deleted = true;	//for avoid desalocaï¿½ï¿½o novamente
 		m_matrix = NULL;
 		m_alloced_lines = 0;
 		//m_columns=0;
@@ -146,49 +163,49 @@ bool BandMatrix::flush()
 	}
 	return true;
 }
-//Zera a matriz, mantando as dimensões atuais
+//Zeroes the matrix, keeping the dimensï¿½es current
 void BandMatrix::clear()
 {
 	for(int i=0; i < m_alloced_lines; i++)
 			m_matrix[i] = 0.0;
 }
-//Retorna a banda inferior da matriz
-int BandMatrix::getBandi()
+//Returns the band lower of the matrix
+int BandMatrix::getBandi() const
 {
 	return m_band_i;
 }
-//Retorna a banda superior da matriz
-int BandMatrix::getBands()
+//Returns the band upper of the matrix
+int BandMatrix::getBands() const
 {
 	return m_band_s;
 }
-//Retorna o numero de linhas da matriz
-int BandMatrix::getColumns()
+//Returns the number of rows of the matrix
+int BandMatrix::getColumns() const
 {
 	return m_columns;
 }
-//Seta a banda da matriz
+//Sets the band of the matrix
 void BandMatrix::setBandi(int bandi)
 {
 	m_band_i = bandi;
 }
-//Seta a banda da matriz
+//Sets the band of the matrix
 void BandMatrix::setBands(int bands)
 {
 	m_band_s = bands;
 }
-//Seta o numero de colunas da matriz
+//Sets the number of columns of the matrix
 void BandMatrix::setColumns(int columns)
 {	
 	m_columns = columns;
 }
-//Retorno do valor na posição especificada - entrada i e j na posição da matriz quadrada original
-double BandMatrix::getValue(long i, long j)
+//Return of the value in the posiï¿½ï¿½o specified - input i and j in the posiï¿½ï¿½o of the square matrix original
+double BandMatrix::getValue(long i, long j) const
 {
 	long column,line;
 	bool flag_write = true;
-	//Testa para ver se a posição esta dentro da banda alocada
-	if (i>j)//parte inferior da diagonal
+	//Tests for ver if the posiï¿½ï¿½o this inside of the band allocated
+	if (i>j)//part lower of the diagonal
 	{
 		if (i-j > m_band_i)
 		{
@@ -217,14 +234,14 @@ double BandMatrix::getValue(long i, long j)
 		return m_matrix[line + column*(2*m_band_i+m_band_s+1)];
 	}
 }
-//Seta na posição (i,j) da matriz quadrada o valor v
+//Sets in the posiï¿½ï¿½o (i,j) of the square matrix the value v
 void BandMatrix::setValue(long i, long j, double v)
 {
 	long column,line;
 
 	bool flag_write = true;
-	//Testa para ver se a posição esta dentro da banda alocada
-	if (i>j)//parte inferior da diagonal
+	//Tests for ver if the posiï¿½ï¿½o this inside of the band allocated
+	if (i>j)//part lower of the diagonal
 	{
 		if (i-j > m_band_i)
 		{
@@ -248,12 +265,12 @@ void BandMatrix::setValue(long i, long j, double v)
 		m_matrix[line + column*(2*m_band_i+m_band_s+1)] = v;
 	}
 }
-//Retorna o endereço de uma matriz
-double* BandMatrix::getMatrix()
+//Returns the endereï¿½o of a matrix
+double* BandMatrix::getMatrix() const
 {
 	return m_matrix;
 }
-//Resolve o sistema linear da forma Ax=b (sendo A uma matriz de banda)
+//Solves the linear system of the way Ax=b (being A a band matrix)
 Matrix bandsystem(BandMatrix &A, Matrix &b,int *info_fail)
 {
 	int n = A.getColumns();
@@ -265,16 +282,18 @@ Matrix bandsystem(BandMatrix &A, Matrix &b,int *info_fail)
 	int info = 1;
 	int *ipiv;
 	ipiv = new int[b.getLines()];
-	//Faz fatoracao LU
+	//Does LU factorization
+#ifdef GIRAFFE_USE_MKL
 	MKL_Set_Num_Threads(1);
 	//mkl_set_dynamic(1);
+#endif
 	dgbtrf(&n,&n,&kl,&ku,A.m_matrix,&ldab,ipiv,&info);
 	if (info != 0)
 	{
 		printf("Error in LU factorization - bandsystem function\n");
 		*info_fail = 1;
 	}
-	//Resolve o sistema linear
+	//Solves the linear system
 	dgbtrs(&trans,&n,&kl,&ku,&nrhs,A.m_matrix,&ldab,ipiv,b.getMatrix(),&n,&info);
 	if (info != 0)
 	{
@@ -285,10 +304,10 @@ Matrix bandsystem(BandMatrix &A, Matrix &b,int *info_fail)
 	delete []ipiv;
 	return b;
 }
-//Operador Multiplicacao de matrizes (matrix2 deve necessariamente ser um vetor)
-Matrix operator * (BandMatrix &matrix1, Matrix &matrix2)
+//Operator Multiplication of matrices (matrix2 must necessariamente be a vector)
+Matrix operator * (const BandMatrix &matrix1, const Matrix &matrix2)
 {
-	//Verificação da possibilidade de multiplicação
+	//Verificaï¿½ï¿½o of the possibility of multiplicaï¿½ï¿½o
 	if (matrix1.getColumns() != matrix2.getLines())
 	{
 		printf("Impossible to multiply matrices. Dimensions are uncompatible\n");
@@ -298,7 +317,7 @@ Matrix operator * (BandMatrix &matrix1, Matrix &matrix2)
 	{
 		Matrix return_m(matrix1.getColumns(),1);
 		
-		//Multiplicação
+		//Multiplicaï¿½ï¿½o
 		int c_index = 0;
 		for (int i = 0; i < matrix1.getColumns();i++)
 		{
@@ -311,7 +330,7 @@ Matrix operator * (BandMatrix &matrix1, Matrix &matrix2)
 		return return_m;
 	}
 }
-//Retorna a matriz quadrada (FULL)
+//Returns the square matrix (FULL)
 Matrix BandMatrix::Full()
 {
 
@@ -321,7 +340,7 @@ Matrix BandMatrix::Full()
 	{
 		for(long j=0; j < m_columns; j++)
 		{
-			//Se esta na região de valores não nulos
+			//If this in the regiï¿½o of values nï¿½o null
 			if(i-j <= m_band_i && j-i <= m_band_s)
 				return_m(i,j) = this->getValue(i,j);
 			else
@@ -331,37 +350,37 @@ Matrix BandMatrix::Full()
 	
 	return return_m;
 }
-//Operador Multiplicacao de matriz de banda por escalar
-BandMatrix operator * (double sigma, BandMatrix &matrix1)
+//Operator Multiplication of band matrix by scalar
+BandMatrix operator * (double sigma, const BandMatrix &matrix1)
 {
 	BandMatrix return_m(matrix1.getBands(),matrix1.getBandi(),matrix1.getColumns());
 	
-	//Multiplicação
+	//Multiplicaï¿½ï¿½o
 	for (int i=0;i<return_m.m_alloced_lines;i++)
 		return_m.getMatrix()[i] = matrix1.getMatrix()[i]*sigma;
 
 	return return_m;
 }
-//Operador soma de matrizes de banda
-BandMatrix operator + (BandMatrix &matrix1, BandMatrix &matrix2)
+//Operator sum of matrices of band
+BandMatrix operator + (const BandMatrix &matrix1, const BandMatrix &matrix2)
 {
 	BandMatrix return_m(matrix1.getBands(),matrix1.getBandi(),matrix1.getColumns());
 
-	//Verificação da possibilidade de multiplicação
+	//Verificaï¿½ï¿½o of the possibility of multiplicaï¿½ï¿½o
 	if (matrix1.getColumns() != matrix2.getColumns() || matrix1.getBandi() != matrix2.getBandi() || matrix1.getBands() != matrix2.getBands())
 	{
 		printf("Impossible to sum matrices. Dimensions are uncompatible\n");
 	}
 	else
 	{
-		//SOMA
+		//SUM
 		for (int i=0;i<return_m.m_alloced_lines;i++)
 			return_m.getMatrix()[i] = matrix1.getMatrix()[i] + matrix2.getMatrix()[i];
 	}
 	return return_m;
 }
 
-long BandMatrix::getAllocedLines()
+long BandMatrix::getAllocedLines() const
 {
 	return m_alloced_lines;
 }

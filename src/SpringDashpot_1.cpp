@@ -8,7 +8,7 @@
 
 #define PI 3.1415926535897932384626433832795
 
-//Variaveis globais
+//Global variables
 extern
 Database db;
 
@@ -33,10 +33,10 @@ SpringDashpot_1::SpringDashpot_1()
 	for (int i = 0; i < n_nodes;i++)
 		DOFs[i] = new int[db.number_GLs_node];
 
-	type_name = new char[20];//Nome do tipo do elemento
+	type_name = new char[20];//Name of the type of the element
 	sprintf(type_name, "SpringDashpot_1");
 
-	//Rotina para ativar os GLS de cada nó do elemento
+	//Routine for activate the GLS of each node of the element
 	for (int i = 0; i < n_nodes; i++)
 	{
 		for (int j = 0; j < db.number_GLs_node; j++)
@@ -48,7 +48,7 @@ SpringDashpot_1::SpringDashpot_1()
 		DOFs[i][2] = 1;
 	}
 
-	//Zerando coeficientes do elemento
+	//Zeroing coefficients of the element
 	k = 0.0;
 	c = 0.0;
 	initial_distance = 0.0;
@@ -57,11 +57,11 @@ SpringDashpot_1::SpringDashpot_1()
 	elastic_force = 0.0;
 	damping_force = 0.0;
 
-	c_stiffness = Matrix(6, 6);									//Matriz de rigidez
-	c_damping = Matrix(6, 6);									//Matriz de amortecimento
-	c_damping_modal = Matrix(6, 6);								//Matriz de amortecimento
-	c_stiffness_force = Matrix(6, 1);							//Vetor de esforços elasticos
-	c_damping_force = Matrix(6, 1);								//Vetor de esforços de amortecimento
+	c_stiffness = Matrix(6, 6);									//Stiffness matrix
+	c_damping = Matrix(6, 6);									//Damping matrix
+	c_damping_modal = Matrix(6, 6);								//Damping matrix
+	c_stiffness_force = Matrix(6, 1);							//Vector of internal forces elasticos
+	c_damping_force = Matrix(6, 1);								//Vector of internal forces of damping
 	I3 = Matrix(3, 3);
 	I3(0, 0) = 1.0;
 	I3(1, 1) = 1.0;
@@ -72,9 +72,9 @@ SpringDashpot_1::SpringDashpot_1()
 	xd1 = Matrix(3, 1);
 	xd2 = Matrix(3, 1);
 
-	z1z2 = Matrix(3, 1);		//distancia atual entre nós
-	n = Matrix(3, 1);			//direção normal da mola
-	last_n = Matrix(3, 1);		//ultima direção normal convergida da mola
+	z1z2 = Matrix(3, 1);		//distance current between nodes
+	n = Matrix(3, 1);			//normal direction of the spring
+	last_n = Matrix(3, 1);		//last normal direction converged of the spring
 	first_evaluation = true;
 	non = Matrix(3, 3);
 	f = 0.0;
@@ -96,7 +96,7 @@ SpringDashpot_1::~SpringDashpot_1()
 	delete[]type_name;
 }
 
-//Checa inconsistências no elemento para evitar erros de execução
+//Checks inconsistencies in the element for avoid errors of execution
 bool SpringDashpot_1::Check()
 {
 	for (int i = 0; i < n_nodes; i++)
@@ -154,60 +154,60 @@ void SpringDashpot_1::Write(FILE *f)
 		nodes[0],
 		nodes[1]);
 }
-//Escreve arquivo de resultados
+//Writes file of results
 void SpringDashpot_1::WriteResults(FILE *f)
 {
 	fprintf(f, "SpringDashpot_1\t%d\tDeformation\t%.6e\tElasticForce\t%.6e\tDampingForce\t%.6e\n",
 		number, gn, elastic_force, damping_force);
 }
 
-//Escreve no monitor do elemento//Escreve no monitor do elemento
+//Writes in the monitor of the element//Writes in the monitor of the element
 void SpringDashpot_1::WriteMonitor(FILE *f, bool first_record, double time)
 {
-	//Cabeçalho
+	//Header
 	if (first_record == true)
 		fprintf(f, "TIME\tDeformation\tElasticForce\tDampingForce\n");
-	//Informações a serem salvas
+	//Information the to be saved
 	fprintf(f, "%.6e\t%.6e\t%.6e\t%.6e\n",
 		time,gn,elastic_force,damping_force);
 }
 
 void SpringDashpot_1::WriteVTK_XMLBase(std::vector<float> *float_vector)
 {
-	//Imprime os resultados do elemento
+	//Prints the results of the element
 	int res_element = 3;
 	float_vector->push_back((float)gn);
 	float_vector->push_back((float)elastic_force);
 	float_vector->push_back((float)damping_force);
-	//Imprime valores nulos para resultados que não fazem sentido para esse tipo de elemento
+	//Prints values null for results that not fazem sentido for this element type
 	for (int i = res_element; i < db.n_element_results; i++)
 		float_vector->push_back(0.0);
 }
 void SpringDashpot_1::WriteVTK_XMLRender(FILE *f)
 {
-	//vetores para escrita no formato binario - usando a função 'enconde'
+	//vectors for writing in the formato binary - using the function 'enconde'
 	std::vector<float> float_vector;
 	std::vector<int> int_vector;
 
-	//Plotagem da mola, se a rigidez não for nula
+	//Plotting of the spring, if the stiffness not for nula
 	if (k != 0.0)
 	{
-		int n;								/*numero de espiras*/
-		float r, L, l;						/*raio da espira, comprimento da mola sem as extremidades e distancia entre espiras*/
-		float xa, ya, za, xb, yb, zb;       /*Pontos das extremidades*/
-		float d;                            /*Comprimento total*/
-		float D;                            /*Comprimento total da mola relaxada*/
-		float fr, fl;                       /*fatores raio r/d e comprimento da extremidade c/d*/
-		int numpontos, i, offsets;			/*numero de pontos DAS ESPIRAS*/
-		int tamanho;						/*tamanho dos vetores*/
-		float *x, *y, *z;					/*pontos das espiras*/
-		double teta;						/*angulo em rad*/
-		float c_i;							/*comprimento das extremidades*/
-		float *ro;							/*distancia do ponto a origem - mudança de coordenadas*/
-		float alfa, beta;                   /*angulos rotação nos eixos x e y - mudança de coordenadas*/
-		float *xg, *yg, *zg;				/*pontos das espiras no sistema global*/
+		int n;								/*number of espiras*/
+		float r, L, l;						/*radius of the espira, length of the spring without the extremidades and distance between espiras*/
+		float xa, ya, za, xb, yb, zb;       /*Points of the extremidades*/
+		float d;                            /*Length total*/
+		float D;                            /*Length total of the spring relaxada*/
+		float fr, fl;                       /*factors radius r/d and length of the extremidade c/d*/
+		int numpontos, i, offsets;			/*number of points OF THE ESPIRAS*/
+		int tamanho;						/*size of the vectors*/
+		float *x, *y, *z;					/*points of the espiras*/
+		double teta;						/*angle in rad*/
+		float c_i;							/*length of the extremidades*/
+		float *ro;							/*distance of the point the origin - change of coordinates*/
+		float alfa, beta;                   /*angles rotation in the eixos x and y - change of coordinates*/
+		float *xg, *yg, *zg;				/*points of the espiras in the system global*/
 
-		//Atribuição de parametros:
+		//Assignment of parameters:
 		n = 10;
 		xa = (float)db.nodes[nodes[0] - 1]->copy_coordinates[0];
 		ya = (float)db.nodes[nodes[0] - 1]->copy_coordinates[1];
@@ -241,7 +241,7 @@ void SpringDashpot_1::WriteVTK_XMLRender(FILE *f)
 		for (i = 2; i<numpontos + 2; i++)
 		{
 			x[i] = r*(float)cos(teta);
-			teta = teta + (PI / 10); /*18º em radianos*/
+			teta = teta + (PI / 10); /*18º in radianos*/
 		}
 		x[0] = x[1] = x[numpontos + 2] = x[numpontos + 3] = 0;
 
@@ -250,7 +250,7 @@ void SpringDashpot_1::WriteVTK_XMLRender(FILE *f)
 		for (i = 2; i<numpontos + 2; i++)
 		{
 			y[i] = r*(float)sin(teta);
-			teta = teta + (PI / 10); /*18º em radianos*/
+			teta = teta + (PI / 10); /*18º in radianos*/
 		}
 		y[0] = y[1] = y[numpontos + 2] = y[numpontos + 3] = 0;
 
@@ -266,7 +266,7 @@ void SpringDashpot_1::WriteVTK_XMLRender(FILE *f)
 		z[numpontos + 2] = z[numpontos + 1];
 		z[numpontos + 3] = d;
 
-		/*Mudança de coordenadas*/
+		/*Change of coordinates*/
 		alfa = atan2((ya - yb), (zb - za));
 		beta = asin((xb - xa) / d);
 		for (i = 0; i<numpontos + 4; i++)
@@ -354,12 +354,12 @@ void SpringDashpot_1::WriteVTK_XMLRender(FILE *f)
 		fprintf(f, "\t\t\t\t<DataArray Name=\"ElementResults\" type=\"Float32\" NumberOfComponents=\"%d\" format=\"binary\">\n", db.n_element_results);
 		for (int cell = 0; cell < n_cells; cell++)
 		{
-			//Imprime os resultados do elemento
+			//Prints the results of the element
 			int res_element = 3;
 			float_vector.push_back((float)(gn));
 			float_vector.push_back((float)(elastic_force));
 			float_vector.push_back((float)(damping_force));
-			//Imprime valores nulos para resultados que não fazem sentido para esse tipo de elemento
+			//Prints values null for results that not fazem sentido for this element type
 			for (int i = res_element; i < db.n_element_results; i++)
 				float_vector.push_back(0.0);
 		}
@@ -396,30 +396,30 @@ void SpringDashpot_1::WriteVTK_XMLRender(FILE *f)
 		delete[]zg;
 	}
 
-	//Plotagem do amortecedor
+	//Plotting of the amortecedor
 
 	if (c != 0)
 	{
-		float L;							/*Comprimentoda mola sem as extremidades*/
-		float xa, ya, za, xb, yb, zb;       /*Pontos das extremidades*/
-		int n;								/*numero de segmentos da circunferencia*/
-		float d;                            /*Comprimento total*/
-		float D;                            /*Comprimento total da mola relaxada*/
-		float r, R;							/*Raios dos cilindros menor e maior*/
-		float fR;							/*fator raio do cilindro maior R/D*/
-		float fl;							/*Comprimento da extremidade c/D*/
-		float fd;							/*comprimento cilindro de maior raio dp/D*/
-		int numpontos, i, offsets;			/*numero de pontos dos cilindros*/
-		int tamanho;						/*tamanho dos vetores*/
-		float *x, *y, *z;					/*pontos das espiras*/
-		double teta;						/*angulo em rad*/
-		float c_i;							/*comprimento das extremidades*/
-		float dp;							/*comprimento cilindro de maior raio*/
-		float *ro;							/*distancia do ponto a origem - mudança de coordenadas*/
-		float alfa, beta;                   /*angulos rotação nos eixos x e y - mudança de coordenadas*/
-		float *xg, *yg, *zg;				/*pontos das espiras no sistema global*/
+		float L;							/*Comprimentoda spring without the extremidades*/
+		float xa, ya, za, xb, yb, zb;       /*Points of the extremidades*/
+		int n;								/*number of segmentos of the circunferencia*/
+		float d;                            /*Length total*/
+		float D;                            /*Length total of the spring relaxada*/
+		float r, R;							/*Raios of the cilindros smaller and larger*/
+		float fR;							/*factor radius of the cilindro larger R/D*/
+		float fl;							/*Length of the extremidade c/D*/
+		float fd;							/*length cilindro of larger radius dp/D*/
+		int numpontos, i, offsets;			/*number of points of the cilindros*/
+		int tamanho;						/*size of the vectors*/
+		float *x, *y, *z;					/*points of the espiras*/
+		double teta;						/*angle in rad*/
+		float c_i;							/*length of the extremidades*/
+		float dp;							/*length cilindro of larger radius*/
+		float *ro;							/*distance of the point the origin - change of coordinates*/
+		float alfa, beta;                   /*angles rotation in the eixos x and y - change of coordinates*/
+		float *xg, *yg, *zg;				/*points of the espiras in the system global*/
 
-		//Atrubuição dos Parêmetros
+		//Atrubuição of the Parêmetros
 
 		xa = (float)db.nodes[nodes[0] - 1]->copy_coordinates[0];
 		ya = (float)db.nodes[nodes[0] - 1]->copy_coordinates[1];
@@ -446,7 +446,7 @@ void SpringDashpot_1::WriteVTK_XMLRender(FILE *f)
 		c_i = fl*D;
 		dp = fd*D;
 		R = fR*D;
-		r = R / 3;				/*raio do cilindro menor*/
+		r = R / 3;				/*radius of the cilindro smaller*/
 		L = d - 2 * c_i;
 		numpontos = n * 4;
 
@@ -493,7 +493,7 @@ void SpringDashpot_1::WriteVTK_XMLRender(FILE *f)
 		z[numpontos + 3] = d;
 
 
-		/*Mudança de coordenadas*/
+		/*Change of coordinates*/
 
 		alfa = atan2((ya - yb), (zb - za));
 		beta = asin((xb - xa) / d);
@@ -646,12 +646,12 @@ void SpringDashpot_1::WriteVTK_XMLRender(FILE *f)
 		fprintf(f, "\t\t\t\t<DataArray Name=\"ElementResults\" type=\"Float32\" NumberOfComponents=\"%d\" format=\"binary\">\n", db.n_element_results);
 		for (int cell = 0; cell < n_cells; cell++)
 		{
-			//Imprime os resultados do elemento
+			//Prints the results of the element
 			int res_element = 3;
 			float_vector.push_back((float)(gn));
 			float_vector.push_back((float)(elastic_force));
 			float_vector.push_back((float)(damping_force));
-			//Imprime valores nulos para resultados que não fazem sentido para esse tipo de elemento
+			//Prints values null for results that not fazem sentido for this element type
 			for (int i = res_element; i < db.n_element_results; i++)
 				float_vector.push_back(0.0);
 		}
@@ -689,49 +689,49 @@ void SpringDashpot_1::WriteVTK_XMLRender(FILE *f)
 	}
 }
 
-//Monta carregamentos associados ao elemento
+//Assembles loadings associated to the element
 void SpringDashpot_1::MountElementLoads()
 {
 
 }
 
-//Monta elementos
+//Assembles elements
 void SpringDashpot_1::Mount()
 {
 	for (int ind = 0; ind < 3; ind++)
 	{
-		xd1(ind, 0) = db.nodes[nodes[0] - 1]->vel[ind];	//Velocidade do Nó 1
-		xd2(ind, 0) = db.nodes[nodes[1] - 1]->vel[ind];	//Velocidade do Nó 2
-		z1(ind, 0) = db.nodes[nodes[0] - 1]->copy_coordinates[ind] + db.nodes[nodes[0] - 1]->displacements[ind];	//Posição do nó 1
-		z2(ind, 0) = db.nodes[nodes[1] - 1]->copy_coordinates[ind] + db.nodes[nodes[1] - 1]->displacements[ind];	//Posição do nó 2
+		xd1(ind, 0) = db.nodes[nodes[0] - 1]->vel[ind];	//Velocity of the Node 1
+		xd2(ind, 0) = db.nodes[nodes[1] - 1]->vel[ind];	//Velocity of the Node 2
+		z1(ind, 0) = db.nodes[nodes[0] - 1]->copy_coordinates[ind] + db.nodes[nodes[0] - 1]->displacements[ind];	//Position of the node 1
+		z2(ind, 0) = db.nodes[nodes[1] - 1]->copy_coordinates[ind] + db.nodes[nodes[1] - 1]->displacements[ind];	//Position of the node 2
 	}
 	
-	//Calculo da distancia entre os pontos
+	//Calculation of the distance between the points
 	z1z2 = z1 - z2;
-	//Direção normal
+	//Normal direction
 	n = (1.0 / norm(z1z2))*z1z2;
 	double norm_z1z2 = norm(z1z2);
 
-	//Calculo do gap - quando não houver inversão de pontos ou for a primeira vez que calcula (ate convergir algum passo do modelo)
+	//Calculation of the gap - when not there is inversão of points or for the first time that calculates (until convergir some step of the modelo)
 	if (dot(last_n, n) >= 0.0 || first_evaluation == true)
 	{
 		gn = norm_z1z2 - initial_distance;
 		f = (gn / norm_z1z2);
 	}
 		
-	else//houve inversão dos pontos
+	else//there was inversão of the points
 	{
 		gn = -(norm_z1z2 + initial_distance);
-		n = -1.0*n;//Inversão da normal
+		n = -1.0*n;//Inversão of the normal
 		f = gn / (norm_z1z2 + initial_distance);
 	}
 	
-	//Força na mola
+	//Force in the spring
 	elastic_force = k*gn;
-	//Força no amortecedor
+	//Force in the amortecedor
 	damping_force = c*dot(xd1 - xd2, n);
 
-	//Matrizes auxiliares para operador tangente
+	//Matrices auxiliary for operator tangent
 	non = dyadic(n, n);
 	if (typeid(*db.solution[db.current_solution_number - 1]) == typeid(Dynamic))
 	{
@@ -764,12 +764,12 @@ void SpringDashpot_1::Mount()
 		}
 	}
 }
-//Monta matriz de transformação de coordenadas
+//Assembles transformation matrix of coordinates
 void SpringDashpot_1::TransformMatrix()
 {
 	//DOES NOTHING
 }
-//Zera matrizes locais do elemento
+//Zeroes matrices local of the element
 void SpringDashpot_1::Zeros()
 {
 	c_stiffness.clear();									
@@ -781,7 +781,7 @@ void SpringDashpot_1::Zeros()
 	strain_energy = 0.0;
 	potential_gravitational_energy = 0.0;
 }
-//Preenche a contribuição do elemento nas matrizes globais
+//Fills the contribution of the element in the matrices global
 void SpringDashpot_1::MountGlobal()
 {
 	int GL_global_1 = 0;
@@ -789,14 +789,14 @@ void SpringDashpot_1::MountGlobal()
 	double anterior = 0;
 	for (int i = 0; i < 6; i++)
 	{
-		//Nó 1
+		//Node 1
 		if (i<3)
 			GL_global_1 = db.nodes[nodes[0] - 1]->GLs[i];
-		//Nó 2
+		//Node 2
 		else
 			GL_global_1 = db.nodes[nodes[1] - 1]->GLs[i - 3];
 
-		//Caso o grau de liberdade seja livre:
+		//Case the degree of freedom be free:
 		if (GL_global_1 > 0)
 		{
 			anterior = db.global_P_A(GL_global_1 - 1, 0);
@@ -811,36 +811,36 @@ void SpringDashpot_1::MountGlobal()
 		}
 		for (int j = 0; j < 6; j++)
 		{
-			//Nó 1
+			//Node 1
 			if (j<3)
 				GL_global_2 = db.nodes[nodes[0] - 1]->GLs[j];
-			//Nó 2
+			//Node 2
 			else
 				GL_global_2 = db.nodes[nodes[1] - 1]->GLs[j - 3];
 
-			//Caso os graus de liberdade sejam ambos livres (Matriz Kaa)
+			//Case the degrees of freedom be both free (Matrix Kaa)
 			if (GL_global_1 > 0 && GL_global_2 > 0)
 				db.global_stiffness_AA.setValue(GL_global_1 - 1, GL_global_2 - 1, c_stiffness(i, j));
-			//Caso os graus de liberdade sejam ambos fixos (Matriz Kbb)
+			//Case the degrees of freedom be both fixed (Matrix Kbb)
 			if (GL_global_1 < 0 && GL_global_2 < 0)
 				db.global_stiffness_BB.setValue(-GL_global_1 - 1, -GL_global_2 - 1, c_stiffness(i, j));
-			//Caso os graus de liberdade sejam livre e fixo (Matriz Kab)
+			//Case the degrees of freedom be free and fixed (Matrix Kab)
 			if (GL_global_1 > 0 && GL_global_2 < 0)
 				db.global_stiffness_AB.setValue(GL_global_1 - 1, -GL_global_2 - 1, c_stiffness(i, j));
-			//Caso os graus de liberdade sejam fixo e livre (Matriz Kba)
+			//Case the degrees of freedom be fixed and free (Matrix Kba)
 			if (GL_global_1 < 0 && GL_global_2 > 0)
 				db.global_stiffness_BA.setValue(-GL_global_1 - 1, GL_global_2 - 1, c_stiffness(i, j));
 		}
 	}
 }
-//Salva variaveis nos pontos de Gauss uteis para descrição lagrangiana atualizada
+//Saves variables in the gauss points useful for description lagrangiana updated
 void SpringDashpot_1::SaveLagrange()
 {
-	//Salva a direção convergida da mola (para checar inversões no passo posterior)
+	//Saves the direction converged of the spring (for check inversões in the step subsequent)
 	last_n = n;
 	first_evaluation = false;
 }
-//Pre-calculo de variaveis que e feito uma unica vez no inicio
+//Pre-calculation of variables that and done a single time in the start
 void SpringDashpot_1::PreCalc()
 {
 	z1(0, 0) = db.nodes[nodes[0] - 1]->ref_coordinates[0];
@@ -854,42 +854,42 @@ void SpringDashpot_1::PreCalc()
 	initial_distance = norm(z1 - z2);
 }
 
-//Monta a matriz de massa
+//Assembles the mass matrix
 void SpringDashpot_1::MountMass()
 {
 	//DOES NOTHING
 }
 
-//Monta a matriz de massa
+//Assembles the mass matrix
 void SpringDashpot_1::MountMassModal()
 {
 	Zeros();
 	//DOES NOTHING
 }
 
-//Monta a matriz de amortecimento para realização da analise modal
+//Assembles the damping matrix for performing of the analysis modal
 void SpringDashpot_1::MountDampingModal()
 {
 	Zeros();
-	//TODO
+	//ALL
 }
 
-//Monta a matriz de amortecimento
+//Assembles the damping matrix
 void SpringDashpot_1::MountDamping(bool update_rayleigh)
 {
 	//DOES NOTHING
 }
 
-//Montagens - Newmark
+//Assemblies - Newmark
 void SpringDashpot_1::MountDyn()
 {
-	//Modificações da dinamica
+	//Modificações of the dynamics
 	c_stiffness = c_stiffness + c_damping;
-	//Modificações da dinamica nos esforços - presença das forças de amortecimento
+	//Modificações of the dynamics in the internal forces - presença of the forces of damping
 	c_stiffness_force = c_stiffness_force + c_damping_force;
 }
 
-//Montagens para analise modal - inserção da matriz de massa e amortecimento na matriz de rigidez para posterior montagem global
+//Assemblies for analysis modal - insertion of the mass matrix and damping in the stiffness matrix for subsequent assembly global
 void SpringDashpot_1::MountDynModal()
 {
 	c_stiffness = c_damping_modal;

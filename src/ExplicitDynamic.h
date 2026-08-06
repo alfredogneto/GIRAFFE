@@ -13,8 +13,8 @@ public:
 	void Write(FILE *f);		//Writes output file
 	bool Solve();				//Solves solution routine
 	
-	void WriteResults();		//Escreve resultados de acordo com uma amostragem especificada
-	void SetGlobalSizeExplicit();				//Seta tamanhos de contribuições globais - explicito
+	void WriteResults();		//Writes results according to a amostragem specified
+	void SetGlobalSizeExplicit();				//Sets tamanhos of contributions global - explicito
 	void MountExplicit();
 	void Euler();
 	void RungeKutta4();
@@ -30,7 +30,7 @@ public:
 	double i_time_step;
 	double max_time_step;
 	double min_time_step;
-	char* method;	//Nome do tipo do metodo
+	char* method;	//Name of the type of the method
 	
 	int sample;
 	//Damping

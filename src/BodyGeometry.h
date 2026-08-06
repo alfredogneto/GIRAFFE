@@ -10,14 +10,14 @@ public:
 	BodyGeometry();
 	~BodyGeometry();
 
-	int n_items;			//numero de items
-	int* list_items;		//lista 
-	int number;				//numero de referência
+	int n_items;			//number of items
+	int* list_items;		//list 
+	int number;				//reference number
 
-	bool sequence;			//true se e do tipo sequence
-	bool list;				//true se e do tipo list
+	bool sequence;			//true if and of the type sequence
+	bool list;				//true if and of the type list
 
-	//Para o caso de sequence
+	//For the case of sequence
 	int initial;
 	int increment;
 
@@ -34,8 +34,8 @@ public:
 	void PreCalc();
 	void UpdateVariables();
 	void UpdateBoundingVolumes();				//Updates bounding volumes
-	void SaveLagrange();						//Salva variaveis
+	void SaveLagrange();						//Saves variables
 
-	double mass;								//Massa do Body - para computar contact damping
+	double mass;								//Mass of the Body - for compute contact damping
 };
 

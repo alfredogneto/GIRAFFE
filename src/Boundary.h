@@ -10,38 +10,38 @@ public:
 	Boundary();
 	virtual ~Boundary();
 
-	int node;				//Nó de referência
-	int number;				//ID da boundary
-	int cs;					//ID do sistema de coordenadas
-	int material;			//ID do material do contorno (para atribuição de leis de interface)
+	int node;				//Node of reference
+	int number;				//ID of the boundary
+	int cs;					//ID of the coordinate system
+	int material;			//ID of the material of the boundary (for assignment of leis of interface)
 
 	void Alloc();
 	void Free();
 	void UpdateVariables();
 
-	//Funções especificas para cada tipo de particula
+	//Functions especificas for each type of particle
 	virtual bool Read(FILE *f) = 0;
 	virtual void Write(FILE *f) = 0;
 	virtual void WriteModifyingParameters(FILE *f, int e_material, int e_node, int e_number, int e_cs) = 0;
-	virtual bool Check() = 0;								//Checa inconsistências na particula para evitar erros de execução
+	virtual bool Check() = 0;								//Checks inconsistencies in the particle for avoid errors of execution
 
-	virtual void PreCalc() = 0;								//Pre-calculo de variaveis que e feito uma unica vez no inicio
+	virtual void PreCalc() = 0;								//Pre-calculation of variables that and done a single time in the start
 	virtual void UpdateBoundingVolumes() = 0;				//Updates bounding volumes
-	virtual void SaveLagrange() = 0;						//Salva variaveis
+	virtual void SaveLagrange() = 0;						//Saves variables
 	virtual void WriteVTK_XMLBase(FILE *f) = 0;
 	virtual void WriteVTK_XMLRender(FILE *f) = 0;
 
-	//Variaveis - bounding volumes
+	//Variables - bounding volumes
 	BoundingVolume* bv;												//Bounding volume
 	int n_sub_bv;													//Number of sub bounding volumes
 	BoundingVolume** sub_bv;										//Sub bounding volumes
 
 	Matrix* I3;
-	Matrix* Q0;														//Transformação de coordenadas
-	//Variaveis para calcular estado atual (nas funcoes de contato)
+	Matrix* Q0;														//Transformation of coordinates
+	//Variables for calculate state current (in the functions of contact)
 	Matrix* Qip;
 	Matrix* x0ip;
-	//Variaveis para calcular estado anterior (nas funcoes de contato)
+	//Variables for calculate state previous (in the functions of contact)
 	Matrix* Qi;
 	Matrix* x0i;
 

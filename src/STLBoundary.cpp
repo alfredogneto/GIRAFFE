@@ -14,7 +14,7 @@
 #include "TriangularFace.h"
 #include "MatrixFloat.h"
 #include"Database.h"
-//Variaveis globais
+//Global variables
 extern
 Database db;
 
@@ -131,7 +131,7 @@ void STLBoundary::WriteModifyingParameters(FILE *f, int e_material, int e_node, 
 //Explicit
 void STLBoundary::InitialEvaluations()
 {
-	//Seta variaveis nodais associadas com o tratamento que essa particula vai empregar
+	//Sets variables nodal associated with the tratamento that this particle vai empregar
 	*db.nodes[node - 1]->Q0 = *Q0;
 	db.nodes[node - 1]->flag_material_description = true;
 	db.nodes[node - 1]->flag_pseudo_moment = false;
@@ -140,8 +140,8 @@ void STLBoundary::InitialEvaluations()
 void STLBoundary::PreCalc()
 {
 	////////////////////////////////////////////////////////////////
-	//Matriz para transformação de coordenadas  local-global
-	//vlocal = (sistema do CAD)
+	//Matrix for transformation of coordinates  local-global
+	//vlocal = (system of the CAD)
 	// Q0*vlocal = vglobal
 	////////////////////////////////////////////////////////////////
 	(*Q0)(0, 0) = (*db.CS[cs - 1]->E1)(0, 0);
@@ -157,7 +157,7 @@ void STLBoundary::PreCalc()
 	//////////////////////////////////////Bounding Volumes////////////////////////////////////
 	if (db.gcs_exist)
 		inc_len_factor = db.gcs->inc_len_factor;
-	//PreCalc do CAD e chamado antes do PreCalc das particulas
+	//PreCalc of the CAD and called before of the PreCalc of the particles
 	BoundingSphere* ptr_bv1 = static_cast<BoundingSphere*>(bv);
 	STLSurface* ptr_cad = static_cast<STLSurface*>(db.cad_data[CADDATA_ID - 1]);
 	//Initial settings of the spherical bounding volume
@@ -193,7 +193,7 @@ void STLBoundary::PreCalc()
 	for (int i = ptr_cad->n_faces; i < ptr_cad->n_faces + (int)ptr_cad->edges.size(); i++)
 	{
 		sub_bv[i] = new BoundingCylinder();
-		//Determining the radius of the cylinder (smallest radius related to a neighboring face)
+		//Determining the radius of the cylinder (smallest radius related to the neighboring face)
 		float temp_radius = FLT_MAX;
 		for (int j = 0; j < ptr_cad->edges[i - ptr_cad->n_faces].faceIDs.size(); j++)
 		{
@@ -216,7 +216,7 @@ void STLBoundary::PreCalc()
 	for (int i = ptr_cad->n_faces + (int)ptr_cad->edges.size(); i < ptr_cad->n_faces + (int)ptr_cad->edges.size() + (int)ptr_cad->vertices.size(); i++)
 	{
 		sub_bv[i] = new BoundingSphere();
-		//Determining the radius of the cylinder (smallest radius related to a neighboring face)
+		//Determining the radius of the cylinder (smallest radius related to the neighboring face)
 		float temp_radius = FLT_MAX;
 		for (int j = 0; j < ptr_cad->vertices[i - ptr_cad->n_faces - (int)ptr_cad->edges.size()].faceIDs.size(); j++)
 		{
@@ -241,7 +241,7 @@ void STLBoundary::UpdateBoundingVolumes()
 {
 	//Evaluating x0f and Q0f
 
-	//Conversão da matriz de rotação para single precision
+	//Conversion of the rotation matrix for single precision
 	*x0f = *x0ip;
 	*Q0f = *Qip;
 

@@ -11,7 +11,7 @@ public:
 
 	int number;				//ID
 	Matrix ref_position;	//Reference position for aerodynamic forces
-	double ref_length;		//Comprimento de refer�ncia (corda)
+	double ref_length;		//Length of refer�ncia (corda)
 	Table* CL;				//Lift coeff. vs. alpha
 	Table* CD;				//Drag coeff. vs. alpha
 	Table* CM;				//Pitching coeff. vs. alpha

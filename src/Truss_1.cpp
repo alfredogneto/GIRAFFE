@@ -9,7 +9,7 @@
 #include "Section.h"
 #include "PipeSection.h"
 #include "Database.h"
-//Variaveis globais
+//Global variables
 extern
 Database db;
 #define PI 3.1415926535897932384626433832795
@@ -43,10 +43,10 @@ Truss_1::Truss_1()
 	for (int i = 0; i < n_nodes; i++)
 		DOFs[i] = new int[db.number_GLs_node];
 
-	type_name = new char[20];//Nome do tipo do elemento
+	type_name = new char[20];//Name of the type of the element
 	sprintf(type_name, "Truss_1");
 
-	//Rotina para ativar os GLS de cada nó do elemento
+	//Routine for activate the GLS of each node of the element
 	for (int i = 0; i < n_nodes; i++)
 	{
 		for (int j = 0; j < db.number_GLs_node; j++)
@@ -58,7 +58,7 @@ Truss_1::Truss_1()
 		DOFs[i][2] = 1;
 	}
 
-	//Variaveis do elemento
+	//Variables of the element
 	T = 0.0;										
 	L = 0.0;										
 	l = 0.0;										
@@ -105,12 +105,12 @@ Truss_1::Truss_1()
 	flag_hydro = false;
 	pipe_sec = 0;
 
-	//Cada variavel carregara a informação para seu ponto de Gauss
+	//Each variable carregara the information for its gauss point
 	int ngauss = 2;
 	N1 = new double[ngauss];
 	N2 = new double[ngauss];
 	N = new Matrix*[2];
-	//Loop nos pontos de Gauss
+	//Loop over the Gauss points
 	for (int i = 0; i < ngauss; i++)
 		N[i] = new Matrix(3, 6);
 }
@@ -129,13 +129,13 @@ Truss_1::~Truss_1()
 
 	delete[] N1;
 	delete[] N2;
-	//Loop nos pontos de Gauss
+	//Loop over the Gauss points
 	for (int i = 0; i < 2; i++)
 		delete N[i];
 	delete[] N;
 }
 
-//Checa inconsistências no elemento para evitar erros de execução
+//Checks inconsistencies in the element for avoid errors of execution
 bool Truss_1::Check()
 {
 	for (int i = 0; i < n_nodes; i++)
@@ -162,7 +162,7 @@ bool Truss_1::Read(FILE *f)
 		fscanf(f, "%s", s);
 		material = atoi(s);
 
-		flag_hydro = false;			//não vai computar esforços hidrodinamicos (não ha coef. disponiveis)
+		flag_hydro = false;			//not vai compute internal forces hidrodinamicos (not there is coef. disponiveis)
 
 		fscanf(f, "%s", s);
 		if (!strcmp(s, "Sec"))
@@ -180,7 +180,7 @@ bool Truss_1::Read(FILE *f)
 			fscanf(f, "%s", s);
 			pipe_sec = atoi(s);
 
-			flag_hydro = true;		//vai computar esforços hidrodinamicos (ha coef. disponiveis)
+			flag_hydro = true;		//vai compute internal forces hidrodinamicos (there is coef. disponiveis)
 		}
 		else
 			return false;
@@ -198,7 +198,7 @@ bool Truss_1::Read(FILE *f)
 	else
 		return false;
 
-	//Salva a posição (stream)
+	//Saves the position (stream)
 	fpos_t pos;
 	fgetpos(f, &pos);
 	fscanf(f, "%s", s);
@@ -231,46 +231,46 @@ void Truss_1::Write(FILE *f)
 		nodes[1],
 			T0);
 }
-//Escreve arquivo de resultados
+//Writes file of results
 void Truss_1::WriteResults(FILE *f)
 {
 	fprintf(f, "Truss_1\t%d\tNormalForce\t%.14e\tDeformedArea\t%.14e\tDeformedLength\t%.14e\tDeformedLengthPlastic\t%.14e\tKirschhoffStress\t%.14e\n",number,T,a,l,l_p,tau);
 }
 
-//Escreve no monitor do elemento
+//Writes in the monitor of the element
 void Truss_1::WriteMonitor(FILE *f, bool first_record, double time)
 {
-	//Cabeçalho
+	//Header
 	if (first_record == true)
 		fprintf(f, "TIME\tTension\tDeformedArea\tDeformedLength\tDeformedLengthPlastic\tKirschhoffStress\t\n");
-	//Informações a serem salvas
+	//Information the to be saved
 	fprintf(f, "%.6e\t%.6e\t%.6e\t%.6e\t%.6e\t%.6e\n",
 		time, T,a,l,l_p,tau);
 }
 
 void Truss_1::WriteVTK_XMLBase(std::vector<float> *float_vector)
 {
-	//Imprime os resultados do elemento
+	//Prints the results of the element
 	int res_element = 5;
 	float_vector->push_back((float)T);
 	float_vector->push_back((float)a);
 	float_vector->push_back((float)l);
 	float_vector->push_back((float)l_p);
 	float_vector->push_back((float)tau);
-	//Imprime valores nulos para resultados que não fazem sentido para esse tipo de elemento
+	//Prints values null for results that not fazem sentido for this element type
 	for (int i = res_element; i < db.n_element_results; i++)
 		float_vector->push_back(0.0);
 }
 void Truss_1::WriteVTK_XMLRender(FILE *f)
 {
-	//TODO
+	//ALL
 	//element index 7
 }
 
-//Monta carregamentos associados ao elemento
+//Assembles loadings associated to the element
 void Truss_1::MountElementLoads()
 {
-	////////////////////////////////////////////////////////////////Peso próprio (efetivo)////////////////////////////////////////////////////////
+	////////////////////////////////////////////////////////////////Weight próprio (efetivo)////////////////////////////////////////////////////////
 	if (db.environment_exist == true)
 	{
 		if (db.environment->g_exist == true)
@@ -278,7 +278,7 @@ void Truss_1::MountElementLoads()
 			load_multiplier = 1.0;
 			l_factor = db.environment->bool_g.GetLinearFactorAtCurrentTime();
 
-			//Loop nos pontos de Gauss
+			//Loop over the Gauss points
 			Matrix pos_gauss(3);
 			double depth;
 			double alpha1 = 1.0;
@@ -287,14 +287,14 @@ void Truss_1::MountElementLoads()
 			{
 				if (db.environment->ocean_data_exist == true)
 				{
-					//Posição do ponto de Gauss
+					//Position of the gauss point
 					for (int i = 0; i < 3; i++)
 					{
 						pos_gauss(i, 0) = (db.nodes[nodes[0] - 1]->copy_coordinates[i])* N1[gauss] + (db.nodes[nodes[1] - 1]->copy_coordinates[i])* N2[gauss] +
 							(db.nodes[nodes[0] - 1]->displacements[i])* N1[gauss] + (db.nodes[nodes[1] - 1]->displacements[i])* N2[gauss];
 					}
 					
-					//Verifica profundidade e assinala o valor correto para o rho
+					//Checks profundidade and assinala the value correct for the rho
 					depth = dot((pos_gauss - db.environment->surface_position), db.environment->G)*(1.0 / norm(db.environment->G));
 					if (depth > 0)
 						mult = l_factor*load_multiplier*alpha1*jacobian*(rho_len - db.environment->rho_fluid*Ahydro);
@@ -314,15 +314,15 @@ void Truss_1::MountElementLoads()
 					c_external_loads(4, 0) += mult * N2[gauss] * db.environment->G(1, 0);
 					c_external_loads(5, 0) += mult * N2[gauss] * db.environment->G(2, 0);
 				}
-			}//end of gauss loop
+			}//end of Gauss loop
 		}
 	}
 	MountSeaCurrentLoading();
-	c_internal_loads = c_internal_loads - c_external_loads;					//Vetor esforço desbalanceado
-	c_stiffness_matrix = c_stiffness_matrix - c_external_loads_stiffness;	//Matriz de rigidez tangente
+	c_internal_loads = c_internal_loads - c_external_loads;					//Vector internal force unbalanced
+	c_stiffness_matrix = c_stiffness_matrix - c_external_loads_stiffness;	//Stiffness matrix tangent
 }
 
-//Monta carregamento de correnteza/amortecimento hidro (Morison)
+//Assembles loading of correnteza/damping hidro (Morison)
 void Truss_1::MountSeaCurrentLoading()
 {
 	////////////////////////////////////////////////////////////////Sea current load////////////////////////////////////////////////////////
@@ -333,7 +333,7 @@ void Truss_1::MountSeaCurrentLoading()
 			load_multiplier = 1.0;
 			l_factor = db.environment->bool_current.GetLinearFactorAtCurrentTime();
 
-			//Loop nos pontos de Gauss
+			//Loop over the Gauss points
 			Matrix pos_gauss(3);
 			double depth;
 			double alpha1 = 1.0;
@@ -374,7 +374,7 @@ void Truss_1::MountSeaCurrentLoading()
 					temp_a5 = 0;
 					temp_a6 = 0;
 				}
-				//Calculando posições e deslocamentos das extremidades
+				//Calculating positions and displacements of the extremidades
 				for (int i = 0; i < 3; i++)
 				{
 					xA(i, 0) = db.nodes[nodes[0] - 1]->copy_coordinates[i];
@@ -382,10 +382,10 @@ void Truss_1::MountSeaCurrentLoading()
 					uA(i, 0) = db.nodes[nodes[0] - 1]->displacements[i];
 					uB(i, 0) = db.nodes[nodes[1] - 1]->displacements[i];
 				}
-				//Loop nos pontos de Gauss
+				//Loop over the Gauss points
 				for (int gauss = 0; gauss < 2; gauss++)
 				{
-					//Posição do ponto de Gauss
+					//Position of the gauss point
 					for (int i = 0; i < 3; i++)
 						pos_gauss(i, 0) = (db.nodes[nodes[0] - 1]->copy_coordinates[i])* N1[gauss] + (db.nodes[nodes[1] - 1]->copy_coordinates[i])* N2[gauss] +
 							(db.nodes[nodes[0] - 1]->displacements[i])* N1[gauss] + (db.nodes[nodes[1] - 1]->displacements[i])* N2[gauss];
@@ -394,7 +394,7 @@ void Truss_1::MountSeaCurrentLoading()
 					Matrix Uinf(3);
 					if (depth > 0)
 					{
-						//velocidade ao longe (correnteza)
+						//velocity to the longe (correnteza)
 						Uinf = db.environment->VelocityAt(depth);
 						for (int i = 0; i < 3; i++)
 						{
@@ -411,7 +411,7 @@ void Truss_1::MountSeaCurrentLoading()
 						c_external_loads = c_external_loads + mult*transp(*N[gauss])*force;
 					}
 
-				}//end of gauss loop
+				}//end of Gauss loop
 				//Cleaning
 				for (int i = 0; i < 3; i++)
 					delete[]stiff1[i];
@@ -423,10 +423,10 @@ void Truss_1::MountSeaCurrentLoading()
 		}
 	}
 }
-//Monta elementos
+//Assembles elements
 void Truss_1::Mount()
 {
-	Zeros();	//Zera matrizes
+	Zeros();	//Zeroes matrices
 	//Contributions due to internal loads
 	//Position of nodes
 	Matrix xa(3);
@@ -517,12 +517,12 @@ void Truss_1::Mount()
 		}
 	}
 }
-//Monta matriz de transformação de coordenadas
+//Assembles transformation matrix of coordinates
 void Truss_1::TransformMatrix()
 {
 	//DOES NOTHING
 }
-//Zera matrizes locais do elemento
+//Zeroes matrices local of the element
 void Truss_1::Zeros()
 {
 	zeros(&c_external_loads);
@@ -531,7 +531,7 @@ void Truss_1::Zeros()
 	strain_energy = 0.0;
 	potential_gravitational_energy = 0.0;
 }
-//Preenche a contribuição do elemento nas matrizes globais
+//Fills the contribution of the element in the matrices global
 void Truss_1::MountGlobal()
 {
 	int GL_global_1 = 0;
@@ -539,14 +539,14 @@ void Truss_1::MountGlobal()
 	double anterior = 0;
 	for (int i = 0; i < 6; i++)
 	{
-		//Nó 1
+		//Node 1
 		if (i<3)
 			GL_global_1 = db.nodes[nodes[0] - 1]->GLs[i];
-		//Nó 2
+		//Node 2
 		else
 			GL_global_1 = db.nodes[nodes[1] - 1]->GLs[i - 3];
 
-		//Caso o grau de liberdade seja livre:
+		//Case the degree of freedom be free:
 		if (GL_global_1 > 0)
 		{
 			anterior = db.global_P_A(GL_global_1 - 1, 0);
@@ -561,29 +561,29 @@ void Truss_1::MountGlobal()
 		}
 		for (int j = 0; j < 6; j++)
 		{
-			//Nó 1
+			//Node 1
 			if (j<3)
 				GL_global_2 = db.nodes[nodes[0] - 1]->GLs[j];
-			//Nó 2
+			//Node 2
 			else
 				GL_global_2 = db.nodes[nodes[1] - 1]->GLs[j - 3];
 
-			//Caso os graus de liberdade sejam ambos livres (Matriz Kaa)
+			//Case the degrees of freedom be both free (Matrix Kaa)
 			if (GL_global_1 > 0 && GL_global_2 > 0)
 				db.global_stiffness_AA.setValue(GL_global_1 - 1, GL_global_2 - 1, c_stiffness_matrix(i, j));
-			//Caso os graus de liberdade sejam ambos fixos (Matriz Kbb)
+			//Case the degrees of freedom be both fixed (Matrix Kbb)
 			if (GL_global_1 < 0 && GL_global_2 < 0)
 				db.global_stiffness_BB.setValue(-GL_global_1 - 1, -GL_global_2 - 1, c_stiffness_matrix(i, j));
-			//Caso os graus de liberdade sejam livre e fixo (Matriz Kab)
+			//Case the degrees of freedom be free and fixed (Matrix Kab)
 			if (GL_global_1 > 0 && GL_global_2 < 0)
 				db.global_stiffness_AB.setValue(GL_global_1 - 1, -GL_global_2 - 1, c_stiffness_matrix(i, j));
-			//Caso os graus de liberdade sejam fixo e livre (Matriz Kba)
+			//Case the degrees of freedom be fixed and free (Matrix Kba)
 			if (GL_global_1 < 0 && GL_global_2 > 0)
 				db.global_stiffness_BA.setValue(-GL_global_1 - 1, GL_global_2 - 1, c_stiffness_matrix(i, j));
 		}
 	}
 }
-//Salva variaveis nos pontos de Gauss uteis para descrição lagrangiana atualizada
+//Saves variables in the gauss points useful for description lagrangiana updated
 void Truss_1::SaveLagrange()
 {
 	//Saving copies of plasticity history variables
@@ -591,7 +591,7 @@ void Truss_1::SaveLagrange()
 	epsp_i = epsp;
 	l_p_i = l_p;
 }
-//Pre-calculo de variaveis e feito uma unica vez no inicio
+//Pre-calculation of variables and done a single time in the start
 void Truss_1::PreCalc()
 {
 	//Position of nodes
@@ -638,7 +638,7 @@ void Truss_1::PreCalc()
 	{
 		E = db.pipe_sections[pipe_sec - 1]->EA;
 		A = 1.0;
-		Ahydro = PI*db.pipe_sections[pipe_sec - 1]->De*db.pipe_sections[pipe_sec - 1]->De / 4.0;	//area externa
+		Ahydro = PI*db.pipe_sections[pipe_sec - 1]->De*db.pipe_sections[pipe_sec - 1]->De / 4.0;	//area external
 		rho_len = db.pipe_sections[pipe_sec - 1]->Rho;
 		double rho_f = 0.0;
 		if (db.environment_exist == true)
@@ -678,12 +678,12 @@ void Truss_1::PreCalc()
 	l_p = L;
 	l_p_i = L;
 
-	//Percorre pontos de Gauss para salvar algumas matrizes/vetores de interesse nos calculos do elemento
+	//Iterates over gauss points for save some matrices/vectors of interest in the calculations of the element
 	int ngauss = 2;
 	double csi = 0.0;
 	for (int gauss = 0; gauss < ngauss; gauss++)
 	{
-		//Ponto localizado nas coordenadas naturais  0.577350269189626 (2 pontos de Gauss)
+		//Point localizado in the coordinates naturais  0.577350269189626 (2 gauss points)
 		if (gauss == 0)
 			csi = -0.577350269189626;
 		if (gauss == 1)
@@ -696,10 +696,10 @@ void Truss_1::PreCalc()
 		(*N[gauss])(0, 3) = N2[gauss];
 		(*N[gauss])(1, 4) = N2[gauss];
 		(*N[gauss])(2, 5) = N2[gauss];
-	}//end of gauss
+	}//end of Gauss
 }
 
-//Monta a matriz de massa
+//Assembles the mass matrix
 void Truss_1::MountMass()
 {
 	if (typeid(*db.solution[db.current_solution_number - 1]) == typeid(Dynamic))
@@ -738,7 +738,7 @@ void Truss_1::MountMass()
 	}
 }
 
-//Monta a matriz de massa
+//Assembles the mass matrix
 void Truss_1::MountMassModal()
 {
 	double coef = 0.0;
@@ -761,26 +761,26 @@ void Truss_1::MountMassModal()
 	MountAddedMassModal();
 }
 
-//Monta a matriz de amortecimento para realização da analise modal
+//Assembles the damping matrix for performing of the analysis modal
 void Truss_1::MountDampingModal()
 {
-	//TODO
+	//ALL
 }
 
-//Monta a matriz de amortecimento
+//Assembles the damping matrix
 void Truss_1::MountDamping(bool update_rayleigh)
 {
 	if (typeid(*db.solution[db.current_solution_number - 1]) == typeid(Dynamic))
 	{
 		Dynamic* ptr_sol = static_cast<Dynamic*>(db.solution[db.current_solution_number - 1]);
 
-		//Amortecimento de Rayleigh
+		//Damping of Rayleigh
 		if (update_rayleigh == true)
 		{
 			MountMassModal();
 			c_rayleigh_damping = ptr_sol->alpha*c_mass_modal + ptr_sol->beta*c_stiffness_matrix;
 		}
-		c_damping_matrix = ptr_sol->a4*c_rayleigh_damping;	//Matriz de amortecimento - inclusão do efeito de Rayleigh
+		c_damping_matrix = ptr_sol->a4*c_rayleigh_damping;	//Damping matrix - inclusão of the effect of Rayleigh
 		Matrix vipp(6);
 		for (int i = 0; i < 3; i++)
 		{
@@ -791,14 +791,14 @@ void Truss_1::MountDamping(bool update_rayleigh)
 	}
 }
 
-//Montagens - Newmark
+//Assemblies - Newmark
 void Truss_1::MountDyn()
 {
 	c_internal_loads = c_internal_loads + c_inertial_loads + c_damping_loads;
 	c_stiffness_matrix = c_stiffness_matrix + c_mass_matrix + c_damping_matrix;
 }
 
-//Montagens para analise modal - inserção da matriz de massa e amortecimento na matriz de rigidez para posterior montagem global
+//Assemblies for analysis modal - insertion of the mass matrix and damping in the stiffness matrix for subsequent assembly global
 void Truss_1::MountDynModal()
 {
 	c_stiffness_matrix = c_mass_modal;
@@ -819,7 +819,7 @@ double Truss_1::sign(double number)
 		return -1.0;
 }
 
-//Monta a matriz de massa adicional
+//Assembles the mass matrix adicional
 void Truss_1::MountAddedMass()
 {
 	if (db.environment_exist == true && db.environment->ocean_data_exist == true && db.environment->g_exist)
@@ -874,10 +874,10 @@ void Truss_1::MountAddedMass()
 			uA(i, 0) = db.nodes[nodes[0] - 1]->displacements[i];
 			uB(i, 0) = db.nodes[nodes[1] - 1]->displacements[i];
 		}
-		//Loop nos pontos de Gauss
+		//Loop over the Gauss points
 		for (int gauss = 0; gauss < 2; gauss++)
 		{
-			//Posição do ponto de Gauss
+			//Position of the gauss point
 			for (int i = 0; i < 3; i++)
 				pos_gauss(i, 0) = (db.nodes[nodes[0] - 1]->copy_coordinates[i])* N1[gauss] + (db.nodes[nodes[1] - 1]->copy_coordinates[i])* N2[gauss] +
 				(db.nodes[nodes[0] - 1]->displacements[i])* N1[gauss] + (db.nodes[nodes[1] - 1]->displacements[i])* N2[gauss];
@@ -910,7 +910,7 @@ void Truss_1::MountAddedMass()
 	}	
 }
 
-//Monta a matriz de massa adicional para analise modal
+//Assembles the mass matrix adicional for analysis modal
 void Truss_1::MountAddedMassModal()
 {
 	if (db.environment_exist == true && db.environment->ocean_data_exist == true && db.environment->g_exist)
@@ -934,10 +934,10 @@ void Truss_1::MountAddedMassModal()
 		l = norm(xb - xa);
 		//Tangent direction
 		Matrix t = (1.0 / l)*(xb - xa);
-		//Loop nos pontos de Gauss
+		//Loop over the Gauss points
 		for (int gauss = 0; gauss < 2; gauss++)
 		{
-			//Posição do ponto de Gauss
+			//Position of the gauss point
 			for (int i = 0; i < 3; i++)
 				pos_gauss(i, 0) = (db.nodes[nodes[0] - 1]->copy_coordinates[i])* N1[gauss] + (db.nodes[nodes[1] - 1]->copy_coordinates[i])* N2[gauss] +
 				(db.nodes[nodes[0] - 1]->displacements[i])* N1[gauss] + (db.nodes[nodes[1] - 1]->displacements[i])* N2[gauss];

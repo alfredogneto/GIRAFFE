@@ -1,4 +1,5 @@
 #include "FlexibleSECylinder_1_FlexibleTriangularSurface_2.h"
+#include "PlatformCompat.h"
 
 #include "FlexibleSECylinder_1.h"
 #include "FlexibleTriangularSurface_2.h"
@@ -7,7 +8,7 @@
 #include "SSContactData.h"
 
 #include "Database.h"
-//Variaveis globais
+//Global variables
 extern
 Database db;
 
@@ -23,7 +24,7 @@ FlexibleSECylinder_1_FlexibleTriangularSurface_2::~FlexibleSECylinder_1_Flexible
 	Free();
 }
 
-//Chute inicial para coordenadas convectivas do par de superficies
+//Initial guess for convective coordinates of the pair of surfaces
 void FlexibleSECylinder_1_FlexibleTriangularSurface_2::InitialGuess(SSContactData* c_data)
 {
 	c_data->convective[0][0] = 0.0;
@@ -33,7 +34,7 @@ void FlexibleSECylinder_1_FlexibleTriangularSurface_2::InitialGuess(SSContactDat
 
 	for (int ip = 1; ip < c_data->n_solutions; ip++)
 	{
-		//Preenchendo as coordenadas convectivas:
+		//Filling the convective coordinates:
 		c_data->convective[ip][0] = c_data->convective[0][0];
 		c_data->convective[ip][1] = c_data->convective[0][1];
 		c_data->convective[ip][2] = c_data->convective[0][2];
@@ -41,21 +42,21 @@ void FlexibleSECylinder_1_FlexibleTriangularSurface_2::InitialGuess(SSContactDat
 	}
 }
 
-//Verifica range de coordenadas convectivas
+//Checks range of convective coordinates
 int FlexibleSECylinder_1_FlexibleTriangularSurface_2::VerifyConvectiveRange(Matrix& mc)
 {
 	int return_value = -1;
 	//Retornos:
-	//0 - Range fisico da superficie
-	//4 - Fora do range fisico da superficie - proximo
-	//2 - Fora do range fisico da superficie - distante
+	//0 - Range physical of the surface
+	//4 - Outside of the range physical of the surface - next
+	//2 - Outside of the range physical of the surface - distante
 
-	//Se esta no range local de interesse - dominio fisico da superficie triangular e da viga
+	//If this in the range local of interest - domain physical of the surface triangular and of the viga
 	if (abs(mc(2, 0)) <= 1.0 && abs(mc(3, 0)) <= 1.0 && mc(3, 0) <= -mc(2, 0) && abs(mc(0, 0)) <= 1.0)
 		return_value = 0;
 	else
 	{
-		//Teste de proximidade
+		//Test of proximidade
 		if (abs(mc(2, 0)) <= (1.0 + perc * 2) && abs(mc(3, 0)) <= (1.0 + perc * 2) && mc(3, 0) <= -mc(2, 0) + perc * 2 && abs(mc(0, 0)) <= (1.00 + perc * 2))
 			return_value = 4;
 		else
@@ -68,8 +69,8 @@ int FlexibleSECylinder_1_FlexibleTriangularSurface_2::VerifyConvectiveRange(Matr
 //Initialize range of validity of convective coordinates
 void FlexibleSECylinder_1_FlexibleTriangularSurface_2::InitializeConvectiveRange()
 {
-	FlexibleSECylinder_1* surf1;		//Ponteiro para a superficie 1
-	FlexibleTriangularSurface_2* surf2;		//Ponteiro para a superficie 2
+	FlexibleSECylinder_1* surf1;		//Pointer to the surface 1
+	FlexibleTriangularSurface_2* surf2;		//Pointer to the surface 2
 	surf1 = static_cast<FlexibleSECylinder_1*>(db.surfaces[surf1_ID - 1]);
 	surf2 = static_cast<FlexibleTriangularSurface_2*>(db.surfaces[surf2_ID - 1]);
 
@@ -6827,10 +6828,10 @@ void FlexibleSECylinder_1_FlexibleTriangularSurface_2::ContactSS(bool *stick, bo
 
 }
 
-//Calcula a função objetivo para um conjunto de coordenadas convectivas - Phase 1
-double FlexibleSECylinder_1_FlexibleTriangularSurface_2::ObjectivePhase1(Matrix& mc)
+//Calculates the objective function for a set of convective coordinates - Phase 1
+double FlexibleSECylinder_1_FlexibleTriangularSurface_2::ObjectivePhase1(const Matrix& mc)
 {
-	double v[2000];		//variavel temporaria - AceGen
+	double v[2000];		//temporary variable - AceGen
 	double* cp = mc.getMatrix();
 	EvaluateDOFsVariables();
 
@@ -6956,10 +6957,10 @@ double FlexibleSECylinder_1_FlexibleTriangularSurface_2::ObjectivePhase1(Matrix&
 	return Ob;
 }
 
-//Calcula o Gradiente da função objetivo - Phase 1
+//Calculates the Gradient of the objective function - Phase 1
 void FlexibleSECylinder_1_FlexibleTriangularSurface_2::GradientPhase1(Matrix& mc, Matrix& mGra)
 {
-	double v[2000];		//variavel temporaria - AceGen
+	double v[2000];		//temporary variable - AceGen
 	double* cp = mc.getMatrix();
 	EvaluateDOFsVariables();
 	double* Gra = mGra.getMatrix();
@@ -7091,10 +7092,10 @@ void FlexibleSECylinder_1_FlexibleTriangularSurface_2::GradientPhase1(Matrix& mc
 	
 }
 
-//Calcula a Hessiana da função objetivo - Phase 1
+//Calculates the Hessian of the objective function - Phase 1
 void FlexibleSECylinder_1_FlexibleTriangularSurface_2::HessianPhase1(Matrix& mc, Matrix& mHes)
 {
-	double v[2000];		//variavel temporaria - AceGen
+	double v[2000];		//temporary variable - AceGen
 	double* cp = mc.getMatrix();
 	EvaluateDOFsVariables();
 	double Hes[4][4];
@@ -7287,10 +7288,10 @@ void FlexibleSECylinder_1_FlexibleTriangularSurface_2::HessianPhase1(Matrix& mc,
 
 }
 
-//Calcula e rotorna o gap (com sinal)
-double FlexibleSECylinder_1_FlexibleTriangularSurface_2::Gap(Matrix& mc, bool fixed_normals, Matrix& nA, Matrix& nB)
+//Calculates and rotorna the gap (with sign)
+double FlexibleSECylinder_1_FlexibleTriangularSurface_2::Gap(const Matrix& mc, bool fixed_normals, Matrix& nA, Matrix& nB)
 {
-	double v[2000];		//variavel temporaria - AceGen
+	double v[2000];		//temporary variable - AceGen
 	double* cp = mc.getMatrix();
 	EvaluateDOFsVariables();
 	bool* fixnormal = &fixed_normals;
@@ -7460,10 +7461,10 @@ double FlexibleSECylinder_1_FlexibleTriangularSurface_2::Gap(Matrix& mc, bool fi
 	return Ob;
 }
 
-//Calcula o Gradiente do gap
+//Calculates the Gradient of the gap
 void FlexibleSECylinder_1_FlexibleTriangularSurface_2::GradientGap(Matrix& mc, Matrix& mGra, bool fixed_normals, Matrix& nA, Matrix& nB)
 {
-	double v[2000];		//variavel temporaria - AceGen
+	double v[2000];		//temporary variable - AceGen
 	double* cp = mc.getMatrix();
 	EvaluateDOFsVariables();
 	bool* fixnormal = &fixed_normals;
@@ -7752,10 +7753,10 @@ void FlexibleSECylinder_1_FlexibleTriangularSurface_2::GradientGap(Matrix& mc, M
 	
 }
 
-//Calcula a Hessiana do gap
+//Calculates the Hessian of the gap
 void FlexibleSECylinder_1_FlexibleTriangularSurface_2::HessianGap(Matrix& mc, Matrix& mHes, bool fixed_normals, Matrix& nA, Matrix& nB)
 {
-	double v[2000];		//variavel temporaria - AceGen
+	double v[2000];		//temporary variable - AceGen
 	double* cp = mc.getMatrix();
 	EvaluateDOFsVariables();
 	bool* fixnormal = &fixed_normals;

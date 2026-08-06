@@ -9,16 +9,16 @@ class ArcCirc
 public:
 	ArcCirc();
 	~ArcCirc();
-	bool Read(FILE *f);					//Leitura
-	void Write(FILE *f);				//Gravação
-	void PreCalc();						//Pre-calculo
+	bool Read(FILE *f);					//Reading
+	void Write(FILE *f);				//Recording
+	void PreCalc();						//Pre-calculation
 
-	int number;							//ID do arco
-	Matrix i_point;					//ponto de inicio do arco - plano xy
-	Matrix f_point;					//ponto de fim do arco - plano xy
-	Matrix c_point;					//ponto de centro de curvatura do arco - plano xy
+	int number;							//ID of the arc
+	Matrix i_point;					//point of start of the arc - plane xy
+	Matrix f_point;					//point of end of the arc - plane xy
+	Matrix c_point;					//point of center of curvature of the arc - plane xy
 
-	//variaveis internas
+	//variables internal
 	double theta_i;
 	double theta_f;
 	double radius;

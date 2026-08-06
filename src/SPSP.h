@@ -1,13 +1,13 @@
 #pragma once
 #include "Contact.h"
-//Tipos de pares de superficie:
+//Types of pairs of surface:
 
 class SplineElement_SplineElement;
 class SPContactData;
 class SplineElementPair;
 class Matrix;
 
-////////Contato do tipo SPSP - "Spline to Spline"///////////
+////////Contact of the type SPSP - "Spline to Spline"///////////
 class SPSP :
 	public Contact
 {
@@ -16,54 +16,54 @@ public:
 	~SPSP();
 	int n_SP1;		//Spline ID 1
 	int n_SP2;		//Spline ID 2
-	double mus;		//Coef. de atrito estatico
-	double mud;		//Coef. de atrito dinamico
-	double ept;		//penalidade tangencial
+	double mus;		//Coef. of atrito estatico
+	double mud;		//Coef. of atrito dinamico
+	double ept;		//penalidade tangential
 	double epn;		//penalidade normal
-	double epn_n;	//potência da penalidade normal
-	double ct;		//coef. de dissipação tangencial
-	double cn;		//coef. de dissipação normal
+	double epn_n;	//potência of the penalidade normal
+	double ct;		//coef. of dissipação tangential
+	double cn;		//coef. of dissipação normal
 	double pinball;	//pinball radius
 	bool write_report;
 	bool write_report_diverged;
 	
-	bool Check();												//Checa inconsistências no elemento para evitar erros de execução
-	bool Read(FILE *f);											//Leitura do arquivo de entrada
-	void Write(FILE *f);										//Gravação do arquivo de saida
-	void WriteResults(FILE *f);									//Escreve arquivo de resultados
-	void WriteMonitor(FILE *f, bool first_record, double time);	//Escreve no monitor do contato
-	void WriteVTK_XMLRender(FILE *f);							//Plota superficies de contato
-	void WriteVTK_XMLForces(FILE *f);							//Plota forças de contato
-	void SaveLagrange();										//Salva variaveis para descrição lagrangiana atualizada
-	bool HaveErrors();											//Retorna 1 - ha algum erro, mesmo que tenha convergido. Ex: penetração excessiva
-	void MountDyn();											//Montagens referentes a parte dependente de velocidades - dinamica
-	void Mount();												//Montagem - contribuições locais de contato
-	void MountGlobal();								//Preenche a contribuição do contato nas matrizes globais
-	void Band(int* band_fixed, int* band_free);		//Calcula a banda gerada na matriz global pelo contato
-	void PreCalc();									//Pre-calculo de variaveis que e feito uma unica vez no inicio
+	bool Check();												//Checks inconsistencies in the element for avoid errors of execution
+	bool Read(FILE *f);											//Reading of the input file
+	void Write(FILE *f);										//Recording of the output file
+	void WriteResults(FILE *f);									//Writes file of results
+	void WriteMonitor(FILE *f, bool first_record, double time);	//Writes in the monitor of the contact
+	void WriteVTK_XMLRender(FILE *f);							//Plots contact surfaces
+	void WriteVTK_XMLForces(FILE *f);							//Plots contact forces
+	void SaveLagrange();										//Saves variables for description lagrangiana updated
+	bool HaveErrors();											//Returns 1 - there is some error, same that tenha converged. Ex: penetração excessiva
+	void MountDyn();											//Assemblies referring to the part dependente of velocities - dynamics
+	void Mount();												//Assembly - contributions local of contact
+	void MountGlobal();								//Fills the contribution of the contact in the matrices global
+	void Band(int* band_fixed, int* band_free);		//Calculates the band generated in the matrix global through the contact
+	void PreCalc();									//Pre-calculation of variables that and done a single time in the start
 	void PinballCheck();							//Checks proximity between Surface to Surface
-	void Alloc();									//Aloca na memória
-	void SetPairs();								//Atribui pares de superficies, de acordo com varredura feita entre os surface sets 1 e 2										
-	void BeginStepCheck();											//checagem inicial do contato  - inicio de cada incremento
+	void Alloc();									//Allocates in the memory
+	void SetPairs();								//Assigns pairs of surfaces, according to sweep done between the surface sets 1 and 2										
+	void BeginStepCheck();											//check initial of the contact  - start of each increment
 
-	void AllocSpecific(int surface1_index, int surface2_index, int sol_index);				//Alocação especifica para o contato surface1, surface2
-	void FreeSpecific(int surface1_index, int surface2_index, int sol_index);				//Liberação especifica para o contato surface1, surface2
-	void EvaluateNormalGap(int surf1_index, int surf2_index, int sol_index);				//Calcula matriz com gap normal entre surface1, surface2
-	void ReportContact(int surface1_index, int surface2_index, int sol_index);				//Imprime na tela informações do par de contato surface1, surface2
+	void AllocSpecific(int surface1_index, int surface2_index, int sol_index);				//Allocation specifies for the contact surface1, surface2
+	void FreeSpecific(int surface1_index, int surface2_index, int sol_index);				//Liberação specifies for the contact surface1, surface2
+	void EvaluateNormalGap(int surf1_index, int surf2_index, int sol_index);				//Calculates matrix with gap normal between surface1, surface2
+	void ReportContact(int surface1_index, int surface2_index, int sol_index);				//Prints in the tela information of the contact pair surface1, surface2
 	
 	
-	//Variaveis internas
-	int number_surfaces1;														//Numero de superficies do SurfaceSet 1
-	int number_surfaces2;														//Numero de superficies do SurfaceSet 2
-	bool*** alloc_control;														//Controle de alocação dinamica
-	SPContactData*** cd;														//Dados das soluções de contato
-	int number_pointwise_interactions;			//Numero maximo de interações pontuais por par superficie-superficie
-	Matrix**** i_loading;						//Vetor de esforços internos
-	double***** contact_stiffness;				//Matriz de rigidez
-	int * DOFs_surfaces1;						//Numero de graus de liberdade que cada uma das superficies no Surface Set possui - influência no vetor de residuos e na regidez tangente
-	int * DOFs_surfaces2;						//Numero de graus de liberdade que cada uma das superficies no Surface Set possui - influência no vetor de residuos e na regidez tangente			
-	Matrix* I3;									//Matriz identidade de ordem 3
-	SplineElementPair*** surf_pair;				//Pares de superficies para atribuições de funções especificas para cada par
+	//Variables internal
+	int number_surfaces1;														//Number of surfaces of the SurfaceSet 1
+	int number_surfaces2;														//Number of surfaces of the SurfaceSet 2
+	bool*** alloc_control;														//Control of allocation dynamics
+	SPContactData*** cd;														//Data of the solutions of contact
+	int number_pointwise_interactions;			//Maximum number of interações pontuais by pair surface-surface
+	Matrix**** i_loading;						//Vector of internal forces internal
+	double***** contact_stiffness;				//Stiffness matrix
+	int * DOFs_surfaces1;						//Number of degrees of freedom that each a of the surfaces in the Surface Set has - influência in the vector of residuals and in the regidez tangent
+	int * DOFs_surfaces2;						//Number of degrees of freedom that each a of the surfaces in the Surface Set has - influência in the vector of residuals and in the regidez tangent			
+	Matrix* I3;									//Identity matrix of order 3
+	SplineElementPair*** surf_pair;				//Pairs of surfaces for atribuições of functions especificas for each pair
 
 	//Saving contact forces (for post-processing)
 	Matrix**** fn;

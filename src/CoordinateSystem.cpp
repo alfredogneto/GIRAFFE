@@ -24,7 +24,7 @@ bool CoordinateSystem::Read(FILE *f)
 {
 	char s[1000];
 	fscanf(f, "%s", s);
-	//Verifica a palavra chave "CS"
+	//Checks the keyword "CS"
 	if (!strcmp(s, "CS"))
 	{
 		fscanf(f, "%s", s);
@@ -67,7 +67,7 @@ bool CoordinateSystem::Read(FILE *f)
 
 	*E2 = cross(*E3, *E1);
 
-	//Tratamento aos versores - verificação e normalização unitaria
+	//Tratamento to the versores - check and normalização unitaria
 	double norm1 = norm(*E1);
 	double norm2 = norm(*E2);
 	double norm3 = norm(*E3);
@@ -78,7 +78,7 @@ bool CoordinateSystem::Read(FILE *f)
 	if (norm3 != 1.0)
 		(*E3) = (1.0 / norm3)*(*E3);
 
-	//Montagem da matrix de transformação de coordenadas
+	//Assembly of the matrix of transformation of coordinates
 	(*Q)(0, 0) = (*E1)(0, 0);
 	(*Q)(0, 1) = (*E1)(1, 0);
 	(*Q)(0, 2) = (*E1)(2, 0);

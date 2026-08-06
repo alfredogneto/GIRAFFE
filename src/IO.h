@@ -1,7 +1,7 @@
 #pragma once
 #include "Database.h"
 
-//Variaveis globais
+//Global variables
 extern 
 Database db;
 class IO
@@ -108,6 +108,6 @@ public:
 	void WriteBodyGeometries(FILE *f);
 };
 
-bool ReadComment(FILE *f, char* s, int dim_char);	//Lê comentarios - retorna o stream no ponto após leitura de comentario
-void TryComment(FILE *f);							//Tenta ler comentarios. Retorna o stream no ponto em que a próxima leitura não e um comentario
-void WriteDOFTable(FILE *f);						//Escreve tabela com DOFs
+bool ReadComment(FILE *f, char* s, int dim_char);	//Reads comments - returns the stream in the point after reading of comment
+void TryComment(FILE *f);							//Tries read comments. Returns the stream in the point in that the next reading not and a comment
+void WriteDOFTable(FILE *f);						//Writes table with DOFs

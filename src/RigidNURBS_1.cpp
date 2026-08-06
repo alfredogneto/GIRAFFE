@@ -6,7 +6,7 @@
 #include "CoordinateSystem.h"
 
 #include"Database.h"
-//Variaveis globais
+//Global variables
 extern
 Database db;
 
@@ -23,18 +23,18 @@ RigidNURBS_1::RigidNURBS_1()
 	for (int i = 0; i < n_nodes; i++)
 		DOFs[i] = new int[db.number_GLs_node];
 	
-	//Rotina para ativar os GLS de cada nó
+	//Routine for activate the GLS of each node
 	for (int i = 0; i < n_nodes; i++)
 	{
 		for (int j = 0; j < db.number_GLs_node; j++)
 		{
 			DOFs[i][j] = 0;
 		}
-		//Translação
+		//Translation
 		DOFs[i][0] = 1;
 		DOFs[i][1] = 1;
 		DOFs[i][2] = 1;
-		//Rotação
+		//Rotation
 		DOFs[i][3] = 1;
 		DOFs[i][4] = 1;
 		DOFs[i][5] = 1;
@@ -82,7 +82,7 @@ void RigidNURBS_1::SetMinMaxRange()
 	u2_range = u2_max - u2_min;
 }
 
-//Normal exterior a superficie na posição escolhida
+//Normal exterior the surface in the position chosen
 void RigidNURBS_1::NormalExt(double* zeta, double* theta, Matrix* n)
 {
 	Matrix** data;
@@ -108,7 +108,7 @@ void RigidNURBS_1::NormalExt(double* zeta, double* theta, Matrix* n)
 
 } 
 
-//Obtem ponto da superficie
+//Obtains point of the surface
 void RigidNURBS_1::SurfacePoint(double& zeta, double& theta, Matrix& point)
 {
 	Matrix p(3);
@@ -116,7 +116,7 @@ void RigidNURBS_1::SurfacePoint(double& zeta, double& theta, Matrix& point)
 	point = xip + Qip * p;
 }
 
-//Atualiza bounding box
+//Updates bounding box
 void RigidNURBS_1::UpdateBox()
 {
 	//Large value of bounding box - encompassing the whole model
@@ -155,7 +155,7 @@ void RigidNURBS_1::UpdateBox()
 	y[7] = +diag;
 	z[7] = +diag;
 
-	//Setando os vertices
+	//Setting the vertices
 	box.SetVertices(x, y, z);
 }
 
@@ -164,7 +164,7 @@ void RigidNURBS_1::WriteVTK_XMLRender(FILE *f)
 	if (db.post_files->WriteRigidContactSurfaces_flag == true)
 	{
 		Matrix pilot(3);
-		//Posição de cada ponto P no plano xy (referência)
+		//Position of each point P in the plane xy (reference)
 		pilot(0, 0) = db.post_files->mag_factor*(db.nodes[pilot_node - 1]->copy_coordinates[0] - db.nodes[pilot_node - 1]->ref_coordinates[0]) + db.nodes[pilot_node - 1]->ref_coordinates[0];
 		pilot(1, 0) = db.post_files->mag_factor*(db.nodes[pilot_node - 1]->copy_coordinates[1] - db.nodes[pilot_node - 1]->ref_coordinates[1]) + db.nodes[pilot_node - 1]->ref_coordinates[1];
 		pilot(2, 0) = db.post_files->mag_factor*(db.nodes[pilot_node - 1]->copy_coordinates[2] - db.nodes[pilot_node - 1]->ref_coordinates[2]) + db.nodes[pilot_node - 1]->ref_coordinates[2];
@@ -208,7 +208,7 @@ bool RigidNURBS_1::Read(FILE *f)
 		return false;
 
 	//Flag normal invertida
-	//Salva a posição (stream)
+	//Saves the position (stream)
 	fpos_t pos;
 	fgetpos(f, &pos);
 
@@ -236,7 +236,7 @@ void RigidNURBS_1::Write(FILE *f)
 	fprintf(f, "RigidNURBS_1\t%d\tCS\t%d\tPilotNode\t%d\tCADData\t%d\t%s\n", number, number_CS, pilot_node, CADData_ID, s);
 }
 
-//Checa inconsistências para evitar erros de execução
+//Checks inconsistencies for avoid errors of execution
 bool RigidNURBS_1::Check()
 {
 	if (pilot_node > db.number_nodes)
@@ -250,7 +250,7 @@ bool RigidNURBS_1::Check()
 	return true;
 }
 
-//Realiza chute inicial para as variaveis zeta e theta
+//Performs initial guess for the variables zeta and theta
 void RigidNURBS_1::InitialGuess(Matrix* xS, double** convective, int n_solutions)
 {
 	
@@ -260,10 +260,10 @@ void RigidNURBS_1::PreCalc()
 {
 	surf = static_cast<NURBSSurface*>(db.cad_data[CADData_ID - 1]);
 	
-	//Apontando para posição que indica valor dos GLs globais
+	//Pointing for position that indicates value of the GLs global
 	for (int i = 0; i < 6; i++)
 		GLs[i] = &db.nodes[pilot_node - 1]->GLs[i];
-	//Matriz para transformação de coordenadas  local-global
+	//Matrix for transformation of coordinates  local-global
 	Qi(0, 0) = (*db.CS[number_CS - 1]->E1)(0, 0);
 	Qi(1, 0) = (*db.CS[number_CS - 1]->E1)(1, 0);
 	Qi(2, 0) = (*db.CS[number_CS - 1]->E1)(2, 0);
@@ -281,7 +281,7 @@ void RigidNURBS_1::PreCalc()
 	DegenerationPreCalc();
 }
 
-//Retorna as coordenadas da superficie para um par (zeta,theta) - configuração anterior convergida
+//Returns the coordinates of the surface for a pair (zeta,theta) - configuration previous converged
 void RigidNURBS_1::Gamma_and_Triad(Matrix* G_p, Matrix* t1_p, Matrix* t2_p, Matrix* n_p, Matrix* G_i, Matrix* t1_i, Matrix* t2_i, Matrix* n_i, Matrix* G_ip, double* zi, double* thi, double* zp, double* thp)
 {
 	Matrix** data;
@@ -328,12 +328,12 @@ void RigidNURBS_1::Gamma_and_Triad(Matrix* G_p, Matrix* t1_p, Matrix* t2_p, Matr
 	return;
 }
 
-//Dado o ponto xS, calcula as coordenadas (zeta,theta) referentes a minima distancia
+//Data the point xS, calculates the coordinates (zeta,theta) referring to the minimum distance
 void RigidNURBS_1::FindMinimimumParameters(Matrix* xS, NSContactData* cd)
 {
 	
 }
-//Atualiza as variaveis internas da superficie, para pegarem info do pilot node para uso posterior com posição atualizada
+//Updates the variables internal of the surface, for grab info of the pilot node for use subsequent with position updated
 void RigidNURBS_1::FillNodes()
 {
 	//Updating pilot node position and rotation tensor
@@ -353,7 +353,7 @@ void RigidNURBS_1::FillNodes()
 	Qip = Q * Qi;
 }
 
-//Retorna coordenadas globais do ponto central da superficie a ser utilizado para calculos grosseiros de sua localização (pinball)
+//Returns coordinates global of the point central of the surface the be used for calculations coarse of its location (pinball)
 void RigidNURBS_1::CenterPoint(Matrix* center)
 {
 	double avg_u = surf->U_knot_vector[(surf->U_order + surf->U_dim) / 2];
@@ -363,20 +363,20 @@ void RigidNURBS_1::CenterPoint(Matrix* center)
 	*center = xi + Qi * local;
 }
 
-//Salva vetores de configuração convergida
+//Saves vectors of configuration converged
 void RigidNURBS_1::SaveConfiguration()
 {
 	Qi = Qip;
 	xi = xip;
 }
 
-//Calcula contribuições de contato entre esfera e superficie
+//Calculates contributions of contact between sphere and surface
 void RigidNURBS_1::ContactSphereSurfaceSticking(double* Rc, double** Kc, double zetap, double thetap, double zetai, double thetai, double* gti, int node, double* epsn, double* epst, double* cn, double* ct, double* mu, double* radius)
 {
 	
 }
 
-//Calcula contribuições de contato entre esfera e superficie
+//Calculates contributions of contact between sphere and surface
 void RigidNURBS_1::ContactSphereSurfaceSliding(double* Rc, double** Kc, double zetap, double thetap, double zetai, double thetai, double* gti, int node, double* epsn, double* epst, double* cn, double* ct, double* mu, double* radius)
 {
 	

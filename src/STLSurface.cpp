@@ -1,5 +1,5 @@
 #include "STLSurface.h"
-#include <Eigen/dense>
+#include <Eigen/Dense>
 
 #include "MatrixFloat.h"
 #include "TriangularFace.h"
@@ -7,7 +7,7 @@
 #include "VEMPolyhedron.h"
 #include "Encoding.h"
 #include "Database.h"
-//Variaveis globais
+//Global variables
 extern
 Database db;
 
@@ -53,7 +53,7 @@ STLSurface::~STLSurface()
 		delete[]vertice_factors;
 }
 
-//Leitura do arquivo de entrada
+//Reading of the input file
 bool STLSurface::Read(FILE *f)
 {
 	char s[1000];
@@ -63,7 +63,7 @@ bool STLSurface::Read(FILE *f)
 	number = atoi(s);
 	fscanf(f, "%s", s);
 	strcpy(file, s);
-	//Leitura do arquivo CAD
+	//File reading CAD
 	CADread = ReadCADFile();
 	if (CADread == false)
 	{
@@ -74,7 +74,7 @@ bool STLSurface::Read(FILE *f)
 	return true;
 }
 
-//Escrita do arquivo de saida
+//File writing of output
 void STLSurface::Write(FILE *f)
 {
 	fprintf(f, "STLSurface\t%d\t%s\n",
@@ -83,7 +83,7 @@ void STLSurface::Write(FILE *f)
 	);
 }
 
-//Leitura do arquivo de malha (opcional)
+//File reading of mesh (optional)
 bool STLSurface::ReadMeshFile()
 {
 	FILE *f1 = NULL;
@@ -240,12 +240,12 @@ void STLSurface::PreCalc()
 		faces[i]->CAD_ID = number;
 		faces[i]->ID = i + 1;
 	}
-	//Leitura do arquivo de malha (opcional)
+	//File reading of mesh (optional)
 	if (ReadMeshFile())
 		mesh_available = true;
 	else
 	{
-		//Creation of vertices, edges and a connected mesh for the surface
+		//Creation of vertices, edges and the connected mesh for the surface
 		CreateVerticesEdges();
 		MergeVertices();
 	}
@@ -304,11 +304,11 @@ void STLSurface::PreCalc()
 	//(*J_O) = (*J_O) + 15 * (dot(*G, *G)*(I3) - dyadic(*G, *G));
 }
 
-//Leitura do arquivo de CAD
+//File reading of CAD
 bool  STLSurface::ReadCADFile()
 {
-	//Faz leitura do arquivo 'file'
-	//atribuir valor para n_CAD_points
+	//Does file reading 'file'
+	//assign value for n_CAD_points
 
 	FILE *f1 = NULL;
 	char name_file[500];
@@ -317,9 +317,9 @@ bool  STLSurface::ReadCADFile()
 	strcat(name_file, file);
 	f1 = fopen(name_file, "r");
 	if (f1 == NULL)
-		return false;//Erro de leitura do arquivo de CAD
+		return false;//Error of file reading of CAD
 
-	//Leitura do CAD file
+	//Reading of the CAD file
 	bool scape = false;
 	n_CAD_points = 0;
 	char s[200];
@@ -349,14 +349,14 @@ bool  STLSurface::ReadCADFile()
 	return true;
 }
 
-void STLSurface::WriteVTK_XMLRender(FILE *f, Matrix& pos, Matrix& rot, int number)
+void STLSurface::WriteVTK_XMLRender(FILE *f, const Matrix& pos, const Matrix& rot, int number)
 {
 	std::vector<int> vint;
 	int c2 = 0, c3 = 0, k = 3, j = 0, c4 = 0;
 	Matrix rP(3);
 	Matrix xP(3);
 
-	//Abre piece
+	//Opens piece
 	fprintf(f, "\n<Piece NumberOfPoints=\"%d\" NumberOfCells=\"%d\">\n<Points>\n<DataArray type = \"Float32\" NumberOfComponents = \"3\" format = \"binary\">\n", n_CAD_points, n_CAD_points / 3);
 	std::vector<float> coord2;
 
@@ -365,8 +365,8 @@ void STLSurface::WriteVTK_XMLRender(FILE *f, Matrix& pos, Matrix& rot, int numbe
 		rP(0, 0) = coord_float[point];
 		rP(1, 0) = coord_float[point + 1];
 		rP(2, 0) = coord_float[point + 2];
-		//rP = (pegar info do vector) 
-		//Calcular a posição atual de cada ponto no sistema global de coordenadas
+		//rP = (grab info of the vector) 
+		//Calculate the position current of each point in the system global of coordinates
 		xP = pos + rot * rP;
 		//		coord2.clear();
 		coord2.push_back((float)xP(0, 0));
@@ -472,7 +472,7 @@ void STLSurface::EvaluateCentroid()
 }
 void STLSurface::EvaluateInertiaTensor()
 {
-	//TODO
+	//ALL
 	//Inertia tensor with respect to the origin in local coordinate system
 					//      | Jxx -Jxy -Jxz|     //
 					//      |-Jxy  Jyy -Jyz|     //
@@ -661,7 +661,7 @@ void STLSurface::MergeEdges()
 
 void STLSurface::OrganizeNumbering()
 {
-	//Re-organize vertices and edges IDs, by imposing the same ID as the position of the vector. This is done for further avoiding searching on the vector for a given ID
+	//Re-organize vertices and edges IDs, by imposing the same ID the the position of the vector. This is done for further avoiding searching on the vector for the given ID
 	for (int ver = 0; ver < vertices.size(); ver++)
 	{
 		int cur_max_ID = n_faces * 3 + 1;
@@ -814,13 +814,13 @@ void STLSurface::WriteVTK_XMLMesh(MatrixFloat& pos, MatrixFloat& rot)
 	strcat(name, "_vertices.vtu");
 	f = fopen(name, "w");
 
-	//Cabeçalho do arquivo VTK
+	//Header of the file VTK
 	fprintf(f, "<?xml version=\"1.0\"?>\n");
 	fprintf(f, "<VTKFile type=\"UnstructuredGrid\" version=\"1.0\" byte_order=\"LittleEndian\" header_type=\"UInt64\">\n");
 	fprintf(f, "<!--INPUT: %s-->\n", db.file_name);
 	fprintf(f, "\t<UnstructuredGrid>\n");
 
-	//Abre piece
+	//Opens piece
 	fprintf(f, "\n<Piece NumberOfPoints=\"%d\" NumberOfCells=\"%d\">\n<Points>\n<DataArray type = \"Float32\" NumberOfComponents = \"3\" format = \"binary\">\n", (int)vertices.size(), (int)vertices.size());
 	std::vector<float> coord2;
 
@@ -829,7 +829,7 @@ void STLSurface::WriteVTK_XMLMesh(MatrixFloat& pos, MatrixFloat& rot)
 		rP(0, 0) = (*vertices[i].coord_float)(0, 0);
 		rP(1, 0) = (*vertices[i].coord_float)(1, 0);
 		rP(2, 0) = (*vertices[i].coord_float)(2, 0);
-		//Calcular a posição atual de cada ponto no sistema global de coordenadas
+		//Calculate the position current of each point in the system global of coordinates
 		xP = pos + rot * rP;
 		//		coord2.clear();
 		coord2.push_back(xP(0, 0));
@@ -885,13 +885,13 @@ void STLSurface::WriteVTK_XMLMesh(MatrixFloat& pos, MatrixFloat& rot)
 	strcat(name, "_edges.vtu");
 	f = fopen(name, "w");
 
-	//Cabeçalho do arquivo VTK
+	//Header of the file VTK
 	fprintf(f, "<?xml version=\"1.0\"?>\n");
 	fprintf(f, "<VTKFile type=\"UnstructuredGrid\" version=\"1.0\" byte_order=\"LittleEndian\" header_type=\"UInt64\">\n");
 	fprintf(f, "<!--INPUT: %s-->\n", db.file_name);
 	fprintf(f, "\t<UnstructuredGrid>\n");
 
-	//Abre piece
+	//Opens piece
 	fprintf(f, "\n<Piece NumberOfPoints=\"%d\" NumberOfCells=\"%d\">\n<Points>\n<DataArray type = \"Float32\" NumberOfComponents = \"3\" format = \"binary\">\n", (int)vertices.size(), (int)edges.size());
 	coord2.clear();
 
@@ -900,7 +900,7 @@ void STLSurface::WriteVTK_XMLMesh(MatrixFloat& pos, MatrixFloat& rot)
 		rP(0, 0) = (*vertices[i].coord_float)(0, 0);
 		rP(1, 0) = (*vertices[i].coord_float)(1, 0);
 		rP(2, 0) = (*vertices[i].coord_float)(2, 0);
-		//Calcular a posição atual de cada ponto no sistema global de coordenadas
+		//Calculate the position current of each point in the system global of coordinates
 		xP = pos + rot * rP;
 		//		coord2.clear();
 		coord2.push_back(xP(0, 0));
@@ -965,13 +965,13 @@ void STLSurface::WriteVTK_XMLMesh(MatrixFloat& pos, MatrixFloat& rot)
 	strcat(name, "_faces.vtu");
 	f = fopen(name, "w");
 
-	//Cabeçalho do arquivo VTK
+	//Header of the file VTK
 	fprintf(f, "<?xml version=\"1.0\"?>\n");
 	fprintf(f, "<VTKFile type=\"UnstructuredGrid\" version=\"1.0\" byte_order=\"LittleEndian\" header_type=\"UInt64\">\n");
 	fprintf(f, "<!--INPUT: %s-->\n", db.file_name);
 	fprintf(f, "\t<UnstructuredGrid>\n");
 
-	//Abre piece
+	//Opens piece
 	fprintf(f, "\n<Piece NumberOfPoints=\"%d\" NumberOfCells=\"%d\">\n<Points>\n<DataArray type = \"Float32\" NumberOfComponents = \"3\" format = \"binary\">\n", (int)vertices.size(), n_faces);
 	coord2.clear();
 
@@ -980,7 +980,7 @@ void STLSurface::WriteVTK_XMLMesh(MatrixFloat& pos, MatrixFloat& rot)
 		rP(0, 0) = (*vertices[i].coord_float)(0, 0);
 		rP(1, 0) = (*vertices[i].coord_float)(1, 0);
 		rP(2, 0) = (*vertices[i].coord_float)(2, 0);
-		//Calcular a posição atual de cada ponto no sistema global de coordenadas
+		//Calculate the position current of each point in the system global of coordinates
 		xP = pos + rot * rP;
 		//		coord2.clear();
 		coord2.push_back(xP(0, 0));
@@ -1034,7 +1034,7 @@ void STLSurface::WriteVTK_XMLMesh(MatrixFloat& pos, MatrixFloat& rot)
 void STLSurface::MarkConcaveEdges()
 {
 	//This function evaluates for each edge of the surface if it is a concave or a convex edge (for closed surfaces)
-	//When the edge is no shared between faces, it is set as convex (concave_indicator = false)
+	//When the edge is in the shared between faces, it is set the convex (concave_indicator = false)
 	float epsilon = 1e-6f;
 	for (int i = 0; i < edges.size(); i++)
 	{
@@ -1123,7 +1123,7 @@ void STLSurface::PrintSurfaceReport()
 	*temp = '\0';					  //Replace token with null char
 	strcat(name, "_report.txt");
 
-	//Escrevendo o nome do arquivo
+	//Writing the file name
 	f = fopen(name, "w");
 	fprintf(f, "IDs on this report are zero-based to match the Paraview IDs\n\n");
 	fprintf(f, "FACES\n");
@@ -1155,7 +1155,7 @@ void STLSurface::PrintSurfaceReport()
 	for (int i=0;i<n_faces;i++)
 		fprintf(f, "Face\t%d\t%.6e\n",faces[i]->ID-1,faces[i]->area);*/
 
-	/*fprintf(f, "Inertia matrix (evaluated as a set of lumped volumes)\n");
+	/*fprintf(f, "Inertia matrix (evaluated the the set of lumped volumes)\n");
 	double jxx = 0.0;
 	double jxy = 0.0;
 	double jxz = 0.0;
@@ -1165,28 +1165,28 @@ void STLSurface::PrintSurfaceReport()
 	double vol2 = 0.0;
 	for (int i = 0; i < (int)vertices.size(); i++)
 	{
-		jxx += vertice_factors[i] * volume*((*vertices[i].coord_double)(1, 0)*(*vertices[i].coord_double)(1, 0) + 
+		jxx += vertex_factors[i] * volume*((*vertices[i].coord_double)(1, 0)*(*vertices[i].coord_double)(1, 0) + 
 			(*vertices[i].coord_double)(2, 0)*(*vertices[i].coord_double)(2, 0));
-		jyy += vertice_factors[i] * volume*((*vertices[i].coord_double)(0, 0)*(*vertices[i].coord_double)(0, 0) +
+		jyy += vertex_factors[i] * volume*((*vertices[i].coord_double)(0, 0)*(*vertices[i].coord_double)(0, 0) +
 			(*vertices[i].coord_double)(2, 0)*(*vertices[i].coord_double)(2, 0));
-		jzz += vertice_factors[i] * volume*((*vertices[i].coord_double)(1, 0)*(*vertices[i].coord_double)(1, 0) +
+		jzz += vertex_factors[i] * volume*((*vertices[i].coord_double)(1, 0)*(*vertices[i].coord_double)(1, 0) +
 			(*vertices[i].coord_double)(0, 0)*(*vertices[i].coord_double)(0, 0));
-		jxy += vertice_factors[i] * volume*(*vertices[i].coord_double)(0, 0)*(*vertices[i].coord_double)(1, 0);
-		jxz += vertice_factors[i] * volume*(*vertices[i].coord_double)(0, 0)*(*vertices[i].coord_double)(2, 0);
-		jyz += vertice_factors[i] * volume*(*vertices[i].coord_double)(1, 0)*(*vertices[i].coord_double)(2, 0);
-		vol2 += vertice_factors[i] * volume;
+		jxy += vertex_factors[i] * volume*(*vertices[i].coord_double)(0, 0)*(*vertices[i].coord_double)(1, 0);
+		jxz += vertex_factors[i] * volume*(*vertices[i].coord_double)(0, 0)*(*vertices[i].coord_double)(2, 0);
+		jyz += vertex_factors[i] * volume*(*vertices[i].coord_double)(1, 0)*(*vertices[i].coord_double)(2, 0);
+		vol2 += vertex_factors[i] * volume;
 	}
 	fprintf(f, "|%.6e\t%.6e\t%.6e|\n", jxx, -jxy, -jxz);
 	fprintf(f, "|%.6e\t%.6e\t%.6e|\n", -jxy, jyy, -jyz);
 	fprintf(f, "|%.6e\t%.6e\t%.6e|\n", -jxz, -jyz, jzz);
-	fprintf(f, "Volume (evaluated as a set of lumped volumes)\n");
+	fprintf(f, "Volume (evaluated the the set of lumped volumes)\n");
 	fprintf(f, "%.6e\n", vol2);
-	fprintf(f, "Vertice factors\n");
+	fprintf(f, "Vertex factors\n");
 	double sum = 0.0;
 	for (int i = 0; i < (int)vertices.size(); i++)
 	{
-		sum += vertice_factors[i];
-		fprintf(f, "%.6e\n", vertice_factors[i]);
+		sum += vertex_factors[i];
+		fprintf(f, "%.6e\n", vertex_factors[i]);
 	}
 	fprintf(f, "Sum: %.6e\n", sum);*/
 	fclose(f);
@@ -1215,7 +1215,7 @@ void STLSurface::GenerateTetraMesh()
 {
 	db.myprintf("No required mesh information of the CAD was provided\n");
 	//Generates the mesh of tetrahedrons on the interior of the body (if this is desired)
-	//Teste
+	//Test
 	/*Tetrahedron t1;
 	t1.CAD_ID = number;
 	t1.ID = 1;
@@ -1300,17 +1300,17 @@ void STLSurface::EvaluateVerticeFactors()
 		vertice_factors[i] = temp_w;
 	}
 	/*for (int i = 0; i < (int)vertices.size(); i++)
-		vertice_factors[i] = 0.0;
+		vertex_factors[i] = 0.0;
 	double sum = 0.0;
 	for (int i = 0; i < (int)n_faces; i++)
 	{
 		sum = 0.0;
-		vertice_factors[faces[i]->verticesIDs[0] - 1] += faces[i]->vertice_weight[0] * faces[i]->area;
-		vertice_factors[faces[i]->verticesIDs[1] - 1] += faces[i]->vertice_weight[1] * faces[i]->area;
-		vertice_factors[faces[i]->verticesIDs[2] - 1] += faces[i]->vertice_weight[2] * faces[i]->area;
-		sum = faces[i]->vertice_weight[0] + faces[i]->vertice_weight[1] + faces[i]->vertice_weight[2];
+		vertex_factors[faces[i]->verticesIDs[0] - 1] += faces[i]->vertex_weight[0] * faces[i]->area;
+		vertex_factors[faces[i]->verticesIDs[1] - 1] += faces[i]->vertex_weight[1] * faces[i]->area;
+		vertex_factors[faces[i]->verticesIDs[2] - 1] += faces[i]->vertex_weight[2] * faces[i]->area;
+		sum = faces[i]->vertex_weight[0] + faces[i]->vertex_weight[1] + faces[i]->vertex_weight[2];
 		printf("%lf\n", sum);
 	}
 	for (int i = 0; i < (int)vertices.size(); i++)
-		vertice_factors[i] = vertice_factors[i] / total_ref_area;*/
+		vertex_factors[i] = vertex_factors[i] / total_ref_area;*/
 }

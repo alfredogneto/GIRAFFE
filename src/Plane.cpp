@@ -1,7 +1,7 @@
 #include "Plane.h"
 #include "Database.h"
 #include "Matrix.h"
-//Variaveis globais
+//Global variables
 extern
 Database db;
 
@@ -24,7 +24,7 @@ Plane::~Plane()
 
 void Plane::WriteVTK_XMLRender(FILE *f)
 {
-	int n_points = 4;	//quatro pontos dos cantos da supeficie
+	int n_points = 4;	//quatro points of the cantos of the supeficie
 	int n_cells = 1;	//quadrilatero
 	Matrix point1(3);
 	Matrix point2(3);
@@ -37,7 +37,7 @@ void Plane::WriteVTK_XMLRender(FILE *f)
 	//Opens DataArray
 	fprintf(f, "\t\t\t\t<DataArray type = \"Float32\" NumberOfComponents = \"3\" Format = \"ascii\">\n");
 
-	//Posição de cada ponto P no plano xy (referência)
+	//Position of each point P in the plane xy (reference)
 	point1 = *P + len*(*T1) + len*(*T2);
 	point2 = *P - len*(*T1) + len*(*T2);
 	point3 = *P - len*(*T1) - len*(*T2);
@@ -56,7 +56,7 @@ void Plane::WriteVTK_XMLRender(FILE *f)
 	fprintf(f, "\t\t\t<Cells>\n");
 	//Opens DataArray
 	fprintf(f, "\t\t\t\t<DataArray type = \"Int32\" Name = \"connectivity\" Format = \"ascii\">\n");
-	//Linhas
+	//Rows
 	fprintf(f, "\t\t\t\t\t%d\t%d\t%d\t%d\n", 0,1,2,3);
 	//Closes DataArray
 	fprintf(f, "\t\t\t\t</DataArray>\n");
@@ -150,34 +150,34 @@ void Plane::T2_O(Matrix *O, Matrix *Tang2)
 }
 void Plane::PreCalc()
 {
-	//Calculando t1 e t2, obrigatoriamente ortogonais a n
-	//Passo 1 - normalização da normal
+	//Calculating t1 and t2, obrigatoriamente ortogonais the n
+	//Step 1 - normalização of the normal
 	(*N) = 1.0 / (norm(*N))*(*N);
-	//Passo 2 - definição de direção t1
+	//Step 2 - definição of direction t1
 	Matrix t1_temp(3, 1);
 
-	//Chute - componentes do vetor t1
+	//Guess - components of the vector t1
 	t1_temp(0, 0) = 1.0;
 	t1_temp(1, 0) = 0.0;
 	t1_temp(2, 0) = 0.0;
 
 	double min_norm = 1e-3;
-	//Se existe alguma componente LD com n
+	//If exists some componente LD with n
 	if (dot(*N, t1_temp) != 0.0)
 	{
-		//Calcula componente ortho a n e subtrai de t1_temp
+		//Calculates componente ortho the n and subtrai of t1_temp
 		t1_temp = t1_temp - dot(t1_temp, *N)*(*N);
 
-		//Verifica se sobrou vetor grande o bastante, maior que tol
+		//Checks if sobrou vector grande the bastante, larger that tol
 		if (norm(t1_temp) >= min_norm)
 			t1_temp = 1.0 / (norm(t1_temp))*t1_temp;
 		else
 		{
-			//Da um chute melhor e faz o processo
+			//Of the a guess melhor and does the processo
 			t1_temp(0, 0) = 0.0;
 			t1_temp(1, 0) = 1.0;
 			t1_temp(2, 0) = 0.0;
-			//Calcula componente ortho a n e subtrai de t1_temp
+			//Calculates componente ortho the n and subtrai of t1_temp
 			t1_temp = t1_temp - dot(t1_temp, *N)*(*N);
 			t1_temp = 1.0 / (norm(t1_temp))*t1_temp;
 		}

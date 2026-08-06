@@ -20,7 +20,7 @@ bool PipeSection::Read(FILE *f)
 {
 	char s[1000];
 	fscanf(f, "%s", s);
-	//Verifica a palavra chave "PS"
+	//Checks the keyword "PS"
 	if (!strcmp(s, "PS"))
 	{
 		fscanf(f, "%s", s);

@@ -1,6 +1,6 @@
 #include "PostFiles.h"
 #include"Database.h"
-#include <direct.h>
+#include "PlatformCompat.h"
 #include <sys/types.h>
 #include <sys/stat.h>
 
@@ -23,13 +23,13 @@
 #include "Constraint.h"
 #include "Load.h"
 
-//Variaveis globais
+//Global variables
 extern
 Database db;
 
 PostFiles::PostFiles()
 {
-	mag_factor = 1;		//Fator de magnificação de deslocamentos
+	mag_factor = 1;		//Factor of magnificação of displacements
 	alloced_files = 0;
 
 	WriteMesh_flag = true;						//default
@@ -132,7 +132,7 @@ bool PostFiles::Read(FILE *f)
 	if (!strcmp(s, "WriteMesh"))
 	{
 		fscanf(f, "%s", s);
-		if (atoi(s) != 0 && atoi(s) != 1)//Se não for 0 ou 1
+		if (atoi(s) != 0 && atoi(s) != 1)//If not for 0 or 1
 			return false;
 		if (atoi(s) == 1)
 			WriteMesh_flag = true;
@@ -146,7 +146,7 @@ bool PostFiles::Read(FILE *f)
 	if (!strcmp(s, "WriteRenderMesh"))
 	{
 		fscanf(f, "%s", s);
-		if (atoi(s) != 0 && atoi(s) != 1)//Se não for 0 ou 1
+		if (atoi(s) != 0 && atoi(s) != 1)//If not for 0 or 1
 			return false;
 		if (atoi(s) == 1)
 			WriteRenderMesh_flag = true;
@@ -160,7 +160,7 @@ bool PostFiles::Read(FILE *f)
 	if (!strcmp(s, "WriteRigidContactSurfaces"))
 	{
 		fscanf(f, "%s", s);
-		if (atoi(s) != 0 && atoi(s) != 1)//Se não for 0 ou 1
+		if (atoi(s) != 0 && atoi(s) != 1)//If not for 0 or 1
 			return false;
 		if (atoi(s) == 1)
 			WriteRigidContactSurfaces_flag = true;
@@ -174,7 +174,7 @@ bool PostFiles::Read(FILE *f)
 	if (!strcmp(s, "WriteFlexibleContactSurfaces"))
 	{
 		fscanf(f, "%s", s);
-		if (atoi(s) != 0 && atoi(s) != 1)//Se não for 0 ou 1
+		if (atoi(s) != 0 && atoi(s) != 1)//If not for 0 or 1
 			return false;
 		if (atoi(s) == 1)
 			WriteFlexibleContactSurfaces_flag = true;
@@ -188,7 +188,7 @@ bool PostFiles::Read(FILE *f)
 	if (!strcmp(s, "WriteForces"))
 	{
 		fscanf(f, "%s", s);
-		if (atoi(s) != 0 && atoi(s) != 1)//Se não for 0 ou 1
+		if (atoi(s) != 0 && atoi(s) != 1)//If not for 0 or 1
 			return false;
 		if (atoi(s) == 1)
 			WriteForces_flag = true;
@@ -202,7 +202,7 @@ bool PostFiles::Read(FILE *f)
 	if (!strcmp(s, "WriteConstraints"))
 	{
 		fscanf(f, "%s", s);
-		if (atoi(s) != 0 && atoi(s) != 1)//Se não for 0 ou 1
+		if (atoi(s) != 0 && atoi(s) != 1)//If not for 0 or 1
 			return false;
 		if (atoi(s) == 1)
 			WriteConstraints_flag = true;
@@ -216,7 +216,7 @@ bool PostFiles::Read(FILE *f)
 	if (!strcmp(s, "WriteSpecialConstraints"))
 	{
 		fscanf(f, "%s", s);
-		if (atoi(s) != 0 && atoi(s) != 1)//Se não for 0 ou 1
+		if (atoi(s) != 0 && atoi(s) != 1)//If not for 0 or 1
 			return false;
 		if (atoi(s) == 1)
 			WriteSpecialConstraints_flag = true;
@@ -230,7 +230,7 @@ bool PostFiles::Read(FILE *f)
 	if (!strcmp(s, "WriteContactForces"))
 	{
 		fscanf(f, "%s", s);
-		if (atoi(s) != 0 && atoi(s) != 1)//Se não for 0 ou 1
+		if (atoi(s) != 0 && atoi(s) != 1)//If not for 0 or 1
 			return false;
 		if (atoi(s) == 1)
 			WriteContactForces_flag = true;
@@ -244,7 +244,7 @@ bool PostFiles::Read(FILE *f)
 	if (!strcmp(s, "WriteRenderRigidBodies"))
 	{
 		fscanf(f, "%s", s);
-		if (atoi(s) != 0 && atoi(s) != 1)//Se não for 0 ou 1
+		if (atoi(s) != 0 && atoi(s) != 1)//If not for 0 or 1
 			return false;
 		if (atoi(s) == 1)
 			WriteRenderRigidBodies_flag = true;
@@ -258,7 +258,7 @@ bool PostFiles::Read(FILE *f)
 	if (!strcmp(s, "WriteRenderParticles"))
 	{
 		fscanf(f, "%s", s);
-		if (atoi(s) != 0 && atoi(s) != 1)//Se não for 0 ou 1
+		if (atoi(s) != 0 && atoi(s) != 1)//If not for 0 or 1
 			return false;
 		if (atoi(s) == 1)
 			WriteRenderParticles_flag = true;
@@ -274,7 +274,7 @@ bool PostFiles::Read(FILE *f)
 	if (!strcmp(s, "WriteSplines"))
 	{
 		fscanf(f, "%s", s);
-		if (atoi(s) != 0 && atoi(s) != 1)//Se não for 0 ou 1
+		if (atoi(s) != 0 && atoi(s) != 1)//If not for 0 or 1
 			return false;
 		if (atoi(s) == 1)
 			WriteSpline_flag = true;
@@ -291,7 +291,7 @@ bool PostFiles::Read(FILE *f)
 	if (!strcmp(s, "WriteRenderSplines"))
 	{
 		fscanf(f, "%s", s);
-		if (atoi(s) != 0 && atoi(s) != 1)//Se não for 0 ou 1
+		if (atoi(s) != 0 && atoi(s) != 1)//If not for 0 or 1
 			return false;
 		if (atoi(s) == 1)
 			WriteRenderSpline_flag = true;
@@ -327,7 +327,7 @@ void PostFiles::StartPostFiles(int sol_index)
 void PostFiles::StartSinglePartFiles(int sol_index)
 {
 	char name[1000];
-	//Escrevendo o nome da solução
+	//Writing the name of the solution
 	char sol_name[100];
 	if (sol_index <= db.number_solutions)
 		sprintf(sol_name, "solution_%d", sol_index);
@@ -336,140 +336,140 @@ void PostFiles::StartSinglePartFiles(int sol_index)
 	struct stat info;
 	if (WriteMesh_flag == true)
 	{
-		strcpy(name, db.folder_name);	//pasta do job
-		strcat(name, "post/");			//diretório post
-		if (stat(name, &info) != 0)		//checa existência do diretório post
-			_mkdir(name);				//criando diretório post
-		strcat(name, sol_name);			//nome da solution
-		strcat(name, "_mesh.pvd");		//criando arquivo
+		strcpy(name, db.folder_name);	//folder of the job
+		strcat(name, "post/");			//directory post
+		if (stat(name, &info) != 0)		//checks existência of the directory post
+			GIRAFFE_MKDIR(name);				//creating directory post
+		strcat(name, sol_name);			//name of the solution
+		strcat(name, "_mesh.pvd");		//creating file
 		f_mesh_pvd[sol_index - 1] = fopen(name, "w");
-		//Cabeçalho do arquivo VTK
+		//Header of the file VTK
 		fprintf(f_mesh_pvd[sol_index - 1], "<?xml version=\"1.0\"?>\n");
 		fprintf(f_mesh_pvd[sol_index - 1], "<VTKFile type=\"Collection\" version=\"1.0\" byte_order=\"LittleEndian\" header_type=\"UInt64\">\n");
 		fprintf(f_mesh_pvd[sol_index - 1], "\t<Collection>\n");
 	}
 	if (WriteRenderMesh_flag == true)
 	{
-		strcpy(name, db.folder_name);	//pasta do job
-		strcat(name, "post/");			//diretório post
-		if (stat(name, &info) != 0)		//checa existência do diretório post
-			_mkdir(name);				//criando diretório post
-		strcat(name, sol_name);			//nome da solution
+		strcpy(name, db.folder_name);	//folder of the job
+		strcat(name, "post/");			//directory post
+		if (stat(name, &info) != 0)		//checks existência of the directory post
+			GIRAFFE_MKDIR(name);				//creating directory post
+		strcat(name, sol_name);			//name of the solution
 		strcat(name, "_rendermesh.pvd");
 		f_rendermesh_pvd[sol_index - 1] = fopen(name, "w");
-		//Cabeçalho do arquivo VTK
+		//Header of the file VTK
 		fprintf(f_rendermesh_pvd[sol_index - 1], "<?xml version=\"1.0\"?>\n");
 		fprintf(f_rendermesh_pvd[sol_index - 1], "<VTKFile type=\"Collection\" version=\"1.0\" byte_order=\"LittleEndian\" header_type=\"UInt64\">\n");
 		fprintf(f_rendermesh_pvd[sol_index - 1], "\t<Collection>\n");
 	}
 	if (WriteFlexibleContactSurfaces_flag == true || WriteRigidContactSurfaces_flag == true)
 	{
-		strcpy(name, db.folder_name);	//pasta do job
-		strcat(name, "post/");			//diretório post
-		if (stat(name, &info) != 0)		//checa existência do diretório post
-			_mkdir(name);				//criando diretório post
-		strcat(name, sol_name);			//nome da solution
+		strcpy(name, db.folder_name);	//folder of the job
+		strcat(name, "post/");			//directory post
+		if (stat(name, &info) != 0)		//checks existência of the directory post
+			GIRAFFE_MKDIR(name);				//creating directory post
+		strcat(name, sol_name);			//name of the solution
 		strcat(name, "_contactsurfaces.pvd");
 		f_contactsurfaces_pvd[sol_index - 1] = fopen(name, "w");
-		//Cabeçalho do arquivo VTK
+		//Header of the file VTK
 		fprintf(f_contactsurfaces_pvd[sol_index - 1], "<?xml version=\"1.0\"?>\n");
 		fprintf(f_contactsurfaces_pvd[sol_index - 1], "<VTKFile type=\"Collection\" version=\"1.0\" byte_order=\"LittleEndian\" header_type=\"UInt64\">\n");
 		fprintf(f_contactsurfaces_pvd[sol_index - 1], "\t<Collection>\n");
 	}
 	if (WriteSpecialConstraints_flag == true)
 	{
-		strcpy(name, db.folder_name);	//pasta do job
-		strcat(name, "post/");			//diretório post
-		if (stat(name, &info) != 0)		//checa existência do diretório post
-			_mkdir(name);				//criando diretório post
-		strcat(name, sol_name);			//nome da solution
+		strcpy(name, db.folder_name);	//folder of the job
+		strcat(name, "post/");			//directory post
+		if (stat(name, &info) != 0)		//checks existência of the directory post
+			GIRAFFE_MKDIR(name);				//creating directory post
+		strcat(name, sol_name);			//name of the solution
 		strcat(name, "_symbols.pvd");
 		f_symbols_pvd[sol_index - 1] = fopen(name, "w");
-		//Cabeçalho do arquivo VTK
+		//Header of the file VTK
 		fprintf(f_symbols_pvd[sol_index - 1], "<?xml version=\"1.0\"?>\n");
 		fprintf(f_symbols_pvd[sol_index - 1], "<VTKFile type=\"Collection\" version=\"1.0\" byte_order=\"LittleEndian\" header_type=\"UInt64\">\n");
 		fprintf(f_symbols_pvd[sol_index - 1], "\t<Collection>\n");
 	}
 	if (WriteContactForces_flag == true)
 	{
-		strcpy(name, db.folder_name);	//pasta do job
-		strcat(name, "post/");			//diretório post
-		if (stat(name, &info) != 0)		//checa existência do diretório post
-			_mkdir(name);				//criando diretório post
-		strcat(name, sol_name);			//nome da solution
+		strcpy(name, db.folder_name);	//folder of the job
+		strcat(name, "post/");			//directory post
+		if (stat(name, &info) != 0)		//checks existência of the directory post
+			GIRAFFE_MKDIR(name);				//creating directory post
+		strcat(name, sol_name);			//name of the solution
 		strcat(name, "_contactforces.pvd");
 		f_contactforces_pvd[sol_index - 1] = fopen(name, "w");
-		//Cabeçalho do arquivo VTK
+		//Header of the file VTK
 		fprintf(f_contactforces_pvd[sol_index - 1], "<?xml version=\"1.0\"?>\n");
 		fprintf(f_contactforces_pvd[sol_index - 1], "<VTKFile type=\"Collection\" version=\"1.0\" byte_order=\"LittleEndian\" header_type=\"UInt64\">\n");
 		fprintf(f_contactforces_pvd[sol_index - 1], "\t<Collection>\n");
 	}
 	if (WriteRenderParticles_flag == true || WriteRenderRigidBodies_flag == true)
 	{
-		strcpy(name, db.folder_name);	//pasta do job
-		strcat(name, "post/");			//diretório post
-		if (stat(name, &info) != 0)		//checa existência do diretório post
-			_mkdir(name);				//criando diretório post
-		strcat(name, sol_name);			//nome da solution
+		strcpy(name, db.folder_name);	//folder of the job
+		strcat(name, "post/");			//directory post
+		if (stat(name, &info) != 0)		//checks existência of the directory post
+			GIRAFFE_MKDIR(name);				//creating directory post
+		strcat(name, sol_name);			//name of the solution
 		strcat(name, "_rb_particles.pvd");
 		f_rb_particles_pvd[sol_index - 1] = fopen(name, "w");
-		//Cabeçalho do arquivo VTK
+		//Header of the file VTK
 		fprintf(f_rb_particles_pvd[sol_index - 1], "<?xml version=\"1.0\"?>\n");
 		fprintf(f_rb_particles_pvd[sol_index - 1], "<VTKFile type=\"Collection\" version=\"1.0\" byte_order=\"LittleEndian\" header_type=\"UInt64\">\n");
 		fprintf(f_rb_particles_pvd[sol_index - 1], "\t<Collection>\n");
 	}
 	if (WriteConstraints_flag == true)
 	{
-		strcpy(name, db.folder_name);	//pasta do job
-		strcat(name, "post/");			//diretório post
-		if (stat(name, &info) != 0)		//checa existência do diretório post
-			_mkdir(name);				//criando diretório post
-		strcat(name, sol_name);			//nome da solution
+		strcpy(name, db.folder_name);	//folder of the job
+		strcat(name, "post/");			//directory post
+		if (stat(name, &info) != 0)		//checks existência of the directory post
+			GIRAFFE_MKDIR(name);				//creating directory post
+		strcat(name, sol_name);			//name of the solution
 		strcat(name, "_constraints.pvd");
 		f_constraints_pvd[sol_index - 1] = fopen(name, "w");
-		//Cabeçalho do arquivo VTK
+		//Header of the file VTK
 		fprintf(f_constraints_pvd[sol_index - 1], "<?xml version=\"1.0\"?>\n");
 		fprintf(f_constraints_pvd[sol_index - 1], "<VTKFile type=\"Collection\" version=\"1.0\" byte_order=\"LittleEndian\" header_type=\"UInt64\">\n");
 		fprintf(f_constraints_pvd[sol_index - 1], "\t<Collection>\n");
 	}
 	if (WriteForces_flag == true)
 	{
-		strcpy(name, db.folder_name);	//pasta do job
-		strcat(name, "post/");			//diretório post
-		if (stat(name, &info) != 0)		//checa existência do diretório post
-			_mkdir(name);				//criando diretório post
-		strcat(name, sol_name);			//nome da solution
+		strcpy(name, db.folder_name);	//folder of the job
+		strcat(name, "post/");			//directory post
+		if (stat(name, &info) != 0)		//checks existência of the directory post
+			GIRAFFE_MKDIR(name);				//creating directory post
+		strcat(name, sol_name);			//name of the solution
 		strcat(name, "_forces.pvd");
 		f_forces_pvd[sol_index - 1] = fopen(name, "w");
-		//Cabeçalho do arquivo VTK
+		//Header of the file VTK
 		fprintf(f_forces_pvd[sol_index - 1], "<?xml version=\"1.0\"?>\n");
 		fprintf(f_forces_pvd[sol_index - 1], "<VTKFile type=\"Collection\" version=\"1.0\" byte_order=\"LittleEndian\" header_type=\"UInt64\">\n");
 		fprintf(f_forces_pvd[sol_index - 1], "\t<Collection>\n");
 	}
 	if (WriteSpline_flag == true)
 	{
-		strcpy(name, db.folder_name);	//pasta do job
-		strcat(name, "post/");			//diretório post
-		if (stat(name, &info) != 0)		//checa existência do diretório post
-			_mkdir(name);				//criando diretório post
-		strcat(name, sol_name);			//nome da solution
-		strcat(name, "_spline.pvd");		//criando arquivo
+		strcpy(name, db.folder_name);	//folder of the job
+		strcat(name, "post/");			//directory post
+		if (stat(name, &info) != 0)		//checks existência of the directory post
+			GIRAFFE_MKDIR(name);				//creating directory post
+		strcat(name, sol_name);			//name of the solution
+		strcat(name, "_spline.pvd");		//creating file
 		f_spline_pvd[sol_index - 1] = fopen(name, "w");
-		//Cabeçalho do arquivo VTK
+		//Header of the file VTK
 		fprintf(f_spline_pvd[sol_index - 1], "<?xml version=\"1.0\"?>\n");
 		fprintf(f_spline_pvd[sol_index - 1], "<VTKFile type=\"Collection\" version=\"1.0\" byte_order=\"LittleEndian\" header_type=\"UInt64\">\n");
 		fprintf(f_spline_pvd[sol_index - 1], "\t<Collection>\n");
 	}
 	if (WriteRenderSpline_flag == true)
 	{
-		strcpy(name, db.folder_name);	//pasta do job
-		strcat(name, "post/");			//diretório post
-		if (stat(name, &info) != 0)		//checa existência do diretório post
-			_mkdir(name);				//criando diretório post
-		strcat(name, sol_name);			//nome da solution
-		strcat(name, "_renderspline.pvd");		//criando arquivo
+		strcpy(name, db.folder_name);	//folder of the job
+		strcat(name, "post/");			//directory post
+		if (stat(name, &info) != 0)		//checks existência of the directory post
+			GIRAFFE_MKDIR(name);				//creating directory post
+		strcat(name, sol_name);			//name of the solution
+		strcat(name, "_renderspline.pvd");		//creating file
 		f_renderspline_pvd[sol_index - 1] = fopen(name, "w");
-		//Cabeçalho do arquivo VTK
+		//Header of the file VTK
 		fprintf(f_renderspline_pvd[sol_index - 1], "<?xml version=\"1.0\"?>\n");
 		fprintf(f_renderspline_pvd[sol_index - 1], "<VTKFile type=\"Collection\" version=\"1.0\" byte_order=\"LittleEndian\" header_type=\"UInt64\">\n");
 		fprintf(f_renderspline_pvd[sol_index - 1], "\t<Collection>\n");
@@ -478,35 +478,35 @@ void PostFiles::StartSinglePartFiles(int sol_index)
 void PostFiles::StartMultiplePartFiles(int sol_index)
 {
 	char name[1000];
-	//Escrevendo o nome da solução
+	//Writing the name of the solution
 	char sol_name[100];
 	sprintf(sol_name, "solution_%d", sol_index);
 
 	struct stat info;
 	if (WriteMesh_flag == true)
 	{
-		strcpy(name, db.folder_name);	//pasta do job
-		strcat(name, "post/");			//diretório post
-		if (stat(name, &info) != 0)		//checa existência do diretório post
-			_mkdir(name);				//criando diretório post
-		strcat(name, sol_name);			//nome da solution
-		strcat(name, "_mesh.pvd");		//criando arquivo
+		strcpy(name, db.folder_name);	//folder of the job
+		strcat(name, "post/");			//directory post
+		if (stat(name, &info) != 0)		//checks existência of the directory post
+			GIRAFFE_MKDIR(name);				//creating directory post
+		strcat(name, sol_name);			//name of the solution
+		strcat(name, "_mesh.pvd");		//creating file
 		f_mesh_pvd[sol_index - 1] = fopen(name, "w");
-		//Cabeçalho do arquivo VTK
+		//Header of the file VTK
 		fprintf(f_mesh_pvd[sol_index - 1], "<?xml version=\"1.0\"?>\n");
 		fprintf(f_mesh_pvd[sol_index - 1], "<VTKFile type=\"Collection\" version=\"1.0\" byte_order=\"LittleEndian\" header_type=\"UInt64\">\n");
 		fprintf(f_mesh_pvd[sol_index - 1], "\t<Collection>\n");
 	}
 	//if (WriteRenderMesh_flag == true)
 	//{
-	//	strcpy(name, data.folder_name);	//pasta do job
-	//	strcat(name, "post/");			//diretório post
-	//	if (stat(name, &info) != 0)		//checa existência do diretório post
-	//		_mkdir(name);				//criando diretório post
-	//	strcat(name, sol_name);			//nome da solution
+	//	strcpy(name, data.folder_name);	//folder of the job
+	//	strcat(name, "post/");			//directory post
+	//	if (stat(name, &info) != 0)		//checks existência of the directory post
+	//		GIRAFFE_MKDIR(name);				//creating directory post
+	//	strcat(name, sol_name);			//name of the solution
 	//	strcat(name, "_rendermesh.pvd");
 	//	f_rendermesh_pvd[sol_index - 1] = fopen(name, "w");
-	//	//Cabeçalho do arquivo VTK
+	//	//Header of the file VTK
 	//	fprintf(f_rendermesh_pvd[sol_index - 1], "<?xml version=\"1.0\"?>\n");
 	//	fprintf(f_rendermesh_pvd[sol_index - 1], "<VTKFile type=\"Collection\" version=\"1.0\" byte_order=\"LittleEndian\" header_type=\"UInt64\">\n");
 	//	fprintf(f_rendermesh_pvd[sol_index - 1], "\t<Collection>\n");
@@ -640,36 +640,36 @@ void PostFiles::EndMultiplePartPostFiles(int sol_index)
 	}*/
 }
 
-//Gerando arquivo para o Paraview (VTK) - formato XML
+//Generating file for the Paraview (VTK) - formato XML
 void PostFiles::WriteVTK_XMLRender(int sol_index, double time, int index, int part)
 {
 	FILE *f_VTK;
 	char name[1000];
 	strcpy(name, db.folder_name);
 	strcat(name, "post/");
-	//Escrevendo o nome da solução
+	//Writing the name of the solution
 	char analysis[100];
 	sprintf(analysis, "solution_%d", sol_index);
 	strcat(name, analysis);
 	strcat(name, "/");
-	_mkdir(name);	//cria a pasta com o tipo de analise em questão
+	GIRAFFE_MKDIR(name);	//creates the folder with the type of analysis in question
 	char number[20];
 	char number2[50];
-	_itoa(index - 1, number, 10);	//Converte o numero inteiro para char, a fim de escrever o arquivo de resultados com o nome desejado
-	sprintf(number2, "%lf", time);	//Converte o time para char
+	_itoa(index - 1, number, 10);	//Converts the number integer for char, in order to write the file of results with the name desired
+	sprintf(number2, "%lf", time);	//Converts the time for char
 	strcat(name, analysis);
 	strcat(name, "_rendermesh_");
 	strcat(name, number);
 	if (part != 0)
 	{
 		strcat(name, "_part_");
-		_itoa(part, number2, 10);	//Converte o numero inteiro para char, a fim de escrever o arquivo de resultados com o nome desejado
+		_itoa(part, number2, 10);	//Converts the number integer for char, in order to write the file of results with the name desired
 		strcat(name, number2);
 	}
 	strcat(name, ".vtu");
 	f_VTK = fopen(name, "w");
 
-	//Nome do arquivo do pvd
+	//File name of the pvd
 	sprintf(name, "./%s/%s",analysis,analysis);
 	strcat(name, "_rendermesh_");
 	strcat(name, number);
@@ -679,17 +679,17 @@ void PostFiles::WriteVTK_XMLRender(int sol_index, double time, int index, int pa
 		strcat(name, number2);
 	}
 	strcat(name, ".vtu");
-	//Atualiza pvd
+	//Updates pvd
 	fprintf(f_rendermesh_pvd[sol_index - 1], "\t\t<DataSet timestep=\"%.10f\" group=\"\" part=\"%d\" name=\"Part %d\" file=\"%s\"/>\n", time, part, part, name);
 	if (part == 0)
 		fprintf(f_rendermesh_pvd[db.number_solutions], "\t\t<DataSet timestep=\"%.10f\" group=\"\" part=\"0\" file=\"%s\"/>\n", time, name);
 	
-	//Cabeçalho do arquivo VTK
+	//Header of the file VTK
 	fprintf(f_VTK, "<?xml version=\"1.0\"?>\n");
 	fprintf(f_VTK, "<VTKFile type=\"UnstructuredGrid\" version=\"1.0\" byte_order=\"LittleEndian\" header_type=\"UInt64\">\n");
 	fprintf(f_VTK, "<!--INPUT: %s - TIME = %.10f-->\n", db.file_name, time);
 	fprintf(f_VTK, "\t<UnstructuredGrid>\n");
-	//Conteudo das Pieces que irão estar no arquivo .vtu
+	//Content of the Pieces that irão to be in the file .vtu
 	for (int ele = 0; ele < db.number_elements; ele++)
 	{
 		if (typeid(*db.elements[ele]) != typeid(RigidBody_1))
@@ -700,44 +700,44 @@ void PostFiles::WriteVTK_XMLRender(int sol_index, double time, int index, int pa
 	fclose(f_VTK);
 }
 
-//Gerando arquivo para o Paraview (VTK) - formato XML
+//Generating file for the Paraview (VTK) - formato XML
 void PostFiles::WriteVTK_XMLRBParticles(int sol_index, double time, int index)
 {
 	FILE *f_VTK;
 	char name[1000];
 	strcpy(name, db.folder_name);
 	strcat(name, "post/");
-	//Escrevendo o nome da solução
+	//Writing the name of the solution
 	char analysis[100];
 	sprintf(analysis, "solution_%d", sol_index);
 	strcat(name, analysis);
 	strcat(name, "/");
-	_mkdir(name);	//cria a pasta com o tipo de analise em questão
+	GIRAFFE_MKDIR(name);	//creates the folder with the type of analysis in question
 	char number[20];
 	char number2[50];
-	_itoa(index - 1, number, 10);	//Converte o numero inteiro para char, a fim de escrever o arquivo de resultados com o nome desejado
-	sprintf(number2, "%lf", time);	//Converte o time para char
+	_itoa(index - 1, number, 10);	//Converts the number integer for char, in order to write the file of results with the name desired
+	sprintf(number2, "%lf", time);	//Converts the time for char
 	strcat(name, analysis);
 	strcat(name, "_rb_particles_");
 	strcat(name, number);
 	strcat(name, ".vtu");
 	f_VTK = fopen(name, "w");
 
-	//Nome do arquivo do pvd
+	//File name of the pvd
 	sprintf(name, "./%s/%s", analysis, analysis);
 	strcat(name, "_rb_particles_");
 	strcat(name, number);
 	strcat(name, ".vtu");
-	//Atualiza pvd
+	//Updates pvd
 	fprintf(f_rb_particles_pvd[sol_index - 1], "\t\t<DataSet timestep=\"%.10f\" group=\"\" part=\"0\" file=\"%s\"/>\n", time, name);
 	fprintf(f_rb_particles_pvd[db.number_solutions], "\t\t<DataSet timestep=\"%.10f\" group=\"\" part=\"0\" file=\"%s\"/>\n", time, name);
 
-	//Cabeçalho do arquivo VTK
+	//Header of the file VTK
 	fprintf(f_VTK, "<?xml version=\"1.0\"?>\n");
 	fprintf(f_VTK, "<VTKFile type=\"UnstructuredGrid\" version=\"1.0\" byte_order=\"LittleEndian\" header_type=\"UInt64\">\n");
 	fprintf(f_VTK, "<!--INPUT: %s - TIME = %.10f-->\n", db.file_name, time);
 	fprintf(f_VTK, "\t<UnstructuredGrid>\n");
-	//Conteudo das Pieces que irão estar no arquivo .vtu
+	//Content of the Pieces that irão to be in the file .vtu
 	if (db.post_files->WriteRenderRigidBodies_flag == true)
 	{
 		for (int ele = 0; ele < db.number_elements; ele++)
@@ -748,7 +748,7 @@ void PostFiles::WriteVTK_XMLRBParticles(int sol_index, double time, int index)
 	}
 	if (db.post_files->WriteRenderParticles_flag == true)
 	{
-		//Conteudo das Pieces que irão estar no arquivo .vtu
+		//Content of the Pieces that irão to be in the file .vtu
 		for (int ele = 0; ele < db.number_particles; ele++)
 			db.particles[ele]->WriteVTK_XMLRender(f_VTK);
 	}
@@ -756,55 +756,55 @@ void PostFiles::WriteVTK_XMLRBParticles(int sol_index, double time, int index)
 	fprintf(f_VTK, "</VTKFile>\n");
 	fclose(f_VTK);
 }
-//Gerando arquivo para o Paraview (VTK) - formato XML
+//Generating file for the Paraview (VTK) - formato XML
 void PostFiles::WriteVTK_XMLContact(int sol_index, double time, int index)
 {
 	FILE *f_VTK;
 	char name[1000];
 	strcpy(name, db.folder_name);
 	strcat(name, "post/");
-	//Escrevendo o nome da solução
+	//Writing the name of the solution
 	char analysis[100];
 	sprintf(analysis, "solution_%d", sol_index);
 	strcat(name, analysis);
 	strcat(name, "/");
-	_mkdir(name);	//cria a pasta com o tipo de analise em questão
+	GIRAFFE_MKDIR(name);	//creates the folder with the type of analysis in question
 	char number[20];
 	char number2[50];
-	_itoa(index - 1, number, 10);	//Converte o numero inteiro para char, a fim de escrever o arquivo de resultados com o nome desejado
-	sprintf(number2, "%lf", time);	//Converte o time para char
+	_itoa(index - 1, number, 10);	//Converts the number integer for char, in order to write the file of results with the name desired
+	sprintf(number2, "%lf", time);	//Converts the time for char
 	strcat(name, analysis);
 	strcat(name, "_contactsurfaces_");
 	strcat(name, number);
 	strcat(name, ".vtu");
 	f_VTK = fopen(name, "w");
 
-	//Nome do arquivo do pvd
+	//File name of the pvd
 	sprintf(name, "./%s/%s", analysis, analysis);
 	strcat(name, "_contactsurfaces_");
 	strcat(name, number);
 	strcat(name, ".vtu");
-	//Atualiza pvd
+	//Updates pvd
 	fprintf(f_contactsurfaces_pvd[sol_index - 1], "\t\t<DataSet timestep=\"%.10f\" group=\"\" part=\"0\" file=\"%s\"/>\n", time, name);
 	fprintf(f_contactsurfaces_pvd[db.number_solutions], "\t\t<DataSet timestep=\"%.10f\" group=\"\" part=\"0\" file=\"%s\"/>\n", time, name);
 
-	//Cabeçalho do arquivo VTK
+	//Header of the file VTK
 	fprintf(f_VTK, "<?xml version=\"1.0\"?>\n");
 	fprintf(f_VTK, "<VTKFile type=\"UnstructuredGrid\" version=\"1.0\" byte_order=\"LittleEndian\" header_type=\"UInt64\">\n");
 	fprintf(f_VTK, "<!--INPUT: %s - TIME = %.10f-->\n", db.file_name, time);
 	fprintf(f_VTK, "\t<UnstructuredGrid>\n");
-	//Conteudo das Pieces que irão estar no arquivo .vtu
+	//Content of the Pieces that irão to be in the file .vtu
 	for (int conta = 0; conta < db.number_contacts; conta++)
 		db.contacts[conta]->WriteVTK_XMLRender(f_VTK);
 	if (WriteRigidContactSurfaces_flag)
 	{
-		//Conteudo das Pieces que irão estar no arquivo .vtu
+		//Content of the Pieces that irão to be in the file .vtu
 		for (int surf = 0; surf < db.number_boundaries; surf++)
 			db.boundaries[surf]->WriteVTK_XMLRender(f_VTK);
 	}
 	if (WriteFlexibleContactSurfaces_flag)
 	{
-		//Conteudo das Geometries que irão estar no arquivo .vtu
+		//Content of the Geometries that irão to be in the file .vtu
 		for (int geom = 0; geom < db.number_geometries; geom++)
 			db.geometries[geom]->WriteVTK_XMLRender(f_VTK);
 	}
@@ -814,44 +814,44 @@ void PostFiles::WriteVTK_XMLContact(int sol_index, double time, int index)
 	fclose(f_VTK);
 }
 
-//Gerando arquivo para o Paraview (VTK) - formato XML
+//Generating file for the Paraview (VTK) - formato XML
 void PostFiles::WriteVTK_XMLContactForces(int sol_index, double time, int index)
 {
 	FILE *f_VTK;
 	char name[1000];
 	strcpy(name, db.folder_name);
 	strcat(name, "post/");
-	//Escrevendo o nome da solução
+	//Writing the name of the solution
 	char analysis[100];
 	sprintf(analysis, "solution_%d", sol_index);
 	strcat(name, analysis);
 	strcat(name, "/");
-	_mkdir(name);	//cria a pasta com o tipo de analise em questão
+	GIRAFFE_MKDIR(name);	//creates the folder with the type of analysis in question
 	char number[20];
 	char number2[50];
-	_itoa(index - 1, number, 10);	//Converte o numero inteiro para char, a fim de escrever o arquivo de resultados com o nome desejado
-	sprintf(number2, "%lf", time);	//Converte o time para char
+	_itoa(index - 1, number, 10);	//Converts the number integer for char, in order to write the file of results with the name desired
+	sprintf(number2, "%lf", time);	//Converts the time for char
 	strcat(name, analysis);
 	strcat(name, "_contactforces_");
 	strcat(name, number);
 	strcat(name, ".vtu");
 	f_VTK = fopen(name, "w");
 
-	//Nome do arquivo do pvd
+	//File name of the pvd
 	sprintf(name, "./%s/%s", analysis, analysis);
 	strcat(name, "_contactforces_");
 	strcat(name, number);
 	strcat(name, ".vtu");
-	//Atualiza pvd
+	//Updates pvd
 	fprintf(f_contactforces_pvd[sol_index - 1], "\t\t<DataSet timestep=\"%.10f\" group=\"\" part=\"0\" file=\"%s\"/>\n", time, name);
 	fprintf(f_contactforces_pvd[db.number_solutions], "\t\t<DataSet timestep=\"%.10f\" group=\"\" part=\"0\" file=\"%s\"/>\n", time, name);
 	
-	//Cabeçalho do arquivo VTK
+	//Header of the file VTK
 	fprintf(f_VTK, "<?xml version=\"1.0\"?>\n");
 	fprintf(f_VTK, "<VTKFile type=\"UnstructuredGrid\" version=\"1.0\" byte_order=\"LittleEndian\" header_type=\"UInt64\">\n");
 	fprintf(f_VTK, "<!--INPUT: %s - TIME = %.10f-->\n", db.file_name, time);
 	fprintf(f_VTK, "\t<UnstructuredGrid>\n");
-	//Conteudo das Pieces que irão estar no arquivo .vtu
+	//Content of the Pieces that irão to be in the file .vtu
 	for (int conta = 0; conta < db.number_contacts; conta++)
 		if (db.contacts[conta]->bool_table.GetAt(db.current_solution_number - 1))
 			db.contacts[conta]->WriteVTK_XMLForces(f_VTK);
@@ -866,34 +866,34 @@ void PostFiles::WriteVTK_XMLContactForces(int sol_index, double time, int index)
 	fclose(f_VTK);
 }
 
-//Gerando arquivo para o Paraview (VTK) - formato XML
+//Generating file for the Paraview (VTK) - formato XML
 void PostFiles::WriteVTK_XMLBase(int sol_index, double time, int index, int part)
 {
 	FILE *f_VTK;
 	char name[1000];
 	strcpy(name, db.folder_name);
 	strcat(name, "post/");
-	//Escrevendo o nome da solução
+	//Writing the name of the solution
 	char analysis[100];
 	sprintf(analysis, "solution_%d", sol_index);
 	strcat(name, analysis);
 	strcat(name, "/");
-	_mkdir(name);
+	GIRAFFE_MKDIR(name);
 	char number[20];
 	char number2[20];
-	_itoa(index - 1, number, 10);	//Converte o numero inteiro para char, a fim de escrever o arquivo de resultados com o nome desejado
+	_itoa(index - 1, number, 10);	//Converts the number integer for char, in order to write the file of results with the name desired
 	strcat(name, analysis);
 	strcat(name, "_mesh_");
 	strcat(name, number);
 	if (part != 0)
 	{
 		strcat(name, "_part_");
-		_itoa(part, number2, 10);	//Converte o numero inteiro para char, a fim de escrever o arquivo de resultados com o nome desejado
+		_itoa(part, number2, 10);	//Converts the number integer for char, in order to write the file of results with the name desired
 		strcat(name, number2);
 	}
 	strcat(name, ".vtu");
 	f_VTK = fopen(name, "w");
-	//Nome do arquivo do pvd
+	//File name of the pvd
 	sprintf(name, "./%s/%s", analysis, analysis);
 	strcat(name, "_mesh_");
 	strcat(name, number);
@@ -903,19 +903,19 @@ void PostFiles::WriteVTK_XMLBase(int sol_index, double time, int index, int part
 		strcat(name, number2);
 	}
 	strcat(name, ".vtu");
-	//Atualiza pvd
+	//Updates pvd
 	fprintf(f_mesh_pvd[sol_index - 1], "\t\t<DataSet timestep=\"%.10f\" group=\"\" part=\"%d\" name=\"Part %d\" file=\"%s\"/>\n", time, part, part, name);
-	//Somente atualiza o pvd do whole solution se part for 0 (ou seja, se não for analise multi-part (modal, por exemplo))
+	//Only updates the pvd of the whole solution if part for 0 (or be, if not for analysis multi-part (modal, by exemplo))
 	if (part == 0)
 		fprintf(f_mesh_pvd[db.number_solutions], "\t\t<DataSet timestep=\"%.10f\" group=\"\" part=\"0\" file=\"%s\"/>\n", time, name);
 	
 	double tempx, tempy, tempz;
 	
-	//vetores para escrita no formato binario - usando a função 'enconde'
+	//vectors for writing in the formato binary - using the function 'enconde'
 	std::vector<float> float_vector;
 	std::vector<int> int_vector;
 	
-	//Cabeçalho do arquivo VTK
+	//Header of the file VTK
 	fprintf(f_VTK, "<?xml version=\"1.0\"?>\n");
 	fprintf(f_VTK, "<VTKFile type=\"UnstructuredGrid\" version=\"1.0\" byte_order=\"LittleEndian\" header_type=\"UInt64\">\n");
 	fprintf(f_VTK, "<!--INPUT: %s - TIME = %.10f-->\n", db.file_name, time);
@@ -1171,7 +1171,7 @@ void PostFiles::WriteVTK_XMLBase(int sol_index, double time, int index, int part
 		{
 			if (typeid(*db.particles[i]) == typeid(Sphere))
 			{
-				//Ponteiro para o Sphere
+				//Pointer for the Sphere
 				Sphere* ptr = static_cast<Sphere*>(db.particles[i]);
 				float_vector.push_back((float)(ptr->radius * 2));
 			}
@@ -1195,45 +1195,45 @@ void PostFiles::WriteVTK_XMLBase(int sol_index, double time, int index, int part
 	fclose(f_VTK);
 }
 
-//Gerando arquivo para o Paraview (VTK) - formato XML
+//Generating file for the Paraview (VTK) - formato XML
 void PostFiles::WriteVTK_XMLSpline(int sol_index, double time, int index)
 {
 	FILE *f_VTK;
 	char name[1000];
 	strcpy(name, db.folder_name);
 	strcat(name, "post/");
-	//Escrevendo o nome da solução
+	//Writing the name of the solution
 	char analysis[100];
 	sprintf(analysis, "solution_%d", sol_index);
 	strcat(name, analysis);
 	strcat(name, "/");
-	_mkdir(name);	//cria a pasta com o tipo de analise em questão
+	GIRAFFE_MKDIR(name);	//creates the folder with the type of analysis in question
 	char number[20];
 	char number2[50];
-	_itoa(index - 1, number, 10);	//Converte o numero inteiro para char, a fim de escrever o arquivo de resultados com o nome desejado
-	sprintf(number2, "%lf", time);	//Converte o time para char
+	_itoa(index - 1, number, 10);	//Converts the number integer for char, in order to write the file of results with the name desired
+	sprintf(number2, "%lf", time);	//Converts the time for char
 	strcat(name, analysis);
 	strcat(name, "_spline_");
 	strcat(name, number);
 	strcat(name, ".vtu");
 	f_VTK = fopen(name, "w");
 
-	//Nome do arquivo do pvd
+	//File name of the pvd
 	sprintf(name, "./%s/%s", analysis, analysis);
 	strcat(name, "_spline_");
 	strcat(name, number);
 	strcat(name, ".vtu");
-	//Atualiza pvd	
+	//Updates pvd	
 	fprintf(f_spline_pvd[sol_index - 1], "\t\t<DataSet timestep=\"%.10f\" group=\"\" part=\"%d\" name=\"Part %d\" file=\"%s\"/>\n", time, 0, 0, name);
-	//Somente atualiza o pvd do whole solution se part for 0 (ou seja, se não for analise multi-part (modal, por exemplo))
+	//Only updates the pvd of the whole solution if part for 0 (or be, if not for analysis multi-part (modal, by exemplo))
 	fprintf(f_spline_pvd[db.number_solutions], "\t\t<DataSet timestep=\"%.10f\" group=\"\" part=\"0\" file=\"%s\"/>\n", time, name);
 
-	//Cabeçalho do arquivo VTK
+	//Header of the file VTK
 	fprintf(f_VTK, "<?xml version=\"1.0\"?>\n");
 	fprintf(f_VTK, "<VTKFile type=\"UnstructuredGrid\" version=\"1.0\" byte_order=\"LittleEndian\" header_type=\"UInt64\">\n");
 	fprintf(f_VTK, "<!--INPUT: %s - TIME = %.10f-->\n", db.file_name, time);
 	fprintf(f_VTK, "\t<UnstructuredGrid>\n");
-	//Conteudo das Pieces que irão estar no arquivo .vtu
+	//Content of the Pieces that irão to be in the file .vtu
 	for (int ele = 0; ele < db.number_splines; ele++)
 	{
 		db.splines[ele]->WriteVTK_XML_SplineMesh(f_VTK);
@@ -1243,45 +1243,45 @@ void PostFiles::WriteVTK_XMLSpline(int sol_index, double time, int index)
 	fclose(f_VTK);
 }
 
-//Gerando arquivo para o Paraview (VTK) - formato XML
+//Generating file for the Paraview (VTK) - formato XML
 void PostFiles::WriteVTK_XMLRenderSpline(int sol_index, double time, int index)
 {
 	FILE *f_VTK;
 	char name[1000];
 	strcpy(name, db.folder_name);
 	strcat(name, "post/");
-	//Escrevendo o nome da solução
+	//Writing the name of the solution
 	char analysis[100];
 	sprintf(analysis, "solution_%d", sol_index);
 	strcat(name, analysis);
 	strcat(name, "/");
-	_mkdir(name);	//cria a pasta com o tipo de analise em questão
+	GIRAFFE_MKDIR(name);	//creates the folder with the type of analysis in question
 	char number[20];
 	char number2[50];
-	_itoa(index - 1, number, 10);	//Converte o numero inteiro para char, a fim de escrever o arquivo de resultados com o nome desejado
-	sprintf(number2, "%lf", time);	//Converte o time para char
+	_itoa(index - 1, number, 10);	//Converts the number integer for char, in order to write the file of results with the name desired
+	sprintf(number2, "%lf", time);	//Converts the time for char
 	strcat(name, analysis);
 	strcat(name, "_renderspline_");
 	strcat(name, number);
 	strcat(name, ".vtu");
 	f_VTK = fopen(name, "w");
 
-	//Nome do arquivo do pvd
+	//File name of the pvd
 	sprintf(name, "./%s/%s", analysis, analysis);
 	strcat(name, "_renderspline_");
 	strcat(name, number);
 	strcat(name, ".vtu");
-	//Atualiza pvd	
+	//Updates pvd	
 	fprintf(f_renderspline_pvd[sol_index - 1], "\t\t<DataSet timestep=\"%.10f\" group=\"\" part=\"%d\" name=\"Part %d\" file=\"%s\"/>\n", time, 0, 0, name);
-	//Somente atualiza o pvd do whole solution se part for 0 (ou seja, se não for analise multi-part (modal, por exemplo))
+	//Only updates the pvd of the whole solution if part for 0 (or be, if not for analysis multi-part (modal, by exemplo))
 	fprintf(f_renderspline_pvd[db.number_solutions], "\t\t<DataSet timestep=\"%.10f\" group=\"\" part=\"0\" file=\"%s\"/>\n", time, name);
 
-	//Cabeçalho do arquivo VTK
+	//Header of the file VTK
 	fprintf(f_VTK, "<?xml version=\"1.0\"?>\n");
 	fprintf(f_VTK, "<VTKFile type=\"UnstructuredGrid\" version=\"1.0\" byte_order=\"LittleEndian\" header_type=\"UInt64\">\n");
 	fprintf(f_VTK, "<!--INPUT: %s - TIME = %.10f-->\n", db.file_name, time);
 	fprintf(f_VTK, "\t<UnstructuredGrid>\n");
-	//Conteudo das Pieces que irão estar no arquivo .vtu
+	//Content of the Pieces that irão to be in the file .vtu
 	for (int ele = 0; ele < db.number_splines; ele++)
 	{
 		db.splines[ele]->WriteVTK_XML_SplineRender(f_VTK);
@@ -1291,44 +1291,44 @@ void PostFiles::WriteVTK_XMLRenderSpline(int sol_index, double time, int index)
 	fclose(f_VTK);
 }
 
-//Gerando arquivo para o Paraview (VTK) - formato XML
+//Generating file for the Paraview (VTK) - formato XML
 void PostFiles::WriteVTK_XMLSymbols(int sol_index, double time, int index)
 {
 	FILE *f_VTK;
 	char name[1000];
 	strcpy(name, db.folder_name);
 	strcat(name, "post/");
-	//Escrevendo o nome da solução
+	//Writing the name of the solution
 	char analysis[100];
 	sprintf(analysis, "solution_%d", sol_index);
 	strcat(name, analysis);
 	strcat(name, "/");
-	_mkdir(name);	//cria a pasta com o tipo de analise em questão
+	GIRAFFE_MKDIR(name);	//creates the folder with the type of analysis in question
 	char number[20];
 	char number2[50];
-	_itoa(index - 1, number, 10);	//Converte o numero inteiro para char, a fim de escrever o arquivo de resultados com o nome desejado
-	sprintf(number2, "%lf", time);	//Converte o time para char
+	_itoa(index - 1, number, 10);	//Converts the number integer for char, in order to write the file of results with the name desired
+	sprintf(number2, "%lf", time);	//Converts the time for char
 	strcat(name, analysis);
 	strcat(name, "_symbols_");
 	strcat(name, number);
 	strcat(name, ".vtu");
 	f_VTK = fopen(name, "w");
 
-	//Nome do arquivo do pvd
+	//File name of the pvd
 	sprintf(name, "./%s/%s", analysis, analysis);
 	strcat(name, "_symbols_");
 	strcat(name, number);
 	strcat(name, ".vtu");
-	//Atualiza pvd
+	//Updates pvd
 	fprintf(f_symbols_pvd[sol_index - 1], "\t\t<DataSet timestep=\"%.10f\" group=\"\" part=\"0\" file=\"%s\"/>\n", time, name);
 	fprintf(f_symbols_pvd[db.number_solutions], "\t\t<DataSet timestep=\"%.10f\" group=\"\" part=\"0\" file=\"%s\"/>\n", time, name);
 	
-	//Cabeçalho do arquivo VTK
+	//Header of the file VTK
 	fprintf(f_VTK, "<?xml version=\"1.0\"?>\n");
 	fprintf(f_VTK, "<VTKFile type=\"UnstructuredGrid\" version=\"1.0\" byte_order=\"LittleEndian\" header_type=\"UInt64\">\n");
 	fprintf(f_VTK, "<!--INPUT: %s - TIME = %.10f-->\n", db.file_name, time);
 	fprintf(f_VTK, "\t<UnstructuredGrid>\n");
-	//Conteudo das Pieces que irão estar no arquivo .vtu
+	//Content of the Pieces that irão to be in the file .vtu
 	for (int i = 0; i < db.number_special_constraints; i++)
 		db.special_constraints[i]->WriteVTK_XMLRender(f_VTK);
 	fprintf(f_VTK, "\t</UnstructuredGrid>\n");
@@ -1336,44 +1336,44 @@ void PostFiles::WriteVTK_XMLSymbols(int sol_index, double time, int index)
 	fclose(f_VTK);
 }
 
-//Gerando arquivo para o Paraview (VTK) - formato XML
+//Generating file for the Paraview (VTK) - formato XML
 void PostFiles::WriteVTK_XMLConstraints(int sol_index, double time, int index)
 {
 	FILE *f_VTK;
 	char name[1000];
 	strcpy(name, db.folder_name);
 	strcat(name, "post/");
-	//Escrevendo o nome da solução
+	//Writing the name of the solution
 	char analysis[100];
 	sprintf(analysis, "solution_%d", sol_index);
 	strcat(name, analysis);
 	strcat(name, "/");
-	_mkdir(name);	//cria a pasta com o tipo de analise em questão
+	GIRAFFE_MKDIR(name);	//creates the folder with the type of analysis in question
 	char number[20];
 	char number2[50];
-	_itoa(index - 1, number, 10);	//Converte o numero inteiro para char, a fim de escrever o arquivo de resultados com o nome desejado
-	sprintf(number2, "%lf", time);	//Converte o time para char
+	_itoa(index - 1, number, 10);	//Converts the number integer for char, in order to write the file of results with the name desired
+	sprintf(number2, "%lf", time);	//Converts the time for char
 	strcat(name, analysis);
 	strcat(name, "_constraints_");
 	strcat(name, number);
 	strcat(name, ".vtu");
 	f_VTK = fopen(name, "w");
 
-	//Nome do arquivo do pvd
+	//File name of the pvd
 	sprintf(name, "./%s/%s", analysis, analysis);
 	strcat(name, "_constraints_");
 	strcat(name, number);
 	strcat(name, ".vtu");
-	//Atualiza pvd
+	//Updates pvd
 	fprintf(f_constraints_pvd[sol_index - 1], "\t\t<DataSet timestep=\"%.10f\" group=\"\" part=\"0\" file=\"%s\"/>\n", time, name);
 	fprintf(f_constraints_pvd[db.number_solutions], "\t\t<DataSet timestep=\"%.10f\" group=\"\" part=\"0\" file=\"%s\"/>\n", time, name);
 
-	//Cabeçalho do arquivo VTK
+	//Header of the file VTK
 	fprintf(f_VTK, "<?xml version=\"1.0\"?>\n");
 	fprintf(f_VTK, "<VTKFile type=\"UnstructuredGrid\" version=\"1.0\" byte_order=\"LittleEndian\" header_type=\"UInt64\">\n");
 	fprintf(f_VTK, "<!--INPUT: %s - TIME = %.10f-->\n", db.file_name, time);
 	fprintf(f_VTK, "\t<UnstructuredGrid>\n");
-	//Conteudo das Pieces que irão estar no arquivo .vtu
+	//Content of the Pieces that irão to be in the file .vtu
 	for (int i = 0; i < db.number_constraints; i++)
 		db.constraints[i]->WriteVTK_XML(f_VTK);
 	fprintf(f_VTK, "\t</UnstructuredGrid>\n");
@@ -1381,44 +1381,44 @@ void PostFiles::WriteVTK_XMLConstraints(int sol_index, double time, int index)
 	fclose(f_VTK);
 }
 
-//Gerando arquivo para o Paraview (VTK) - formato XML
+//Generating file for the Paraview (VTK) - formato XML
 void PostFiles::WriteVTK_XMLForces(int sol_index, double time, int index)
 {
 	FILE *f_VTK;
 	char name[1000];
 	strcpy(name, db.folder_name);
 	strcat(name, "post/");
-	//Escrevendo o nome da solução
+	//Writing the name of the solution
 	char analysis[100];
 	sprintf(analysis, "solution_%d", sol_index);
 	strcat(name, analysis);
 	strcat(name, "/");
-	_mkdir(name);	//cria a pasta com o tipo de analise em questão
+	GIRAFFE_MKDIR(name);	//creates the folder with the type of analysis in question
 	char number[20];
 	char number2[50];
-	_itoa(index - 1, number, 10);	//Converte o numero inteiro para char, a fim de escrever o arquivo de resultados com o nome desejado
-	sprintf(number2, "%lf", time);	//Converte o time para char
+	_itoa(index - 1, number, 10);	//Converts the number integer for char, in order to write the file of results with the name desired
+	sprintf(number2, "%lf", time);	//Converts the time for char
 	strcat(name, analysis);
 	strcat(name, "_forces_");
 	strcat(name, number);
 	strcat(name, ".vtu");
 	f_VTK = fopen(name, "w");
 
-	//Nome do arquivo do pvd
+	//File name of the pvd
 	sprintf(name, "./%s/%s", analysis, analysis);
 	strcat(name, "_forces_");
 	strcat(name, number);
 	strcat(name, ".vtu");
-	//Atualiza pvd
+	//Updates pvd
 	fprintf(f_forces_pvd[sol_index - 1], "\t\t<DataSet timestep=\"%.10f\" group=\"\" part=\"0\" file=\"%s\"/>\n", time, name);
 	fprintf(f_forces_pvd[db.number_solutions], "\t\t<DataSet timestep=\"%.10f\" group=\"\" part=\"0\" file=\"%s\"/>\n", time, name);
 	
-	//Cabeçalho do arquivo VTK
+	//Header of the file VTK
 	fprintf(f_VTK, "<?xml version=\"1.0\"?>\n");
 	fprintf(f_VTK, "<VTKFile type=\"UnstructuredGrid\" version=\"1.0\" byte_order=\"LittleEndian\" header_type=\"UInt64\">\n");
 	fprintf(f_VTK, "<!--INPUT: %s - TIME = %.10f-->\n", db.file_name, time);
 	fprintf(f_VTK, "\t<UnstructuredGrid>\n");
-	//Conteudo das Pieces que irão estar no arquivo .vtu
+	//Content of the Pieces that irão to be in the file .vtu
 	for (int i = 0; i < db.number_loads; i++)
 		db.loads[i]->WriteVTK_XML(f_VTK);
 	fprintf(f_VTK, "\t</UnstructuredGrid>\n");
@@ -1430,21 +1430,21 @@ void PostFiles::WriteConfigurationResults(int sol_index, double time, int index)
 {
 	FILE *f;
 	char name[1000];
-	strcpy(name, db.folder_name);	//pasta do job
+	strcpy(name, db.folder_name);	//folder of the job
 	struct stat info;
-	strcat(name, "post/");			//diretório post
-	if (stat(name, &info) != 0)		//checa existência do diretório post
-		_mkdir(name);				//criando diretório post
-	//Escrevendo o nome da solução
+	strcat(name, "post/");			//directory post
+	if (stat(name, &info) != 0)		//checks existência of the directory post
+		GIRAFFE_MKDIR(name);				//creating directory post
+	//Writing the name of the solution
 	char analysis[100];
 	sprintf(analysis, "solution_%d", sol_index);
 	strcat(name, analysis);
 	strcat(name, "/");
-	_mkdir(name);	//cria a pasta com o tipo de analise em questão
+	GIRAFFE_MKDIR(name);	//creates the folder with the type of analysis in question
 	char number[20];
 	char number2[50];
-	_itoa(index - 1, number, 10);	//Converte o numero inteiro para char, a fim de escrever o arquivo de resultados com o nome desejado
-	sprintf(number2, "%lf", time);	//Converte o time para char
+	_itoa(index - 1, number, 10);	//Converts the number integer for char, in order to write the file of results with the name desired
+	sprintf(number2, "%lf", time);	//Converts the time for char
 	strcat(name, analysis);
 	strcat(name, "_configuration_");
 	strcat(name, number);
@@ -1465,7 +1465,7 @@ void PostFiles::WriteConfigurationResults(int sol_index, double time, int index)
 void PostFiles::WriteSingleVertexPart(FILE *f)
 {
 	//Creates a single null contact force at origin - to avoid bugs in paraview visualization
-	//vetores para escrita no formato binario - usando a função 'enconde'
+	//vectors for writing in the formato binary - using the function 'enconde'
 	std::vector<float> float_vector;
 	float_vector.clear();
 	float_vector.push_back(0.0);

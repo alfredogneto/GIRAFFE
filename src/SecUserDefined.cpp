@@ -5,7 +5,7 @@
 #include "MultiCellSection.h"
 
 #include"Database.h"
-//Variaveis globais
+//Global variables
 extern
 Database db;
 
@@ -234,7 +234,7 @@ bool SecUserDefined::Read(FILE *f)
 	else
 		return false;
 
-	//Salva a posição (stream)
+	//Saves the position (stream)
 	fpos_t pos;
 	fgetpos(f, &pos);
 	fscanf(f, "%s", s);
@@ -264,7 +264,7 @@ bool SecUserDefined::Read(FILE *f)
 			return false;
 	}
 	else
-		fsetpos(f, &pos);	//volta a posição anterior
+		fsetpos(f, &pos);	//turn the position previous
 
 	return true;
 }
@@ -299,10 +299,10 @@ void SecUserDefined::Write(FILE *f)
 }
 void SecUserDefined::PreCalc()
 {
-	//Atribuição dos section details a seção transversal
+	//Assignment of the section details the section transversal
 	if (sec_details_ID <= db.number_section_details)
 	{
-		//Verifica o tipo de SD atribuido e aloca de acordo
+		//Checks the type of SD assigned and allocates of acordo
 		if (typeid(*db.section_details[sec_details_ID - 1]) == typeid(SolidSection))
 		{
 			SolidSection* ptr_sd = static_cast<SolidSection*>(db.section_details[sec_details_ID - 1]);

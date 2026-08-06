@@ -24,27 +24,27 @@ public:
 	bool* repeated;
 	double*** invHessian;						//Inverse of the Hessian matrix - determined during the FindMinimumParameters routine
 
-	bool* copy_degenerated;						//true ou false para indicar se o contato foi ou não degenerado no passo anterior
-	bool* degenerated;							//true ou false para indicar se o contato e ou não degenerado
+	bool* copy_degenerated;						//true or false for indicate if the contact was or not degenerated in the step previous
+	bool* degenerated;							//true or false for indicate if the contact and or not degenerated
 
 	double* g_n;								//gap normal
 	double* copy_g_n;							//gap normal
-	Matrix** g_t;								//gap tangencial - atual
-	Matrix** copy_g_t;							//gap tangencial - cópia
-	Matrix** g;									//gap vetorial - atual
-	Matrix** copy_g;							//gap vetorial - cópia
+	Matrix** g_t;								//gap tangential - current
+	Matrix** copy_g_t;							//gap tangential - copies
+	Matrix** g;									//gap cross - current
+	Matrix** copy_g;							//gap cross - copies
 	Matrix ** n;								//contact normal direction
-	Matrix ** copy_n;							//contact normal direction - copia
+	Matrix ** copy_n;							//contact normal direction - copies
 	bool* stick;								//boolean - indicates stick (true) or slide (false)
-	bool* copy_stick;							//boolean - indicates stick (true) or slide (false) - copia
+	bool* copy_stick;							//boolean - indicates stick (true) or slide (false) - copies
 
-	SplineElementData* surf1;							//Dados - superficie 1
-	SplineElementData* surf2;							//Dados - superficie 2
+	SplineElementData* surf1;							//Data - surface 1
+	SplineElementData* surf2;							//Data - surface 2
 
-	bool alloced;								//Booleana que indica se esta ou não alocado - controle de alocação
-	void CheckRepeated(double tol_coordinate_value);	//Checa repetição de raizes e salva a informação na matriz 'repeated'
+	bool alloced;								//Boolean that indicates if this or not allocated - control of allocation
+	void CheckRepeated(double tol_coordinate_value);	//Checks repetição of raizes and saves the information in the matrix 'repeated'
 	void Plot();
-	void Alloc();										//Aloca matrizes
-	void Free();										//Desaloca matrizes	
+	void Alloc();										//Allocates matrices
+	void Free();										//Deallocates matrices	
 };
 

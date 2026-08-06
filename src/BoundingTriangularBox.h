@@ -7,7 +7,7 @@ class BoundingTriangularBox :
 	public BoundingVolume
 {
 public:
-	class BoundingTriangularBox();
+	BoundingTriangularBox();
 	~BoundingTriangularBox();
 	void SaveConfiguration();
 	void Report();

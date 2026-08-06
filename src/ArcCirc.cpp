@@ -19,12 +19,12 @@ ArcCirc::~ArcCirc()
 {
 }
 
-//Leitura
+//Reading
 bool ArcCirc::Read(FILE *f)
 {
 	char s[1000];
 	fscanf(f, "%s", s);
-	//Verifica a palavra chave "Arc"
+	//Checks the keyword "Arc"
 	if (!strcmp(s, "Arc"))
 	{
 		fscanf(f, "%s", s);
@@ -68,13 +68,13 @@ bool ArcCirc::Read(FILE *f)
 	return true;
 }
 
-//Gravação
+//Recording
 void ArcCirc::Write(FILE *f)
 {
 	fprintf(f, "Arc\t%d\tInitialPoint\t%.6e\t%.6e\tFinalPoint\t%.6e\t%.6e\tCenterPoint\t%.6e\t%.6e\n", number, i_point(0, 0), i_point(1, 0), f_point(0, 0), f_point(1, 0), c_point(0, 0), c_point(1, 0));
 }
 
-//Pre-calculo
+//Pre-calculation
 void ArcCirc::PreCalc()
 {
 	theta_i = ArcReduction(atan2(i_point(1, 0) - c_point(1, 0), i_point(0, 0) - c_point(0, 0)));
@@ -207,7 +207,7 @@ void ArcCirc::BoundingRectangle(float* x_min, float* x_max, float* y_min, float*
 
 bool ArcCirc::InsideArc(double theta)
 {
-	//Redução de theta ao range [-PI,PI]
+	//Reduction of theta to the range [-PI,PI]
 	double theta_mod = ArcReduction(theta);
 	if (theta_i <= theta_f)
 	{

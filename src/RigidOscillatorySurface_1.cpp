@@ -8,7 +8,7 @@
 #include "Dynamic.h"
 
 #include"Database.h"
-//Variaveis globais
+//Global variables
 extern
 Database db;
 #define PI 3.1415926535897932384626433832795
@@ -77,19 +77,19 @@ void RigidOscillatorySurface_1::SetMinMaxRange()
 	u2_range = waves_2 * lambda_2;
 }
 
-//Obtem ponto da superficie
+//Obtains point of the surface
 void RigidOscillatorySurface_1::SurfacePoint(double& zeta, double& theta, Matrix& point)
 {
-	//TODO
+	//ALL
 }
 
-//Normal exterior a superficie na posição escolhida
+//Normal exterior the surface in the position chosen
 void RigidOscillatorySurface_1::NormalExt(double* zeta, double* theta, Matrix* n)
 {
 
 }
 
-//Atualiza bounding box
+//Updates bounding box
 void RigidOscillatorySurface_1::UpdateBox()
 {
 
@@ -99,7 +99,7 @@ void RigidOscillatorySurface_1::WriteVTK_XMLRender(FILE *f)
 {
 	if (db.post_files->WriteRigidContactSurfaces_flag == true)
 	{
-		//vetores para escrita no formato binario - usando a função 'enconde'
+		//vectors for writing in the formato binary - using the function 'enconde'
 		std::vector<float> float_vector;
 		std::vector<int> int_vector;
 
@@ -134,7 +134,7 @@ void RigidOscillatorySurface_1::WriteVTK_XMLRender(FILE *f)
 		fprintf(f, "\t\t\t\t<DataArray type=\"Float32\" NumberOfComponents=\"3\" format=\"binary\">\n");
 		float_vector.clear();
 		//Pilot node
-		//Posição de cada ponto P no plano xy (referência)
+		//Position of each point P in the plane xy (reference)
 		pilot(0, 0) = db.post_files->mag_factor*(db.nodes[pilot_node - 1]->copy_coordinates[0] - db.nodes[pilot_node - 1]->ref_coordinates[0]) + db.nodes[pilot_node - 1]->ref_coordinates[0];
 		pilot(1, 0) = db.post_files->mag_factor*(db.nodes[pilot_node - 1]->copy_coordinates[1] - db.nodes[pilot_node - 1]->ref_coordinates[1]) + db.nodes[pilot_node - 1]->ref_coordinates[1];
 		pilot(2, 0) = db.post_files->mag_factor*(db.nodes[pilot_node - 1]->copy_coordinates[2] - db.nodes[pilot_node - 1]->ref_coordinates[2]) + db.nodes[pilot_node - 1]->ref_coordinates[2];
@@ -165,7 +165,7 @@ void RigidOscillatorySurface_1::WriteVTK_XMLRender(FILE *f)
 		fprintf(f, "\t\t\t<Cells>\n");
 		//Opens DataArray
 		fprintf(f, "\t\t\t\t<DataArray type=\"Int32\" Name=\"connectivity\" format=\"binary\">\n");
-		//Linhas
+		//Rows
 		int nj = (2 * divisions2 + 1);
 		int_vector.clear();
 		for (int i = 0; i < (2 * divisions1 - 1); i = i + 2)
@@ -339,7 +339,7 @@ void RigidOscillatorySurface_1::Write(FILE *f)
 	fprintf(f, "RigidOscillatorySurface_1\t%d\tA1\t%.6e\tA2\t%.6e\tA12\t%.6e\tLambda1\t%.6e\tLambda2\t%.6e\tPhi1\t%.6e\tPhi2\t%.6e\tWaves1\t%.6e\tWaves2\t%.6e\tCS\t%d\tPilotNode\t%d\n", number,A_1,A_2,A_12,lambda_1,lambda_2,phi_1,phi_2,waves_1,waves_2,number_CS,pilot_node);
 }
 
-//Checa inconsistências para evitar erros de execução
+//Checks inconsistencies for avoid errors of execution
 bool RigidOscillatorySurface_1::Check()
 {
 	if (pilot_node > db.number_nodes)
@@ -351,7 +351,7 @@ bool RigidOscillatorySurface_1::Check()
 
 void RigidOscillatorySurface_1::PreCalc()
 {
-	//Setando valores dos versores locais - de acordo com a orientação do sistema de coordenadas local atribuido a superficie
+	//Setting values of the versores local - according to the orientation of the coordinate system local assigned the surface
 	*e1_i = *(db.CS[number_CS - 1]->E1);
 	*e2_i = *(db.CS[number_CS - 1]->E2);
 	(*xP_i)(0, 0) = db.nodes[pilot_node - 1]->ref_coordinates[0];
@@ -361,27 +361,27 @@ void RigidOscillatorySurface_1::PreCalc()
 	*e1_p = *e1_i;
 	*e2_p = *e2_i;
 
-	//Apontando para posição que indica valor dos GLs globais
+	//Pointing for position that indicates value of the GLs global
 	for (int i = 0; i < 6; i++)
 		GLs[i] = &db.nodes[pilot_node - 1]->GLs[i];
 
 	DegenerationPreCalc();
 }
 
-//Retorna as coordenadas da superficie para um par (zeta,theta) - configuração anterior convergida
+//Returns the coordinates of the surface for a pair (zeta,theta) - configuration previous converged
 void RigidOscillatorySurface_1::Gamma_and_Triad(Matrix* G_p, Matrix* t1_p, Matrix* t2_p, Matrix* n_p, Matrix* G_i, Matrix* t1_i, Matrix* t2_i, Matrix* n_i, Matrix* G_ip, double* zi, double* thi, double* zp, double* thp)
 {
-	double *Gp = G_p->getMatrix();		//ponteiro para o vetor Gp 
-	double *t1p = t1_p->getMatrix();	//ponteiro para o vetor t1p 
-	double *t2p = t2_p->getMatrix();	//ponteiro para o vetor t2p
-	double *np = n_p->getMatrix();		//ponteiro para o vetor np
+	double *Gp = G_p->getMatrix();		//pointer for the vector Gp 
+	double *t1p = t1_p->getMatrix();	//pointer for the vector t1p 
+	double *t2p = t2_p->getMatrix();	//pointer for the vector t2p
+	double *np = n_p->getMatrix();		//pointer for the vector np
 
-	double *t1i = t1_i->getMatrix();	//ponteiro para o vetor t1i 
-	double *t2i = t2_i->getMatrix();	//ponteiro para o vetor t2i
-	double *ni = n_i->getMatrix();		//ponteiro para o vetor ni
+	double *t1i = t1_i->getMatrix();	//pointer for the vector t1i 
+	double *t2i = t2_i->getMatrix();	//pointer for the vector t2i
+	double *ni = n_i->getMatrix();		//pointer for the vector ni
 
-	double *Gip = G_ip->getMatrix();	//ponteiro para o vetor Gip
-	double *Gi = G_i->getMatrix();		//ponteiro para o vetor Gi
+	double *Gip = G_ip->getMatrix();	//pointer for the vector Gip
+	double *Gi = G_i->getMatrix();		//pointer for the vector Gi
 
 	double* e1i = e1_i->getMatrix();
 	double* e2i = e2_i->getMatrix();
@@ -495,7 +495,7 @@ void RigidOscillatorySurface_1::Gamma_and_Triad(Matrix* G_p, Matrix* t1_p, Matri
 	Gi[2] = e2i[2] * (*thi) + v[148] * v[66] + xPi[2] + e1i[2] * (*zi);
 }
 
-//Realiza chute inicial para as variaveis zeta e theta
+//Performs initial guess for the variables zeta and theta
 void RigidOscillatorySurface_1::InitialGuess(Matrix* xS, double** convective, int n_solutions)
 {
 	Matrix QMt(3, 3);
@@ -516,7 +516,7 @@ void RigidOscillatorySurface_1::InitialGuess(Matrix* xS, double** convective, in
 	convective[0][1] = temp(1, 0);
 }
 
-//Retorna em Gamma o valor de Gamma para zeta e theta (tomando posição atual)
+//Returns in Gamma the value of Gamma for zeta and theta (tomando position current)
 void RigidOscillatorySurface_1::Gamma(Matrix* Gamma, double *zeta, double *theta)
 {
 	double* A1 = &A_1;
@@ -542,24 +542,24 @@ void RigidOscillatorySurface_1::Gamma(Matrix* Gamma, double *zeta, double *theta
 	G[2] = e2[2] * (*theta) + (-(e1[1] * e2[0]) + e1[0] * e2[1])*v[28] + xP[2] + e1[2] * (*zeta);
 }
 
-//Dado o ponto xS, calcula as coordenadas (zeta,theta) referentes a minima distancia
+//Data the point xS, calculates the coordinates (zeta,theta) referring to the minimum distance
 void RigidOscillatorySurface_1::FindMinimimumParameters(Matrix* xS, NSContactData* cd)
 {
-	//Parametros NR
+	//Parameters NR
 	double tol_ortho = 1e-12;
 	double max_delta = 0.0;
 	int max_it = 20;
 	double v[1000];
 	double** J;
-	//Alocação J
+	//Allocation J
 	J = new double*[2];
 	for (int i = 0; i < 2; i++)
 		J[i] = new double[2];
 	Matrix Jacobian(2, 2);
 	Matrix residual(2);
 	Matrix delta(2);
-	double *r = residual.getMatrix();		//ponteiro para o vetor residual
-	double *vi = vNR->getMatrix();			//ponteiro para vNR
+	double *r = residual.getMatrix();		//pointer for the vector residual
+	double *vi = vNR->getMatrix();			//pointer for vNR
 
 	double* e1 = e1_p->getMatrix();
 	double* e2 = e2_p->getMatrix();
@@ -571,48 +571,48 @@ void RigidOscillatorySurface_1::FindMinimimumParameters(Matrix* xS, NSContactDat
 	double* lambda2 = &lambda_2;
 	double* phi1 = &phi_1;
 	double* phi2 = &phi_2;
-	double *pxS = xS->getMatrix();			//ponteiro para o vetor xS
+	double *pxS = xS->getMatrix();			//pointer for the vector xS
 	
 	for (int sol_index = 0; sol_index < cd->n_solutions; sol_index++)
 	{
-		//Inicialização de chute inicial
+		//Initialization of initial guess
 		(*vNR)(0, 0) = cd->convective[sol_index][0];
 		(*vNR)(1, 0) = cd->convective[sol_index][1];
 		
-		if (sol_index == 1 && cd->repeated[sol_index] == true)//tentativa de encontrar outras raizes
+		if (sol_index == 1 && cd->repeated[sol_index] == true)//attempt of find other raizes
 		{
 			(*vNR)(0, 0) = cd->convective[0][0] + lambda_1;
 			(*vNR)(1, 0) = cd->convective[0][1];
 		}
-		if (sol_index == 2 && cd->repeated[sol_index] == true)//tentativa de encontrar outras raizes
+		if (sol_index == 2 && cd->repeated[sol_index] == true)//attempt of find other raizes
 		{
 			(*vNR)(0, 0) = cd->convective[0][0] - lambda_1;
 			(*vNR)(1, 0) = cd->convective[0][1];
 		}
-		if (sol_index == 3 && cd->repeated[sol_index] == true)//tentativa de encontrar outras raizes
+		if (sol_index == 3 && cd->repeated[sol_index] == true)//attempt of find other raizes
 		{
 			(*vNR)(0, 0) = cd->convective[0][0];
 			(*vNR)(1, 0) = cd->convective[0][1] + lambda_2;
 		}
-		if (sol_index == 4 && cd->repeated[sol_index] == true)//tentativa de encontrar outras raizes
+		if (sol_index == 4 && cd->repeated[sol_index] == true)//attempt of find other raizes
 		{
 			(*vNR)(0, 0) = cd->convective[0][0];
 			(*vNR)(1, 0) = cd->convective[0][1] - lambda_2;
 		}
-		if (sol_index > 4 && cd->repeated[sol_index] == true)//tentativa de encontrar outras raizes
+		if (sol_index > 4 && cd->repeated[sol_index] == true)//attempt of find other raizes
 		{
 			(*vNR)(0, 0) = cd->convective[0][0];
 			(*vNR)(1, 0) = cd->convective[0][1];
 		}
 
-		double error = tol_ortho + 1.0;	//Forçando a entrar no loop
+		double error = tol_ortho + 1.0;	//Forcing the enter in the loop
 		int it = 1;
 		int flag_error = 0;
 		while (error > tol_ortho && it <= max_it)
 		{
 			if (error > tol_ortho)
 			{
-				//Calculo do residuo e jacobiano
+				//Calculation of the residual and Jacobian
 				v[96] = -(e2[2] * vi[1]);
 				v[95] = -(e1[2] * vi[0]);
 				v[94] = -(e2[1] * vi[1]);
@@ -659,39 +659,39 @@ void RigidOscillatorySurface_1::FindMinimimumParameters(Matrix* xS, NSContactDat
 				J[0][1] = v[79];
 				J[1][0] = v[79];
 				J[1][1] = -(v[64] * v[64]) - (v[66] * v[66]) - (v[68] * v[68]) + v[61] * v[97];
-				Jacobian.PtrToMatrix(J, 2);									//Conversão do Jacobiano para matriz
-				delta = fullsystem(Jacobian, -1.0*residual, &flag_error);	//Resolve sistema linear
-				if (flag_error == 0)										//Se conseguiu fazer o sistema linear
+				Jacobian.PtrToMatrix(J, 2);									//Conversion of the Jacobian for matrix
+				delta = fullsystem(Jacobian, -1.0*residual, &flag_error);	//Solves linear system
+				if (flag_error == 0)										//If conseguiu do the linear system
 				{
-					(*vNR) = (*vNR) + delta;								//Atualização das variaveis
-					error = norm(delta);									//Norma do residuo
+					(*vNR) = (*vNR) + delta;								//Update of the variables
+					error = norm(delta);									//Norm of the residual
 					it++;
 				}
 				else
 				{
-					it = max_it + 1;//Força saida - divergência
+					it = max_it + 1;//Force output - divergence
 				}
 			}
 		}//end while NR
 		
 		
 
-		//Convergiu - ainda ha ações a verificar...
+		//Converged - still there is ações the check...
 		if (error <= tol_ortho && flag_error == 0)
 		{
 			if (norm(delta) > max_delta)
 				max_delta = norm(delta);
 			cd->convective[sol_index][0] = (*vNR)(0, 0);
 			cd->convective[sol_index][1] = (*vNR)(1, 0);
-			//Se esta no range local de interesse - dominio fisico da superficie triangular
+			//If this in the range local of interest - domain physical of the surface triangular
 			if (abs((*vNR)(0, 0)) <= 0.5*waves_1*lambda_1 && abs((*vNR)(1, 0)) <= 0.5*waves_2*lambda_2)
 				cd->return_value[sol_index] = 0;
 			else
 			{
-				//Se esta em região próxima, mas não no range local de interesse
+				//If this in região next, but not in the range local of interest
 				if (abs((*vNR)(0, 0)) <= 0.6*waves_1*lambda_1 && abs((*vNR)(1, 0)) <= 0.6*waves_2*lambda_2)
 					cd->return_value[sol_index] = 3;
-				//Se não estiver no range de interesse
+				//If not is in the range of interest
 				else
 					cd->return_value[sol_index] = 2;
 			}
@@ -699,11 +699,11 @@ void RigidOscillatorySurface_1::FindMinimimumParameters(Matrix* xS, NSContactDat
 		}
 		else
 			cd->return_value[sol_index] = 1;
-		//Retornos da função
-		//0 - Convergiu e esta no range de interesse para contato
-		//1 - Não houve convergência (pode ou não estar no range para contato) - retorno problematico!!
-		//2 - Houve convergência, mas não esta no range para contato
-		//3 - Houve convergência, esta fora do range para contato, mas próximo
+		//Retornos of the function
+		//0 - Converged and this in the range of interest for contact
+		//1 - Not there was convergence (can or not to be in the range for contact) - return problematico!!
+		//2 - There was convergence, but not this in the range for contact
+		//3 - There was convergence, this outside of the range for contact, but next
 	}
 	//Clean
 	for (int i = 0; i < 2; i++)
@@ -716,15 +716,15 @@ void RigidOscillatorySurface_1::FindMinimimumParameters(Matrix* xS, NSContactDat
 	//cd->Plot();
 	//printf("%d %d %d %d %d\n", cd->repeated[0], cd->repeated[1], cd->repeated[2], cd->repeated[3], cd->repeated[4]);
 }
-//Atualiza as variaveis internas da superficie, para pegarem info do pilot node para uso posterior com posição atualizada
+//Updates the variables internal of the surface, for grab info of the pilot node for use subsequent with position updated
 void RigidOscillatorySurface_1::FillNodes()
 {
-	//Atualização do Pilot Node
+	//Update of the Pilot Node
 	(*xP_p)(0, 0) = (*xP_i)(0, 0) + db.nodes[pilot_node - 1]->displacements[0];
 	(*xP_p)(1, 0) = (*xP_i)(1, 0) + db.nodes[pilot_node - 1]->displacements[1];
 	(*xP_p)(2, 0) = (*xP_i)(2, 0) + db.nodes[pilot_node - 1]->displacements[2];
 
-	//Atualização dos versores orientativos da superficie
+	//Update of the versores orientativos of the surface
 	Matrix alpha_1(3);
 	alpha_1(0, 0) = db.nodes[pilot_node - 1]->displacements[3];
 	alpha_1(1, 0) = db.nodes[pilot_node - 1]->displacements[4];
@@ -737,13 +737,13 @@ void RigidOscillatorySurface_1::FillNodes()
 	*e2_p = Q*(*e2_i);
 }
 
-//Retorna coordenadas globais do ponto central da superficie a ser utilizado para calculos grosseiros de sua localização (pinball)
+//Returns coordinates global of the point central of the surface the be used for calculations coarse of its location (pinball)
 void RigidOscillatorySurface_1::CenterPoint(Matrix* center)
 {
 	*center = *xP_i;
 }
 
-//Salva vetores de configuração convergida
+//Saves vectors of configuration converged
 void RigidOscillatorySurface_1::SaveConfiguration()
 {
 	*xP_i = *xP_p;
@@ -751,10 +751,10 @@ void RigidOscillatorySurface_1::SaveConfiguration()
 	*e2_i = *e2_p;
 }
 
-//Calcula contribuições de contato entre esfera e superficie
+//Calculates contributions of contact between sphere and surface
 void RigidOscillatorySurface_1::ContactSphereSurfaceSticking(double* Rc, double** Kc, double zetap, double thetap, double zetai, double thetai, double* gti, int node, double* epsn, double* epst, double* cn, double* ct, double* mu, double* radius)
 {
-	double *xPi = xP_i->getMatrix();	//ponteiro para o vetor xPi
+	double *xPi = xP_i->getMatrix();	//pointer for the vector xPi
 	double* e1i = e1_i->getMatrix();
 	double* e2i = e2_i->getMatrix();
 	double* A1 = &A_1;
@@ -4689,10 +4689,10 @@ void RigidOscillatorySurface_1::ContactSphereSurfaceSticking(double* Rc, double*
 					+ v[1140] * v[704] + v[1141] * v[710]);
 }
 
-//Calcula contribuições de contato entre esfera e superficie
+//Calculates contributions of contact between sphere and surface
 void RigidOscillatorySurface_1::ContactSphereSurfaceSliding(double* Rc, double** Kc, double zetap, double thetap, double zetai, double thetai, double* gti, int node, double* epsn, double* epst, double* cn, double* ct, double* mu, double* radius)
 {
-	double *xPi = xP_i->getMatrix();	//ponteiro para o vetor xPi
+	double *xPi = xP_i->getMatrix();	//pointer for the vector xPi
 	double* e1i = e1_i->getMatrix();
 	double* e2i = e2_i->getMatrix();
 	double* A1 = &A_1;

@@ -1,5 +1,5 @@
 #include "Modal.h"
-#include <direct.h>
+#include "PlatformCompat.h"
 #include <chrono>
 #include <iostream>
 
@@ -11,7 +11,7 @@
 
 #include "IO.h"
 #include"Database.h"
-//Variaveis globais
+//Global variables
 extern
 Database db;
 #define PI 3.1415926535897932384626433832795
@@ -30,7 +30,7 @@ Modal::Modal()
 	end_time = 0;
 	start_time = 0;
 
-	//Flag que indica se e analise concomitante - default: false
+	//Flag that indicates if and analysis concomitante - default: false
 	concomitant_solution = false;									
 }
 
@@ -49,7 +49,7 @@ bool Modal::Read(FILE *f)
 	if (!strcmp(s, "ExportMatrices"))
 	{
 		fscanf(f, "%s", s);
-		if (atoi(s) != 0 && atoi(s) != 1)//Se não for 0 ou 1
+		if (atoi(s) != 0 && atoi(s) != 1)//If not for 0 or 1
 			return false;
 		if (atoi(s) == 1)
 			export_matrices = true;
@@ -81,7 +81,7 @@ bool Modal::Read(FILE *f)
 	if (!strcmp(s, "ComputeEigenvectors"))
 	{
 		fscanf(f, "%s", s);
-		if (atoi(s) != 0 && atoi(s) != 1)//Se não for 0 ou 1
+		if (atoi(s) != 0 && atoi(s) != 1)//If not for 0 or 1
 			return false;
 		if (atoi(s) == 1)
 			compute_eigenvectors = true;
@@ -100,7 +100,7 @@ bool Modal::Read(FILE *f)
 	else
 		return false;
 
-	//Alocação do vetor que salvara os autovalores
+	//Allocation of the vector that salvara the eigenvalues
 	eig = Matrix(number_modes, 2);
 
 	return true;
@@ -117,20 +117,20 @@ void Modal::CreateOutputFolder()
 {
 	strcpy(copy_name, db.folder_name);	
 	strcat(copy_name, "post/");
-	_mkdir(copy_name);				//criando diretório post
-	//Escrevendo o nome da solução
+	GIRAFFE_MKDIR(copy_name);				//creating directory post
+	//Writing the name of the solution
 	char analysis[100];
 	sprintf(analysis, "solution_%d", solution_number);
 	strcat(copy_name, analysis);
 	strcat(copy_name, "/");
-	_mkdir(copy_name);			//cria a pasta com o tipo de analise em questão
+	GIRAFFE_MKDIR(copy_name);			//creates the folder with the type of analysis in question
 	strcat(copy_name, analysis);
 }
 
-//Realiza analise modal
+//Performs analysis modal
 bool Modal::Solve()
 {
-	//Plotagem do dia da simulação
+	//Plotting of the dia of the simulation
 	system_clock::time_point today = system_clock::now();
 	time_t tt;
 	tt = system_clock::to_time_t(today);
@@ -141,36 +141,36 @@ bool Modal::Solve()
 	}
 	else
 		db.myprintf("\nConcomitant solution started at %s\n", ctime(&tt));
-	high_resolution_clock::time_point t1 = high_resolution_clock::now();//Inicia a marcação de tempo de execução
-	DOFsActive();														//Para cada nó ativa DOFs - tambem opera sobre multiplicadores de Lagrange de SpecialConstraints
-	SetGlobalDOFs();													//Numeração de graus de liberdade
-	SetGlobalSize();													//Calcula o tamanho da matriz global - com base nos GLs livres e fixos
-	Zeros();															//Zera displacements dos nós
-	//////////////////////////////////////////Montagem da matriz de massa para analise modal//////////////////////////////////////////////////////
-	Clear();															//Limpeza das matrizes globais
-	ZerosLocalMatrices();												//Limpeza das matrizes dos elementos (locais)
-	MountMassModal();													//Montagem da matriz de massa
-	MountDynModal();													//Copia informações da matriz de massa para a rigidez, para espalhamento correto no passo posterior
-	MountGlobal();														//Espalhamento das informações locais nas matrizes/vetores globais
-	MountSparse();														//Montagem da matriz esparsa
-	db.global_mass_AA = db.global_stiffness_AA;						//Cria cópia da matriz de massa (a mesma havia sido salva na variavel referente a matriz de rigidez para se utilizar das mesmas funções de montagem de matrizes globais)
-	//////////////////////////////////////////Montagem da matriz de rigidez para analise modal////////////////////////////////////////////////////
-	Clear();															//Limpeza das matrizes globais
-	ZerosLocalMatrices();												//Limpeza das matrizes dos elementos (locais)
-	MountLocal();														//Montagem das matrizes de rigidez (locais)
-	MountElementLoads();												//Montagem das matrizes de rigidez de carregamentos nos elementos (locais)
-	MountSpecialConstraints();											//Montagem das special constraints
-	MountContacts();													//Montagem dos contatos
-	MountLoads();														//Montagem de carregamentos gerais
-	MountGlobal();														//Espalhamento das informações locais nas matrizes/vetores globais
-	MountSparse();														//Montagem da matriz esparsa
-	//Nesse ponto possuimos as duas matrizes relevantes (massa e rigidez), salvas para analise modal. A seguir e feita a rotina de extração de autovalores.
-	//Se houver requisição, exporta as matrizes para a pasta da solution
+	high_resolution_clock::time_point t1 = high_resolution_clock::now();//Inicia the marcação of time of execution
+	DOFsActive();														//For each node active DOFs - tambem opera on Lagrange multipliers of SpecialConstraints
+	SetGlobalDOFs();													//Numbering of degrees of freedom
+	SetGlobalSize();													//Calculates the size of the matrix global - with base in the GLs free and fixed
+	Zeros();															//Zeroes displacements of the nodes
+	//////////////////////////////////////////Assembly of the mass matrix for analysis modal//////////////////////////////////////////////////////
+	Clear();															//Limpeza of the matrices global
+	ZerosLocalMatrices();												//Limpeza of the matrices of the elements (local)
+	MountMassModal();													//Assembly of the mass matrix
+	MountDynModal();													//Copies information of the mass matrix for the stiffness, for espalhamento correct in the step subsequent
+	MountGlobal();														//Espalhamento of the information local in the matrices/vectors global
+	MountSparse();														//Assembly of the sparse matrix
+	db.global_mass_AA = db.global_stiffness_AA;						//Creates copies of the mass matrix (the same there was sido saves in the variable referring to the stiffness matrix for if use of the same functions of assembly of matrices global)
+	//////////////////////////////////////////Assembly of the stiffness matrix for analysis modal////////////////////////////////////////////////////
+	Clear();															//Limpeza of the matrices global
+	ZerosLocalMatrices();												//Limpeza of the matrices of the elements (local)
+	MountLocal();														//Assembly of the matrices of stiffness (local)
+	MountElementLoads();												//Assembly of the matrices of stiffness of loadings in the elements (local)
+	MountSpecialConstraints();											//Assembly of the special constraints
+	MountContacts();													//Assembly of the contacts
+	MountLoads();														//Assembly of loadings gerais
+	MountGlobal();														//Espalhamento of the information local in the matrices/vectors global
+	MountSparse();														//Assembly of the sparse matrix
+	//In this point possuimos the two matrices relevantes (mass and stiffness), saved for analysis modal. A seguir and done the routine of extração of eigenvalues.
+	//If there is requisição, exporta the matrices for the folder of the solution
 	if (export_matrices == true)
 		WriteMatrices();
 	int ret;
 	if (compute_eigenvectors == true)
-		eigenvectors = Matrix(db.global_stiffness_AA.rows, number_modes + 1);	//saida dos autovetores - alocação
+		eigenvectors = Matrix(db.global_stiffness_AA.rows, number_modes + 1);	//output of the eigenvectors - allocation
 	eig = sparseeigen(db.global_stiffness_AA, db.global_mass_AA, eigenvectors, number_modes, compute_eigenvectors, &ret, tolerance);
 	if (ret != 0)
 	{
@@ -188,7 +188,7 @@ bool Modal::Solve()
 	if (concomitant_solution == false)
 	{
 		db.myprintf("\nSolution step %d time:\t   %lf sec.\n", solution_number, duration / 1e6);
-		//Plotagem do dia da simulação
+		//Plotting of the dia of the simulation
 		db.myprintf("\nSolution step %d finished at %s\n", solution_number, ctime(&tt));
 	}
 	else
@@ -197,7 +197,7 @@ bool Modal::Solve()
 	return true;
 }
 
-//Escreve resultados
+//Writes results
 void Modal::WriteResults(double time_value)
 {
 	char name[1000];
@@ -206,7 +206,7 @@ void Modal::WriteResults(double time_value)
 	strcpy(name, copy_name);
 	strcat(name, "_eigenvalues.txt");
 	f = fopen(name, "w");
-	//Escrevendo autovalores
+	//Writing eigenvalues
 	fprintf(f, "Eigenvalues - solution number %d\n", solution_number);
 	fprintf(f, "Mode\tRe\tIm\n");
 	for (int mode = 0; mode < number_modes; mode++)
@@ -241,7 +241,7 @@ void Modal::WriteMatrices()
 	db.global_mass_AA.WriteMatrix(name);
 }
 
-//Escreve arquivos com os modos de vibrar
+//Writes files with the modos of vibrar
 void Modal::WriteModes()
 {
 	char file_name[400];
@@ -249,22 +249,22 @@ void Modal::WriteModes()
 	re_mode = new double[db.number_GLs_node];
 	double* im_mode;
 	im_mode = new double[db.number_GLs_node];
-	//Percorrendo os modos para escrita
-	bool first = true;	//para casos de autovalor complexo
+	//Percorrendo the modos for writing
+	bool first = true;	//for cases of eigenvalue complexo
 	for (int mode = 0; mode < number_modes; mode++)
 	{
-		//Nome do arquivo
+		//File name
 		sprintf(file_name, "mode_%d_solution_%d.txt", mode + 1, solution_number);
 		FILE *f = fopen(file_name, "w");
 		for (int node = 0; node < db.number_nodes; node++)
 		{
-			//Coordenadas do nó em questão
+			//Coordinates of the node in question
 			fprintf(f, "Node\t%d\tX\t%.6e\tY\t%.6e\tZ\t%.6e\t", node+1,
 				db.nodes[node]->copy_coordinates[0],
 				db.nodes[node]->copy_coordinates[1], 
 				db.nodes[node]->copy_coordinates[2]);
-		    //Deslocamentos do nó em questão
-			if (eig(mode, 1) == 0.0)//autovalor real
+		    //Displacements of the node in question
+			if (eig(mode, 1) == 0.0)//eigenvalue real
 			{
 				for (int k = 0; k < db.number_GLs_node; k++)
 				{
@@ -275,7 +275,7 @@ void Modal::WriteModes()
 					im_mode[k] = 0.0;
 				}
 			}
-			else//autovalor complexo
+			else//eigenvalue complexo
 			{
 				if (first == true)
 				{
@@ -301,7 +301,7 @@ void Modal::WriteModes()
 						if (db.nodes[node]->GLs[k] > 0)
 						{
 							re_mode[k] = eigenvectors(db.nodes[node]->GLs[k]-1, mode - 1);
-							im_mode[k] = -eigenvectors(db.nodes[node]->GLs[k]-1, mode);//complexo conjugado do anterior
+							im_mode[k] = -eigenvectors(db.nodes[node]->GLs[k]-1, mode);//complexo conjugado of the previous
 						}
 						else
 						{
@@ -316,7 +316,7 @@ void Modal::WriteModes()
 				fprintf(f, "Re_RX\t%.6e\tIm_RX\t%.6e\tRe_RY\t%.6e\tIm_RY\t%.6e\tRe_RZ\t%.6e\tIm_RZ\t%.6e\t", re_mode[3], im_mode[3], re_mode[4], im_mode[4], re_mode[5], im_mode[5]);
 			fprintf(f, "\n");
 		}
-		//Lógica para complexos conjugados
+		//Lógica for complexos conjugados
 		if (first == true && eig(mode, 1) != 0.0)
 			first = false;
 		else
@@ -328,11 +328,11 @@ void Modal::WriteModes()
 	delete[]im_mode;
 }
 
-//Calcula o valor do deslocamento modal no nó e grau de liberdade em questão
+//Calculates the value of the displacement modal in the node and degree of freedom in question
 void Modal::ComputeModalDisplacement(int node, int DOF, int mode, double* Re, double* Im)
 {
-	//Deslocamentos do nó em questão
-	if (eig(mode, 1) == 0.0)//autovalor real
+	//Displacements of the node in question
+	if (eig(mode, 1) == 0.0)//eigenvalue real
 	{
 		if (db.nodes[node]->GLs[DOF] > 0)
 			*Re = eigenvectors(db.nodes[node]->GLs[DOF] - 1, mode);
@@ -340,7 +340,7 @@ void Modal::ComputeModalDisplacement(int node, int DOF, int mode, double* Re, do
 			*Re = 0.0;
 		*Im = 0.0;
 	}
-	else//autovalor complexo
+	else//eigenvalue complexo
 	{
 		bool first = true;
 		if (mode > 0)
@@ -364,7 +364,7 @@ void Modal::ComputeModalDisplacement(int node, int DOF, int mode, double* Re, do
 			if (db.nodes[node]->GLs[DOF] > 0)
 			{
 				*Re = eigenvectors(db.nodes[node]->GLs[DOF] - 1, mode - 1);
-				*Im = -eigenvectors(db.nodes[node]->GLs[DOF] - 1, mode);//complexo conjugado do anterior
+				*Im = -eigenvectors(db.nodes[node]->GLs[DOF] - 1, mode);//complexo conjugado of the previous
 			}
 			else
 			{
@@ -375,10 +375,10 @@ void Modal::ComputeModalDisplacement(int node, int DOF, int mode, double* Re, do
 	}
 }
 
-//Escreve modos de vibrar de todos os elementos
+//Writes modos of vibrar of all the elements
 void Modal::WriteVTK_XML()
 {
-	//Creates a copy of nodal coordinates
+	//Creates the copy of nodal coordinates
 	double** copy_copy_coordinates;
 	copy_copy_coordinates = new double*[db.number_nodes];
 	for (int node = 0; node < db.number_nodes; node++)
@@ -399,7 +399,7 @@ void Modal::WriteVTK_XML()
 	double bbox = db.EvaluateBoundingBoxDiag() / 8;
 	for (int mode = 0; mode < number_modes; mode++)
 	{
-		//Calcula o mode factor utilizando uma relação com a diagonal do bounding box do modelo
+		//Calculates the mode factor utilizando a relação with the diagonal of the bounding box of the modelo
 		mode_factor = bbox / ComputeModeNorm(mode);
 		for (int c_factor = 0; c_factor < number_frames; c_factor++)
 		{
@@ -438,13 +438,13 @@ void Modal::WriteVTK_XML()
 	delete[]copy_ref_coordinates;
 }
 
-//Computa a norma do autovetor
+//Computes the norm of the eigenvector
 double Modal::ComputeModeNorm(int mode)
 {
 	double ret_norm = 0;
 	double temp = 0;
-	//Deslocamentos do nó em questão
-	if (eig(mode, 1) == 0.0)//autovalor real
+	//Displacements of the node in question
+	if (eig(mode, 1) == 0.0)//eigenvalue real
 	{
 		for (int DOF = 0; DOF<db.global_stiffness_AA.rows; DOF++)
 			if (abs(eigenvectors(DOF, mode))>ret_norm)
@@ -473,7 +473,7 @@ double Modal::ComputeModeNorm(int mode)
 	return ret_norm;
 }
 
-//Monta matriz de massa para analise modal
+//Assembles mass matrix for analysis modal
 void Modal::MountMassModal()
 {
 	high_resolution_clock::time_point t_last = high_resolution_clock::now();
@@ -490,7 +490,7 @@ void Modal::MountMassModal()
 		cout << "MountMassModal duration:\t" << duration / 1e6 << " sec." << "\n";
 }
 
-//Monta matriz de amortecimento para analise modal
+//Assembles damping matrix for analysis modal
 void Modal::MountDampingModal()
 {
 	high_resolution_clock::time_point t_last = high_resolution_clock::now();
@@ -507,7 +507,7 @@ void Modal::MountDampingModal()
 		cout << "MountDampingModal duration:\t" << duration / 1e6 << " sec." << "\n";
 }
 
-//Montagens - Modal
+//Assemblies - Modal
 void Modal::MountDynModal()
 {
 	high_resolution_clock::time_point t_last = high_resolution_clock::now();
@@ -536,7 +536,7 @@ void Modal::MountDynModal()
 	}
 }
 
-//Zera matrizes dos elementos (para uso na analise modal)
+//Zeroes matrices of the elements (for use in the analysis modal)
 void Modal::ZerosLocalMatrices()
 {
 #pragma omp parallel

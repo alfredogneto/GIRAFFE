@@ -1,12 +1,12 @@
 #include "SplineElementPair.h"
-#include <direct.h>
+#include "PlatformCompat.h"
 
 #include "SPContactData.h"
 #include "Surface.h"
 #include "Spline.h"
 #include "SplineElement.h"
 #include "Database.h"
-//Variaveis globais
+//Global variables
 extern
 Database db;
 
@@ -19,7 +19,7 @@ SplineElementPair::~SplineElementPair()
 {
 }
 
-//Valores Default de tolerancias e outras variaveis
+//Values Default of tolerancias and other variables
 void SplineElementPair::DefaultValues()
 {
 	//Tolerance for precision of convective coordinates
@@ -44,7 +44,7 @@ void SplineElementPair::DefaultValues()
 	alloc_control = false;
 }
 
-//Aloca memória
+//Allocates memory
 void SplineElementPair::Alloc(SPContactData* c_data)
 {
 	if (alloc_control == false)
@@ -72,12 +72,12 @@ void SplineElementPair::Alloc(SPContactData* c_data)
 
 }
 
-//Libera memória
+//Frees memory
 void SplineElementPair::Free()
 {
 	if (alloc_control == true)
 	{
-		//Limpeza de memória
+		//Limpeza of memory
 		for (int i = 0; i < n_pointwise; i++)
 		{
 			delete cNR1[i];
@@ -92,41 +92,41 @@ void SplineElementPair::Free()
 
 void SplineElementPair::OpenTRReport(int index)
 {
-	//Escrevendo o nome do par de contato
+	//Writing the name of the contact pair
 	char pair_name[100];
 	sprintf(pair_name, "TR_report_Spline%d_Spline%d__ele_%d_ele_%d__%d", spline1_ID, spline2_ID, surf1_ID, surf2_ID, index);
-	strcpy(name, db.folder_name);	//pasta do job
-	strcat(name, "TR/");			//diretório TR
-	_mkdir(name);					//criando diretório TR
-	strcat(name, pair_name);		//nome do arquivo
-	strcat(name, ".txt");			//criando arquivo
-	f_TR_report[index] = fopen(name, "a");	//abre arquivo
+	strcpy(name, db.folder_name);	//folder of the job
+	strcat(name, "TR/");			//directory TR
+	GIRAFFE_MKDIR(name);					//creating directory TR
+	strcat(name, pair_name);		//file name
+	strcat(name, ".txt");			//creating file
+	f_TR_report[index] = fopen(name, "a");	//opens file
 }
 
 void SplineElementPair::OpenDEGReport(int index)
 {
-	//Escrevendo o nome do par de contato
+	//Writing the name of the contact pair
 	char pair_name_deg[100];
 	sprintf(pair_name_deg, "DEG_report_Spline%d_Spline%d__ele_%d_ele_%d__%d", spline1_ID, spline2_ID, surf1_ID, surf2_ID, index);
-	strcpy(name_deg, db.folder_name);	//pasta do job
-	strcat(name_deg, "DEG/");			//diretório TR
-	_mkdir(name_deg);					//criando diretório TR
-	strcat(name_deg, pair_name_deg);	//nome do arquivo
-	strcat(name_deg, ".txt");			//criando arquivo
-	f_DEG_report[index] = fopen(name_deg, "a");	//abre arquivo
+	strcpy(name_deg, db.folder_name);	//folder of the job
+	strcat(name_deg, "DEG/");			//directory TR
+	GIRAFFE_MKDIR(name_deg);					//creating directory TR
+	strcat(name_deg, pair_name_deg);	//file name
+	strcat(name_deg, ".txt");			//creating file
+	f_DEG_report[index] = fopen(name_deg, "a");	//opens file
 }
 
 void SplineElementPair::InitializeTRReport(int index)
 {
-	//Escrevendo o nome do par de contato
+	//Writing the name of the contact pair
 	char pair_name[100];
 	sprintf(pair_name, "TR_report_Spline%d_Spline%d__ele_%d_ele_%d__%d", spline1_ID, spline2_ID, surf1_ID, surf2_ID, index);
-	strcpy(name, db.folder_name);	//pasta do job
-	strcat(name, "TR/");			//diretório TR
-	_mkdir(name);					//criando diretório TR
-	strcat(name, pair_name);		//nome do arquivo
-	strcat(name, ".txt");			//criando arquivo
-	f_TR_report[index] = fopen(name, "w");	//abre arquivo
+	strcpy(name, db.folder_name);	//folder of the job
+	strcat(name, "TR/");			//directory TR
+	GIRAFFE_MKDIR(name);					//creating directory TR
+	strcat(name, pair_name);		//file name
+	strcat(name, ".txt");			//creating file
+	f_TR_report[index] = fopen(name, "w");	//opens file
 
 	fprintf(f_TR_report[index], "///////////////////////////////////////////////////////////////////////\n");
 	fprintf(f_TR_report[index], "InitializeConvectiveRange\n");
@@ -134,20 +134,20 @@ void SplineElementPair::InitializeTRReport(int index)
 	fprintf(f_TR_report[index], "Convective 2:\t%.6e\tto\t%.6e\tRange:\t%.6e\n", convective_min(1, 0), convective_max(1, 0), convective_range(1, 0));
 	fclose(f_TR_report[index]);
 
-	fclose(f_TR_report[index]);			//fecha arquivo	
+	fclose(f_TR_report[index]);			//closes file	
 }
 
 void SplineElementPair::InitializeDEGReport(int index)
 {
-	//Escrevendo o nome do par de contato
+	//Writing the name of the contact pair
 	char pair_name[100];
 	sprintf(pair_name, "DEG_report_Spline%d_Spline%d__ele_%d_ele_%d__%d", spline1_ID, spline2_ID, surf1_ID, surf2_ID, index);
-	strcpy(name_deg, db.folder_name);	//pasta do job
-	strcat(name_deg, "DEG/");			//diretório TR
-	_mkdir(name_deg);					//criando diretório TR
-	strcat(name_deg, pair_name);		//nome do arquivo
-	strcat(name_deg, ".txt");			//criando arquivo
-	f_DEG_report[index] = fopen(name_deg, "w");	//abre arquivo
+	strcpy(name_deg, db.folder_name);	//folder of the job
+	strcat(name_deg, "DEG/");			//directory TR
+	GIRAFFE_MKDIR(name_deg);					//creating directory TR
+	strcat(name_deg, pair_name);		//file name
+	strcat(name_deg, ".txt");			//creating file
+	f_DEG_report[index] = fopen(name_deg, "w");	//opens file
 
 	fprintf(f_DEG_report[index], "///////////////////////////////////////////////////////////////////////\n");
 	fprintf(f_DEG_report[index], "InitializeConvectiveRange\n");
@@ -155,7 +155,7 @@ void SplineElementPair::InitializeDEGReport(int index)
 	fprintf(f_DEG_report[index], "Convective 2:\t%.6e\tto\t%.6e\tRange:\t%.6e\n", convective_min(1, 0), convective_max(1, 0), convective_range(1, 0));
 
 	fclose(f_DEG_report[index]);
-	fclose(f_DEG_report[index]);			//fecha arquivo	
+	fclose(f_DEG_report[index]);			//closes file	
 }
 
 void SplineElementPair::PreCalc()
@@ -185,21 +185,21 @@ void SplineElementPair::BeginStepCheck(SPContactData* c_data)
 		}
 	}
 
-	///////////////////////////////Ponteiros e variáveis para facilitar acesso//////////////////////////////////////////
-	SplineElement* surf1 = db.splines[spline1_ID - 1]->sp_element[surf1_ID];		//Ponteiro para a superfície 1
-	SplineElement* surf2 = db.splines[spline2_ID - 1]->sp_element[surf2_ID];		//Ponteiro para a superfície 2
+	///////////////////////////////Pointers and variables to make access easier//////////////////////////////////////////
+	SplineElement* surf1 = db.splines[spline1_ID - 1]->sp_element[surf1_ID];		//Pointer to the surface 1
+	SplineElement* surf2 = db.splines[spline2_ID - 1]->sp_element[surf2_ID];		//Pointer to the surface 2
 	Matrix GammaA(3);
 	Matrix GammaB(3);
 	Matrix cNR1_deg(2);
 	Matrix cNR2_deg(2);
 	double g_deg1;
 	double g_deg2;
-	//No início de cada passo é tomada a decisão acerca de strong_candidate ou não (com base na checagem de bounding box em torno das superfícies)
+	//In the start of each step and tomada the decisão acerca of strong_candidate or not (with base in the check of bounding box in torno of the surfaces)
 	bool converged1 = false;
 	bool strong_candidate = false;
 	bool deg1_converged = false;
 	bool deg2_converged = false;
-	//Primeira checagem - bounding box overlap
+	//First check - bounding box overlap
 	double inflation_factor = 4.0;
 	strong_candidate = true;
 	//strong_candidate = BoxOverlap(surf1->box, surf2->box, inflation_factor);
@@ -207,7 +207,7 @@ void SplineElementPair::BeginStepCheck(SPContactData* c_data)
 	if (strong_candidate == false)
 	{
 		for (int ip = 0; ip < n_pointwise; ip++)
-			c_data->return_value[ip] = 2;	//não e strong 
+			c_data->return_value[ip] = 2;	//not and strong 
 		if (write_report)
 		{
 			for (int i = 0; i < n_pointwise; i++)
@@ -219,19 +219,19 @@ void SplineElementPair::BeginStepCheck(SPContactData* c_data)
 		return;
 	}
 
-	//Salvando ultimas coordenadas convectivas convergidas nas atuais - evitando que casos que divergiram sejam usados como estimativas iniciais do novo incremento
+	//Saving ultimas convective coordinates convergidas in the current - evitando that cases that divergiram be usados as estimativas initial of the new increment
 	for (int ip = 0; ip < n_pointwise; ip++)
 	{
 		c_data->convective[ip][0] = c_data->copy_convective[ip][0];
 		c_data->convective[ip][1] = c_data->copy_convective[ip][1];
 
-		c_data->repeated[ip] = false;			//Indica que a solução [ip] sempre sera considerada
+		c_data->repeated[ip] = false;			//Indicates that the solution [ip] always will be considerada
 	}
 	for (int ip = 0; ip < n_pointwise; ip++)
 	{
 		converged1 = false;
 		int charact1 = 3;
-		seq_number = ip;//para controle do report
+		seq_number = ip;//for control of the report
 
 
 		//Degeneration basis - canonical basis
@@ -250,16 +250,16 @@ void SplineElementPair::BeginStepCheck(SPContactData* c_data)
 		////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 		////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-		//CASO 1: não era strong candidate (ou primeiro calculo)
+		//CASE 1: not era strong candidate (or first calculation)
 		if (c_data->copy_return_value[ip] == 2)
 		{
 			if (write_report)
 				fprintf(f_TR_report[ip], "Performing initial guess\n");
-			InitialGuess(c_data); //Realiza chute inicial com criterio geometrico -> escreve em 'convective'
+			InitialGuess(c_data); //Performs initial guess with criterion geometrico -> writes in 'convective'
 			for (int i = 0; i < 2; i++)
 				(*cNR1[ip])(i, 0) = c_data->convective[ip][i];
 		}
-		//CASO 2: ou e copy_return_value 0 ou 4 (ja ha solução disponivel proveniente de um passo anterior)
+		//CASE 2: or and copy_return_value 0 or 4 (already there is solution disponivel proveniente of a step previous)
 		else
 		{
 			(*cNR1[ip])(0, 0) = c_data->copy_convective[ip][0];
@@ -274,10 +274,10 @@ void SplineElementPair::BeginStepCheck(SPContactData* c_data)
 		{
 			if (write_report)
 				fprintf(f_TR_report[ip], "Search for minimum\n");
-			//Determinação de minimo ou intersecção
-			converged1 = FindMinimumSolution(c_data, cNR1[ip], info); //Verifica convergência do modelo - true/false
-			c_data->return_value[ip] = VerifyConvectiveRange(*cNR1[ip]); //Verifica o range da coordenada convectiva (2 longe, 4 próximo ou 0 no range) 
-			charact1 = CharacterizeCriticalPoint(cNR1[ip]); //Caracteriza o ponto critico (0 minimo estrito ou 4 outro tipo de problema)
+			//Determination of minimum or intersection
+			converged1 = FindMinimumSolution(c_data, cNR1[ip], info); //Checks convergence of the modelo - true/false
+			c_data->return_value[ip] = VerifyConvectiveRange(*cNR1[ip]); //Checks the range of the convective coordinate (2 longe, 4 next or 0 in the range) 
+			charact1 = CharacterizeCriticalPoint(cNR1[ip]); //Caracteriza the point critico (0 minimum strict or 4 other type of problem)
 			if (write_report)
 			{
 				fprintf(f_TR_report[ip], "Return value is %d \n", c_data->return_value[ip]);
@@ -319,7 +319,7 @@ void SplineElementPair::BeginStepCheck(SPContactData* c_data)
 			//Degenerative operator
 			c_data->MountDegenerativeOperator();
 
-			converged1 = FindMinimumSolutionDegenerated(c_data, c_data->P_0[ip], cNR1[ip]); //Verifica convergência do modelo - true/false
+			converged1 = FindMinimumSolutionDegenerated(c_data, c_data->P_0[ip], cNR1[ip]); //Checks convergence of the modelo - true/false
 			deg1_converged = converged1;
 
 			surf1->SplinePoint((*cNR1[ip])(0, 0), GammaA);
@@ -470,7 +470,7 @@ void SplineElementPair::BeginStepCheck(SPContactData* c_data)
 
 		c_data->return_value[ip] = VerifyConvectiveRange(*cNR1[ip]);
 
-		//Salva nas variaveis
+		//Saves in the variables
 		c_data->convective[ip][0] = (*cNR1[ip])(0, 0);
 		c_data->convective[ip][1] = (*cNR1[ip])(1, 0);
 
@@ -479,19 +479,19 @@ void SplineElementPair::BeginStepCheck(SPContactData* c_data)
 
 		if (VerifyConvectiveRange(*cNR1[ip]) == 2)
 		{
-			c_data->return_value[ip] = 2;	//não e strong
+			c_data->return_value[ip] = 2;	//not and strong
 			if (write_report)
 				fprintf(f_TR_report[ip], "Candidate is not Strong. Strict minimum far from range of interest.\n");
 		}
 		//if (charact1 != 0)
 		//{
-		//	c_data->return_value[ip] = 2;	//não e strong
+		//	c_data->return_value[ip] = 2;	//not and strong
 		//	if (write_report)
 		//		fprintf(f_TR_report[ip], "Candidate is not Strong. Critical point is not a minimum.\n");
 		//}
 		//if (converged1 == false) 
 		//{
-		//	c_data->return_value[ip] = 2;	//não e strong
+		//	c_data->return_value[ip] = 2;	//not and strong
 		//	if (write_report)
 		//		fprintf(f_TR_report[ip], "Candidate is not Strong. Solution diverged.\n");
 		//}		
@@ -504,12 +504,12 @@ void SplineElementPair::BeginStepCheck(SPContactData* c_data)
 
 }
 
-//Determinação via otimização das coordenadas convectivas do par de superficies
+//Determination via optimization of the convective coordinates of the pair of surfaces
 void SplineElementPair::SolveLCP(SPContactData* c_data)
 {
-	///////////////////////////////Ponteiros e variáveis para facilitar acesso//////////////////////////////////////////
-	SplineElement* surf1 = db.splines[spline1_ID - 1]->sp_element[surf1_ID];		//Ponteiro para a superfície 1
-	SplineElement* surf2 = db.splines[spline2_ID - 1]->sp_element[surf2_ID];		//Ponteiro para a superfície 2
+	///////////////////////////////Pointers and variables to make access easier//////////////////////////////////////////
+	SplineElement* surf1 = db.splines[spline1_ID - 1]->sp_element[surf1_ID];		//Pointer to the surface 1
+	SplineElement* surf2 = db.splines[spline2_ID - 1]->sp_element[surf2_ID];		//Pointer to the surface 2
 	Matrix GammaA(3);
 	Matrix GammaB(3);
 	Matrix cNR1_deg(2);
@@ -528,14 +528,14 @@ void SplineElementPair::SolveLCP(SPContactData* c_data)
 		}
 	}
 
-	//Valores salvos pela função (indicativos do que ocorreu em sua execução)
-	//0 - Convergiu e esta no range de interesse para contato e não houve grande mudança de posição do ponto material de contato, no caso de haver contato anterior - OK
-	//1 - Não houve convergência (pode ou não estar no range para contato) - e e strong_candidate. Retorno problematico responsavel por veto de passo da simulação.
-	//2 - Não e strong_candidate - OK
-	//3 - mudança abrupta na posição de contato. Retorno problematico responsavel por veto de passo da simulação.
-	//4 - Houve convergência, mas não esta no range para contato. Possivelmente elemento vizinho. - OK
+	//Values saved through the function (indicativos of the that ocorreu in its execution)
+	//0 - Converged and this in the range of interest for contact and not there was grande change of position of the point material of contact, in the case of haver contact previous - OK
+	//1 - Not there was convergence (can or not to be in the range for contact) - and and strong_candidate. Return problematico responsavel by veto of step of the simulation.
+	//2 - Not and strong_candidate - OK
+	//3 - change abrupta in the position of contact. Return problematico responsavel by veto of step of the simulation.
+	//4 - There was convergence, but not this in the range for contact. Possivelmente element vizinho. - OK
 
-	//Varredura das soluções ativas
+	//Sweep of the solutions active
 	for (int i = 0; i < c_data->n_solutions; i++)
 	{
 		//Degeneration basis - canonical basis
@@ -547,7 +547,7 @@ void SplineElementPair::SolveLCP(SPContactData* c_data)
 		c_data->copy_deg_coordinates[i][1] = (surf2->knot_element[2] + surf2->knot_element[3]) / 2;
 
 
-		//CASO 1 - não e strong candidate - retorno imediato:
+		//CASE 1 - not and strong candidate - return imediato:
 		if (c_data->return_value[i] == 2)
 		{
 			if (write_report)
@@ -555,27 +555,27 @@ void SplineElementPair::SolveLCP(SPContactData* c_data)
 		}
 		else
 		{
-			seq_number = i;//para controle do report
-			//Se não for solução repetida (ou seja, se for ativa)
+			seq_number = i;//for control of the report
+			//If not for solution repetida (or be, if for active)
 			if (c_data->repeated[i] == false)
 			{
-				//CASO 2: não houve convergência ou houve convergência para uma solução longe da desejada
-				//Toma como chute inicial a ultima solução correta conhecida (cópia do passo convergido anterior da phase 2)
+				//CASE 2: not there was convergence or there was convergence for a solution longe of the desired
+				//Takes as initial guess the last solution correct conhecida (copies of the step converged previous of the phase 2)
 				if (c_data->return_value[i] == 1 || c_data->return_value[i] == 3)
 				{
 					(*cNR1[i])(0, 0) = c_data->copy_convective[i][0];
 					(*cNR1[i])(1, 0) = c_data->copy_convective[i][1];
 
-					//Se antes não era strong candidate, o copy_convective não traz info valida. Assim, calcula o chute inicial (geometrico) novamente
+					//If before not era strong candidate, the copy_convective not traz info valida. Thus, calculates the initial guess (geometrico) novamente
 					if (c_data->copy_return_value[i] == 2)
 					{
-						InitialGuess(c_data); //Realiza chute inicial com criterio geometrico -> escreve em 'convective'
+						InitialGuess(c_data); //Performs initial guess with criterion geometrico -> writes in 'convective'
 						for (int ii = 0; ii < 2; ii++)
 							(*cNR1[i])(ii, 0) = c_data->convective[i][ii];
 					}
 				}
-				//CASO 3: houve convergência
-				//Toma como chute inicial a ultima solução convergida
+				//CASE 3: there was convergence
+				//Takes as initial guess the last solution converged
 				if (c_data->return_value[i] == 0 || c_data->return_value[i] == 4)
 				{
 					(*cNR1[i])(0, 0) = c_data->convective[i][0];
@@ -603,7 +603,7 @@ void SplineElementPair::SolveLCP(SPContactData* c_data)
 						//Degenerative operator
 						c_data->MountDegenerativeOperator();
 
-						//Determinação de minimo ou intersecção
+						//Determination of minimum or intersection
 						converged1 = FindMinimumSolution(c_data, cNR1[i], info);
 					}
 				}
@@ -770,11 +770,11 @@ void SplineElementPair::SolveLCP(SPContactData* c_data)
 				}
 
 				if (converged1 == true) {
-					//Salva nas variaveis
+					//Saves in the variables
 					c_data->convective[i][0] = (*cNR1[i])(0, 0);
 					c_data->convective[i][1] = (*cNR1[i])(1, 0);
 
-					//Preenche return value com 0, 2 ou 4
+					//Fills return value with 0, 2 or 4
 					c_data->return_value[i] = VerifyConvectiveRange(*cNR1[i]);
 					//Correction (for not creating a not-strong candidate here!):
 					if (c_data->return_value[i] == 2)
@@ -787,7 +787,7 @@ void SplineElementPair::SolveLCP(SPContactData* c_data)
 			}
 		}
 	}
-	EvaluateInvertedHessian(c_data);	//prepara inversa da Hessiana para envio para a rotina de contato - essa função ja faz o tratamento para não convexidade
+	EvaluateInvertedHessian(c_data);	//prepara inversa of the Hessian for envio for the routine of contact - this function already does the tratamento for not convexidade
 	if (write_report)
 	{
 		for (int i = 0; i < c_data->n_solutions; i++)
@@ -797,13 +797,13 @@ void SplineElementPair::SolveLCP(SPContactData* c_data)
 
 int SplineElementPair::CharacterizeCriticalPoint(Matrix* solution)
 {
-	///////////////////////////////Ponteiros e variaveis para facilitar acesso//////////////////////////////////////////
-	SplineElement* surf1 = db.splines[spline1_ID - 1]->sp_element[surf1_ID];		//Ponteiro para a superficie 1
-	SplineElement* surf2 = db.splines[spline2_ID - 1]->sp_element[surf2_ID];		//Ponteiro para a superficie 2
+	///////////////////////////////Pointers and variables to make access easier//////////////////////////////////////////
+	SplineElement* surf1 = db.splines[spline1_ID - 1]->sp_element[surf1_ID];		//Pointer to the surface 1
+	SplineElement* surf2 = db.splines[spline2_ID - 1]->sp_element[surf2_ID];		//Pointer to the surface 2
 
-	//0 - minimo estrito
-	//1 - minimo não estrito (intersecção)
-	//2 - transição minimo-sela (just-touch)
+	//0 - minimum strict
+	//1 - minimum not strict (intersection)
+	//2 - transition minimum-saddle (just-touch)
 	//3 - saddle 2 negative eigenvalues
 	//4 - other
 	Matrix xk(2);
@@ -814,9 +814,9 @@ int SplineElementPair::CharacterizeCriticalPoint(Matrix* solution)
 	for (int i = 0; i < 2; i++)
 		xk(i, 0) = (*solution)(i, 0);
 	double ob = ObjectivePhase1(xk);
-	//Hessiana da função objetivo
+	//Hessian of the objective function
 	HessianPhase1(xk, Hes);
-	//Calculando direções principais e curvaturas principais da função objetivo
+	//Calculating directions main and curvatures main of the objective function
 	fulleigen1(Hes, P, D, tol_eig);
 
 	double max_eig = -1e100;
@@ -828,14 +828,14 @@ int SplineElementPair::CharacterizeCriticalPoint(Matrix* solution)
 	double tol_intersect = max_eig * tol_convective * tol_convective;
 	double tol_small = max_eig * tol_small_1;
 
-	////minimo não estrito (intersecção)
+	////minimum not strict (intersection)
 	//if (ob < tol_intersect)
 	//{
 	//	if (write_report)
 	//		fprintf(f_TR_report[seq_number], "Intersection found (tolerance %.6e). Eigenvalues are %.6e\t%.6e\n", tol_intersect, D(0, 0), D(1, 1));
 	//	return 1;
 	//}
-	//minimo estrito
+	//minimum strict
 	if (D(0, 0) >= tol_small && D(1, 1) >= tol_small)
 	{
 		if (write_report)
@@ -849,13 +849,13 @@ int SplineElementPair::CharacterizeCriticalPoint(Matrix* solution)
 
 int SplineElementPair::CharacterizeCriticalPointDegenerated(Matrix* solution, Matrix* P_0, bool print)
 {
-	///////////////////////////////Ponteiros e variaveis para facilitar acesso//////////////////////////////////////////
-	SplineElement* surf1 = db.splines[spline1_ID - 1]->sp_element[surf1_ID];		//Ponteiro para a superficie 1
-	SplineElement* surf2 = db.splines[spline2_ID - 1]->sp_element[surf2_ID];		//Ponteiro para a superficie 2
+	///////////////////////////////Pointers and variables to make access easier//////////////////////////////////////////
+	SplineElement* surf1 = db.splines[spline1_ID - 1]->sp_element[surf1_ID];		//Pointer to the surface 1
+	SplineElement* surf2 = db.splines[spline2_ID - 1]->sp_element[surf2_ID];		//Pointer to the surface 2
 
-	//0 - minimo estrito
-	//1 - minimo não estrito (intersecção)
-	//2 - transição minimo-sela (just-touch)
+	//0 - minimum strict
+	//1 - minimum not strict (intersection)
+	//2 - transition minimum-saddle (just-touch)
 	//3 - saddle 2 negative eigenvalues
 	//4 - other
 	Matrix xk(2);
@@ -866,7 +866,7 @@ int SplineElementPair::CharacterizeCriticalPointDegenerated(Matrix* solution, Ma
 	for (int i = 0; i < 2; i++)
 		xk(i, 0) = (*solution)(i, 0);
 	double ob = ObjectivePhase1(xk);
-	//Hessiana da função objetivo
+	//Hessian of the objective function
 	HessianPhase1(xk, Hes);
 	dHes = transp(*P_0) * Hes * (*P_0);
 	fulleigen1(dHes, P, D, tol_eig);
@@ -880,14 +880,14 @@ int SplineElementPair::CharacterizeCriticalPointDegenerated(Matrix* solution, Ma
 	double tol_intersect = max_eig * tol_convective * tol_convective;
 	double tol_small = max_eig * tol_small_1;
 
-	////minimo não estrito (intersecção)
+	////minimum not strict (intersection)
 	//if (ob < tol_intersect)
 	//{
 	//	if (write_report)
 	//		fprintf(f_TR_report[seq_number], "Intersection found. Eigenvalues are %.6e\n", D(0, 0));
 	//	return 1;
 	//}
-	//minimo estrito
+	//minimum strict
 	if (D(0, 0) >= tol_small)
 	{
 		if (write_report)
@@ -916,22 +916,22 @@ bool SplineElementPair::EndStepCheck(SPContactData* c_data)
 			fprintf(f_DEG_report[i], "\nTime\t%.6f\tIteration\t%d\t%d\t%d\t%d\t", db.last_converged_time + db.current_time_step, db.current_iteration_number, c_data->degenerated[i], c_data->deg_control[i][0], c_data->deg_control[i][1]);
 		}
 	}
-	///////////////////////////////Ponteiros e variaveis para facilitar acesso//////////////////////////////////////////
-	SplineElement* surf1 = db.splines[spline1_ID - 1]->sp_element[surf1_ID];		//Ponteiro para a superficie 1
-	SplineElement* surf2 = db.splines[spline2_ID - 1]->sp_element[surf2_ID];		//Ponteiro para a superficie 2
+	///////////////////////////////Pointers and variables to make access easier//////////////////////////////////////////
+	SplineElement* surf1 = db.splines[spline1_ID - 1]->sp_element[surf1_ID];		//Pointer to the surface 1
+	SplineElement* surf2 = db.splines[spline2_ID - 1]->sp_element[surf2_ID];		//Pointer to the surface 2
 
-	//Retorno com problemas: true
-	//Retorno sem problemas: false
+	//Return with problems: true
+	//Return without problems: false
 	bool c_problem = false;
 
-	//Teste para avaliar solucoes nao convergidas
-	//Varredura das soluções ativas
+	//Test for evaluate solutions not convergidas
+	//Sweep of the solutions active
 	for (int i = 0; i < c_data->n_solutions; i++)
 	{
-		//Se não for solução repetida (ou seja, se for solução ativa)
+		//If not for solution repetida (or be, if for solution active)
 		if (c_data->repeated[i] == false)
 		{
-			//Se algum dos pares ativos apresentou divergência do metodo de otimização
+			//If some of the pairs active apresentou divergence of the method of optimization
 			if (c_data->return_value[i] == 1)
 			{
 				db.myprintf("LCP between surfaces %d and %d has presented problems. Code 1.\n", surf1_ID, surf2_ID);
@@ -943,7 +943,7 @@ bool SplineElementPair::EndStepCheck(SPContactData* c_data)
 				//return true;
 			}
 
-			//Critério numérico para indicar inversão do vetor normal de contato
+			//Criterion numérico for indicate inversão of the normal vector of contact
 			//double pen_tol = 1e-14;
 			//if (c_data->g_n[i] < -pen_tol)
 
@@ -969,7 +969,7 @@ bool SplineElementPair::EndStepCheck(SPContactData* c_data)
 				//return true;
 			}
 
-			//Se houve muita mudança de range das coordenadas convectivas e indicativo de perda da solução desejada para c_bar
+			//If there was muita change of range of the convective coordinates and indicativo of perda of the solution desired for c_bar
 			if (c_data->return_value[i] == 3)
 			{
 				db.myprintf("LCP between surfaces %d and %d has presented problems. Code 3.\n", surf1_ID, surf2_ID);
@@ -996,11 +996,11 @@ bool SplineElementPair::EndStepCheck(SPContactData* c_data)
 
 bool SplineElementPair::FindMinimumSolution(SPContactData* c_data, Matrix* solution, int& return_info)
 {
-	//Dados - trust region
-	double Deltamax = 1e4;			//maximo raio da trust region permitido
-	double Deltak = 0.1;			//atual raio de trust region
-	double etha = 0.15;				//valor entre 0 e 0.15 - indica que a aproximação e ruim e veta o incremento
-	double rhok = 0.0;				//razão entre a diferença na função objetivo e a diferença da aproximação utilizada
+	//Data - trust region
+	double Deltamax = 1e4;			//maximum radius of the trust region allowed
+	double Deltak = 0.1;			//current radius of trust region
+	double etha = 0.15;				//value between 0 and 0.15 - indicates that the approximation and ruim and veta the increment
+	double rhok = 0.0;				//reason between the difference in the objective function and the difference of the approximation used
 	double actual_reduction = 0.0;
 	double predicted_reduction = 0.0;
 	int max_it = max_it_1;
@@ -1017,11 +1017,11 @@ bool SplineElementPair::FindMinimumSolution(SPContactData* c_data, Matrix* solut
 	Matrix D(2, 2);
 	Matrix cHes(2, 2);
 
-	//Inicialização do metodo - chute inicial
+	//Initialization of the method - initial guess
 	for (int i = 0; i < 2; i++)
 		xk(i, 0) = (*solution)(i, 0);
 
-	//Criterio de parada
+	//Stopping criterion
 	HessianPhase1(xk, Hes);
 	fulleigen1(Hes, P, D, tol_eig);
 	double max_eig = -1e100;
@@ -1033,7 +1033,7 @@ bool SplineElementPair::FindMinimumSolution(SPContactData* c_data, Matrix* solut
 	double tol_ortho = tol_convective * abs(max_eig);
 	double tol_small = tol_small_1;
 
-	//Criterio para identificar uma intersecção
+	//Criterion for identify a intersection
 	double tol_intersect = max_eig * tol_convective * tol_convective;
 
 	if (write_report)
@@ -1041,13 +1041,13 @@ bool SplineElementPair::FindMinimumSolution(SPContactData* c_data, Matrix* solut
 	char c = 'I';
 
 	int it = 1;
-	//Objetivo
+	//Objective
 	double ob = ObjectivePhase1(xk);
-	//Gradiente
+	//Gradient
 	GradientPhase1(xk, Gra);
-	//Hessiana
+	//Hessian
 	HessianPhase1(xk, Hes);
-	//Erro - forçando primeira entrada
+	//Error - forcing first input
 	double error = tol_ortho + 1.0;
 	//Initial guess report
 	if (write_report)
@@ -1056,12 +1056,12 @@ bool SplineElementPair::FindMinimumSolution(SPContactData* c_data, Matrix* solut
 
 	while ((error > tol_ortho || (norm(pk) > tol_convective && ob > tol_intersect)) && it <= max_it)
 	{
-		//Determinação do ponto de Cauchy
+		//Determination of the point of Cauchy
 		double gragra = (transp(Gra) * Gra)(0, 0);
 		double grahesgra = (transp(Gra) * Hes * Gra)(0, 0);
 		double normgra = norm(Gra);
-		Matrix pc;	//direção do Cauchy point
-		/////////////////Ponto de Cauchy///////////////////////
+		Matrix pc;	//direction of the Cauchy point
+		/////////////////Point of Cauchy///////////////////////
 		if (grahesgra <= 0.0)
 			pc = -(Deltak / normgra) * Gra;
 		else
@@ -1075,34 +1075,34 @@ bool SplineElementPair::FindMinimumSolution(SPContactData* c_data, Matrix* solut
 		}
 		else//Cauchy point inside the TR
 		{
-			//Calculando direções principais e curvaturas principais da função objetivo
+			//Calculating directions main and curvatures main of the objective function
 			cHes = Hes;
 			fulleigen1(cHes, P, D, tol_eig);
-			//Escrevendo gradiente nas direções principais
+			//Writing gradient in the directions main
 			pGra = transp(P) * Gra;
-			//Determinação do menor autovalor (min_eig)
+			//Determination of the smallest eigenvalue (min_eig)
 			double min_eig = 1e100;
 			for (int i = 0; i < 2; i++)
 			{
 				if (D(i, i) < min_eig)
 					min_eig = D(i, i);
 			}
-			//Construção da direção de busca
-			//Direção de busca baseada em NR - modificada pelo menor autovalor
+			//Construction of the direction of search
+			//Direction of search based in NR - modificada through the smallest eigenvalue
 			zeros(&pb);
-			//Se o menor autovalor e menor ou igual a zero (tol_small) - modifica a direção de NR para garantir direção descendente
+			//If the smallest eigenvalue and smaller or igual the zero (tol_small) - modifies the direction of NR for garantir direction descendente
 			if (min_eig < tol_small)
 			{
 				for (int i = 0; i < 2; i++)
 					pb(i, 0) = -pGra(i, 0) / (D(i, i) - (min_eig - abs(min_eig) * tol_ascent));
 			}
-			//Se o menor autovalor e maior que zero (tol_small) - direção de NR e escolhida
+			//If the smallest eigenvalue and larger that zero (tol_small) - direction of NR and chosen
 			else
 			{
 				for (int i = 0; i < 2; i++)
 					pb(i, 0) = -pGra(i, 0) / D(i, i);
 			}
-			//Escrevendo direção de busca nas coordenadas originais
+			//Writing direction of search in the coordinates originais
 
 			pb = P * pb;
 			double normpb = norm(pb);
@@ -1121,14 +1121,14 @@ bool SplineElementPair::FindMinimumSolution(SPContactData* c_data, Matrix* solut
 				b1 = 2 * (transp(pc) * (pb - pc))(0, 0);
 				c1 = normpc * normpc - Deltak * Deltak;
 				thetak = (-b1 + sqrt(b1 * b1 - 4 * a1 * c1)) / (2 * a1);
-				//Determinação do path
+				//Determination of the path
 				pk = pc + thetak * (pb - pc);
 				c = 'D';
 			}
 		}
 
 		//////////////////////////UPDATING SOLUTION////////////////////////////////
-		//Calculo de rhok
+		//Calculation of rhok
 		actual_reduction = ObjectivePhase1(xk) - ObjectivePhase1(xk + pk);
 		predicted_reduction = -(transp(Gra) * pk + 0.5 * transp(pk) * Hes * pk)(0, 0);
 		rhok = actual_reduction / predicted_reduction;
@@ -1160,15 +1160,15 @@ bool SplineElementPair::FindMinimumSolution(SPContactData* c_data, Matrix* solut
 		}
 		else
 			Deltak = Deltak / 2.0;
-		//Incrementa iterações
+		//Increments iterations
 		it++;
-		//Objetivo
+		//Objective
 		ob = ObjectivePhase1(xk);
-		//Gradiente
+		//Gradient
 		GradientPhase1(xk, Gra);
-		//Hessiana
+		//Hessian
 		HessianPhase1(xk, Hes);
-		//Erro - norma do gradiente
+		//Error - norm of the gradient
 		error = norm(Gra);
 		if (write_report)
 			fprintf(f_TR_report[seq_number], "%d\t%.12e\t%.12e\t%.6e\t%.6e\t%.6e\t%c\t%.6e\t%.6e\t%.6e\n", it, xk(0, 0), xk(1, 0), ob, error, Deltak, c, rhok, actual_reduction, predicted_reduction);
@@ -1176,7 +1176,7 @@ bool SplineElementPair::FindMinimumSolution(SPContactData* c_data, Matrix* solut
 	if (write_report)
 		fprintf(f_TR_report[seq_number], "Error\t%.6e\tTolerance\t%.6e\n", error, tol_ortho);
 
-	//Retorno da função
+	//Return of the function
 	if (error < tol_ortho)
 	{
 		for (int i = 0; i < 2; i++)
@@ -1189,11 +1189,11 @@ bool SplineElementPair::FindMinimumSolution(SPContactData* c_data, Matrix* solut
 
 bool SplineElementPair::FindMinimumSolutionDegenerated(SPContactData* c_data, Matrix* P_0, Matrix* solution)
 {
-	//Dados - trust region
-	double Deltamax = 1e4;			//maximo raio da trust region permitido
-	double Deltak = 0.1;			//atual raio de trust region
-	double etha = 0.15;				//valor entre 0 e 0.15 - indica que a aproximação e ruim e veta o incremento
-	double rhok = 0.0;				//razão entre a diferença na função objetivo e a diferença da aproximação utilizada
+	//Data - trust region
+	double Deltamax = 1e4;			//maximum radius of the trust region allowed
+	double Deltak = 0.1;			//current radius of trust region
+	double etha = 0.15;				//value between 0 and 0.15 - indicates that the approximation and ruim and veta the increment
+	double rhok = 0.0;				//reason between the difference in the objective function and the difference of the approximation used
 	double actual_reduction = 0.0;
 	double predicted_reduction = 0.0;
 	int max_it = max_it_1;
@@ -1214,11 +1214,11 @@ bool SplineElementPair::FindMinimumSolutionDegenerated(SPContactData* c_data, Ma
 	Matrix D(order, order);
 	Matrix cHes(order, order);
 
-	//Inicialização do metodo - chute inicial - obtido da solução anterior - problema de minima distancia
+	//Initialization of the method - initial guess - obtained of the solution previous - problem of minimum distance
 	for (int i = 0; i < 2; i++)
 		xk(i, 0) = (*solution)(i, 0);
 
-	//Criterio de parada
+	//Stopping criterion
 	HessianPhase1(xk, Hes);
 	deg_Hes = transp(*P_0) * Hes * (*P_0);
 	fulleigen1(deg_Hes, P, D, tol_eig);
@@ -1238,16 +1238,16 @@ bool SplineElementPair::FindMinimumSolutionDegenerated(SPContactData* c_data, Ma
 	char c = 'I';
 
 	int it = 1;
-	//Objetivo
+	//Objective
 	double ob = ObjectivePhase1(xk);
-	//Gradiente
+	//Gradient
 	GradientPhase1(xk, Gra);
-	//Hessiana
+	//Hessian
 	HessianPhase1(xk, Hes);
-	//Transformações - degeneração
+	//Transformações - degeneration
 	deg_Gra = transp(*P_0) * Gra;
 	deg_Hes = transp(*P_0) * Hes * (*P_0);
-	//Erro - forçando primeira entrada
+	//Error - forcing first input
 	double error = tol_ortho + 1.0;
 	//Initial guess report
 	if (write_report)
@@ -1255,12 +1255,12 @@ bool SplineElementPair::FindMinimumSolutionDegenerated(SPContactData* c_data, Ma
 	/////////////////////////////////////////////////////BEGIN///////////////////////////////////////////////
 	while ((error > tol_ortho || norm((*P_0) * pk) > tol_convective) && it <= max_it)
 	{
-		//Determinação do ponto de Cauchy
+		//Determination of the point of Cauchy
 		double gragra = (transp(deg_Gra) * deg_Gra)(0, 0);
 		double grahesgra = (transp(deg_Gra) * deg_Hes * deg_Gra)(0, 0);
 		double normgra = norm(deg_Gra);
-		Matrix pc;	//direção do Cauchy point
-		/////////////////Ponto de Cauchy///////////////////////
+		Matrix pc;	//direction of the Cauchy point
+		/////////////////Point of Cauchy///////////////////////
 		if (grahesgra <= 0.0)
 			pc = -(Deltak / normgra) * deg_Gra;
 		else
@@ -1275,34 +1275,34 @@ bool SplineElementPair::FindMinimumSolutionDegenerated(SPContactData* c_data, Ma
 
 		else//Cauchy point inside the TR
 		{
-			//Calculando direções principais e curvaturas principais da função objetivo
+			//Calculating directions main and curvatures main of the objective function
 			cHes = deg_Hes;
 			fulleigen1(cHes, P, D, tol_eig);
-			//Escrevendo gradiente nas direções principais
+			//Writing gradient in the directions main
 			pGra = transp(P) * deg_Gra;
-			//Determinação do menor autovalor (min_eig)
+			//Determination of the smallest eigenvalue (min_eig)
 			double min_eig = 1e100;
 			for (int i = 0; i < order; i++)
 			{
 				if (D(i, i) < min_eig)
 					min_eig = D(i, i);
 			}
-			//Construção da direção de busca
-			//Direção de busca baseada em NR - modificada pelo menor autovalor
+			//Construction of the direction of search
+			//Direction of search based in NR - modificada through the smallest eigenvalue
 			zeros(&pb);
-			//Se o menor autovalor é menor ou igual a zero (tol_small) - modifica a direção de NR para garantir direção descendente
+			//If the smallest eigenvalue and smaller or igual the zero (tol_small) - modifies the direction of NR for garantir direction descendente
 			if (min_eig < tol_small)
 			{
 				for (int i = 0; i < order; i++)
 					pb(i, 0) = -pGra(i, 0) / (D(i, i) - (min_eig - abs(min_eig) * tol_ascent));
 			}
-			//Se o menor autovalor é maior que zero (tol_small) - direção de NR é escolhida
+			//If the smallest eigenvalue and larger that zero (tol_small) - direction of NR and chosen
 			else
 			{
 				for (int i = 0; i < order; i++)
 					pb(i, 0) = -pGra(i, 0) / D(i, i);
 			}
-			//Escrevendo direção de busca nas coordenadas originais
+			//Writing direction of search in the coordinates originais
 			pb = P * pb;
 			double normpb = norm(pb);
 			double thetak;
@@ -1320,14 +1320,14 @@ bool SplineElementPair::FindMinimumSolutionDegenerated(SPContactData* c_data, Ma
 				b = 2 * (transp(pc) * (pb - pc))(0, 0);
 				c = normpc * normpc - Deltak * Deltak;
 				thetak = (-b + sqrt(b * b - 4 * a * c)) / (2 * a);
-				//Determinação do path
+				//Determination of the path
 				pk = pc + thetak * (pb - pc);
 				c = 'D';
 			}
 		}
 
 		//////////////////////////UPDATING SOLUTION////////////////////////////////
-		//Calculo de rhok
+		//Calculation of rhok
 		double actual_reduction = ObjectivePhase1(xk) - ObjectivePhase1(xk + (*P_0) * pk);
 		double predicted_reduction = -(transp(deg_Gra) * pk + 0.5 * transp(pk) * deg_Hes * pk)(0, 0);
 		rhok = actual_reduction / predicted_reduction;
@@ -1358,18 +1358,18 @@ bool SplineElementPair::FindMinimumSolutionDegenerated(SPContactData* c_data, Ma
 		}
 		else
 			Deltak = Deltak / 2;
-		//		//Incrementa iterações
+		//		//Increments iterations
 		it++;
-		//Objetivo
+		//Objective
 		ob = ObjectivePhase1(xk);
-		//Gradiente
+		//Gradient
 		GradientPhase1(xk, Gra);
-		//Hessiana
+		//Hessian
 		HessianPhase1(xk, Hes);
-		//Transformações - degeneração
+		//Transformações - degeneration
 		deg_Gra = transp(*P_0) * Gra;
 		deg_Hes = transp(*P_0) * Hes * (*P_0);
-		//Erro - norma do gradiente
+		//Error - norm of the gradient
 		error = norm(deg_Gra);
 		//Initial guess report
 		if (write_report)
@@ -1378,10 +1378,10 @@ bool SplineElementPair::FindMinimumSolutionDegenerated(SPContactData* c_data, Ma
 	if (write_report)
 		fprintf(f_TR_report[seq_number], "Error\t%.6e\tTolerance\t%.6e\n", error, tol_ortho);
 
-	//Retorno da função
+	//Return of the function
 	if (error < tol_ortho)
 	{
-		//Salva resultado em solution
+		//Saves result in solution
 		for (int i = 0; i < 2; i++)
 			(*solution)(i, 0) = xk(i, 0);
 		return true;
@@ -1392,7 +1392,7 @@ bool SplineElementPair::FindMinimumSolutionDegenerated(SPContactData* c_data, Ma
 
 
 
-//Calcula a inversa da Hessiana
+//Calculates the inversa of the Hessian
 void SplineElementPair::EvaluateInvertedHessian(SPContactData* c_data)
 {
 	for (int sol = 0; sol < c_data->n_solutions; sol++)
@@ -1411,7 +1411,7 @@ void SplineElementPair::EvaluateInvertedHessian(SPContactData* c_data)
 			Matrix D(order_minor, order_minor);
 			fulleigen1(Hes_minor, P, D, tol_eig);
 			//D.print();
-			//Inversão da Hessiana
+			//Inversão of the Hessian
 			for (int i = 0; i < order_minor; i++)
 			{
 				D(i, i) = 1.0 / D(i, i);
@@ -1428,14 +1428,14 @@ void SplineElementPair::WriteConvectiveRange()
 {
 	if (write_report)
 	{
-		//Escrevendo o nome do par de contato
+		//Writing the name of the contact pair
 		char pair_name[100];
 		sprintf(pair_name, "TR_report_surf_%d_surf_%d_%d", surf1_ID, surf2_ID, seq_number);
-		strcpy(name, db.folder_name);	//pasta do job
-		strcat(name, "TR/");			//diretório TR
-		_mkdir(name);					//criando diretório TR
-		strcat(name, pair_name);		//nome do arquivo
-		strcat(name, ".txt");			//criando arquivo
+		strcpy(name, db.folder_name);	//folder of the job
+		strcat(name, "TR/");			//directory TR
+		GIRAFFE_MKDIR(name);					//creating directory TR
+		strcat(name, pair_name);		//file name
+		strcat(name, ".txt");			//creating file
 		f_TR_report[seq_number] = fopen(name, "a");
 		fprintf(f_TR_report[seq_number], "ConvectiveRange:\nMin\t%.6e\tMax\t%.6e\tRange\t%.6e\nMin\t%.6e\tMax\t%.6e\tRange\t%.6e\nMin\t%.6e\tMax\t%.6e\tRange\t%.6e\nMin\t%.6e\tMax\t%.6e\tRange\t%.6e\n",
 			convective_min(0, 0), convective_max(0, 0), convective_range(0, 0),

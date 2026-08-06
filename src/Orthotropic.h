@@ -7,7 +7,7 @@ class Orthotropic:
 public:
 	Orthotropic();
 	~Orthotropic();
-	double E1, E2, G12, G23, nu12;	//Propriedades do material ortotropico
+	double E1, E2, G12, G23, nu12;	//Propriedades of the material ortotropico
 
 	bool Read(FILE *f);
 	void Write(FILE *f);

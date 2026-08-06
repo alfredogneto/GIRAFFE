@@ -12,14 +12,16 @@
 #include "SSContactData.h"
 #include "TimeStepControlData.h"
 #include "Database.h"
-//Variaveis globais
+//Global variables
 extern
 Database db;
 
 ////////////////////////////////////////////////////////////////////
 #define _CRTDBG_MAP_ALLOC
 #include <stdlib.h>
+#ifdef _WIN32
 #include <crtdbg.h>
+#endif
 #ifdef _DEBUG
 #define DBG_NEW new ( _NORMAL_BLOCK , __FILE__ , __LINE__ )
 // Replace _NORMAL_BLOCK with _CLIENT_BLOCK if you want the
@@ -69,10 +71,10 @@ void ContactParticleParticle::SaveConfiguration()
 		}
 		if (contact_pairs[i]->GetActive())
 		{
-			//Zera o gap tangencial se:
-			//1 - gn for positivo (não ha contato)
-			//2 - copy_gn for positivo (e a primeira ocorrência de contato - não ha como acumular gap tangencial pois o contato acaba de começar)
-			//3 - return value e 2 - contato não estabelecido - e não e strong candidate, mas pode ocorrer em próximos instantes
+			//Zeroes the gap tangential if:
+			//1 - gn for positive (not there is contact)
+			//2 - copy_gn for positive (and the first ocorrência of contact - not there is as acumular gap tangential since the contact acaba of começar)
+			//3 - return value and 2 - contact not estabelecido - and not and strong candidate, but can ocorrer in próximos instantes
 			if (contact_pairs[i]->eligible == false)
 			{
 				zeros(contact_pairs[i]->cd->g_t[0]);
@@ -183,7 +185,7 @@ bool ContactParticleParticle::NightOwlContact()
 
 void ContactParticleParticle::WriteVTK_XMLForces(FILE *f)
 {
-	//vetores para escrita no formato binario - usando a função 'enconde'
+	//vectors for writing in the formato binary - using the function 'enconde'
 	std::vector<float> float_vector;
 	std::vector<int> int_vector;
 
@@ -309,7 +311,7 @@ void ContactParticleParticle::WriteVTK_XMLForces(FILE *f)
 
 double ContactParticleParticle::TimeStepControl(double kin)
 {
-	double return_step = db.solution[db.current_solution_number - 1]->end_time;				//valor alto
+	double return_step = db.solution[db.current_solution_number - 1]->end_time;				//value alto
 	for (int i = 0; i < contact_pairs.size(); i++)
 	{
 		if (typeid(*db.solution[db.current_solution_number - 1]) == typeid(Dynamic))

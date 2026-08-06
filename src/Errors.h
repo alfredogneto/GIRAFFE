@@ -5,9 +5,9 @@ class Errors
 public:
 	Errors();
 	~Errors();
-	bool CheckErrors();		//Checa erros de inconsistência do arquivo de entrada e alerta o usuario caso encontre
+	bool CheckErrors();		//Checks errors of inconsistência of the input file and alerta the usuario case encontre
 
-	//Funções individuais para checar erros em cada um dos itens
+	//Functions individuais for check errors in each a of the itens
 	bool CheckSolutions();
 	bool CheckNodes();
 	bool CheckPoints();

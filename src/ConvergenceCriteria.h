@@ -7,61 +7,61 @@ public:
 	ConvergenceCriteria();
 	~ConvergenceCriteria();
 
-	//Funções para estabelecer e checar convergência
+	//Functions for estabelecer and check convergence
 	void EstablishResidualCriteria();
 	bool CheckResidualConvergence();
 	bool CheckGLConvergence();
 
-	bool Read(FILE *f);			//Leitura
-	void Write(FILE *f);		//Gravação
+	bool Read(FILE *f);			//Reading
+	void Write(FILE *f);		//Recording
 
-	double force_tol;			//Fator aplicado a norma do vetor de forças do sistema para estabelecer criterio de convergência
-	double moment_tol;			//Fator aplicado a norma do vetor de momentos do sistema para estabelecer criterio de convergência
+	double force_tol;			//Factor applied the norm of the force vector of the system for estabelecer convergence criterion
+	double moment_tol;			//Factor applied the norm of the vector of moments of the system for estabelecer convergence criterion
 	
-	double force_ref;			//Valor de referência para avaliação do criterio de parada de forças
-	int force_n_times;			//Numero de valores utilizado no calculo da media do valor de referência
-	double moment_ref;			//Valor de referência para avaliação do criterio de parada de momentos
-	int moment_n_times;			//Numero de valores utilizado no calculo da media do valor de referência
+	double force_ref;			//Value of reference for evaluation of the stopping criterion of forces
+	int force_n_times;			//Number of values used in the calculation of the media of the value of reference
+	double moment_ref;			//Value of reference for evaluation of the stopping criterion of moments
+	int moment_n_times;			//Number of values used in the calculation of the media of the value of reference
 
 
-	double force_min;			//Valor de força considerado pequeno - usado quando ha somente forças nulas - valor dimensional
-	double moment_min;			//Valor de momento considerado pequeno - usado quando ha somente momentos nulos - valor dimensional
-	double constraint_min;		//Valor de erro de constraint, considerado pequeno - sempre e utilizado quando ha joints
+	double force_min;			//Value of force considered small - used when there is only forces nulas - value dimensional
+	double moment_min;			//Value of moment considered small - used when there is only moments null - value dimensional
+	double constraint_min;		//Value of error of constraint, considered small - always and used when there is joints
 
-	double disp_tol;			//Fator aplicado a norma do vetor de deslocamentos incrementais do sistema para estabelecer criterio de convergência
-	double rot_tol;				//Fator aplicado a norma do vetor de rotações incrementais do sistema para estabelecer criterio de convergência
-	double lag_tol;				//Fator aplicado a norma do vetor de multiplicadores de lagrange do sistema para estabelecer criterio de convergência
+	double disp_tol;			//Factor applied the norm of the displacement vector incrementais of the system for estabelecer convergence criterion
+	double rot_tol;				//Factor applied the norm of the vector of rotations incrementais of the system for estabelecer convergence criterion
+	double lag_tol;				//Factor applied the norm of the vector of Lagrange multipliers of the system for estabelecer convergence criterion
 
-	double disp_min;			//Valor de deslocamento considerado pequeno - usado quando ha somente deslocamentos nulos - valor dimensional
-	double rot_min;				//Valor de rotação considerado pequeno - usado quando ha somente rotações nulos - valor dimensional
-	double lag_min;				//Valor de multiplicador de lagrange considerado pequeno - usado quando ha somente multiplicadores de lagrange nulos - valor dimensional
+	double disp_min;			//Value of displacement considered small - used when there is only displacements null - value dimensional
+	double rot_min;				//Value of rotation considered small - used when there is only rotations null - value dimensional
+	double lag_min;				//Value of Lagrange multiplier considered small - used when there is only Lagrange multipliers null - value dimensional
 
-	double divergence_ref;		//Valor bastante elevado que indica divergência do modelo
-	bool diverged;				//Variavel booleada que indica divergência
+	double divergence_ref;		//Value bastante elevado that indicates divergence of the modelo
+	bool diverged;				//Variable booleada that indicates divergence
 
-	double disp_criterion;		//Criterio de convergência para norma de deslocamento - calculado automaticamente
-	double rot_criterion;		//Criterio de convergência para norma de rotação - calculado automaticamente
-	double lag_criterion;		//Criterio de convergência para norma de multiplicador de lagrange - calculado automaticamente
-	double force_criterion;		//Criterio de convergência para norma de força - calculado automaticamente
-	double moment_criterion;	//Criterio de convergência para norma de momento - calculado automaticamente	
-	double constraint_criterion;//Criterio de convergência para norma de constraint - calculado automaticamente
+	double disp_criterion;		//Convergence criterion for norm of displacement - calculated automaticamente
+	double rot_criterion;		//Convergence criterion for norm of rotation - calculated automaticamente
+	double lag_criterion;		//Convergence criterion for norm of Lagrange multiplier - calculated automaticamente
+	double force_criterion;		//Convergence criterion for norm of force - calculated automaticamente
+	double moment_criterion;	//Convergence criterion for norm of moment - calculated automaticamente	
+	double constraint_criterion;//Convergence criterion for norm of constraint - calculated automaticamente
 
 	bool NaNDetector(double &value);
 
-	void PlotDivergenceReport();//Imprime na tela informações para auxiliar o porquê da divergência
+	void PlotDivergenceReport();//Prints in the tela information for auxiliary the because of the divergence
 
-	//Nós ou SpecialConstraint associados ao maximo erro
+	//Nodes or SpecialConstraint associated to the maximum error
 	int super_node_disp;
 	int node_disp;
 	int node_rot;
 	int sc_lag;
-	//Nós ou SpecialConstraint associados ao maximo erro
+	//Nodes or SpecialConstraint associated to the maximum error
 	int super_node_force;
 	int node_force;
 	int node_moment;
 	int sc_constraint;
 
-	int n_conv_evaluated;	//Contador do numero de vezes que o criterio foi estabelecido.
+	int n_conv_evaluated;	//Contador of the number of times that the criterion was estabelecido.
 
 };
 

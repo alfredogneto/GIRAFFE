@@ -1,4 +1,5 @@
 #include "ContactSECylinderSECylinder.h"
+#include "PlatformCompat.h"
 
 #include "SECylinder.h"
 #include "Matrix.h"
@@ -9,14 +10,16 @@
 #include "Dynamic.h"
 
 #include "Database.h"
-//Variaveis globais
+//Global variables
 extern
 Database db;
 
 ////////////////////////////////////////////////////////////////////
 #define _CRTDBG_MAP_ALLOC
 #include <stdlib.h>
+#ifdef _WIN32
 #include <crtdbg.h>
+#endif
 #ifdef _DEBUG
 #define DBG_NEW new ( _NORMAL_BLOCK , __FILE__ , __LINE__ )
 // Replace _NORMAL_BLOCK with _CLIENT_BLOCK if you want the
@@ -159,7 +162,7 @@ void ContactSECylinderSECylinder::Free()
 	}
 }
 
-//Chute inicial para coordenadas convectivas do par de superficies
+//Initial guess for convective coordinates of the pair of surfaces
 void ContactSECylinderSECylinder::InitialGuess()
 {
 	//Local specific pointers
@@ -186,35 +189,35 @@ void ContactSECylinderSECylinder::InitialGuess()
 	Matrix tB = 0.5*(*sB_local->x_Bi + uBB - *sB_local->x_Ai - uAB);
 
 	double csi_A, csi_B;
-	//Se não houver paralelismo
+	//If not there is paralelismo
 	if (abs(dot(tA, tA)*dot(tB, tB) - dot(tA, tB)*dot(tA, tB)) > tol_ortho)
 	{
-		//Estimativa dos csi's com base na configuração atual - considerando-se que são elementos retilineos (baseado em Wriggers e Zavarise, 1997)
+		//Estimativa of the csi's with base in the configuration current - considerando-if that are elements retilineos (based in Wriggers and Zavarise, 1997)
 		csi_A = dot(bA - bB, (1.0 / (dot(tA, tA)*dot(tB, tB) - dot(tA, tB)*dot(tA, tB)))*(tB*dot(tA, tB) - tA * dot(tB, tB)));
 		csi_B = -1.0*dot(bA - bB, (1.0 / (dot(tA, tA)*dot(tB, tB) - dot(tA, tB)*dot(tA, tB)))*(tA*dot(tA, tB) - tB * dot(tA, tA)));
 	}
-	else//Caso haja paralelismo
+	else//Case haja paralelismo
 	{
 		csi_A = 0.0;
 		csi_B = 0.0;
 	}
-	//Tensor rotação no csiA:
+	//Tensor rotation in the csiA:
 	Matrix Q_Acsi = (*sA_local->Q_Ai) * (transp(*sA_local->Q0A)) * (0.5 - 0.5*csi_A) + (*sA_local->Q_Bi) * (transp(*sA_local->Q0B)) * (0.5 + 0.5*csi_A);
-	//Tensor rotação no csiB:
+	//Tensor rotation in the csiB:
 	Matrix Q_Bcsi = (*sB_local->Q_Ai) * (transp(*sB_local->Q0A)) * (0.5 - 0.5*csi_B) + (*sB_local->Q_Bi) * (transp(*sB_local->Q0B)) * (0.5 + 0.5*csi_B);
-	//Posição no csiA:
+	//Position in the csiA:
 	Matrix x_Acsi = (*sA_local->x_Ai + uAA)*(0.5 - 0.5*csi_A) + (*sA_local->x_Bi + uBA)*(0.5 + 0.5*csi_A);
-	//Posição no csiB:
+	//Position in the csiB:
 	Matrix x_Bcsi = (*sB_local->x_Ai + uAB)*(0.5 - 0.5*csi_B) + (*sB_local->x_Bi + uBB)*(0.5 + 0.5*csi_B);
-	//Vetor e1_A atualizado (em csi)
+	//Vector e1_A updated (in csi)
 	Matrix e1_A = Q_Acsi * (*db.CS[sA_local->csA - 1]->E1);
 	Matrix e2_A = Q_Acsi * (*db.CS[sA_local->csA - 1]->E2);
 	Matrix e3_A = Q_Acsi * (*db.CS[sA_local->csA - 1]->E3);
-	//Vetor e1_B atualizado (em csi)
+	//Vector e1_B updated (in csi)
 	Matrix e1_B = Q_Bcsi * (*db.CS[sB_local->csB - 1]->E1);
 	Matrix e2_B = Q_Bcsi * (*db.CS[sB_local->csB - 1]->E2);
 	Matrix e3_B = Q_Bcsi * (*db.CS[sB_local->csB - 1]->E3);
-	//Estimativa dos theta_A e theta_B
+	//Estimativa of the theta_A and theta_B
 	double theta_A = 0;
 	double theta_B = 0;
 	double ndAB = norm(x_Acsi - x_Bcsi);
@@ -225,7 +228,7 @@ void ContactSECylinderSECylinder::InitialGuess()
 	Matrix dAB_planeB = dAB - dot(dAB, e3_B)*e3_B;
 	double cos_e1_A = dot(dAB_planeA, e1_A);
 	double cos_e2_A = dot(dAB_planeA, e2_A);
-	//Evitando erros de arredondamento - cos
+	//Evitando errors of arredondamento - cos
 	if (cos_e1_A > 1.0)
 		cos_e1_A = 1.0;
 	if (cos_e1_A < -1.0)
@@ -234,25 +237,25 @@ void ContactSECylinderSECylinder::InitialGuess()
 		cos_e2_A = 1.0;
 	if (cos_e2_A < -1.0)
 		cos_e2_A = -1.0;
-	//Primeiro ou quarto quadrantes
+	//First or fourth quadrantes
 	if (cos_e1_A >= 0.0)
 	{
-		if (cos_e2_A >= 0.0)//primeiro
+		if (cos_e2_A >= 0.0)//first
 			theta_A = abs(acos(cos_e1_A));
-		else //quarto
+		else //fourth
 			theta_A = -abs(acos(cos_e1_A));
 	}
-	//Segundo ou terceiro quadrantes
+	//Second or third quadrantes
 	else
 	{
-		if (cos_e2_A >= 0.0)//segundo
+		if (cos_e2_A >= 0.0)//second
 			theta_A = abs(acos(cos_e2_A)) + PI / 2;
-		else //terceiro
+		else //third
 			theta_A = abs(acos(-cos_e1_A)) + PI;
 	}
 	double cos_e1_B = dot(dAB_planeB, e1_B);
 	double cos_e2_B = dot(dAB_planeB, e2_B);
-	//Evitando erros de arredondamento - cos
+	//Evitando errors of arredondamento - cos
 	if (cos_e1_B > 1.0)
 		cos_e1_B = 1.0;
 	if (cos_e1_B < -1.0)
@@ -261,23 +264,23 @@ void ContactSECylinderSECylinder::InitialGuess()
 		cos_e2_B = 1.0;
 	if (cos_e2_B < -1.0)
 		cos_e2_B = -1.0;
-	//Primeiro ou quarto quadrantes
+	//First or fourth quadrantes
 	if (cos_e1_B >= 0.0)
 	{
-		if (cos_e2_B >= 0.0)//primeiro
+		if (cos_e2_B >= 0.0)//first
 			theta_B = abs(acos(cos_e1_B));
-		else //quarto
+		else //fourth
 			theta_B = -abs(acos(cos_e1_B));
 	}
-	//Segundo ou terceiro quadrantes
+	//Second or third quadrantes
 	else
 	{
-		if (cos_e2_B >= 0.0)//segundo
+		if (cos_e2_B >= 0.0)//second
 			theta_B = abs(acos(cos_e2_B)) + PI / 2;
-		else //terceiro
+		else //third
 			theta_B = abs(acos(-cos_e1_B)) + PI;
 	}
-	//Preenchendo as coordenadas convectivas:
+	//Filling the convective coordinates:
 	cd->convective[0][0] = csi_A;
 	cd->convective[0][1] = theta_A;
 	cd->convective[0][2] = csi_B;
@@ -455,26 +458,26 @@ void ContactSECylinderSECylinder::InitializeConvectiveRange()
 	}
 }
 
-//Verifica range de coordenadas convectivas
+//Checks range of convective coordinates
 int ContactSECylinderSECylinder::VerifyConvectiveRange(Matrix& mc)
 {
 	//Retornos:
-	//0 - Range fisico da superficie
-	//4 - Fora do range fisico da superficie
+	//0 - Range physical of the surface
+	//4 - Outside of the range physical of the surface
 
-	//Se esta no range local de interesse - dominio fisico da superficie
+	//If this in the range local of interest - domain physical of the surface
 	if (abs(mc(0, 0)) < 1.0 && abs(mc(2, 0)) < 1.0)
 	{
-		return 0;	//Houve convergência, esta no range fisico
+		return 0;	//There was convergence, this in the range physical
 	}
 	else
 	{
 		if ((sA->deg_u1 && abs(mc(2, 0)) < 1.0))
-			return 0;	//coordenada u1 da superficie B no range e degeneração da coordenada u1 da superficie A.
+			return 0;	//coordinate u1 of the surface B in the range and degeneration of the coordinate u1 of the surface A.
 		if ((sB->deg_u1 && abs(mc(0, 0)) < 1.0))
-			return 0;	//coordenada u1 da superficie A no range e degeneração da coordenada u1 da superficie B.
+			return 0;	//coordinate u1 of the surface A in the range and degeneration of the coordinate u1 of the surface B.
 		if (sA->deg_u1 && sB->deg_u1)
-			return 0;	//coordenada u1 da superficie A no range e degeneração da coordenada u1 da superficie B.
+			return 0;	//coordinate u1 of the surface A in the range and degeneration of the coordinate u1 of the surface B.
 		return 4;
 	}
 		
@@ -491,8 +494,8 @@ void ContactSECylinderSECylinder::CompactReport()
 	db.myprintf("Gap %.6e\n", cd->g_n[0]);
 }
 
-//Calcula a função objetivo para um conjunto de coordenadas convectivas - Phase 1
-double ContactSECylinderSECylinder::ObjectivePhase1(Matrix& mc)
+//Calculates the objective function for a set of convective coordinates - Phase 1
+double ContactSECylinderSECylinder::ObjectivePhase1(const Matrix& mc)
 {
 	double v[600];
 	double *c = mc.getMatrix();
@@ -613,7 +616,7 @@ double ContactSECylinderSECylinder::ObjectivePhase1(Matrix& mc)
 	return Ob;
 }
 
-//Calcula o Gradiente da função objetivo - Phase 1
+//Calculates the Gradient of the objective function - Phase 1
 void ContactSECylinderSECylinder::GradientPhase1(Matrix& mc, Matrix& mGra)
 {
 	double v[600];
@@ -791,19 +794,19 @@ void ContactSECylinderSECylinder::GradientPhase1(Matrix& mc, Matrix& mGra)
 		mGra(i, 0) = Gra[i];
 }
 
-//Calcula a Hessiana da função objetivo - Phase 1
+//Calculates the Hessian of the objective function - Phase 1
 void ContactSECylinderSECylinder::HessianPhase1(Matrix& mc, Matrix& mHes)
 {
 	double v[450];
 	double *c = mc.getMatrix();
 	double Hes[4][4];
-	//Pontos de singularidade - função phi
+	//Points of singularidade - function phi
 	double test1 = 2 * c[1] / PI;
-	test1 = abs(test1 - int(test1));//testa o quão próximo de inteiro e esse numero
+	test1 = abs(test1 - int(test1));//tests the quão next of integer and this number
 	if (test1 < tol_small_1)
 		c[1] += tol_small_1;
 	double test3 = 2 * c[3] / PI;
-	test3 = abs(test3 - int(test3));//testa o quão próximo de inteiro e esse numero
+	test3 = abs(test3 - int(test3));//tests the quão next of integer and this number
 	if (test3 < tol_small_1)
 		c[3] += tol_small_1;
 
@@ -1053,10 +1056,10 @@ void ContactSECylinderSECylinder::HessianPhase1(Matrix& mc, Matrix& mHes)
 			mHes(i, j) = Hes[i][j];
 }
 
-//Calcula e rotorna o gap (com sinal)
-double ContactSECylinderSECylinder::Gap(Matrix& mc, bool fixed_normals, Matrix& nA, Matrix& nB)
+//Calculates and rotorna the gap (with sign)
+double ContactSECylinderSECylinder::Gap(const Matrix& mc, bool fixed_normals, Matrix& nA, Matrix& nB)
 {
-	double v[2000];		//variavel temporaria - AceGen
+	double v[2000];		//temporary variable - AceGen
 	double gap;
 	double *c = mc.getMatrix();
 
@@ -1241,19 +1244,19 @@ double ContactSECylinderSECylinder::Gap(Matrix& mc, bool fixed_normals, Matrix& 
 	return gap;
 }
 
-//Calcula o Gradiente do gap
+//Calculates the Gradient of the gap
 void ContactSECylinderSECylinder::GradientGap(Matrix& mc, Matrix& mGra, bool fixed_normals, Matrix& nA, Matrix& nB)
 {
-	double v[2000];		//variavel temporaria - AceGen
+	double v[2000];		//temporary variable - AceGen
 	double *c = mc.getMatrix();
 	double Gra[4];
-	//Pontos de singularidade - função phi
+	//Points of singularidade - function phi
 	double test1 = 2 * c[1] / PI;
-	test1 = abs(test1 - int(test1));//testa o quão próximo de inteiro e esse numero
+	test1 = abs(test1 - int(test1));//tests the quão next of integer and this number
 	if (test1 < tol_small_1)
 		c[1] += tol_small_1;
 	double test3 = 2 * c[3] / PI;
-	test3 = abs(test3 - int(test3));//testa o quão próximo de inteiro e esse numero
+	test3 = abs(test3 - int(test3));//tests the quão next of integer and this number
 	if (test3 < tol_small_1)
 		c[3] += tol_small_1;
 
@@ -1578,19 +1581,19 @@ void ContactSECylinderSECylinder::GradientGap(Matrix& mc, Matrix& mGra, bool fix
 		mGra(i, 0) = Gra[i];
 }
 
-//Calcula a Hessiana do gap
+//Calculates the Hessian of the gap
 void ContactSECylinderSECylinder::HessianGap(Matrix& mc, Matrix& mHes, bool fixed_normals, Matrix& nA, Matrix& nB)
 {
-	double v[2000];		//variavel temporaria - AceGen
+	double v[2000];		//temporary variable - AceGen
 	double *c = mc.getMatrix();
 	double Hes[4][4];
-	//Pontos de singularidade - função phi
+	//Points of singularidade - function phi
 	double test1 = 2 * c[1] / PI;
-	test1 = abs(test1 - int(test1));//testa o quão próximo de inteiro e esse numero
+	test1 = abs(test1 - int(test1));//tests the quão next of integer and this number
 	if (test1 < tol_small_1)
 		c[1] += tol_small_1;
 	double test3 = 2 * c[3] / PI;
-	test3 = abs(test3 - int(test3));//testa o quão próximo de inteiro e esse numero
+	test3 = abs(test3 - int(test3));//tests the quão next of integer and this number
 	if (test3 < tol_small_1)
 		c[3] += tol_small_1;
 
@@ -2242,7 +2245,7 @@ void ContactSECylinderSECylinder::MountLocalContributions()
 {
 	/*if (db.last_converged_time >= 0.28)
 	{
-		int teste = 0;
+		int test = 0;
 		PrintAceGenPointers();
 		cd->Plot();
 	}*/
@@ -2276,7 +2279,7 @@ void ContactSECylinderSECylinder::MountLocalContributions()
 		a5 = &value;
 		a6 = &value;
 	}
-	//Zerando matrizes e vetores
+	//Zeroing matrices and vectors
 	for (int i = 0; i < nDOF; i++)
 	{
 		Rc[i] = 0.0;
@@ -2286,7 +2289,7 @@ void ContactSECylinderSECylinder::MountLocalContributions()
 
 	bool *previouscontact = &prev_eligible;
 
-	//Avalia contribuições de contato
+	//Evaluates contributions of contact
 
 //
 //#pragma region ACEGEN
@@ -2345,14 +2348,14 @@ void ContactSECylinderSECylinder::MountLocalContributions()
 //v[33] = (*mus);
 //v[34] = (*mud);
 //v[35] = (*me);
-//v[36] = dA[0];
-//v[37] = dA[1];
-//v[38] = dA[2];
-//v[39] = dA[3];
+//v[36] = of the[0];
+//v[37] = of the[1];
+//v[38] = of the[2];
+//v[39] = of the[3];
 //v[1004] = 2e0*v[39];
 //v[1000] = v[39] / 2e0;
 //v[196] = (v[39] * v[39]);
-//v[40] = dA[4];
+//v[40] = of the[4];
 //v[1003] = 2e0*v[40];
 //v[11293] = 0e0;
 //v[11294] = 0e0;
@@ -2431,7 +2434,7 @@ void ContactSECylinderSECylinder::MountLocalContributions()
 //v[189] = (v[40] * v[40]);
 //v[950] = -v[189] - v[196];
 //v[7680] = v[950] / 2e0;
-//v[41] = dA[5];
+//v[41] = of the[5];
 //v[1001] = v[41] / 2e0;
 //v[10333] = 0e0;
 //v[10334] = 0e0;
@@ -2621,14 +2624,14 @@ void ContactSECylinderSECylinder::MountLocalContributions()
 //v[7682] = v[973] / 2e0;
 //v[960] = -v[190] - v[196];
 //v[7681] = v[960] / 2e0;
-//v[42] = dA[6];
-//v[43] = dA[7];
-//v[44] = dA[8];
-//v[45] = dA[9];
+//v[42] = of the[6];
+//v[43] = of the[7];
+//v[44] = of the[8];
+//v[45] = of the[9];
 //v[998] = 2e0*v[45];
 //v[994] = v[45] / 2e0;
 //v[215] = (v[45] * v[45]);
-//v[46] = dA[10];
+//v[46] = of the[10];
 //v[997] = 2e0*v[46];
 //v[11365] = 0e0;
 //v[11366] = 0e0;
@@ -2707,7 +2710,7 @@ void ContactSECylinderSECylinder::MountLocalContributions()
 //v[208] = (v[46] * v[46]);
 //v[919] = -v[208] - v[215];
 //v[7677] = v[919] / 2e0;
-//v[47] = dA[11];
+//v[47] = of the[11];
 //v[995] = v[47] / 2e0;
 //v[10429] = 0e0;
 //v[10430] = 0e0;

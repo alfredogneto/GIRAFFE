@@ -36,18 +36,18 @@ SplineElement::SplineElement()
 	dui = new Matrix(9);
 	ddui = new Matrix(9);
 
-	//Rotina para ativar os GLS de cada nó
+	//Routine for activate the GLS of each node
 	for (int i = 0; i < n_nodes; i++)
 	{
 		for (int j = 0; j < db.number_GLs_node; j++)
 		{
 			DOFs[i][j] = 0;
 		}
-		//Translação
+		//Translation
 		DOFs[i][0] = 1;
 		DOFs[i][1] = 1;
 		DOFs[i][2] = 1;
-		//Rotação
+		//Rotation
 		DOFs[i][3] = 0;
 		DOFs[i][4] = 0;
 		DOFs[i][5] = 0;
@@ -161,7 +161,7 @@ void SplineElement::SplinePoint(double & zeta, Matrix & point)
 
 void SplineElement::UpdateBox()
 {
-	//Pontos da spline
+	//Points of the spline
 	Matrix x_spA(3);
 	Matrix x_spB(3);
 	Matrix x_spC(3);
@@ -240,13 +240,13 @@ void SplineElement::UpdateBox()
 	y[7] = vec(1, 0);
 	z[7] = vec(2, 0);
 
-	//Setando os vertices
+	//Setting the vertices
 	box.SetVertices(x, y, z);
 }
 
 void SplineElement::PreCalc()
 {
-	//Apontando para posição que indica valor dos GLs globais
+	//Pointing for position that indicates value of the GLs global
 	for (int i = 0; i < 3; i++)
 	{
 		GLs[i] = &db.nodes[nodes[0] - 1]->GLs[i];
@@ -254,7 +254,7 @@ void SplineElement::PreCalc()
 		GLs[i + 6] = &db.nodes[nodes[2] - 1]->GLs[i];
 	}
 
-	////Transformação de coordenadas
+	////Transformation of coordinates
 	//Matrix e1g(3);
 	//e1g(0, 0) = 1.0;
 	//Matrix e2g(3);
@@ -265,7 +265,7 @@ void SplineElement::PreCalc()
 	//Matrix e2l = *db.CS[csA - 1]->E2;
 	//Matrix e3l = *db.CS[csA - 1]->E3;
 
-	////Salva a matriz de transformação de coordenadas (para orientar o plano da ST de acordo com a orientação de referência da superficie)
+	////Saves the transformation matrix of coordinates (for orientar the plane of the ST according to the orientation of reference of the surface)
 	//(*Q0A)(0, 0) = dot(e1g, e1l);
 	//(*Q0A)(0, 1) = dot(e1g, e2l);
 	//(*Q0A)(0, 2) = dot(e1g, e3l);
@@ -282,7 +282,7 @@ void SplineElement::PreCalc()
 	//e2l = *db.CS[csB - 1]->E2;
 	//e3l = *db.CS[csB - 1]->E3;
 
-	////Salva a matriz de transformação de coordenadas (para orientar o plano da ST de acordo com a orientação de referência da superficie)
+	////Saves the transformation matrix of coordinates (for orientar the plane of the ST according to the orientation of reference of the surface)
 	//(*Q0B)(0, 0) = dot(e1g, e1l);
 	//(*Q0B)(0, 1) = dot(e1g, e2l);
 	//(*Q0B)(0, 2) = dot(e1g, e3l);
@@ -420,7 +420,7 @@ bool SplineElement::ReadCommon(FILE *f)
 {
 	char s[1000];
 
-	//Salva a posição (stream)
+	//Saves the position (stream)
 	fpos_t pos;
 	fgetpos(f, &pos);
 	fscanf(f, "%s", s);

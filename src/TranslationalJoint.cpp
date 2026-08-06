@@ -5,13 +5,13 @@
 #include "Node.h"
 #include "CoordinateSystem.h"
 #include"Database.h"
-//Variaveis globais
+//Global variables
 extern
 Database db;
 
 TranslationalJoint::TranslationalJoint()
 {
-	n_GL = 2;						//Dois graus de liberdade (esse vinculo possui 2 multiplicadores de lagrange)
+	n_GL = 2;						//Two degrees of freedom (this constraint has 2 Lagrange multipliers)
 	active_lambda = new int[n_GL];
 	lambda = new double[n_GL];
 	copy_lambda = new double[n_GL];
@@ -25,7 +25,7 @@ TranslationalJoint::TranslationalJoint()
 	{
 		active_lambda[i] = 0;
 		GLs[i] = 0;
-		//Chute inicial para os lambdas: valores nulos
+		//Initial guess for the lambdas: values null
 		lambda[i] = 0.0;
 		copy_lambda[i] = 0.0;
 	}
@@ -47,7 +47,7 @@ TranslationalJoint::TranslationalJoint()
 	ei1A = Matrix(3);
 	ei2A = Matrix(3);
 
-	//Matriz de rigidez tangente e vetor residuo
+	//Stiffness matrix tangent and vector residual
 	stiffness = new double*[11];
 	for (int i = 0; i < 11; i++)
 		stiffness[i] = new double[11];
@@ -61,7 +61,7 @@ TranslationalJoint::TranslationalJoint()
 	}
 }
 
-//Zera matrizes e vetores
+//Zeroes matrices and vectors
 void TranslationalJoint::ClearContributions()
 {
 	for (int i = 0; i < 11; i++)
@@ -84,7 +84,7 @@ TranslationalJoint::~TranslationalJoint()
 	delete []residual;
 }
 
-//Leitura
+//Reading
 bool TranslationalJoint::Read(FILE *f)
 {
 	char s[1000];
@@ -120,7 +120,7 @@ bool TranslationalJoint::Read(FILE *f)
 	}
 	else
 		return false;
-	//Salva a posição (stream)
+	//Saves the position (stream)
 	fpos_t pos;
 	fgetpos(f, &pos);
 	fscanf(f, "%s", s);
@@ -135,7 +135,7 @@ bool TranslationalJoint::Read(FILE *f)
 	return true;
 }
 
-//Gravação
+//Recording
 void TranslationalJoint::Write(FILE *f)
 {
 	fprintf(f, "TranslationalJoint\t%d\tNodes\t%d\t%d\tRotationNode\t%d\tCS\t%d\n",
@@ -146,7 +146,7 @@ void TranslationalJoint::Write(FILE *f)
 		cs);
 }
 
-//Escreve no monitor do SpecialConstraint
+//Writes in the monitor of the SpecialConstraint
 void TranslationalJoint::WriteMonitor(FILE *f, bool first_record, double time)
 {
 
@@ -157,7 +157,7 @@ void TranslationalJoint::WriteVTK_XMLRender(FILE *f)
 	
 }
 
-//Checa inconsistências no SC para evitar erros de execução
+//Checks inconsistencies in the SC for avoid errors of execution
 bool TranslationalJoint::Check()
 {
 	if (node_A > db.number_nodes)
@@ -169,7 +169,7 @@ bool TranslationalJoint::Check()
 	if (cs > db.number_CS)
 		return false;
 
-	//Checagem das condições iniciais
+	//Check of the initial conditions
 	int temp_node = 0;
 	for (int i = 0; i < db.number_IC; i++)
 	{
@@ -182,34 +182,34 @@ bool TranslationalJoint::Check()
 	return true;
 }
 
-//Montagem dos residuos e rigidez tangente
+//Assembly of the residuals and stiffness tangent
 void TranslationalJoint::Mount()
 {
 	ClearContributions();
-	//Montagem da rigidez tangente e residuo
+	//Assembly of the stiffness tangent and residual
 	if (active_lambda[0] == 1 && active_lambda[1] == 1)
 	{
 		for (int i = 0; i < 3; i++)
 		{
-			alphaA(i, 0) = db.nodes[rot_node - 1]->displacements[i + 3];		//vetor rotação (atual) do nó de ref para rotação
-			alphaiA(i, 0) = db.nodes[rot_node - 1]->copy_coordinates[i + 3];	//vetor rotação acumulada (do inicio) do nó de ref para rotação
-			uA(i, 0) = db.nodes[node_A - 1]->displacements[i];				//vetor de deslocamentos do nó A
-			uB(i, 0) = db.nodes[node_B - 1]->displacements[i];				//vetor de deslocamentos do nó B
+			alphaA(i, 0) = db.nodes[rot_node - 1]->displacements[i + 3];		//vector rotation (current) of the node of ref for rotation
+			alphaiA(i, 0) = db.nodes[rot_node - 1]->copy_coordinates[i + 3];	//vector rotation acumulada (of the start) of the node of ref for rotation
+			uA(i, 0) = db.nodes[node_A - 1]->displacements[i];				//displacement vector of the node A
+			uB(i, 0) = db.nodes[node_B - 1]->displacements[i];				//displacement vector of the node B
 		}
 		alpha_escalar_i = norm(alphaiA);
 		A = skew(alphaiA);
 		g = 4.0 / (4.0 + alpha_escalar_i*alpha_escalar_i);
 		QA = I3 + g*(A + 0.5*(A*A));
-		ei1A = QA*(*db.CS[cs - 1]->E1);	//Eixo e1 no inicio do incremento
-		ei2A = QA*(*db.CS[cs - 1]->E2);	//Eixo e2 no inicio do incremento
+		ei1A = QA*(*db.CS[cs - 1]->E1);	//Axis e1 in the start of the increment
+		ei2A = QA*(*db.CS[cs - 1]->E2);	//Axis e2 in the start of the increment
 		EvaluateTranslationalContribution(temp_v, residual, stiffness, uA.getMatrix(), uB.getMatrix(), alphaA.getMatrix(), ei1A.getMatrix(), ei2A.getMatrix(), lambda);
 	}
 }
 
-//Preenche a contribuição do elemento nas matrizes globais
+//Fills the contribution of the element in the matrices global
 void TranslationalJoint::MountGlobal()
 {
-	//Variaveis temporarias para salvar a indexação global dos graus de liberdade a serem setados na matriz de rigidez global
+	//Temporary variables for save the indexing global of the degrees of freedom the to be set in the stiffness matrix global
 	int GL_global_1 = 0;
 	int GL_global_2 = 0;
 	double anterior = 0;
@@ -219,8 +219,8 @@ void TranslationalJoint::MountGlobal()
 		
 		for (int i = 0; i < 11; i++)
 		{
-			//////////////MONTAGEM DO VETOR DE ESFORÇOS DESBALANCEADOS//////////////////
-			//Toma do vetor de GL globais, a indexação de cada grau de liberdade global
+			//////////////ASSEMBLY OF THE VECTOR OF INTERNAL FORCES UNBALANCED//////////////////
+			//Takes of the global-DOF vector, the indexing of each global degree of freedom
 			if (i < 3)//u_A -> i=0,1,2
 				GL_global_1 = db.nodes[node_A - 1]->GLs[i];
 			else
@@ -240,7 +240,7 @@ void TranslationalJoint::MountGlobal()
 				}
 			}
 
-			//Caso o grau de liberdade seja livre:
+			//Case the degree of freedom be free:
 			if (GL_global_1 > 0)
 			{
 				anterior = db.global_P_A(GL_global_1 - 1, 0);
@@ -255,8 +255,8 @@ void TranslationalJoint::MountGlobal()
 			}
 			for (int j = 0; j < 11; j++)
 			{
-				//////////////////////MONTAGEM DA MATRIZ DE RIGIDEZ/////////////////////////
-				//Toma do vetor de GL globais, a indexação de cada grau de liberdade global
+				//////////////////////ASSEMBLY OF THE STIFFNESS MATRIX/////////////////////////
+				//Takes of the global-DOF vector, the indexing of each global degree of freedom
 				if (j < 3)//u_A -> j=0,1,2
 					GL_global_2 = db.nodes[node_A - 1]->GLs[j];
 				else
@@ -276,16 +276,16 @@ void TranslationalJoint::MountGlobal()
 					}
 				}
 
-				//Caso os graus de liberdade sejam ambos livres (Matriz Kaa)
+				//Case the degrees of freedom be both free (Matrix Kaa)
 				if (GL_global_1 > 0 && GL_global_2 > 0)
 					db.global_stiffness_AA.setValue(GL_global_1 - 1, GL_global_2 - 1, stiffness[i][j]);
-				//Caso os graus de liberdade sejam ambos fixos (Matriz Kbb)
+				//Case the degrees of freedom be both fixed (Matrix Kbb)
 				if (GL_global_1 < 0 && GL_global_2 < 0)
 					db.global_stiffness_BB.setValue(-GL_global_1 - 1, -GL_global_2 - 1, stiffness[i][j]);
-				//Caso os graus de liberdade sejam livre e fixo (Matriz Kab)
+				//Case the degrees of freedom be free and fixed (Matrix Kab)
 				if (GL_global_1 > 0 && GL_global_2 < 0)
 					db.global_stiffness_AB.setValue(GL_global_1 - 1, -GL_global_2 - 1, stiffness[i][j]);
-				//Caso os graus de liberdade sejam fixo e livre (Matriz Kba)
+				//Case the degrees of freedom be fixed and free (Matrix Kba)
 				if (GL_global_1 < 0 && GL_global_2 > 0)
 					db.global_stiffness_BA.setValue(-GL_global_1 - 1, GL_global_2 - 1, stiffness[i][j]);
 			}
@@ -298,43 +298,43 @@ void TranslationalJoint::ComputeInitialGuessDisplacements()
 
 }
 
-//Computa efeito das condições iniciais nos nós da restrição
+//Computes effect of the initial conditions in the nodes of the constraint
 void TranslationalJoint::ComputeVelAccel()
 {
 	if (bool_table.GetAt(db.current_solution_number - 1) == true)
 	{
-		//TODO
+		//ALL
 	}
 }
 
-//Pre-calculo de variaveis que e feito uma unica vez no inicio
+//Pre-calculation of variables that and done a single time in the start
 void TranslationalJoint::PreCalc()
 {
 	//Not applicable
 }
 
-//Salvando variaveis da configuração convergida
+//Saving variables of the configuration converged
 void TranslationalJoint::SaveLagrange()
 {
 	for (int i = 0; i < n_GL; i++)
 		copy_lambda[i] = lambda[i];
 }
 
-//Checa quais multiplicadores de lagrange serão ativados,de acordo com a ativação dos GLs dos nós dos quais a special constraint participa
+//Checks which Lagrange multipliers will be ativados,according to the activation of the GLs of the nodes of the which the special constraint participates
 void TranslationalJoint::ActivateDOFs()
 {
-	//Ativa GLs de translação dos nós A e B
+	//Active GLs of translation of the nodes A and B
 	for (int i = 0; i < 3; i++)
 		db.nodes[node_A - 1]->active_GL[i] = 1;
 	for (int i = 0; i < 3; i++)
 		db.nodes[node_B - 1]->active_GL[i] = 1;
-	//Ativa GLs de rotação do rotation node
+	//Active GLs of rotation of the rotation node
 	for (int i = 0; i < 3; i++)
 		db.nodes[rot_node - 1]->active_GL[i + 3] = 1;
 
 	if (bool_table.GetAt(db.current_solution_number - 1))
 	{
-		//Ativa GLs de multiplicadores de Lagrange
+		//Active GLs of Lagrange multipliers
 		active_lambda[0] = 1;
 		active_lambda[1] = 1;
 	}
@@ -344,7 +344,7 @@ void TranslationalJoint::ActivateDOFs()
 		active_lambda[1] = 0;
 	}
 }
-//Calcula contribuições do residuo e operador tangente - gerado no AceGen
+//Calculates contributions of the residual and operator tangent - generated in the AceGen
 void TranslationalJoint::EvaluateTranslationalContribution(double *v, double *residual, double **stiffness, double *uA, double *uB, double *alphaA, double *ei1A , double *ei2A, double *lambda)
 {
 	int i01; int i02;

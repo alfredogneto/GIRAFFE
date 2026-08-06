@@ -6,43 +6,43 @@ class BandMatrix
 {
 public:
 	BandMatrix(void);
-	BandMatrix(long band_s,long band_i,long columns);				//Construtor Parametrico
-	BandMatrix(BandMatrix &copied);									//Construtor de cópia
+	BandMatrix(long band_s,long band_i,long columns);				//Parametric constructor
+	BandMatrix(BandMatrix &copied);									//Constructor of cï¿½pia
 	~BandMatrix(void);
 
 	//General Functions
-	void print();													//Imprime a matriz no console
-	void fprint(char* s);											//Imprime a matriz em um arquivo de texto, cujo nome esta no char s
-	void fprintSquare(char* s);										//Imprime a matriz em um arquivo de texto, cujo nome esta no char s (quadrada)
-	bool alloc();													//Aloca a matriz
-	bool flush();													//Libera a memória ocupada pela matriz
-	void clear();													//Zera a matriz, mantando as dimensões atuais
-	Matrix Full();													//Retorna a matriz quadrada (FULL)
+	void print();													//Prints the matrix in the console
+	void fprint(char* s);											//Prints the matrix in a file of text, whose name this in the char s
+	void fprintSquare(char* s);										//Prints the matrix in a file of text, whose name this in the char s (quadrada)
+	bool alloc();													//Allocates the matrix
+	bool flush();													//Frees the memï¿½ria occupied through the matrix
+	void clear();													//Zeroes the matrix, keeping the dimensï¿½es current
+	Matrix Full();													//Returns the square matrix (FULL)
 
-	friend Matrix bandsystem(BandMatrix &A, Matrix &b,int *info_fail);	//Resolve o sistema linear da forma Ax=b
-	friend Matrix operator * (BandMatrix &matrix1, Matrix &matrix2);		//Operador Multiplicacao de matrizes (matrix2 deve necessariamente ser um vetor)	
-	friend BandMatrix operator * (double sigma, BandMatrix &matrix1);		//Operador Multiplicacao de matriz de banda por escalar
-	friend BandMatrix operator + (BandMatrix &matrix1, BandMatrix &matrix2);//Operador soma de matrizes de banda
+	friend Matrix bandsystem(BandMatrix &A, Matrix &b,int *info_fail);	//Solves the linear system of the way Ax=b (mutates A and b in-place via LAPACK)
+	friend Matrix operator * (const BandMatrix &matrix1, const Matrix &matrix2);		//Operator Multiplication of matrices (matrix2 must necessariamente be a vector)
+	friend BandMatrix operator * (double sigma, const BandMatrix &matrix1);		//Operator Multiplication of band matrix by scalar
+	friend BandMatrix operator + (const BandMatrix &matrix1, const BandMatrix &matrix2);//Operator sum of matrices of band
 
-	double getValue(long i, long j);								//Retorno do valor na posição especificada - entrada i e j
-																	//na posição da matriz quadrada original
-	void setValue(long i, long j, double v);						//Seta na posição (i,j) da matriz quadrada o valor v
+	double getValue(long i, long j) const;							//Return of the value in the posiï¿½ï¿½o specified - input i and j
+																	//in the posiï¿½ï¿½o of the square matrix original
+	void setValue(long i, long j, double v);						//Sets in the posiï¿½ï¿½o (i,j) of the square matrix the value v
 
-	int getBandi();													//Retorna a banda inferior da matriz
-	int getBands();													//Retorna a banda superior da matriz
-	int getColumns();												//Retorna o numero de colunas da matriz
-	void setBandi(int bandi);										//Seta a banda inferior da matriz
-	void setBands(int bands);										//Seta a banda superior da matriz
-	void setColumns(int lines);										//Seta o numero de colunas da matriz
-	double* getMatrix();											//Retorna o endereço de uma matriz
+	int getBandi() const;											//Returns the band lower of the matrix
+	int getBands() const;											//Returns the band upper of the matrix
+	int getColumns() const;											//Returns the number of columns of the matrix
+	void setBandi(int bandi);										//Sets the band lower of the matrix
+	void setBands(int bands);										//Sets the band upper of the matrix
+	void setColumns(int lines);										//Sets the number of columns of the matrix
+	double* getMatrix() const;										//Returns the endereï¿½o of a matrix
 
-	long getAllocedLines();											//Retorna as linhas alocadas
+	long getAllocedLines() const;											//Returns the rows allocated
 
 protected:
-	double*  m_matrix;												//Matriz unidimensional
-	long     m_columns;												//Numero de linhas
-	long     m_band_s;												//Banda superior da matriz
-	long     m_band_i;												//Banda inferior da matriz
-	long	 m_alloced_lines;										//Numero de linhas atualmente alocadas (pois m_matrix e unidimensional)
-	bool	 m_lines_deleted;										//Flag que indica se as linhas foram desalocadas
+	double*  m_matrix;												//Matrix one-dimensional
+	long     m_columns;												//Number of rows
+	long     m_band_s;												//Band upper of the matrix
+	long     m_band_i;												//Band lower of the matrix
+	long	 m_alloced_lines;										//Number of rows currently allocated (since m_matrix and one-dimensional)
+	bool	 m_lines_deleted;										//Flag that indicates if the rows were deallocated
 };

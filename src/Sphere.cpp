@@ -10,7 +10,7 @@
 #include "MatrixFloat.h"
 #include "Dynamic.h"
 #include"Database.h"
-//Variaveis globais
+//Global variables
 extern
 Database db;
 #define PI 3.1415926535897932384626433832795
@@ -117,7 +117,7 @@ void Sphere::WriteModifyingParameters(FILE *f, int e_material, int e_node, int e
 	);
 }
 
-//Pre-calculo de variaveis que e feito uma unica vez no inicio
+//Pre-calculation of variables that and done a single time in the start
 void Sphere::PreCalc()
 {
 	volume = (4.0 / 3.0) * PI*radius*radius*radius;
@@ -126,8 +126,8 @@ void Sphere::PreCalc()
 	inertia = (2.0 / 5.0)*mass*radius*radius;
 
 	////////////////////////////////////////////////////////////////
-	//Matriz para transformação de coordenadas  local-global
-	//vlocal = (sistema do CAD)
+	//Matrix for transformation of coordinates  local-global
+	//vlocal = (system of the CAD)
 	// Q0*vlocal = vglobal
 	////////////////////////////////////////////////////////////////
 	(*Q0)(0, 0) = (*db.CS[cs - 1]->E1)(0, 0);
@@ -144,11 +144,11 @@ void Sphere::PreCalc()
 	br[0] = 0.0;
 	br[1] = 0.0;
 	br[2] = 0.0;
-	//Momentos de Inercia
+	//Moments of Inertia
 	Jr[0][0] = inertia;
 	Jr[1][1] = inertia;
 	Jr[2][2] = inertia;
-	//Produtos de Inercia
+	//Produtos of Inertia
 	Jr[0][1] = 0.0;
 	Jr[1][0] = 0.0;
 	Jr[0][2] = 0.0;
@@ -157,7 +157,7 @@ void Sphere::PreCalc()
 	Jr[2][1] = 0.0;
 
 	//////////////////////////////////////Bounding Volume////////////////////////////////////
-	//Setando apenas raios (que não mudam)
+	//Setting only raios (that not mudam)
 	BoundingSphere* ptr_bv = static_cast<BoundingSphere*>(bv);
 	ptr_bv->radius = (float)radius;
 	n_sub_bv = 1;
@@ -188,7 +188,7 @@ void Sphere::UpdateBoundingVolumes()
 	}
 }
 
-//Salva variaveis
+//Saves variables
 void Sphere::SaveLagrange()
 {
 	//Saving bounding volumes
@@ -204,17 +204,17 @@ void Sphere::WriteVTK_XMLBase(FILE *f)
 
 void Sphere::WriteVTK_XMLRender(FILE *f)
 {
-	//vetores para escrita no formato binario - usando a função 'enconde'
+	//vectors for writing in the formato binary - using the function 'enconde'
 	std::vector<float> float_vector;
 	std::vector<int> int_vector;
 
-	//Divisões em theta
+	//Divisões in theta
 	int n_theta = 12;
-	//Divisões em phi
+	//Divisões in phi
 	int n_phi = 8;
-	//Numero de pontos
+	//Number of points
 	int n_points = (2 * n_theta + 1)*(2 * n_phi + 1);
-	//Numero de celulas a serem geradas
+	//Number of celulas the to be geradas
 	int n_cells = n_theta*n_phi;
 	Matrix QM = (*db.nodes[node - 1]->Q)*(*Q0);
 	
@@ -228,7 +228,7 @@ void Sphere::WriteVTK_XMLRender(FILE *f)
 	//Opens DataArray
 	fprintf(f, "\t\t\t\t<DataArray type=\"Float32\" NumberOfComponents=\"3\" format=\"binary\">\n");
 	float_vector.clear();
-	//Centro da esfera
+	//Center of the sphere
 	center(0, 0) = db.nodes[node - 1]->copy_coordinates[0];
 	center(1, 0) = db.nodes[node - 1]->copy_coordinates[1];
 	center(2, 0) = db.nodes[node - 1]->copy_coordinates[2];
@@ -241,7 +241,7 @@ void Sphere::WriteVTK_XMLRender(FILE *f)
 			point(0, 0) = radius*sin(phi)*cos(theta);
 			point(1, 0) = radius*sin(phi)*sin(theta);
 			point(2, 0) = radius*cos(phi);
-			point = QM*point;//conversão para SC global
+			point = QM*point;//conversion for SC global
 			float_vector.push_back((float)(center(0, 0) + point(0, 0)));
 			float_vector.push_back((float)(center(1, 0) + point(1, 0)));
 			float_vector.push_back((float)(center(2, 0) + point(2, 0)));
@@ -259,7 +259,7 @@ void Sphere::WriteVTK_XMLRender(FILE *f)
 	fprintf(f, "\t\t\t<Cells>\n");
 	//Opens DataArray
 	fprintf(f, "\t\t\t\t<DataArray type=\"Int32\" Name=\"connectivity\" format=\"binary\">\n");
-	//Linhas
+	//Rows
 	int_vector.clear();
 	int nj = (2 * n_phi + 1);
 	for (int i = 0; i < (2 * n_theta - 1); i = i + 2)
@@ -320,23 +320,23 @@ void Sphere::Alloc()
 	cs = 0;
 
 	DOFs = new int[db.number_GLs_node];
-	type_name = new char[20];//Nome do tipo da particula
+	type_name = new char[20];//Name of the type of the particle
 
-	//Rotina para ativar os GLS do nó da particula
+	//Routine for activate the GLS of the node of the particle
 	for (int j = 0; j < db.number_GLs_node; j++)
 	{
 		DOFs[j] = 0;
 	}
-	//Translação
+	//Translation
 	DOFs[0] = 1;
 	DOFs[1] = 1;
 	DOFs[2] = 1;
-	//Rotação
+	//Rotation
 	DOFs[3] = 1;
 	DOFs[4] = 1;
 	DOFs[5] = 1;
 
-	//Variaveis internas
+	//Variables internal
 	mass = 0.0;
 
 	I3 = new Matrix(3, 3);
@@ -424,7 +424,7 @@ void Sphere::UpdateVariables()
 
 void Sphere::Mount()
 {
-	//Zera matrizes diversas
+	//Zeroes matrices diversas
 	for (int i = 0; i < 6; i++)
 	{
 		dfield[i] = 0.0;
@@ -435,7 +435,7 @@ void Sphere::Mount()
 			DdT[i][j] = 0.0;
 		}
 	}
-	//Valores de variaveis cinematicas - atribuição
+	//Values of variables cinematicas - assignment
 	for (int i = 0; i < 3; i++)
 	{
 		alphai[i] = db.nodes[node - 1]->copy_coordinates[i + 3];
@@ -467,17 +467,17 @@ void Sphere::EvaluateAccelerations()
 
 void Sphere::MountGlobal()
 {
-	//Variaveis temporarias para salvar a indexação global dos graus de liberdade a serem setados na matriz de rigidez global
+	//Temporary variables for save the indexing global of the degrees of freedom the to be set in the stiffness matrix global
 	int GL_global_1 = 0;
 	int GL_global_2 = 0;
 	double anterior = 0;
 	for (int i = 0; i < 6; i++)
 	{
-		//////////////MONTAGEM DO VETOR DE ESFORÇOS DESBALANCEADOS//////////////////
-		//Toma do vetor de GL globais, a indexação de cada grau de liberdade global
+		//////////////ASSEMBLY OF THE VECTOR OF INTERNAL FORCES UNBALANCED//////////////////
+		//Takes of the global-DOF vector, the indexing of each global degree of freedom
 		GL_global_1 = db.nodes[node - 1]->GLs[i];
 
-		//Caso o grau de liberdade seja livre:
+		//Case the degree of freedom be free:
 		if (GL_global_1 > 0)
 		{
 			anterior = db.global_P_A(GL_global_1 - 1, 0);
@@ -492,19 +492,19 @@ void Sphere::MountGlobal()
 		}
 		for (int j = 0; j < 6; j++)
 		{
-			//////////////////////MONTAGEM DA MATRIZ DE RIGIDEZ/////////////////////////
-			//Toma do vetor de GL globais, a indexação de cada grau de liberdade global
+			//////////////////////ASSEMBLY OF THE STIFFNESS MATRIX/////////////////////////
+			//Takes of the global-DOF vector, the indexing of each global degree of freedom
 			GL_global_2 = db.nodes[node - 1]->GLs[j];
-			//Caso os graus de liberdade sejam ambos livres (Matriz Kaa)
+			//Case the degrees of freedom be both free (Matrix Kaa)
 			if (GL_global_1 > 0 && GL_global_2 > 0)
 				db.global_stiffness_AA.setValue(GL_global_1 - 1, GL_global_2 - 1, (DdT[i][j] - Ddfield[i][j]));
-			//Caso os graus de liberdade sejam ambos fixos (Matriz Kbb)
+			//Case the degrees of freedom be both fixed (Matrix Kbb)
 			if (GL_global_1 < 0 && GL_global_2 < 0)
 				db.global_stiffness_BB.setValue(-GL_global_1 - 1, -GL_global_2 - 1, (DdT[i][j] - Ddfield[i][j]));
-			//Caso os graus de liberdade sejam livre e fixo (Matriz Kab)
+			//Case the degrees of freedom be free and fixed (Matrix Kab)
 			if (GL_global_1 > 0 && GL_global_2 < 0)
 				db.global_stiffness_AB.setValue(GL_global_1 - 1, -GL_global_2 - 1, (DdT[i][j] - Ddfield[i][j]));
-			//Caso os graus de liberdade sejam fixo e livre (Matriz Kba)
+			//Case the degrees of freedom be fixed and free (Matrix Kba)
 			if (GL_global_1 < 0 && GL_global_2 > 0)
 				db.global_stiffness_BA.setValue(-GL_global_1 - 1, GL_global_2 - 1, (DdT[i][j] - Ddfield[i][j]));
 		}
@@ -513,15 +513,15 @@ void Sphere::MountGlobal()
 
 void Sphere::MountFieldLoading()
 {
-	//Ponteiro para o valor da massa
+	//Pointer for the value of the mass
 	double* m = &mass;
-	double v[1000];													//Variavel necessaria para o AceGen		
-	//Variaveis para calculo de steps
+	double v[1000];													//Variable necessary for the AceGen		
+	//Variables for calculation of steps
 	double l_factor;
 	bool in_gcs_domain = true;
 	if (db.environment_exist == true)
 	{
-		//Se existe campo gravitacional
+		//If exists field gravitacional
 		if (db.environment->g_exist == true)
 		{
 			if (db.gcs_exist)
@@ -550,7 +550,7 @@ void Sphere::MountFieldLoading()
 			if (in_gcs_domain)
 			{
 				l_factor = db.environment->bool_g.GetLinearFactorAtCurrentTime();
-				double g[3];					//Vetor gravidade
+				double g[3];					//Vector gravidade
 				g[0] = l_factor * db.environment->G(0, 0);
 				g[1] = l_factor * db.environment->G(1, 0);
 				g[2] = l_factor * db.environment->G(2, 0);
@@ -727,10 +727,10 @@ void Sphere::MountFieldLoading()
 		}
 	}
 
-	//Outras contribuições de esforços de campo, colocar aqui...
+	//Other contributions of internal forces of field, place here...
 }
 
-//Calcula contribuições de inercia
+//Calculates contributions of inertia
 void Sphere::InertialContributions()
 {
 	double value = 0.0;
@@ -748,7 +748,7 @@ void Sphere::InertialContributions()
 	if (typeid(*db.solution[db.current_solution_number - 1]) == typeid(Dynamic))
 	{
 		Dynamic* ptr_sol = static_cast<Dynamic*>(db.solution[db.current_solution_number - 1]);
-		//Ponteiros para parametros do Newmark
+		//Pointers for parameters of the Newmark
 		a1 = &ptr_sol->a1;
 		a2 = &ptr_sol->a2;
 		a3 = &ptr_sol->a3;
@@ -766,9 +766,9 @@ void Sphere::InertialContributions()
 		a6 = &value;
 	}
 
-	//Ponteiro para o valor da massa
+	//Pointer for the value of the mass
 	double* m = &mass;
-	double v[1000];													//Variavel necessaria para o AceGen		
+	double v[1000];													//Variable necessary for the AceGen		
 	//AceGen
 	v[134] = Power(alphai[0], 2);
 	v[132] = 0.5e0*alphai[0] * alphai[1];

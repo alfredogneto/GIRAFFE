@@ -5,7 +5,7 @@
 //extern
 //FILE *fdebug;
 
-//Variaveis globais
+//Global variables
 extern
 Database db;
 

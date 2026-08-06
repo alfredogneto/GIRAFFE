@@ -7,15 +7,15 @@ public:
 	NodeSet();
 	~NodeSet();
 
-	int n_nodes;		//numero de nós
-	int* node_list;		//lista de nós
-	int number;			//numero de referência
+	int n_nodes;		//number of nodes
+	int* node_list;		//list of nodes
+	int number;			//reference number
 
 	
-	bool sequence;		//true se e do tipo sequence
-	bool list;			//true se e do tipo list
+	bool sequence;		//true if and of the type sequence
+	bool list;			//true if and of the type list
 
-	//Para o caso de sequence
+	//For the case of sequence
 	int initial;
 	int increment;
 

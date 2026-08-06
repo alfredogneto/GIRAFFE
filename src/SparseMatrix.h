@@ -1,5 +1,5 @@
 #pragma once
-#include <Eigen\SparseCore>
+#include <Eigen/SparseCore>
 
 class Matrix;
 //#include <unsupported/Eigen/SparseExtra>
@@ -7,29 +7,31 @@ class Matrix;
 class SparseMatrix
 {
 public:
-	SparseMatrix();												//Construtor padrão
-	SparseMatrix(int rows, int cols, int non_null_estimative);	//Construtor parametrico
-	SparseMatrix(SparseMatrix &copied);							//Construtor de cópia
+	SparseMatrix();												//Constructor padrï¿½o
+	SparseMatrix(int rows, int cols, int non_null_estimative);	//Parametric constructor
+	SparseMatrix(const SparseMatrix &copied);							//Constructor of cï¿½pia
 	~SparseMatrix();
-	void Clear();												//Zera coeficientes da matriz
-	void setValue(int i, int j, double v);						//Seta na posição (i,j) da matriz quadrada o valor v
-	void Mount();												//Seta matriz a partir da lista de triplets
+	void Clear();												//Zeroes coefficients of the matrix
+	void setValue(int i, int j, double v);						//Sets in the posiï¿½ï¿½o (i,j) of the square matrix the value v
+	void Mount() const;											//Sets matrix the partir of the list of triplets (lazy init - ver mutable below)
 
-	//Matrix esparsa criada via Eigen
-	Eigen::SparseMatrix<double,1,int> m_matrix;					//matriz esparsa da biblioteca Eigen - RowMajor
-	typedef Eigen::Triplet<double> T;							//cria typedef para a estrutura de triplets do Eigen
-	std::vector<T> tripletList;									//cria vector de triplets (tripletList)
-	bool mounted;												//Indica que a matriz esta montada - conteudo da tripletList foi transferido para a matriz, de fato
-	int rows;													//Numero de linhas
-	int cols;													//Numero de colunas
-	int non_null_estimative;									//Estimativa de coeficientes não nulos
+	//Matrix esparsa created via Eigen
+	//m_matrix/mounted are "mutable" since Mount() does a initialization preguicosa (lazy) the partir
+	//of the tripletList, the that needs funcionar same when the object and acessado via const&
+	mutable Eigen::SparseMatrix<double,1,int> m_matrix;					//sparse matrix of the biblioteca Eigen - RowMajor
+	typedef Eigen::Triplet<double> T;							//creates typedef for the structure of triplets of the Eigen
+	std::vector<T> tripletList;									//creates vector of triplets (tripletList)
+	mutable bool mounted;												//Indicates that the matrix this montada - content of the tripletList was transferido for the matrix, of fato
+	int rows;													//Number of rows
+	int cols;													//Number of columns
+	int non_null_estimative;									//Estimativa of coefficients nï¿½o null
 
-	void WriteMatrix(char* name);																				//Função de escrita da matriz em arquivo de texto
-	friend Matrix sparsesystem(SparseMatrix &A, Matrix &b, int *info_fail, int processors, int solver_type);	//Resolve o sistema linear da forma Ax=b
-	friend Matrix operator * (SparseMatrix& matrix1, Matrix& matrix2);											//Operador Multiplicacao de matrizes (matrix2 deve necessariamente ser um vetor)
-	friend SparseMatrix operator + (SparseMatrix& matrix1, SparseMatrix& matrix2);								//Operador Soma de matrizes esparsas
-	friend SparseMatrix operator * (double sigma, SparseMatrix &matrix1);										//Operador Multiplicacao de matriz esparsa por escalar
-	SparseMatrix &operator = (SparseMatrix const &matrix1);														//Operador de Atribuição
-	friend Matrix sparseeigen(SparseMatrix &K, SparseMatrix &M, Matrix &z, int n_e, bool eigenvectors, int* ret, double tolerance);			//Função que calcula autovalores de matriz esparsa - ARPACK - retorna em ret 0 se a execução foi correta
+	void WriteMatrix(char* name);																				//Funï¿½ï¿½o of matrix writing in file of text
+	friend Matrix sparsesystem(SparseMatrix &A, Matrix &b, int *info_fail, int processors, int solver_type);	//Solves the linear system of the way Ax=b
+	friend Matrix operator * (const SparseMatrix& matrix1, const Matrix& matrix2);											//Operator Multiplication of matrices (matrix2 must necessariamente be a vector)
+	friend SparseMatrix operator + (const SparseMatrix& matrix1, const SparseMatrix& matrix2);								//Operator Sum of matrices esparsas
+	friend SparseMatrix operator * (double sigma, const SparseMatrix &matrix1);										//Operator Multiplication of sparse matrix by scalar
+	SparseMatrix &operator = (SparseMatrix const &matrix1);														//Operator of Atribuiï¿½ï¿½o
+	friend Matrix sparseeigen(SparseMatrix &K, SparseMatrix &M, Matrix &z, int n_e, bool eigenvectors, int* ret, double tolerance);			//Funï¿½ï¿½o that calculates eigenvalues of sparse matrix - ARPACK - returns in ret 0 if the execuï¿½ï¿½o was correct
 };
 

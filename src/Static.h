@@ -10,7 +10,7 @@ public:
 	bool Read(FILE *f);									//Reads input file
 	void Write(FILE *f);								//Writes output file
 	bool Solve();										//Solves solution routine
-	void WriteResults(double time_value);				//Escreve resultados de acordo com uma amostragem especificada
+	void WriteResults(double time_value);				//Writes results according to a amostragem specified
 	
 	double i_time_step;
 	double max_time_step;

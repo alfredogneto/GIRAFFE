@@ -13,42 +13,42 @@ public:
 	bool Read(FILE *f);
 	void Write(FILE *f);	
 
-	void PreCalc();								//Calculos realizados uma unica vez
-	void WriteVTK_XML_SplineMesh(FILE *f);		//Malha da spline junto ao paraview
-	void WriteVTK_XML_SplineRender(FILE *f);	//Malha renderizada da spline junto ao paraview
-	void CalculateSpline();						//Calculo de pontos da spline
-	void CalculateSplineTangentNormal();		//Calculo de vetor tangente e normal a spline
-	void SaveConfiguration();					//Atualiza as variaveis internas da superficie, para pegarem info do pilot node para uso posterior com posição atualizada
-	bool Check();								//Checa inconsistências para evitar erros de execução
+	void PreCalc();								//Calculations realizados a single time
+	void WriteVTK_XML_SplineMesh(FILE *f);		//Mesh of the spline junto to the paraview
+	void WriteVTK_XML_SplineRender(FILE *f);	//Mesh renderizada of the spline junto to the paraview
+	void CalculateSpline();						//Calculation of points of the spline
+	void CalculateSplineTangentNormal();		//Calculation of tangent vector and normal the spline
+	void SaveConfiguration();					//Updates the variables internal of the surface, for grab info of the pilot node for use subsequent with position updated
+	bool Check();								//Checks inconsistencies for avoid errors of execution
 	
-	//Variaveis internas da spline		
-	bool alloc = false;			//Controle de alocação da spline para destrutor
-	int number;					//Numero de referência
-	double radius;				//Raio que define a superficie externa a spline (offset)
-	int nodeset;				//Idenificador do nodeset que define os pontos de controle da spline	
-	int size_nodeset;			//Numero de nós definidos no nodeset
-	int size_sp_nodes;			//Numero de nós utilizados para descrever a spline apenas para visualização	
-	int size_sp_elements;		//Numero de elementos (trechos) de spline
+	//Variables internal of the spline		
+	bool alloc = false;			//Control of allocation of the spline for destructor
+	int number;					//Reference number
+	double radius;				//Radius that defines the surface external the spline (offset)
+	int nodeset;				//Idenificador of the nodeset that defines the points of control of the spline	
+	int size_nodeset;			//Number of nodes definidos in the nodeset
+	int size_sp_nodes;			//Number of nodes used for descrever the spline only for visualização	
+	int size_sp_elements;		//Number of elements (trechos) of spline
 
-	int* nodeset_list;			//Lista de nós do nodeset	
-	double* knot;				//Knot vector calculado de acordo com a quantidade de nós do nodeset
-	double* sp0;				//Coeficientes para montar a primeira iteração da spline (p=0)
-	double* sp1;				//Coeficientes para montar a segunda iteração da spline (p=1)
-	double* sp1_dd;				//Coeficientes para montar a segunda iteração da spline (p=1) para segunda derivada
-	double** sp2;				//Coeficientes para montar a terceira iteração da spline (p=2)
-	double** sp2_d;				//Coeficientes para montar a primeria derivada da spline quadrada
-	double** sp2_dd;			//Coeficientes para montar a segunda derivada da spline quadrada	
-	int* sp_elements_list;		//Lista de elementos (trechos) de spline
+	int* nodeset_list;			//List of nodes of the nodeset	
+	double* knot;				//Knot vector calculated according to the quantidade of nodes of the nodeset
+	double* sp0;				//Coefficients for assemble the first iteration of the spline (p=0)
+	double* sp1;				//Coefficients for assemble the second iteration of the spline (p=1)
+	double* sp1_dd;				//Coefficients for assemble the second iteration of the spline (p=1) for second derivative
+	double** sp2;				//Coefficients for assemble the third iteration of the spline (p=2)
+	double** sp2_d;				//Coefficients for assemble the primeria derivative of the spline quadrada
+	double** sp2_dd;			//Coefficients for assemble the second derivative of the spline quadrada	
+	int* sp_elements_list;		//List of elements (trechos) of spline
 	
-	Matrix** x_sp_Ai;			//Pontos da spline
-	Matrix** x_sp_d;			//Pontos da primeira derivada
-	Matrix** x_sp_dd;			//Pontos da segunda derivada
-	Matrix** x_sp_tangent;		//Vetor de tangentes para plotagem
-	Matrix** x_sp_normal;		//Vetor de normais para plortagem
+	Matrix** x_sp_Ai;			//Points of the spline
+	Matrix** x_sp_d;			//Points of the first derivative
+	Matrix** x_sp_dd;			//Points of the second derivative
+	Matrix** x_sp_tangent;		//Vector of tangentes for plotting
+	Matrix** x_sp_normal;		//Vector of normal for plortagem
 
-	Matrix** x_Ai;				//Pontos de controle da spline
+	Matrix** x_Ai;				//Points of control of the spline
 
-	SplineElement** sp_element;	//Lista de elementos de spline
+	SplineElement** sp_element;	//List of elements of spline
 
 };
 

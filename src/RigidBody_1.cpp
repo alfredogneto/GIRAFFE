@@ -6,7 +6,7 @@
 #include "Dynamic.h"
 #include "Environment.h"
 #include"Database.h"
-//Variaveis globais
+//Global variables
 extern
 Database db;
 
@@ -28,9 +28,9 @@ RigidBody_1::RigidBody_1()
 	DOFs = new int *[n_nodes];
 	for (int i = 0; i < n_nodes;i++)
 		DOFs[i] = new int[db.number_GLs_node];
-	type_name = new char[20];//Nome do tipo do elemento
+	type_name = new char[20];//Name of the type of the element
 	sprintf(type_name, "RigidBody_1");
-	//Rotina para ativar os GLS de cada nó do elemento
+	//Routine for activate the GLS of each node of the element
 	for (int i = 0; i < n_nodes; i++)
 	{
 		for (int j = 0; j < db.number_GLs_node; j++)
@@ -178,7 +178,7 @@ bool RigidBody_1::Read(FILE *f)
 	return true;
 }
 
-//Checa inconsistências no elemento para evitar erros de execução
+//Checks inconsistencies in the element for avoid errors of execution
 bool RigidBody_1::Check()
 {
 	for (int i = 0; i < n_nodes; i++)
@@ -195,29 +195,29 @@ void RigidBody_1::Write(FILE *f)
 {
 	fprintf(f, "RigidBody_1\t%d\tRigidBodyData\t%d\tCS\t%d\tNode\t%d\n", number, RB_data_ID, cs, nodes[0]);
 }
-//Escreve arquivo de resultados
+//Writes file of results
 void RigidBody_1::WriteResults(FILE *f)
 {
 	
 }
 
-//Escreve no monitor do elemento//Escreve no monitor do elemento
+//Writes in the monitor of the element//Writes in the monitor of the element
 void RigidBody_1::WriteMonitor(FILE *f, bool first_record, double time)
 {
-	//Cabeçalho
+	//Header
 	if (first_record == true)
 		fprintf(f, "TIME\tT1\tT2\tT3\tT\tLx\tLy\tLz\tL\tHGx\tHGy\tHGz\tHG\n");
 
-	//Informações a serem salvas
+	//Information the to be saved
 	fprintf(f, "%.6e\t%.6e\t%.6e\t%.6e\t%.6e\t%.6e\t%.6e\t%.6e\t%.6e\t%.6e\t%.6e\t%.6e\t%.6e\n",
 		time, *T1, *T2, *T3, *T, L[0], L[1], L[2],*magL, HG[0], HG[1], HG[2], *magHG);
 }
 
 void RigidBody_1::WriteVTK_XMLBase(std::vector<float> *float_vector)
 {
-	//Imprime os resultados do elemento
+	//Prints the results of the element
 	int res_element = 0;
-	//Imprime valores nulos para resultados que não fazem sentido para esse tipo de elemento
+	//Prints values null for results that not fazem sentido for this element type
 	for (int i = res_element; i < db.n_element_results; i++)
 		float_vector->push_back(0.0);
 }
@@ -227,37 +227,37 @@ void RigidBody_1::WriteVTK_XMLRender(FILE *f)
 	db.RB_data[RB_data_ID - 1]->WriteVTK_XMLRender(f,nodes[0],cs);
 }
 
-//Monta carregamentos associados ao elemento
+//Assembles loadings associated to the element
 void RigidBody_1::MountElementLoads()
 {
 	MountFieldLoading();
 }
 
-//Monta elementos
+//Assembles elements
 void RigidBody_1::Mount()
 {
-	Zeros();	//Zera matrizes
-	//Não ha contribuição para rigidez nesse elemento
+	Zeros();	//Zeroes matrices
+	//Not there is contribution for stiffness in this element
 }
-//Monta matriz de transformação de coordenadas
+//Assembles transformation matrix of coordinates
 void RigidBody_1::TransformMatrix()
 {
 	
 }
-//Preenche a contribuição do elemento nas matrizes globais
+//Fills the contribution of the element in the matrices global
 void RigidBody_1::MountGlobal()
 {
-	//Variaveis temporarias para salvar a indexação global dos graus de liberdade a serem setados na matriz de rigidez global
+	//Temporary variables for save the indexing global of the degrees of freedom the to be set in the stiffness matrix global
 	int GL_global_1 = 0;
 	int GL_global_2 = 0;
 	double anterior = 0;
 	for (int i = 0; i<6; i++)
 	{
-		//////////////MONTAGEM DO VETOR DE ESFORÇOS DESBALANCEADOS//////////////////
-		//Toma do vetor de GL globais, a indexação de cada grau de liberdade global
+		//////////////ASSEMBLY OF THE VECTOR OF INTERNAL FORCES UNBALANCED//////////////////
+		//Takes of the global-DOF vector, the indexing of each global degree of freedom
 		GL_global_1 = db.nodes[nodes[0] - 1]->GLs[i];
 
-		//Caso o grau de liberdade seja livre:
+		//Case the degree of freedom be free:
 		if (GL_global_1 > 0)
 		{
 			anterior = db.global_P_A(GL_global_1 - 1, 0);
@@ -272,33 +272,33 @@ void RigidBody_1::MountGlobal()
 		}
 		for (int j = 0; j<6; j++)
 		{
-			//////////////////////MONTAGEM DA MATRIZ DE RIGIDEZ/////////////////////////
-			//Toma do vetor de GL globais, a indexação de cada grau de liberdade global
+			//////////////////////ASSEMBLY OF THE STIFFNESS MATRIX/////////////////////////
+			//Takes of the global-DOF vector, the indexing of each global degree of freedom
 			GL_global_2 = db.nodes[nodes[0] - 1]->GLs[j];
-			//Caso os graus de liberdade sejam ambos livres (Matriz Kaa)
+			//Case the degrees of freedom be both free (Matrix Kaa)
 			if (GL_global_1 > 0 && GL_global_2 > 0)
 				db.global_stiffness_AA.setValue(GL_global_1 - 1, GL_global_2 - 1, (DdT[i][j] - Ddfield[i][j]));
-			//Caso os graus de liberdade sejam ambos fixos (Matriz Kbb)
+			//Case the degrees of freedom be both fixed (Matrix Kbb)
 			if (GL_global_1 < 0 && GL_global_2 < 0)
 				db.global_stiffness_BB.setValue(-GL_global_1 - 1, -GL_global_2 - 1, (DdT[i][j] - Ddfield[i][j]));
-			//Caso os graus de liberdade sejam livre e fixo (Matriz Kab)
+			//Case the degrees of freedom be free and fixed (Matrix Kab)
 			if (GL_global_1 > 0 && GL_global_2 < 0)
 				db.global_stiffness_AB.setValue(GL_global_1 - 1, -GL_global_2 - 1, (DdT[i][j] - Ddfield[i][j]));
-			//Caso os graus de liberdade sejam fixo e livre (Matriz Kba)
+			//Case the degrees of freedom be fixed and free (Matrix Kba)
 			if (GL_global_1 < 0 && GL_global_2 > 0)
 				db.global_stiffness_BA.setValue(-GL_global_1 - 1, GL_global_2 - 1, (DdT[i][j] - Ddfield[i][j]));
 		}
 	}
 }
-//Salva variaveis nos pontos de Gauss uteis para descrição lagrangiana atualizada
+//Saves variables in the gauss points useful for description lagrangiana updated
 void RigidBody_1::SaveLagrange()
 {
 	
 }
-//Pre-calculo de variaveis que e feito uma unica vez no inicio
+//Pre-calculation of variables that and done a single time in the start
 void RigidBody_1::PreCalc()
 {
-	//Matriz para transformação de coordenadas  local-global
+	//Matrix for transformation of coordinates  local-global
 	Matrix Q(3, 3);
 	Q(0, 0) = (*db.CS[cs - 1]->E1)(0, 0);
 	Q(1, 0) = (*db.CS[cs - 1]->E1)(1, 0);
@@ -310,25 +310,25 @@ void RigidBody_1::PreCalc()
 	Q(1, 2) = (*db.CS[cs - 1]->E3)(1, 0);
 	Q(2, 2) = (*db.CS[cs - 1]->E3)(2, 0);
 
-	//Calculando valores do br. Feito apenas uma vez no inicio. 
-	//A origem do CAD coincide com o Polo, então G-O = G
-	//Como G e dado no sistema do CAD, então G precisa ser transformado
+	//Calculating values of the br. Done only once in the start. 
+	//A origin of the CAD coincides with the Pole, then G-O = G
+	//As G and data in the system of the CAD, then G needs be transformed
 	Matrix local_b = *db.RB_data[RB_data_ID - 1]->G;
 	Matrix global_b = Q*local_b;
 	br[0] = global_b(0, 0);
 	br[1] = global_b(1, 0);
 	br[2] = global_b(2, 0);
 
-	//Atualizando J_G para o sistema global e copiando valores para Jr. Feito apenas uma vez no inicio
+	//Updating J_G for the system global and copying values for Jr. Done only once in the start
 	Matrix global_J = Q*(*db.RB_data[RB_data_ID - 1]->J_G)*transp(Q);
 	global_J.MatrixToPtr(Jr, 3);
 
-	//Aplicando Teorema de Steiner
-	//Momentos de Inercia
+	//Aplicando Teorema of Steiner
+	//Moments of Inertia
 	Jr[0][0] = Jr[0][0] + (db.RB_data[RB_data_ID - 1]->mass)*((br[1] * br[1]) + (br[2] * br[2]));
 	Jr[1][1] = Jr[1][1] + (db.RB_data[RB_data_ID - 1]->mass)*((br[0] * br[0]) + (br[2] * br[2]));
 	Jr[2][2] = Jr[2][2] + (db.RB_data[RB_data_ID - 1]->mass)*((br[0] * br[0]) + (br[1] * br[1]));
-	//Produtos de Inercia
+	//Produtos of Inertia
 	Jr[0][1] = Jr[0][1] - (db.RB_data[RB_data_ID - 1]->mass)*(br[0] * br[1]);
 	Jr[1][0] = Jr[0][1];
 	Jr[0][2] = Jr[0][2] - (db.RB_data[RB_data_ID - 1]->mass)*(br[0] * br[2]);
@@ -337,17 +337,17 @@ void RigidBody_1::PreCalc()
 	Jr[2][1] = Jr[1][2];
 }
 
-//Monta a matriz de massa
+//Assembles the mass matrix
 void RigidBody_1::MountMass()
 {
 	InertialContributions();
 }
-//Monta a matriz de massa
+//Assembles the mass matrix
 void RigidBody_1::MountMassModal()
 {
-	//Ponteiro para o valor da massa
+	//Pointer for the value of the mass
 	double* m = &db.RB_data[RB_data_ID - 1]->mass;
-	//Valores de variaveis cinematicas - atribuição
+	//Values of variables cinematicas - assignment
 	for (int i = 0; i < 3; i++)
 		alphai[i] = db.nodes[nodes[0] - 1]->copy_coordinates[i + 3];
 	double Mr[3][3];
@@ -455,31 +455,31 @@ void RigidBody_1::MountMassModal()
 	DdT[5][5] = v[117] * v[82] + v[118] * v[84] + v[119] * v[85];
 }
 
-//Monta a matriz de amortecimento para realização da analise modal
+//Assembles the damping matrix for performing of the analysis modal
 void RigidBody_1::MountDampingModal()
 {
 	
 }
 
-//Monta a matriz de amortecimento
+//Assembles the damping matrix
 void RigidBody_1::MountDamping(bool update_rayleigh)
 {
 	
 }
 
-//Montagens - Newmark
+//Assemblies - Newmark
 void RigidBody_1::MountDyn()
 {
 	
 }
 
-//Montagens para analise modal - inserção da matriz de massa e amortecimento na matriz de rigidez para posterior montagem global
+//Assemblies for analysis modal - insertion of the mass matrix and damping in the stiffness matrix for subsequent assembly global
 void RigidBody_1::MountDynModal()
 {
 	
 }
 
-//Zera algumas matrizes utilizadas nos calculos
+//Zeroes some matrices used in the calculations
 void RigidBody_1::Zeros()
 {
 	for (int i = 0; i < 6; i++)
@@ -497,21 +497,21 @@ void RigidBody_1::Zeros()
 	potential_gravitational_energy = 0.0;
 }
 
-//Essa função escreve nas variaveis dT e DdT as contribuições para residuo e para o operador tangente
+//This function writes in the variables dT and DdT the contributions for residual and for the operator tangent
 void RigidBody_1::InertialContributions()
 {
 	
 	Dynamic* ptr_sol = static_cast<Dynamic*>(db.solution[db.current_solution_number - 1]);
-	//Ponteiros para parametros do Newmark
+	//Pointers for parameters of the Newmark
 	double* a1 = &ptr_sol->a1;
 	double* a2 = &ptr_sol->a2;
 	double* a3 = &ptr_sol->a3;
 	double* a4 = &ptr_sol->a4;
 	double* a5 = &ptr_sol->a5;
 	double* a6 = &ptr_sol->a6;
-	//Ponteiro para o valor da massa
+	//Pointer for the value of the mass
 	double* m = &db.RB_data[RB_data_ID - 1]->mass;
-	//Valores de variaveis cinematicas - atribuição
+	//Values of variables cinematicas - assignment
 	for (int i = 0; i < 3; i++)
 	{
 		alphai[i] = db.nodes[nodes[0] - 1]->copy_coordinates[i + 3];
@@ -1022,10 +1022,10 @@ void RigidBody_1::InertialContributions()
 
 void RigidBody_1::MountFieldLoading()
 {
-	//Ponteiro para o valor da massa
+	//Pointer for the value of the mass
 	double* m = &db.RB_data[RB_data_ID - 1]->mass;
 	
-	//Valores de variaveis cinematicas - atribuição
+	//Values of variables cinematicas - assignment
 	for (int i = 0; i < 3; i++)
 	{
 		alphai[i] = db.nodes[nodes[0] - 1]->copy_coordinates[i + 3];
@@ -1033,16 +1033,16 @@ void RigidBody_1::MountFieldLoading()
 		alphad[i] = db.nodes[nodes[0] - 1]->displacements[i + 3];
 	}
 
-	//Variaveis para calculo de steps
+	//Variables for calculation of steps
 	double l_factor;
 	
 	if (db.environment_exist == true)
 	{
-		//Se existe campo gravitacional
+		//If exists field gravitacional
 		if (db.environment->g_exist == true)
 		{
 			l_factor = db.environment->bool_g.GetLinearFactorAtCurrentTime();
-			double g[3];					//Vetor gravidade
+			double g[3];					//Vector gravidade
 			g[0] = l_factor * db.environment->G(0, 0);
 			g[1] = l_factor * db.environment->G(1, 0);
 			g[2] = l_factor * db.environment->G(2, 0);
@@ -1219,5 +1219,5 @@ void RigidBody_1::MountFieldLoading()
 
 	//db.PrintPtr(dfield, 6);
 
-	//Outras contribuições de esforços de campo, colocar aqui...
+	//Other contributions of internal forces of field, place here...
 }

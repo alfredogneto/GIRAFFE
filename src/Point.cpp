@@ -2,7 +2,7 @@
 #include <string>
 
 #include"Database.h"
-//Variaveis globais
+//Global variables
 extern
 Database db;
 
@@ -20,7 +20,7 @@ bool Point::Read(FILE *f)
 {
 	char s[1000];
 	fscanf(f, "%s", s);
-	//Verifica a palavra chave "Point"
+	//Checks the keyword "Point"
 	if (!strcmp(s, "Point"))
 	{
 		fscanf(f, "%s", s);
@@ -29,7 +29,7 @@ bool Point::Read(FILE *f)
 	else
 		return false;
 	
-	//Leitura das coordenadas
+	//Reading of the coordinates
 	fscanf(f, "%s", s);
 	coordinates(0, 0) = atof(s);
 

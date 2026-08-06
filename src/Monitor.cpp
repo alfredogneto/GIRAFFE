@@ -1,5 +1,5 @@
 #include "Monitor.h"
-#include <direct.h>
+#include "PlatformCompat.h"
 
 #include "Node.h"
 #include "Element.h"
@@ -12,7 +12,7 @@
 
 #include"Database.h"
 #include "IO.h"
-//Variaveis globais
+//Global variables
 extern
 Database db;
 
@@ -112,7 +112,7 @@ void Monitor::FlushFiles()
 bool Monitor::Read(FILE *f)
 {
 	char s[1000];
-	//Verifica a palavra chave "Sample"
+	//Checks the keyword "Sample"
 	fscanf(f, "%s", s);
 	if (!strcmp(s, "Sample"))
 	{
@@ -275,16 +275,16 @@ void Monitor::Write(FILE *f)
 }
 void Monitor::StartMonitor()
 {
-	//Abre os arquivos dos nós
+	//Opens the files of the nodes
 	char name[200];
 	for (int i = 0; i < nodes.size(); i++)
 	{
 		int node = nodes[i];
 		strcpy(name, db.folder_name);
 		strcat(name, "monitors/");
-		_mkdir(name);
+		GIRAFFE_MKDIR(name);
 		char number[20];
-		_itoa(node, number, 10);	//Converte o numero inteiro para char, a fim de escrever o arquivo de resultados com o nome desejado
+		_itoa(node, number, 10);	//Converts the number integer for char, in order to write the file of results with the name desired
 		strcat(name, "monitor_node_");
 		strcat(name, number);
 		strcat(name, ".txt");
@@ -292,15 +292,15 @@ void Monitor::StartMonitor()
 		//fprintf(f_nodes[i], "NODE\t%d\n",node);
 	}
 	
-	//Abre os arquivos dos elementos
+	//Opens the files of the elements
 	for (int i = 0; i < elements.size(); i++)
 	{
 		int element = elements[i];
 		strcpy(name, db.folder_name);
 		strcat(name, "monitors/");
-		_mkdir(name);
+		GIRAFFE_MKDIR(name);
 		char number[20];
-		_itoa(element, number, 10);	//Converte o numero inteiro para char, a fim de escrever o arquivo de resultados com o nome desejado
+		_itoa(element, number, 10);	//Converts the number integer for char, in order to write the file of results with the name desired
 		strcat(name, "monitor_element_");
 		strcat(name, number);
 		strcat(name, ".txt");
@@ -308,15 +308,15 @@ void Monitor::StartMonitor()
 		//fprintf(f_elements[i], "ELEMENT\t%d\t%s\n", element,db.elements[element-1]->type_name);
 	}
 
-	//Abre os arquivos dos contatos
+	//Opens the files of the contacts
 	for (int i = 0; i < contacts.size(); i++)
 	{
 		int contact = contacts[i];
 		strcpy(name, db.folder_name);
 		strcat(name, "monitors/");
-		_mkdir(name);
+		GIRAFFE_MKDIR(name);
 		char number[20];
-		_itoa(contact, number, 10);	//Converte o numero inteiro para char, a fim de escrever o arquivo de resultados com o nome desejado
+		_itoa(contact, number, 10);	//Converts the number integer for char, in order to write the file of results with the name desired
 		strcat(name, "monitor_contact_");
 		strcat(name, number);
 		strcat(name, ".txt");
@@ -324,15 +324,15 @@ void Monitor::StartMonitor()
 		//fprintf(f_contacts[i], "CONTACT\t%d\t%s\n", contact, db.contacts[contact-1]->type_name);
 	}
 
-	//Abre os arquivos dos node sets
+	//Opens the files of the node sets
 	for (int i = 0; i < node_sets.size(); i++)
 	{
 		int set = node_sets[i];
 		strcpy(name, db.folder_name);
 		strcat(name, "monitors/");
-		_mkdir(name);
+		GIRAFFE_MKDIR(name);
 		char number[20];
-		_itoa(set, number, 10);	//Converte o numero inteiro para char, a fim de escrever o arquivo de resultados com o nome desejado
+		_itoa(set, number, 10);	//Converts the number integer for char, in order to write the file of results with the name desired
 		strcat(name, "monitor_nodeset_");
 		strcat(name, number);
 		strcat(name, ".txt");
@@ -340,15 +340,15 @@ void Monitor::StartMonitor()
 		//fprintf(f_node_sets[i], "NODESET\t%d\n", set);
 	}
 
-	//Abre os arquivos das particulas
+	//Opens the files of the particles
 	for (int i = 0; i < particles.size(); i++)
 	{
 		int particle = particles[i];
 		strcpy(name, db.folder_name);
 		strcat(name, "monitors/");
-		_mkdir(name);
+		GIRAFFE_MKDIR(name);
 		char number[20];
-		_itoa(particle, number, 10);	//Converte o numero inteiro para char, a fim de escrever o arquivo de resultados com o nome desejado
+		_itoa(particle, number, 10);	//Converts the number integer for char, in order to write the file of results with the name desired
 		strcat(name, "monitor_particle_");
 		strcat(name, number);
 		strcat(name, ".txt");
@@ -356,23 +356,23 @@ void Monitor::StartMonitor()
 		//fprintf(f_elements[i], "PARTICLE\t%d\t%s\n", element,db.particles[particle-1]->type_name);
 	}
 
-	//Abre o arquivo do monitor global
+	//Opens the file of the monitor global
 	strcpy(name, db.folder_name);
 	strcat(name, "monitors/");
-	_mkdir(name);
+	GIRAFFE_MKDIR(name);
 	strcat(name, "monitor_global");
 	strcat(name, ".txt");
 	f_global[0] = fopen(name, "w");
 
-	//Abre os arquivos dos special constraints
+	//Opens the files of the special constraints
 	for (int i = 0; i < special_constraints.size(); i++)
 	{
 		int sc = special_constraints[i];
 		strcpy(name, db.folder_name);
 		strcat(name, "monitors/");
-		_mkdir(name);
+		GIRAFFE_MKDIR(name);
 		char number[20];
-		_itoa(sc, number, 10);	//Converte o numero inteiro para char, a fim de escrever o arquivo de resultados com o nome desejado
+		_itoa(sc, number, 10);	//Converts the number integer for char, in order to write the file of results with the name desired
 		strcat(name, "monitor_special_constraint_");
 		strcat(name, number);
 		strcat(name, ".txt");
@@ -383,7 +383,7 @@ void Monitor::StartMonitor()
 
 void Monitor::UpdateMonitor(double time)
 {
-	//Atualizações a serem realizadas - salvas nos arquivos do monitor
+	//Atualizações the to be realizadas - saved in the files of the monitor
 	for (int i = 0; i < nodes.size(); i++)
 		db.nodes[nodes[i] - 1]->WriteMonitor(f_nodes[i], first_record,time);
 	for (int i = 0; i < elements.size(); i++)
@@ -419,7 +419,7 @@ void Monitor::EndMonitor()
 
 void Monitor::UpdateGlobalMonitor(double time)
 {
-	//Cabeçalho
+	//Header
 	if (first_record == true)
 	{
 		fprintf(f_global[0], "TIME\t");
@@ -461,10 +461,10 @@ void Monitor::UpdateGlobalMonitor(double time)
 		fprintf(f_global[0], "ROT_CRIT\t");
 		fprintf(f_global[0], "\n");
 	}
-	//Informações a serem salvas
+	//Information the to be saved
 	fprintf(f_global[0], "%.6e\t",time);
 
-	//Energia cinetica, momento linear e momento angular das particulas
+	//Kinetic energy, moment linear and moment angular of the particles
 	double kin = 0;
 	double strain = 0;
 	double grav = 0;
@@ -524,7 +524,7 @@ void Monitor::UpdateGlobalMonitor(double time)
 
 	
 
-	//Quebra de linha final
+	//Quebra of linha final
 	fprintf(f_global[0], "\n");
 
 	db.myprintf("\nSystem kinetic energy:\t%6e\n", kin);

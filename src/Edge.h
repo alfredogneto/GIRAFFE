@@ -11,7 +11,7 @@ class Edge
 public:
 	Edge();
 	~Edge();
-	Edge(const Edge &copied);								//Construtor de cópia
+	Edge(const Edge &copied);								//Copy constructor
 	Edge& operator=(const Edge& copied);
 	void Print(FILE *f);
 	int ID;
@@ -30,5 +30,5 @@ public:
 	Matrix* n2;
 };
 
-bool operator == (Edge &e1, Edge &e2);				//Verificação de igualdade com tol_equal
+bool operator == (const Edge &e1, const Edge &e2);				//Equality check with tol_equal
 

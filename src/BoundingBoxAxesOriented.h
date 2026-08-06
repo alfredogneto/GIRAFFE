@@ -7,7 +7,7 @@ class BoundingBoxAxesOriented :
 	public BoundingVolume
 {
 public:
-	class BoundingBoxAxesOriented();
+	BoundingBoxAxesOriented();
 	~BoundingBoxAxesOriented();
 	void SaveConfiguration();
 	void Report();

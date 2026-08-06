@@ -13,7 +13,7 @@
 
 
 #include"Database.h"
-//Variaveis globais
+//Global variables
 extern
 Database db;
 #define PI 3.1415926535897932384626433832795
@@ -35,7 +35,7 @@ Pipe_1::Pipe_1()
 	DOFs = new int *[n_nodes];
 	for (int i = 0; i < n_nodes; i++)
 		DOFs[i] = new int[db.number_GLs_node];
-	type_name = new char[20];//Nome do tipo do elemento
+	type_name = new char[20];//Name of the type of the element
 	sprintf(type_name, "Pipe_1");
 	
 	VTK_nodes[0] = 0;
@@ -45,7 +45,7 @@ Pipe_1::Pipe_1()
 	rho_adt = 0;
 	rho_adn = 0;
 
-	//Rotina para ativar os GLS de cada nó do elemento
+	//Routine for activate the GLS of each node of the element
 	for (int i = 0; i < n_nodes; i++)
 	{
 		for (int j = 0; j < db.number_GLs_node; j++)
@@ -59,13 +59,13 @@ Pipe_1::Pipe_1()
 		DOFs[i][4] = 1;
 		DOFs[i][5] = 1;
 	}
-	//Variaveis internas do elemento
+	//Variables internal of the element
 	alpha1 = 0;
 	length = 0;
 	jacobian = 0;
 	alpha_escalar_delta = 0;
 	g = 0;
-	//Cada variavel carregara a informação para seu ponto de Gauss
+	//Each variable carregara the information for its gauss point
 	N1 = new double[2];
 	N2 = new double[2];
 	N3 = new double[2];
@@ -94,7 +94,7 @@ Pipe_1::Pipe_1()
 	m_r = new Matrix*[2];
 	n = new Matrix*[2];
 	m = new Matrix*[2];
-	//Loop nos pontos de Gauss
+	//Loop over the Gauss points
 	for (int i = 0; i < 2; i++)
 	{
 		deltaN[i] = new Matrix(9, 18);
@@ -153,7 +153,7 @@ Pipe_1::Pipe_1()
 	B = new Matrix(6, 9);
 	G = new Matrix(9, 9);
 	lag_save = new LagrangeSave();
-	//Variaveis internas para o esforço de correnteza maritima
+	//Variables internal for the internal force of correnteza maritima
 	e3ip = new Matrix*[2];
 	zi = new Matrix*[2];
 	vel = new Matrix*[2];
@@ -180,7 +180,7 @@ Pipe_1::Pipe_1()
 	ut_ = 0;
 	C1t = 0;
 	C1n = 0;
-	//Loop nos pontos de Gauss
+	//Loop over the Gauss points
 	for (int i = 0; i < 2; i++)
 	{
 		e3ip[i] = new Matrix(3,1);
@@ -210,7 +210,7 @@ Pipe_1::Pipe_1()
 	Cdn = 0;
 	Aext = 0;
 	rho_f = 0;
-	//Variaveis internas para o esforço pipe load
+	//Variables internal for the internal force pipe load
 	kip = new Matrix*[2];
 	temp_f = new Matrix*[2];
 	temp_m = new Matrix*[2];
@@ -218,7 +218,7 @@ Pipe_1::Pipe_1()
 	Kip = new Matrix*[2];
 	E3ip = new Matrix*[2];
 	UpsilonN = new Matrix*[2];
-	//Loop nos pontos de Gauss
+	//Loop over the Gauss points
 	for (int i = 0; i < 2; i++)
 	{
 		kip[i] = new Matrix(3,1);
@@ -240,14 +240,14 @@ Pipe_1::Pipe_1()
 	rhoi = 0;
 	rhoe = 0;
 	Aint = 0;
-	//Variaveis internas para uso na dinamica
+	//Variables internal for use in the dynamics
 	alpha_dot = new Matrix*[2];
 	Xi_dot = new Matrix*[2];
 	Mip = new Matrix*[2];
 	Jip = new Matrix*[2];
 	M = new Matrix*[2];
 	Md1 = new Matrix*[2];
-	//Loop nos pontos de Gauss
+	//Loop over the Gauss points
 	for (int i = 0; i < 2; i++)
 	{
 		alpha_dot[i] = new Matrix(3, 1);
@@ -260,7 +260,7 @@ Pipe_1::Pipe_1()
 	Mr = new Matrix(3, 3);
 	Jr = new Matrix(3, 3);
 
-	//Ponteiros double** - conversão de matriz
+	//Pointers double** - conversion of matrix
 	pJr = new double*[3];
 	for (int i = 0; i < 3; i++)
 		pJr[i] = new double[3];
@@ -301,7 +301,7 @@ Pipe_1::~Pipe_1()
 	delete[] csi;
 
 	delete[] type_name;
-	//Loop nos pontos de Gauss
+	//Loop over the Gauss points
 	for (int i = 0; i < 2; i++)
 	{
 		delete deltaN[i];
@@ -381,8 +381,8 @@ Pipe_1::~Pipe_1()
 	delete B;
 	delete G;
 	delete lag_save;
-	//Variaveis internas para o esforço de correnteza maritima
-	//Loop nos pontos de Gauss
+	//Variables internal for the internal force of correnteza maritima
+	//Loop over the Gauss points
 	for (int i = 0; i < 2; i++)
 	{
 		delete e3ip[i];
@@ -427,8 +427,8 @@ Pipe_1::~Pipe_1()
 	delete[] Mdn;
 	delete[] Md2;
 	delete e3rg;
-	//Variaveis internas para o esforço pipe load
-	//Loop nos pontos de Gauss
+	//Variables internal for the internal force pipe load
+	//Loop over the Gauss points
 	for (int i = 0; i < 2; i++)
 	{
 		delete kip[i];
@@ -452,8 +452,8 @@ Pipe_1::~Pipe_1()
 	delete K2ua;
 	delete K2au;
 	delete Kext;
-	//Variaveis internas para uso na dinamica
-	//Loop nos pontos de Gauss
+	//Variables internal for use in the dynamics
+	//Loop over the Gauss points
 	for (int i = 0; i < 2; i++)
 	{
 		delete alpha_dot[i];
@@ -478,7 +478,7 @@ Pipe_1::~Pipe_1()
 	delete DdT;
 	delete dT;
 
-	//Ponteiros de double**
+	//Pointers of double**
 	for (int i = 0; i < 3; i++)
 		delete[]pMr[i];
 	delete[] pMr;
@@ -496,7 +496,7 @@ Pipe_1::~Pipe_1()
 	
 }
 
-//Checa inconsistências no elemento para evitar erros de execução
+//Checks inconsistencies in the element for avoid errors of execution
 bool Pipe_1::Check()
 {
 	for (int i = 0; i < n_nodes; i++)
@@ -508,13 +508,13 @@ bool Pipe_1::Check()
 		return false;
 	if (section > db.number_pipe_sections)
 		return false;
-	//Checagem do alinhamento dos eixos do CS com direção dos nós
+	//Check of the alinhamento of the eixos of the CS with direction of the nodes
 	Matrix e1r = *db.CS[cs - 1]->E1;
 	Matrix e2r = *db.CS[cs - 1]->E2;
 	Matrix e3r = *db.CS[cs - 1]->E3;
 	double tolortho = 1e-8;
 	Matrix e3_check(3);
-	//Versor e3_check (configuração de referência)
+	//Versor e3_check (configuration of reference)
 	e3_check(0, 0) = db.nodes[nodes[2] - 1]->ref_coordinates[0] - db.nodes[nodes[0] - 1]->ref_coordinates[0];
 	e3_check(1, 0) = db.nodes[nodes[2] - 1]->ref_coordinates[1] - db.nodes[nodes[0] - 1]->ref_coordinates[1];
 	e3_check(2, 0) = db.nodes[nodes[2] - 1]->ref_coordinates[2] - db.nodes[nodes[0] - 1]->ref_coordinates[2];
@@ -582,7 +582,7 @@ void Pipe_1::Write(FILE *f)
 		nodes[2]);
 }
 
-//Escreve arquivo de resultados
+//Writes file of results
 void Pipe_1::WriteResults(FILE *f)
 {
 	fprintf(f, "Pipe_1\t%d\tStress_r\t%.6e\t%.6e\t%.6e\t%.6e\t%.6e\t%.6e\tStrain_r\t%.6e\t%.6e\t%.6e\t%.6e\t%.6e\t%.6e\tRef_Coor\t%.6e\t%.6e\t%.6e\tCoor\t%.6e\t%.6e\t%.6e\n",
@@ -600,7 +600,7 @@ void Pipe_1::WriteResults(FILE *f)
 
 void Pipe_1::WriteVTK_XMLBase(std::vector<float> *float_vector)
 {
-	//Imprime os resultados do elemento
+	//Prints the results of the element
 	int res_element = 6;
 	float_vector->push_back((float)((*sigma_r[0])(0, 0) + (*sigma_r[1])(0, 0)) / 2);
 	float_vector->push_back((float)((*sigma_r[0])(1, 0) + (*sigma_r[1])(1, 0)) / 2);
@@ -608,14 +608,14 @@ void Pipe_1::WriteVTK_XMLBase(std::vector<float> *float_vector)
 	float_vector->push_back((float)((*sigma_r[0])(3, 0) + (*sigma_r[1])(3, 0)) / 2);
 	float_vector->push_back((float)((*sigma_r[0])(4, 0) + (*sigma_r[1])(4, 0)) / 2);
 	float_vector->push_back((float)((*sigma_r[0])(5, 0) + (*sigma_r[1])(5, 0)) / 2);
-	//Imprime valores nulos para resultados que não fazem sentido para esse tipo de elemento
+	//Prints values null for results that not fazem sentido for this element type
 	for (int i = res_element; i < db.n_element_results; i++)
 		float_vector->push_back(0.0);
 }
 
 void Pipe_1::WriteVTK_XMLRender(FILE *f)
 {
-	//vetores para escrita no formato binario - usando a função 'enconde'
+	//vectors for writing in the formato binary - using the function 'enconde'
 	std::vector<float> float_vector;
 	std::vector<int> int_vector;
 
@@ -625,9 +625,9 @@ void Pipe_1::WriteVTK_XMLRender(FILE *f)
 	Matrix A;
 	Matrix vec_P(3);
 	double factor = db.pipe_sections[section - 1]->Di / db.pipe_sections[section - 1]->De;
-	//Numero de pontos a serem gerados
+	//Number of points the to be gerados
 	int n_points = n_nodes*db.pipe_sections[section - 1]->sec_details->n_points * 2;
-	//Numero de celulas a serem geradas
+	//Number of celulas the to be geradas
 	int n_cells = db.pipe_sections[section - 1]->sec_details->n_points*(n_nodes - 1);
 	//Opens Piece
 	fprintf(f, "\t\t<Piece NumberOfPoints = \"%d\" NumberOfCells = \"%d\">\n", n_points, n_cells);
@@ -636,10 +636,10 @@ void Pipe_1::WriteVTK_XMLRender(FILE *f)
 			//Opens DataArray
 			fprintf(f, "\t\t\t\t<DataArray type = \"Float32\" NumberOfComponents = \"3\" format=\"binary\">\n");
 			float_vector.clear();
-			//Preenchendo as coordenadas dos pontos
-			for (int i = 0; i < n_nodes; i++)//percorrendo os 3 nós do elemento
+			//Filling the coordinates of the points
+			for (int i = 0; i < n_nodes; i++)//percorrendo the 3 nodes of the element
 			{
-				//Para cada nó do elemento, calcula o tensor rotação
+				//For each node of the element, calculates the tensor rotation
 				alpha_1(0, 0) = db.nodes[nodes[i] - 1]->copy_coordinates[3];
 				alpha_1(1, 0) = db.nodes[nodes[i] - 1]->copy_coordinates[4];
 				alpha_1(2, 0) = db.nodes[nodes[i] - 1]->copy_coordinates[5];
@@ -647,30 +647,30 @@ void Pipe_1::WriteVTK_XMLRender(FILE *f)
 				A = skew(alpha_1);
 				g = 4.0 / (4.0 + alpha_escalar*alpha_escalar);
 				Q = *I3 + g*(A + 0.5*A*A);
-				Q = Q*transp(*transform3);//Matriz de transformação para trazer o vetor da ST do plano xy para o plano atual em que ela se encontra
+				Q = Q*transp(*transform3);//Transformation matrix for trazer the vector of the ST of the plane xy for the plane current in that it if finds
 
-				for (int point = 0; point < db.pipe_sections[section - 1]->sec_details->n_points; point++)//Percorre os nós que descrevem o perimetro da ST - diametro externo
+				for (int point = 0; point < db.pipe_sections[section - 1]->sec_details->n_points; point++)//Iterates over the nodes that descrevem the perimetro of the ST - diametro external
 				{
-					//Posição de cada ponto P no plano xy (referência)
+					//Position of each point P in the plane xy (reference)
 					vec_P(0, 0) = db.pipe_sections[section - 1]->sec_details->points[point][0];
 					vec_P(1, 0) = db.pipe_sections[section - 1]->sec_details->points[point][1];
 					vec_P(2, 0) = 0.0;
-					vec_P = Q*vec_P;//Operando rotacionando para o sistema da barra
+					vec_P = Q*vec_P;//Operando rotacionando for the system of the bar
 					for (int c = 0; c < 3; c++)
-						vec_P(c, 0) += db.nodes[nodes[i] - 1]->ref_coordinates[c] + db.post_files->mag_factor*(db.nodes[nodes[i] - 1]->copy_coordinates[c] - db.nodes[nodes[i] - 1]->ref_coordinates[c]);//Translação - soma a posição do centro da barra (do ponto em questão)
+						vec_P(c, 0) += db.nodes[nodes[i] - 1]->ref_coordinates[c] + db.post_files->mag_factor*(db.nodes[nodes[i] - 1]->copy_coordinates[c] - db.nodes[nodes[i] - 1]->ref_coordinates[c]);//Translation - sum the position of the center of the bar (of the point in question)
 					float_vector.push_back((float)(vec_P(0, 0)));
 					float_vector.push_back((float)(vec_P(1, 0)));
 					float_vector.push_back((float)(vec_P(2, 0)));
 				}
-				for (int point = 0; point < db.pipe_sections[section - 1]->sec_details->n_points; point++)//Percorre os nós que descrevem o perimetro da ST - diametro interno
+				for (int point = 0; point < db.pipe_sections[section - 1]->sec_details->n_points; point++)//Iterates over the nodes that descrevem the perimetro of the ST - diametro internal
 				{
-					//Posição de cada ponto P no plano xy (referência)
+					//Position of each point P in the plane xy (reference)
 					vec_P(0, 0) = db.pipe_sections[section - 1]->sec_details->points[point][0] * factor;
 					vec_P(1, 0) = db.pipe_sections[section - 1]->sec_details->points[point][1] * factor;
 					vec_P(2, 0) = 0.0;
-					vec_P = Q*vec_P;//Operando rotacionando para o sistema da barra
+					vec_P = Q*vec_P;//Operando rotacionando for the system of the bar
 					for (int c = 0; c < 3; c++)
-						vec_P(c, 0) += db.nodes[nodes[i] - 1]->ref_coordinates[c] + db.post_files->mag_factor*(db.nodes[nodes[i] - 1]->copy_coordinates[c] - db.nodes[nodes[i] - 1]->ref_coordinates[c]);//Translação - soma a posição do centro da barra (do ponto em questão)
+						vec_P(c, 0) += db.nodes[nodes[i] - 1]->ref_coordinates[c] + db.post_files->mag_factor*(db.nodes[nodes[i] - 1]->copy_coordinates[c] - db.nodes[nodes[i] - 1]->ref_coordinates[c]);//Translation - sum the position of the center of the bar (of the point in question)
 					float_vector.push_back((float)(vec_P(0, 0)));
 					float_vector.push_back((float)(vec_P(1, 0)));
 					float_vector.push_back((float)(vec_P(2, 0)));
@@ -692,7 +692,7 @@ void Pipe_1::WriteVTK_XMLRender(FILE *f)
 		int_vector.clear();
 		for (int cell = 0; cell < db.pipe_sections[section - 1]->sec_details->n_points; cell++)
 		{
-			//Se não for a ultima celula ao longo do perimetro
+			//If not for the last celula to the longo of the perimetro
 			if (cell != db.pipe_sections[section - 1]->sec_details->n_points-1)
 			{
 				nodes[0] = cell;
@@ -725,7 +725,7 @@ void Pipe_1::WriteVTK_XMLRender(FILE *f)
 			int_vector.push_back(nodes[7]);
 			//fprintf(f, "\t\t\t\t\t%d\t%d\t%d\t%d\t%d\t%d\t%d\t%d\n", nodes[0], nodes[1], nodes[2], nodes[3], nodes[4], nodes[5], nodes[6], nodes[7]);
 
-			//Incrementa todos os pontos de offset para fazer a segunda metade dos poligonos
+			//Increments all the points of offset for do the second metade of the poligonos
 			for (int i = 0; i < 8; i++)
 				nodes[i] += offset;
 			//fprintf(f, "\t\t\t\t\t%d\t%d\t%d\t%d\t%d\t%d\t%d\t%d\n", nodes[0], nodes[1], nodes[2], nodes[3], nodes[4], nodes[5], nodes[6], nodes[7]);
@@ -776,7 +776,7 @@ void Pipe_1::WriteVTK_XMLRender(FILE *f)
 		fprintf(f, "\t\t\t\t<DataArray Name = \"ElementResults\" type = \"Float32\" NumberOfComponents=\"%d\" format=\"binary\">\n", db.n_element_results);
 		for (int cell = 0; cell < n_cells; cell++)
 		{
-			//Imprime os resultados do elemento
+			//Prints the results of the element
 			int res_element = 6;
 			float_vector.push_back((float)((*sigma_r[0])(0, 0) + (*sigma_r[1])(0, 0)) / 2);
 			float_vector.push_back((float)((*sigma_r[0])(1, 0) + (*sigma_r[1])(1, 0)) / 2);
@@ -788,7 +788,7 @@ void Pipe_1::WriteVTK_XMLRender(FILE *f)
 				((*sigma_r[0])(0, 0) + (*sigma_r[1])(0, 0)) / 2, ((*sigma_r[0])(1, 0) + (*sigma_r[1])(1, 0)) / 2, ((*sigma_r[0])(2, 0) + (*sigma_r[1])(2, 0)) / 2,
 				((*sigma_r[0])(3, 0) + (*sigma_r[1])(3, 0)) / 2, ((*sigma_r[0])(4, 0) + (*sigma_r[1])(4, 0)) / 2, ((*sigma_r[0])(5, 0) + (*sigma_r[1])(5, 0)) / 2
 				);*/
-			//Imprime valores nulos para resultados que não fazem sentido para esse tipo de elemento
+			//Prints values null for results that not fazem sentido for this element type
 			for (int i = res_element; i < db.n_element_results; i++)
 				float_vector.push_back(0.0);
 		}
@@ -818,13 +818,13 @@ void Pipe_1::WriteVTK_XMLRender(FILE *f)
 	fprintf(f, "\t\t</Piece>\n");
 }
 
-//Escreve no monitor do elemento//Escreve no monitor do elemento
+//Writes in the monitor of the element//Writes in the monitor of the element
 void Pipe_1::WriteMonitor(FILE *f, bool first_record, double time)
 {
-	//Cabeçalho
+	//Header
 	if (first_record == true)
 		fprintf(f, "TIME\tnx1r\tny1r\tnz1r\tmx1r\tmy1r\tmz1r\tnx2r\tny2r\tnz2r\tmx2r\tmy2r\tmz2r\n");
-	//Informações a serem salvas
+	//Information the to be saved
 	fprintf(f, "%.6e\t%.6e\t%.6e\t%.6e\t%.6e\t%.6e\t%.6e\t%.6e\t%.6e\t%.6e\t%.6e\t%.6e\t%.6e\n",
 		time,
 		(*sigma_r[0])(0, 0), (*sigma_r[0])(1, 0), (*sigma_r[0])(2, 0), (*sigma_r[0])(3, 0), (*sigma_r[0])(4, 0), (*sigma_r[0])(5, 0),
@@ -832,14 +832,14 @@ void Pipe_1::WriteMonitor(FILE *f, bool first_record, double time)
 		);
 }
 
-//Monta elementos
+//Assembles elements
 void Pipe_1::Mount()
 {
-	Zeros();	//Zera matrizes
-	//Loop nos pontos de Gauss
+	Zeros();	//Zeroes matrices
+	//Loop over the Gauss points
 	for (int gauss = 0; gauss < 2; gauss++)
 	{
-		//alpha_delta calculado no ponto de Gauss							
+		//alpha_delta calculated in the gauss point							
 		(*alpha_delta[gauss])(0, 0) =	(db.nodes[nodes[0] - 1]->displacements[3])* N1[gauss] +
 										(db.nodes[nodes[1] - 1]->displacements[3])* N2[gauss] +
 										(db.nodes[nodes[2] - 1]->displacements[3])* N3[gauss] ;
@@ -849,7 +849,7 @@ void Pipe_1::Mount()
 		(*alpha_delta[gauss])(2, 0) =	(db.nodes[nodes[0] - 1]->displacements[5])* N1[gauss] +
 										(db.nodes[nodes[1] - 1]->displacements[5])* N2[gauss] +
 										(db.nodes[nodes[2] - 1]->displacements[5])* N3[gauss] ;
-		//d_alpha_delta calculado no ponto de Gauss							
+		//d_alpha_delta calculated in the gauss point							
 		(*d_alpha_delta[gauss])(0, 0) = (db.nodes[nodes[0] - 1]->displacements[3])* dN1[gauss] +
 										(db.nodes[nodes[1] - 1]->displacements[3])* dN2[gauss] +
 										(db.nodes[nodes[2] - 1]->displacements[3])* dN3[gauss] ;
@@ -859,7 +859,7 @@ void Pipe_1::Mount()
 		(*d_alpha_delta[gauss])(2, 0) = (db.nodes[nodes[0] - 1]->displacements[5])* dN1[gauss] +
 										(db.nodes[nodes[1] - 1]->displacements[5])* dN2[gauss] +
 										(db.nodes[nodes[2] - 1]->displacements[5])* dN3[gauss] ;
-		//u_delta calculado no ponto de Gauss	
+		//u_delta calculated in the gauss point	
 		(*u_delta[gauss])(0, 0) =	(db.nodes[nodes[0] - 1]->displacements[0])* N1[gauss] +
 									(db.nodes[nodes[1] - 1]->displacements[0])* N2[gauss] +
 									(db.nodes[nodes[2] - 1]->displacements[0])* N3[gauss] ;
@@ -869,7 +869,7 @@ void Pipe_1::Mount()
 		(*u_delta[gauss])(2, 0) =	(db.nodes[nodes[0] - 1]->displacements[2])* N1[gauss] +
 									(db.nodes[nodes[1] - 1]->displacements[2])* N2[gauss] +
 									(db.nodes[nodes[2] - 1]->displacements[2])* N3[gauss] ;
-		//d_u_delta calculado no ponto de Gauss	
+		//d_u_delta calculated in the gauss point	
 		(*d_u_delta[gauss])(0, 0) =	(db.nodes[nodes[0] - 1]->displacements[0])* dN1[gauss] +
 									(db.nodes[nodes[1] - 1]->displacements[0])* dN2[gauss] +
 									(db.nodes[nodes[2] - 1]->displacements[0])* dN3[gauss] ;
@@ -879,28 +879,28 @@ void Pipe_1::Mount()
 		(*d_u_delta[gauss])(2, 0) = (db.nodes[nodes[0] - 1]->displacements[2])* dN1[gauss] +
 									(db.nodes[nodes[1] - 1]->displacements[2])* dN2[gauss] +
 									(db.nodes[nodes[2] - 1]->displacements[2])* dN3[gauss] ;
-		//Transformação para o sistema local do elemento
+		//Transformation for the system local of the element
 		*alpha_delta[gauss] = (*transform3)*(*alpha_delta[gauss]);
 		*d_alpha_delta[gauss] = (*transform3)*(*d_alpha_delta[gauss]);
 		*u_delta[gauss] = (*transform3)*(*u_delta[gauss]);
 		*d_u_delta[gauss] = (*transform3)*(*d_u_delta[gauss]);
-		//Calculo de tensores de rotação e outros
-		alpha_escalar_delta = norm(*alpha_delta[gauss]);																	//Valor escalar do parametro alpha
-		*A_delta[gauss] = skew(*alpha_delta[gauss]);																		//Matriz A_delta
-		g = 4.0 / (4.0 + alpha_escalar_delta*alpha_escalar_delta);															//função g(alpha) - em algumas ref. tb. chamado de h(alpha)
-		*Q_delta[gauss] = *I3 + g*(*A_delta[gauss] + 0.5*((*A_delta[gauss])*(*A_delta[gauss])));							//Tensor de rotação
+		//Calculation of tensores of rotation and other
+		alpha_escalar_delta = norm(*alpha_delta[gauss]);																	//Value scalar of the parameter alpha
+		*A_delta[gauss] = skew(*alpha_delta[gauss]);																		//Matrix A_delta
+		g = 4.0 / (4.0 + alpha_escalar_delta*alpha_escalar_delta);															//function g(alpha) - in some ref. tb. called of h(alpha)
+		*Q_delta[gauss] = *I3 + g*(*A_delta[gauss] + 0.5*((*A_delta[gauss])*(*A_delta[gauss])));							//Tensor of rotation
 		*Xi_delta[gauss] = g*(*I3 + 0.5*(*A_delta[gauss]));
-		*d_A_delta[gauss] = skew(*d_alpha_delta[gauss]);																	//Derivada do vetor d_alpha
-		*d_Xi_delta[gauss] = -0.5*g*((dot(*alpha_delta[gauss], *d_alpha_delta[gauss]))*(*Xi_delta[gauss]) - (*d_A_delta[gauss]));		//Derivada do tensor Xi
-		*d_z[gauss] = *d_u_delta[gauss] + (*lag_save->dz_i[gauss]);															//Vetor derivada de z (calculada em i+1)
-		*d_Z[gauss] = skew(*d_z[gauss]);																					//Tensor anti-simetrico, cuja axial e z'
+		*d_A_delta[gauss] = skew(*d_alpha_delta[gauss]);																	//Derivative of the vector d_alpha
+		*d_Xi_delta[gauss] = -0.5*g*((dot(*alpha_delta[gauss], *d_alpha_delta[gauss]))*(*Xi_delta[gauss]) - (*d_A_delta[gauss]));		//Derivative of the tensor Xi
+		*d_z[gauss] = *d_u_delta[gauss] + (*lag_save->dz_i[gauss]);															//Vector derivative of z (calculated in i+1)
+		*d_Z[gauss] = skew(*d_z[gauss]);																					//Tensor anti-simetrico, whose axial and z'
 		*Qtransp = transp((*Q_delta[gauss])*(*lag_save->Q_i[gauss]));	//Q transposta (i+1)
 		for (int i = 0; i<3; i++)
 			for (int j = 0; j<3; j++)
 				(*B1)(i, j) = (*Qtransp)(i, j);
 		for (int i = 0; i<3; i++)
 			for (int j = 0; j<3; j++)
-				(*B1)(i + 3, j + 3) = (*Qtransp)(i, j);			//Matriz B1 preenchida
+				(*B1)(i + 3, j + 3) = (*Qtransp)(i, j);			//Matrix B1 preenchida
 		*B2temp = (*d_Z[gauss])*(*Xi_delta[gauss]);
 		for (int i = 0; i<3; i++)
 			for (int j = 0; j<3; j++)
@@ -912,19 +912,19 @@ void Pipe_1::Mount()
 			for (int j = 0; j<3; j++)
 				(*B2)(i + 3, j + 6) = (*d_Xi_delta[gauss])(i, j);
 		(*B) = (*B1)*(*B2);
-		//Matriz de rigidez constitutiva
+		//Stiffness matrix constitutiva
 		(*constitutive_stiffness) = (transp(*deltaN[gauss])) * ((((transp(*B)) * (*D)) * (*B)) * (*deltaN[gauss]));
 		//Deformações retro-rotacionadas
 		*eta_r[gauss] = transp((*Q_delta[gauss]) * (*lag_save->Q_i[gauss]))*(*d_z[gauss]) - *e3r;
 		*kappa_r[gauss] = transp(*lag_save->Q_i[gauss])*transp(*Xi_delta[gauss])*(*d_alpha_delta[gauss]) + (*lag_save->kappa_i_ref[gauss]);
-		//Vetor deformação generalizada retro-rotacionada
+		//Vector strain generalizada retro-rotacionada
 		(*epsilon_r[gauss])(0, 0) = (*eta_r[gauss])(0, 0);
 		(*epsilon_r[gauss])(1, 0) = (*eta_r[gauss])(1, 0);
 		(*epsilon_r[gauss])(2, 0) = (*eta_r[gauss])(2, 0);
 		(*epsilon_r[gauss])(3, 0) = (*kappa_r[gauss])(0, 0);
 		(*epsilon_r[gauss])(4, 0) = (*kappa_r[gauss])(1, 0);
 		(*epsilon_r[gauss])(5, 0) = (*kappa_r[gauss])(2, 0);
-		//Forças e momentos internos retro-rotacionados
+		//Forces and moments internal retro-rotacionados
 		(*sigma_r[gauss]) = (*D)*(*epsilon_r[gauss]);
 		(*n_r[gauss])(0, 0) = (*sigma_r[gauss])(0, 0);
 		(*n_r[gauss])(1, 0) = (*sigma_r[gauss])(1, 0);
@@ -932,10 +932,10 @@ void Pipe_1::Mount()
 		(*m_r[gauss])(0, 0) = (*sigma_r[gauss])(3, 0);
 		(*m_r[gauss])(1, 0) = (*sigma_r[gauss])(4, 0);
 		(*m_r[gauss])(2, 0) = (*sigma_r[gauss])(5, 0);
-		//Forças e momentos internos não retro-rotacionados
+		//Forces and moments internal not retro-rotacionados
 		(*n[gauss]) = ((*Q_delta[gauss])* (*lag_save->Q_i[gauss]))*(*n_r[gauss]);
 		(*m[gauss]) = ((*Q_delta[gauss])* (*lag_save->Q_i[gauss]))*(*m_r[gauss]);
-		//Calculo da matriz G
+		//Calculation of the matrix G
 		*V_alpha_dz_n = V(*alpha_delta[gauss], (*d_Z[gauss])* (*n[gauss]), alpha_escalar_delta);
 		*V_alpha_m = V(*alpha_delta[gauss], (*m[gauss]), alpha_escalar_delta);
 		*d_V_dalpha_apha_m = d_V(*alpha_delta[gauss], *d_alpha_delta[gauss], *m[gauss], alpha_escalar_delta);
@@ -944,7 +944,7 @@ void Pipe_1::Mount()
 		*G_alpha_alpha = 1.0*(transp(*Xi_delta[gauss])) * ((*d_Z[gauss])* (skew(*n[gauss])))*(*Xi_delta[gauss]) - 1.0* (*V_alpha_dz_n) + (*d_V_dalpha_apha_m) - (transp(*d_Xi_delta[gauss]))*((skew(*m[gauss]))*(*Xi_delta[gauss]));
 		*G_alpha_d_alpha = *V_alpha_m - 1.0*(transp(*Xi_delta[gauss]))*((skew(*m[gauss]))*(*Xi_delta[gauss]));
 		*G_alpha_d_alpha_transp = *V_alpha_m;
-		//Calculo da matriz G:
+		//Calculation of the matrix G:
 		for (int i = 0; i<3; i++)
 			for (int j = 0; j<3; j++)
 				(*G)(i, j + 6) = (*G_d_u_alpha)(i, j);
@@ -960,25 +960,25 @@ void Pipe_1::Mount()
 		for (int i = 0; i<3; i++)
 			for (int j = 0; j<3; j++)
 				(*G)(i + 6, j + 3) = (*G_alpha_d_alpha_transp)(i, j);
-		//Matriz de rigidez geometrica
+		//Geometric stiffness matrix
 		(*geometric_stiffness) = (transp(*deltaN[gauss]))*((*G)*(*deltaN[gauss]));
-		//Atualiza a matriz de rigidez do elemento
+		//Updates the stiffness matrix of the element
 		(*stiffness) = (*stiffness) + (alpha1*jacobian)*((*constitutive_stiffness) + (*geometric_stiffness));
-		//Esforços internos calculados
+		//Internal forces internal calculated
 		(*i_loading) = (*i_loading) + (alpha1*jacobian)*(((transp(*deltaN[gauss])) * (transp(*B))) * (*sigma_r[gauss]));
-	}//end of gauss loop
-	//Transformações de coordenadas, para o sistema global - matriz de rigidez
+	}//end of Gauss loop
+	//Transformações of coordinates, for the system global - stiffness matrix
 	(*stiffness) = (transp(*transform)*(*stiffness))*(*transform);
 	(*i_loading) = transp(*transform)*(*i_loading);
 }
-//Monta carregamentos associados ao elemento
+//Assembles loadings associated to the element
 void Pipe_1::MountElementLoads()
 {
-	MountFieldLoading();		//Inclui atualizações no vetor e_loading
-	MountSeaCurrentLoading();	//Inclui atualizações no vetor e_loading e matriz loading_stiffness e stiffness
-	(*P_loading) = (*i_loading) - (*e_loading);		//Vetor esforço desbalanceado
+	MountFieldLoading();		//Inclui atualizações in the vector e_loading
+	MountSeaCurrentLoading();	//Inclui atualizações in the vector e_loading and matrix loading_stiffness and stiffness
+	(*P_loading) = (*i_loading) - (*e_loading);		//Vector internal force unbalanced
 }
-//Monta matriz de transformação de coordenadas
+//Assembles transformation matrix of coordinates
 void Pipe_1::TransformMatrix()
 {
 	Matrix e1(3);
@@ -990,10 +990,10 @@ void Pipe_1::TransformMatrix()
 	Matrix e1r = *db.CS[cs - 1]->E1;
 	Matrix e2r = *db.CS[cs - 1]->E2;
 	Matrix e3r = *db.CS[cs - 1]->E3;
-	//Preenche a matriz de transformação de coordenadas
+	//Fills the transformation matrix of coordinates
 	for (int i = 0; i<18; i = i + 3)
 	{
-		//Preenche tambem a matriz transform3
+		//Fills tambem the matrix transform3
 		if (i == 0)
 		{
 			(*transform3)(0, 0) = dot(e1r, e1);
@@ -1023,17 +1023,17 @@ void Pipe_1::TransformMatrix()
 	}
 }
 
-//Preenche a contribuição do elemento nas matrizes globais
+//Fills the contribution of the element in the matrices global
 void Pipe_1::MountGlobal()
 {
-	//Variaveis temporarias para salvar a indexação global dos graus de liberdade a serem setados na matriz de rigidez global
+	//Temporary variables for save the indexing global of the degrees of freedom the to be set in the stiffness matrix global
 	int GL_global_1 = 0;
 	int GL_global_2 = 0;
 	double anterior = 0;
 	for (int i = 0; i<18; i++)
 	{
-		//////////////MONTAGEM DO VETOR DE ESFORÇOS DESBALANCEADOS//////////////////
-		//Toma do vetor de GL globais, a indexação de cada grau de liberdade global
+		//////////////ASSEMBLY OF THE VECTOR OF INTERNAL FORCES UNBALANCED//////////////////
+		//Takes of the global-DOF vector, the indexing of each global degree of freedom
 		if (i<6)
 			GL_global_1 = db.nodes[nodes[0] - 1]->GLs[i];
 		if (i > 5 && i < 12)
@@ -1041,7 +1041,7 @@ void Pipe_1::MountGlobal()
 		if (i > 11)
 			GL_global_1 = db.nodes[nodes[2] - 1]->GLs[i - 12];
 
-		//Caso o grau de liberdade seja livre:
+		//Case the degree of freedom be free:
 		if (GL_global_1 > 0)
 		{
 			anterior = db.global_P_A(GL_global_1 - 1, 0);
@@ -1056,8 +1056,8 @@ void Pipe_1::MountGlobal()
 		}
 		for (int j = 0; j<18; j++)
 		{
-			//////////////////////MONTAGEM DA MATRIZ DE RIGIDEZ/////////////////////////
-			//Toma do vetor de GL globais, a indexação de cada grau de liberdade global
+			//////////////////////ASSEMBLY OF THE STIFFNESS MATRIX/////////////////////////
+			//Takes of the global-DOF vector, the indexing of each global degree of freedom
 			if (j<6)
 				GL_global_2 = db.nodes[nodes[0] - 1]->GLs[j];
 			if (j > 5 && j < 12)
@@ -1065,22 +1065,22 @@ void Pipe_1::MountGlobal()
 			if (j > 11)
 				GL_global_2 = db.nodes[nodes[2] - 1]->GLs[j - 12];
 
-			//Caso os graus de liberdade sejam ambos livres (Matriz Kaa)
+			//Case the degrees of freedom be both free (Matrix Kaa)
 			if (GL_global_1 > 0 && GL_global_2 > 0)
 			{
 				db.global_stiffness_AA.setValue(GL_global_1 - 1, GL_global_2 - 1, (*stiffness)(i, j));
 			}
-			//Caso os graus de liberdade sejam ambos fixos (Matriz Kbb)
+			//Case the degrees of freedom be both fixed (Matrix Kbb)
 			if (GL_global_1 < 0 && GL_global_2 < 0)
 			{
 				db.global_stiffness_BB.setValue(-GL_global_1 - 1, -GL_global_2 - 1, (*stiffness)(i, j));
 			}
-			//Caso os graus de liberdade sejam livre e fixo (Matriz Kab)
+			//Case the degrees of freedom be free and fixed (Matrix Kab)
 			if (GL_global_1 > 0 && GL_global_2 < 0)
 			{
 				db.global_stiffness_AB.setValue(GL_global_1 - 1, -GL_global_2 - 1, (*stiffness)(i, j));
 			}
-			//Caso os graus de liberdade sejam fixo e livre (Matriz Kba)
+			//Case the degrees of freedom be fixed and free (Matrix Kba)
 			if (GL_global_1 < 0 && GL_global_2 > 0)
 			{
 				db.global_stiffness_BA.setValue(-GL_global_1 - 1, GL_global_2 - 1, (*stiffness)(i, j));
@@ -1088,67 +1088,67 @@ void Pipe_1::MountGlobal()
 		}
 	}
 }
-//Salva variaveis nos pontos de Gauss uteis para descrição lagrangiana atualizada
+//Saves variables in the gauss points useful for description lagrangiana updated
 void Pipe_1::SaveLagrange()
 {
-	//Loop nos pontos de Gauss
+	//Loop over the Gauss points
 	for (int gauss = 0; gauss < 2; gauss++)
 	{
-		(*lag_save->Q_i[gauss]) = (*Q_delta[gauss])*(*lag_save->Q_i[gauss]);										//Tensor de rotação
-		(*lag_save->u_i[gauss]) = (*lag_save->u_i[gauss]) + *u_delta[gauss];										//Deslocamento
-		(*lag_save->kappa_i_ref[gauss]) = *kappa_r[gauss];															//Rotação por unidade de comprimento 
+		(*lag_save->Q_i[gauss]) = (*Q_delta[gauss])*(*lag_save->Q_i[gauss]);										//Tensor of rotation
+		(*lag_save->u_i[gauss]) = (*lag_save->u_i[gauss]) + *u_delta[gauss];										//Displacement
+		(*lag_save->kappa_i_ref[gauss]) = *kappa_r[gauss];															//Rotation by unit of length 
 		(*lag_save->alpha_i[gauss]) = 4.0 / (4.0 - dot(*alpha_delta[gauss], *lag_save->alpha_i[gauss]))* (*alpha_delta[gauss] +
-			(*lag_save->alpha_i[gauss]) + 0.5*cross(*alpha_delta[gauss], *lag_save->alpha_i[gauss]));				//Vetor rotação de Rodrigues
+			(*lag_save->alpha_i[gauss]) + 0.5*cross(*alpha_delta[gauss], *lag_save->alpha_i[gauss]));				//Vector rotation of Rodrigues
 		(*lag_save->dz_i[gauss]) = *d_z[gauss];
 	}
 }
-//Pre-calculo de variaveis que e feito uma unica vez no inicio
+//Pre-calculation of variables that and done a single time in the start
 void Pipe_1::PreCalc()
 {
-	//Operador constitutivo
+	//Operator constitutivo
 	(*D)(0, 0) = db.pipe_sections[section-1]->GA;
 	(*D)(1, 1) = db.pipe_sections[section - 1]->GA;
 	(*D)(2, 2) = db.pipe_sections[section - 1]->EA;
 	(*D)(3, 3) = db.pipe_sections[section - 1]->EI;
 	(*D)(4, 4) = db.pipe_sections[section - 1]->EI;
 	(*D)(5, 5) = db.pipe_sections[section - 1]->GJ;
-	//Identidade de ordem 3
+	//Identidade of order 3
 	(*I3)(0, 0) = 1.0;
 	(*I3)(1, 1) = 1.0;
 	(*I3)(2, 2) = 1.0;
 	(*B2)(0, 0) = 1.0;
 	(*B2)(1, 1) = 1.0;
 	(*B2)(2, 2) = 1.0;
-	//Monta as matrizes de rotação
+	//Assembles the matrices of rotation
 	TransformMatrix();
-	//Versor e3r (configuração de referência) - escrito no sistema local do elemento
+	//Versor e3r (configuration of reference) - written in the system local of the element
 	(*e3r)(0, 0) = db.nodes[nodes[2] - 1]->ref_coordinates[0] - db.nodes[nodes[0] - 1]->ref_coordinates[0];
 	(*e3r)(1, 0) = db.nodes[nodes[2] - 1]->ref_coordinates[1] - db.nodes[nodes[0] - 1]->ref_coordinates[1];
 	(*e3r)(2, 0) = db.nodes[nodes[2] - 1]->ref_coordinates[2] - db.nodes[nodes[0] - 1]->ref_coordinates[2];
 	*e3r = (1.0 / (norm(*e3r)))*(*e3r);							//Normalização
-	*e3rg = *e3r;												//Cópia do e3r (preservado no sistema global)
-	*e3r = (*transform3)*(*e3r);								//e3r escrito no sistema local do elemento
-	//Massa por unidade de comprimento na configuração de referência
+	*e3rg = *e3r;												//Copies of the e3r (preservado in the system global)
+	*e3r = (*transform3)*(*e3r);								//e3r written in the system local of the element
+	//Mass by unit of length in the configuration of reference
 	(*Mr)(0, 0) = db.pipe_sections[section - 1]->Rho;
 	(*Mr)(1, 1) = db.pipe_sections[section - 1]->Rho;
 	(*Mr)(2, 2) = db.pipe_sections[section - 1]->Rho;
-	Mr->MatrixToPtr(pMr, 3);//salvando ptr para uso na dinamica
-	//Inercia por unidade de comprimento na configuração de referência
+	Mr->MatrixToPtr(pMr, 3);//saving ptr for use in the dynamics
+	//Inertia by unit of length in the configuration of reference
 	(*Jr)(0, 0) = (db.pipe_sections[section - 1]->Rho*((db.pipe_sections[section - 1]->De / 2.0)*(db.pipe_sections[section - 1]->De / 2.0) - (db.pipe_sections[section - 1]->Di / 2.0)*(db.pipe_sections[section - 1]->Di / 2.0)) / 4.0);
 	(*Jr)(1, 1) = (db.pipe_sections[section - 1]->Rho*((db.pipe_sections[section - 1]->De / 2.0)*(db.pipe_sections[section - 1]->De / 2.0) - (db.pipe_sections[section - 1]->Di / 2.0)*(db.pipe_sections[section - 1]->Di / 2.0)) / 4.0);
 	(*Jr)(2, 2) = (db.pipe_sections[section - 1]->Rho*((db.pipe_sections[section - 1]->De / 2.0)*(db.pipe_sections[section - 1]->De / 2.0) - (db.pipe_sections[section - 1]->Di / 2.0)*(db.pipe_sections[section - 1]->Di / 2.0)) / 2.0);
-	Jr->MatrixToPtr(pJr, 3);//salvando ptr para uso na dinamica
-	//Termos de transporte - alterar em situações em que o baricentro não e o polo utilizado no calculo do momento de inercia
+	Jr->MatrixToPtr(pJr, 3);//saving ptr for use in the dynamics
+	//Terms of transporte - change in situações in that the baricentro not and the pole used in the calculation of the moment of inertia
 	(*br)(0, 0) = 0.0;
 	(*br)(1, 0) = 0.0;
 	(*br)(2, 0) = 0.0;
-	length = CalculateLength();	//comprimento
-	jacobian = length / 2.0;	//jacobiano
-	alpha1 = 1.0;				//Peso do metodo de quadratura Gaussiana
+	length = CalculateLength();	//length
+	jacobian = length / 2.0;	//Jacobian
+	alpha1 = 1.0;				//Weight of the method of quadratura Gaussiana
 	if (db.environment_exist == true)
 		rho_f = db.environment->rho_fluid;
-	Aext = PI*De()*De() / 4.0;	//area externa
-	Aint = PI*(db.pipe_sections[section - 1]->Di)*(db.pipe_sections[section - 1]->Di) / 4.0;	//area interna
+	Aext = PI*De()*De() / 4.0;	//area external
+	Aint = PI*(db.pipe_sections[section - 1]->Di)*(db.pipe_sections[section - 1]->Di) / 4.0;	//area internal
 	Cdt = db.pipe_sections[section - 1]->CDt;	//coef. arrasto
 	Cdn = db.pipe_sections[section - 1]->CDn;	//coef. arrasto
 	C1t = 0.5*De()*rho_f*Cdt;
@@ -1163,10 +1163,10 @@ void Pipe_1::PreCalc()
 		rho_adt = 0.0;
 		rho_adn = 0.0;
 	}
-	//Percorre pontos de Gauss para salvar algumas matrizes/vetores de interesse nos calculos do elemento
+	//Iterates over gauss points for save some matrices/vectors of interest in the calculations of the element
 	for (int gauss = 0; gauss < 2; gauss++)
 	{
-		//Ponto localizado nas coordenadas naturais  0.577350269189626 (2 pontos de Gauss)
+		//Point localizado in the coordinates naturais  0.577350269189626 (2 gauss points)
 		if (gauss == 0)
 			csi[gauss] = -0.577350269189626;
 		if (gauss == 1)
@@ -1271,10 +1271,10 @@ void Pipe_1::PreCalc()
 		(*UpsilonN[gauss])(9, 15) = dN3[gauss];
 		(*UpsilonN[gauss])(10, 16) = dN3[gauss];
 		(*UpsilonN[gauss])(11, 17) = dN3[gauss];
-	}//end of gauss
+	}//end of Gauss
 }
 
-//Monta carregamentos de campo
+//Assembles loadings of field
 void Pipe_1::MountFieldLoading()
 {
 	if (db.environment_exist == true)
@@ -1284,12 +1284,12 @@ void Pipe_1::MountFieldLoading()
 			load_multiplier = 1.0;
 			l_factor = db.environment->bool_g.GetLinearFactorAtCurrentTime();
 
-			//Loop nos pontos de Gauss
+			//Loop over the Gauss points
 			for (int gauss = 0; gauss < 2; gauss++)
 			{
 				if (db.environment->ocean_data_exist == true)
 				{
-					//Posição do ponto de Gauss
+					//Position of the gauss point
 					(*zi[gauss])(0, 0) = (db.nodes[nodes[0] - 1]->copy_coordinates[0])* N1[gauss] +
 						(db.nodes[nodes[1] - 1]->copy_coordinates[0])* N2[gauss] +
 						(db.nodes[nodes[2] - 1]->copy_coordinates[0])* N3[gauss] +
@@ -1309,7 +1309,7 @@ void Pipe_1::MountFieldLoading()
 						(db.nodes[nodes[1] - 1]->displacements[2])* N2[gauss] +
 						(db.nodes[nodes[2] - 1]->displacements[2])* N3[gauss];
 
-					//Verifica profundidade e assinala o valor correto para o rho
+					//Checks profundidade and assinala the value correct for the rho
 					depth = dot((*zi[gauss] - db.environment->surface_position), db.environment->G)*(1.0 / norm(db.environment->G));
 					if (depth > 0)
 						mult = l_factor*load_multiplier*alpha1*jacobian*(db.pipe_sections[section - 1]->Rho - db.environment->rho_fluid*Aext);
@@ -1333,12 +1333,12 @@ void Pipe_1::MountFieldLoading()
 					(*e_loading)(13, 0) += mult * N3[gauss] * db.environment->G(1, 0);
 					(*e_loading)(14, 0) += mult * N3[gauss] * db.environment->G(2, 0);
 				}
-			}//end of gauss loop
+			}//end of Gauss loop
 		}
 	}
 }
 
-//Monta a parte estatica dos esforços de Morison - correnteza maritima
+//Assembles the part estatica of the internal forces of Morison - correnteza maritima
 void Pipe_1::MountSeaCurrentLoading()
 {
 	if (db.environment_exist == true)
@@ -1369,10 +1369,10 @@ void Pipe_1::MountSeaCurrentLoading()
 					temp_a5 = 0;
 					temp_a6 = 0;
 				}
-				//Loop nos pontos de Gauss
+				//Loop over the Gauss points
 				for (int gauss = 0; gauss < 2; gauss++)
 				{
-					//Posição do ponto de Gauss
+					//Position of the gauss point
 					(*zi[gauss])(0, 0) = (db.nodes[nodes[0] - 1]->copy_coordinates[0])* N1[gauss] +
 						(db.nodes[nodes[1] - 1]->copy_coordinates[0])* N2[gauss] +
 						(db.nodes[nodes[2] - 1]->copy_coordinates[0])* N3[gauss] +
@@ -1391,8 +1391,8 @@ void Pipe_1::MountSeaCurrentLoading()
 						(db.nodes[nodes[0] - 1]->displacements[2])* N1[gauss] +
 						(db.nodes[nodes[1] - 1]->displacements[2])* N2[gauss] +
 						(db.nodes[nodes[2] - 1]->displacements[2])* N3[gauss];
-					//Velocidade da correnteza no ponto de Gauss (cota z)
-					//Verifica profundidade
+					//Velocity of the correnteza in the gauss point (cota z)
+					//Checks profundidade
 					depth = dot((*zi[gauss] - db.environment->surface_position), db.environment->G)*(1.0 / norm(db.environment->G));
 					if (depth > 0)
 					{
@@ -1429,37 +1429,37 @@ void Pipe_1::MountSeaCurrentLoading()
 						(*morison_loading) = (*morison_loading) + mult*transp(*N[gauss])*force;
 					}
 				
-				}//end of gauss loop
-				(*stiffness) = (*stiffness) - transp(*transform)*(*loading_stiffness)*(*transform);	//Acrescimo na matriz de rigidez
-				(*e_loading) = (*e_loading) + transp(*transform)*(*morison_loading);				//Forças de Morison
+				}//end of Gauss loop
+				(*stiffness) = (*stiffness) - transp(*transform)*(*loading_stiffness)*(*transform);	//Acrescimo in the stiffness matrix
+				(*e_loading) = (*e_loading) + transp(*transform)*(*morison_loading);				//Forces of Morison
 			}
 		}
 	}
 }
 
-//Monta carregamentos de pressão interna/externa no tubo
+//Assembles loadings of pressão internal/external in the tubo
 void Pipe_1::MountPipeSpecialLoads(int l_number)
 {
-	//Função para montar carregamentos de pressão em tubos. Atende simulações estatica e dinamica
-	//////////////////Efeito da Pressão////////////////////////////
+	//Function for assemble loadings of pressão in tubos. Atende simulações estatica and dynamics
+	//////////////////Effect of the Pressão////////////////////////////
 	p0i = db.loads[l_number - 1]->GetValueAt(db.last_converged_time + db.current_time_step, 0);
 	p0e = db.loads[l_number - 1]->GetValueAt(db.last_converged_time + db.current_time_step, 1);
 	rhoi = db.loads[l_number - 1]->GetValueAt(db.last_converged_time + db.current_time_step, 2);
 	rhoe = db.loads[l_number - 1]->GetValueAt(db.last_converged_time + db.current_time_step, 3);
 
-	//Multiplicador de carregamentos - caso estatico
+	//Multiplicador of loadings - case estatico
 	mult = alpha1*jacobian;
 
-	//Loop nos pontos de Gauss
+	//Loop over the Gauss points
 	for (int gauss = 0; gauss < 2; gauss++)
 	{
-		*kip[gauss] = ((*Q_delta[gauss])* (*lag_save->Q_i[gauss]))*(*kappa_r[gauss]);	//Rotação especifica no ponto de gauss no instante i+1 (Lag. Atualizada)
-		*e3ip[gauss] = ((*Q_delta[gauss])* (*lag_save->Q_i[gauss]))*(*e3r);				//Orientação do elemento no ponto de gauss no instante i+1 (Lag. Atualizada)
-		//Forças - sistema local (elemento)
+		*kip[gauss] = ((*Q_delta[gauss])* (*lag_save->Q_i[gauss]))*(*kappa_r[gauss]);	//Rotation specifies in the gauss point in the instant i+1 (Lag. Updated)
+		*e3ip[gauss] = ((*Q_delta[gauss])* (*lag_save->Q_i[gauss]))*(*e3r);				//Orientation of the element in the gauss point in the instant i+1 (Lag. Updated)
+		//Forces - system local (element)
 		*temp_f[gauss] = -p0i*Aint*cross(*kip[gauss], *e3ip[gauss]);
-		//Momentos - sistema local (elemento)
+		//Moments - system local (element)
 		*temp_m[gauss] = -p0i*Aint*transp(*Xi_delta[gauss])*cross(*d_z[gauss], *e3ip[gauss]);
-		//Vetor de esforços externos generalizados - sistema local (elemento)
+		//Vector of internal forces external generalizados - system local (element)
 		(*temp_l[gauss])(0, 0) = (*temp_f[gauss])(0, 0);
 		(*temp_l[gauss])(1, 0) = (*temp_f[gauss])(1, 0);
 		(*temp_l[gauss])(2, 0) = (*temp_f[gauss])(2, 0);
@@ -1485,14 +1485,14 @@ void Pipe_1::MountPipeSpecialLoads(int l_number)
 		for (int i = 0; i < 3; i++)
 		for (int j = 0; j < 3; j++)
 			(*Kext)(i + 3, j + 6) = (*K2au)(i, j);
-		//Carregamentos no elemento
-		(*P_loading) = (*P_loading) - mult* transp(*transform)*(transp(*N[gauss]))*(*temp_l[gauss]);	//Esforço desbalanceado
-		(*e_loading) = (*e_loading) + mult* transp(*transform)*(transp(*N[gauss]))*(*temp_l[gauss]);	//Esforço externo
-		//Contribuição para a matriz de rigidez
+		//Loadings in the element
+		(*P_loading) = (*P_loading) - mult* transp(*transform)*(transp(*N[gauss]))*(*temp_l[gauss]);	//Internal force unbalanced
+		(*e_loading) = (*e_loading) + mult* transp(*transform)*(transp(*N[gauss]))*(*temp_l[gauss]);	//Internal force external
+		//Contribution for the stiffness matrix
 		(*stiffness) = (*stiffness) - mult*p0i*Aint* transp(*transform) * ((transp(*N[gauss]))*(*Kext)*(*UpsilonN[gauss])) * (*transform);
 	}
 }
-//Comprimento do elemento
+//Length of the element
 double Pipe_1::CalculateLength()
 {
 	double x1 = db.nodes[nodes[0] - 1]->ref_coordinates[0];
@@ -1520,24 +1520,24 @@ void Pipe_1::Zeros()
 	potential_gravitational_energy = 0.0;
 }
 
-//Retorna o diametro externo
+//Returns the diametro external
 double Pipe_1::De()
 {
 	return db.pipe_sections[section - 1]->De;
 }
 
-//Monta a matriz de massa
+//Assembles the mass matrix
 void Pipe_1::MountMassModal()
 {
 	zeros(mass_modal);
 	zeros(damping_modal);
-	//Loop nos pontos de Gauss
+	//Loop over the Gauss points
 	for (int gauss = 0; gauss < 2; gauss++)
 	{
 		if (db.environment_exist == true && db.environment->ocean_data_exist == true && db.environment->g_exist)
 		{
-			//Avalia se o tubo esta imerso ou não para modificar a massa adicional
-			//Posição do ponto de Gauss
+			//Evaluates if the tubo this imerso or not for modify the mass adicional
+			//Position of the gauss point
 			(*zi[gauss])(0, 0) = (db.nodes[nodes[0] - 1]->copy_coordinates[0])* N1[gauss] +
 				(db.nodes[nodes[1] - 1]->copy_coordinates[0])* N2[gauss] +
 				(db.nodes[nodes[2] - 1]->copy_coordinates[0])* N3[gauss] +
@@ -1556,19 +1556,19 @@ void Pipe_1::MountMassModal()
 				(db.nodes[nodes[0] - 1]->displacements[2])* N1[gauss] +
 				(db.nodes[nodes[1] - 1]->displacements[2])* N2[gauss] +
 				(db.nodes[nodes[2] - 1]->displacements[2])* N3[gauss];
-			//Velocidade da correnteza no ponto de Gauss (cota z)
-			//Verifica profundidade
+			//Velocity of the correnteza in the gauss point (cota z)
+			//Checks profundidade
 			depth = dot((*zi[gauss] - db.environment->surface_position), db.environment->G)*(1.0 / norm(db.environment->G));
 			if (depth > 0)
 			{
-				//Massa por unidade de comprimento na configuração de referência
+				//Mass by unit of length in the configuration of reference
 				(*Mr)(0, 0) = db.pipe_sections[section - 1]->Rho + rho_adn;
 				(*Mr)(1, 1) = db.pipe_sections[section - 1]->Rho + rho_adn;
 				(*Mr)(2, 2) = db.pipe_sections[section - 1]->Rho + rho_adt;
 			}
 			else
 			{
-				//Massa por unidade de comprimento na configuração de referência
+				//Mass by unit of length in the configuration of reference
 				(*Mr)(0, 0) = db.pipe_sections[section - 1]->Rho;
 				(*Mr)(1, 1) = db.pipe_sections[section - 1]->Rho;
 				(*Mr)(2, 2) = db.pipe_sections[section - 1]->Rho;
@@ -1577,28 +1577,28 @@ void Pipe_1::MountMassModal()
 		}
 		else
 		{
-			//Massa por unidade de comprimento na configuração de referência
+			//Mass by unit of length in the configuration of reference
 			(*Mr)(0, 0) = db.pipe_sections[section - 1]->Rho;
 			(*Mr)(1, 1) = db.pipe_sections[section - 1]->Rho;
 			(*Mr)(2, 2) = db.pipe_sections[section - 1]->Rho;
 		}
-		Mr->MatrixToPtr(pMr, 3);//salvando ptr para uso na dinamica
-		//Calculo do integrando no ponto de Gauss
+		Mr->MatrixToPtr(pMr, 3);//saving ptr for use in the dynamics
+		//Calculation of the integrando in the gauss point
 		EvaluateMassModal(temp_v, lag_save->alpha_i[gauss]->getMatrix(), pJr, pMr, br->getMatrix(), pDdT);
-		//Transformando o operador tangente em Matrix
+		//Transforming the operator tangent in Matrix
 		DdT->PtrToMatrix(pDdT, 6);
 		(*mass_modal) = (*mass_modal) + (alpha1*jacobian)*transp(*N[gauss])*(*DdT)*(*N[gauss]);
-	}//end of gauss
-	//Conversão para o sistema global
+	}//end of Gauss
+	//Conversion for the system global
 	(*mass_modal) = (transp(*transform)*(*mass_modal))*(*transform);
 }
 
-//Monta a matriz de amortecimento para realização da analise modal
+//Assembles the damping matrix for performing of the analysis modal
 void Pipe_1::MountDampingModal()
 {
 	zeros(mass_modal);
 	zeros(damping_modal);
-	//TODO
+	//ALL
 }
 
 void Pipe_1::EvaluateMassModal(double* v, double* alphai, double** Jr, double** Mr, double* br, double** matrixm)
@@ -1699,17 +1699,17 @@ void Pipe_1::EvaluateMassModal(double* v, double* alphai, double** Jr, double** 
 	matrixm[5][5] = v[117] * v[82] + v[118] * v[84] + v[119] * v[85];
 };
 
-//Monta a matriz de massa
+//Assembles the mass matrix
 void Pipe_1::MountMass()
 {
 	Matrix omega_i(3);
 	Matrix domega_i(3);
 	Matrix du_i(3);
 	Matrix ddu_i(3);
-	//Loop nos pontos de Gauss
+	//Loop over the Gauss points
 	for (int gauss = 0; gauss < 2; gauss++)
 	{
-		//Calculando as variaveis necessarias para obter o valor do integrando							
+		//Calculating the variables necessarias for obtain the value of the integrando							
 		(omega_i)(0, 0) =	(db.nodes[nodes[0] - 1]->copy_vel[3])* N1[gauss] +
 							(db.nodes[nodes[1] - 1]->copy_vel[3])* N2[gauss] +
 							(db.nodes[nodes[2] - 1]->copy_vel[3])* N3[gauss];
@@ -1750,15 +1750,15 @@ void Pipe_1::MountMass()
 						(db.nodes[nodes[1] - 1]->copy_accel[2])* N2[gauss] +
 						(db.nodes[nodes[2] - 1]->copy_accel[2])* N3[gauss];
 		
-		//Para o sistema do elemento
+		//For the system of the element
 		omega_i = (*transform3)*omega_i;
 		domega_i = (*transform3)*domega_i;
 		du_i = (*transform3)*du_i;
 		ddu_i = (*transform3)*ddu_i;
 		if (db.environment_exist == true && db.environment->ocean_data_exist == true && db.environment->g_exist)
 		{
-			//Avalia se o tubo esta imerso ou não para modificar a massa adicional
-			//Posição do ponto de Gauss
+			//Evaluates if the tubo this imerso or not for modify the mass adicional
+			//Position of the gauss point
 			(*zi[gauss])(0, 0) = (db.nodes[nodes[0] - 1]->copy_coordinates[0])* N1[gauss] +
 				(db.nodes[nodes[1] - 1]->copy_coordinates[0])* N2[gauss] +
 				(db.nodes[nodes[2] - 1]->copy_coordinates[0])* N3[gauss] +
@@ -1777,19 +1777,19 @@ void Pipe_1::MountMass()
 				(db.nodes[nodes[0] - 1]->displacements[2])* N1[gauss] +
 				(db.nodes[nodes[1] - 1]->displacements[2])* N2[gauss] +
 				(db.nodes[nodes[2] - 1]->displacements[2])* N3[gauss];
-			//Velocidade da correnteza no ponto de Gauss (cota z)
-			//Verifica profundidade
+			//Velocity of the correnteza in the gauss point (cota z)
+			//Checks profundidade
 			depth = dot((*zi[gauss] - db.environment->surface_position), db.environment->G)*(1.0 / norm(db.environment->G));
 			if (depth > 0)
 			{
-				//Massa por unidade de comprimento na configuração de referência
+				//Mass by unit of length in the configuration of reference
 				(*Mr)(0, 0) = db.pipe_sections[section - 1]->Rho + rho_adn;
 				(*Mr)(1, 1) = db.pipe_sections[section - 1]->Rho + rho_adn;
 				(*Mr)(2, 2) = db.pipe_sections[section - 1]->Rho + rho_adt;
 			}
 			else
 			{
-				//Massa por unidade de comprimento na configuração de referência
+				//Mass by unit of length in the configuration of reference
 				(*Mr)(0, 0) = db.pipe_sections[section - 1]->Rho;
 				(*Mr)(1, 1) = db.pipe_sections[section - 1]->Rho;
 				(*Mr)(2, 2) = db.pipe_sections[section - 1]->Rho;
@@ -1797,43 +1797,43 @@ void Pipe_1::MountMass()
 		}
 		else
 		{
-			//Massa por unidade de comprimento na configuração de referência
+			//Mass by unit of length in the configuration of reference
 			(*Mr)(0, 0) = db.pipe_sections[section - 1]->Rho;
 			(*Mr)(1, 1) = db.pipe_sections[section - 1]->Rho;
 			(*Mr)(2, 2) = db.pipe_sections[section - 1]->Rho;
 		}
 		Dynamic* ptr_sol = static_cast<Dynamic*>(db.solution[db.current_solution_number - 1]);
-		Mr->MatrixToPtr(pMr, 3);//salvando ptr para uso na dinamica
-		//Calculo do integrando no ponto de Gauss
+		Mr->MatrixToPtr(pMr, 3);//saving ptr for use in the dynamics
+		//Calculation of the integrando in the gauss point
 		EvaluateInertialContributions(temp_v, &ptr_sol->a1, &ptr_sol->a2, &ptr_sol->a3, &ptr_sol->a4,
 			&ptr_sol->a5, &ptr_sol->a6, lag_save->alpha_i[gauss]->getMatrix(), alpha_delta[gauss]->getMatrix(),
 			lag_save->u_i[gauss]->getMatrix(), u_delta[gauss]->getMatrix(), omega_i.getMatrix(), domega_i.getMatrix(), du_i.getMatrix(), ddu_i.getMatrix(), pJr, pMr, br->getMatrix(), dT->getMatrix(), pDdT);
-		//Transformando o operador tangente em Matrix
+		//Transforming the operator tangent in Matrix
 		DdT->PtrToMatrix(pDdT, 6);
 		(*inertial_loading) = (*inertial_loading) + (alpha1*jacobian)*transp(*N[gauss])*(*dT);
 		(*mass) = (*mass) + (alpha1*jacobian)*transp(*N[gauss])*(*DdT)*(*N[gauss]);
-	}//end of gauss
-	//Conversão para o sistema global
+	}//end of Gauss
+	//Conversion for the system global
 	(*inertial_loading) = transp(*transform)*(*inertial_loading);
 	(*mass) = (transp(*transform)*(*mass))*(*transform);
 }
 
-//Monta a matriz de amortecimento
+//Assembles the damping matrix
 void Pipe_1::MountDamping(bool update_rayleigh)
 {
 	if (typeid(*db.solution[db.current_solution_number - 1]) == typeid(Dynamic))
 	{
 		Dynamic* ptr_sol = static_cast<Dynamic*>(db.solution[db.current_solution_number - 1]);
-		//Amortecimento de Rayleigh
+		//Damping of Rayleigh
 		if (update_rayleigh == true)
 		{
 			MountMassModal();
 			(*rayleigh_damping) = ptr_sol->alpha*(*mass_modal) + ptr_sol->beta*(*stiffness);
 		}
-		(*damping) = (*damping) + ptr_sol->a4*(*rayleigh_damping);	//Atualizando a matriz de amortecimento - inclusão do efeito de Rayleigh
+		(*damping) = (*damping) + ptr_sol->a4*(*rayleigh_damping);	//Updating the damping matrix - inclusão of the effect of Rayleigh
 
 		Matrix v_ipp(18);
-		//Calculo dos esforços de amortecimento - utilização de informação das velocidades nos GL do elemento
+		//Calculation of the internal forces of damping - utilização of information of the velocities in the GL of the element
 		for (int node = 0; node < 3; node++)
 		{
 			for (int GL = 0; GL<6; GL++)
@@ -1843,20 +1843,20 @@ void Pipe_1::MountDamping(bool update_rayleigh)
 	}
 }
 
-//Composição da forma fraca e operador tangente - contribuições inerciais e amortecimento
+//Composição of the way fraca and operator tangent - contributions inerciais and damping
 void Pipe_1::MountDyn()
 {
 	(*P_loading) = (*P_loading) + (*inertial_loading) + (*damping_loading);
 	(*i_loading) = (*i_loading) + (*inertial_loading) + (*damping_loading);
 	(*stiffness) = (*stiffness) + (*mass) + (*damping);
 }
-//Montagens para analise modal - inserção da matriz de massa e amortecimento na matriz de rigidez para posterior montagem global
+//Assemblies for analysis modal - insertion of the mass matrix and damping in the stiffness matrix for subsequent assembly global
 void Pipe_1::MountDynModal()
 {
 	(*stiffness) = (*mass_modal) + (*damping_modal);
 }
 
-//Calcula as contribuições inerciais para a analise dinamica - inclui todas as contribuições para a forma fraca e para o operador tangente
+//Calculates the contributions inerciais for the analysis dynamics - inclui all the contributions for the way fraca and for the operator tangent
 void Pipe_1::EvaluateInertialContributions(double* v, double(*a1)
 	, double(*a2), double(*a3), double(*a4), double(*a5), double(*a6)
 	, double* alphai, double* alphad, double* ui, double* ud, double* omegai

@@ -20,7 +20,7 @@
 //FILE *fdebug;
 
 #include"Database.h"
-//Variaveis globais
+//Global variables
 extern
 Database db;
 
@@ -154,8 +154,8 @@ void Polyhedron::WriteModifyingParameters(FILE *f, int e_material, int e_node, i
 void Polyhedron::PreCalc()
 {
 	////////////////////////////////////////////////////////////////
-	//Matriz para transformação de coordenadas  local-global
-	//vlocal = (sistema do CAD)
+	//Matrix for transformation of coordinates  local-global
+	//vlocal = (system of the CAD)
 	// Q0*vlocal = vglobal
 	////////////////////////////////////////////////////////////////
 	(*Q0)(0, 0) = (*db.CS[cs - 1]->E1)(0, 0);
@@ -168,9 +168,9 @@ void Polyhedron::PreCalc()
 	(*Q0)(1, 2) = (*db.CS[cs - 1]->E3)(1, 0);
 	(*Q0)(2, 2) = (*db.CS[cs - 1]->E3)(2, 0);
 
-	//Calculando valores do br. Feito apenas uma vez no inicio. 
-	//A origem do CAD coincide com o Polo, então G-O = G
-	//Como G e dado no sistema do CAD, então G precisa ser transformado
+	//Calculating values of the br. Done only once in the start. 
+	//A origin of the CAD coincides with the Pole, then G-O = G
+	//As G and data in the system of the CAD, then G needs be transformed
 	Matrix local_b = *db.cad_data[CADDATA_ID - 1]->G;
 	
 	(*mbr) = (*Q0) * local_b;
@@ -178,7 +178,7 @@ void Polyhedron::PreCalc()
 	br[1] = (*mbr)(1, 0);
 	br[2] = (*mbr)(2, 0);
 
-	//Atualizando J_O para o sistema global e copiando valores para Jr. Feito apenas uma vez no inicio
+	//Updating J_O for the system global and copying values for Jr. Done only once in the start
 	*mJr = db.materials[material - 1]->rho * (*Q0) * (*db.cad_data[CADDATA_ID - 1]->J_O)*transp(*Q0);
 	mJr->MatrixToPtr(Jr, 3);
 	mass = db.cad_data[CADDATA_ID - 1]->volume * db.materials[material - 1]->rho;
@@ -214,7 +214,7 @@ void Polyhedron::PreCalc()
 		if (ptr->gnb > largest_gnb)
 			largest_gnb = ptr->gnb;
 	}
-	//PreCalc do CAD e chamado antes do PreCalc das particulas
+	//PreCalc of the CAD and called before of the PreCalc of the particles
 	BoundingSphere* ptr_bv1 = static_cast<BoundingSphere*>(bv);
 	STLSurface* ptr_cad = static_cast<STLSurface*>(db.cad_data[CADDATA_ID - 1]);
 	//Initial settings of the spherical bounding volume
@@ -257,7 +257,7 @@ void Polyhedron::PreCalc()
 	for (int i = ptr_cad->n_faces; i < ptr_cad->n_faces + (int)ptr_cad->edges.size(); i++)
 	{
 		sub_bv[i] = new BoundingCylinder();
-		//Determining the radius of the cylinder (smallest radius related to a neighboring face)
+		//Determining the radius of the cylinder (smallest radius related to the neighboring face)
 		float temp_radius = FLT_MAX;
 		for (int j = 0; j < ptr_cad->edges[i - ptr_cad->n_faces].faceIDs.size(); j++)
 		{
@@ -286,7 +286,7 @@ void Polyhedron::PreCalc()
 	for (int i = ptr_cad->n_faces + (int)ptr_cad->edges.size(); i < ptr_cad->n_faces + (int)ptr_cad->edges.size() + (int)ptr_cad->vertices.size(); i++)
 	{
 		sub_bv[i] = new BoundingSphere();
-		//Determining the radius of the cylinder (smallest radius related to a neighboring face)
+		//Determining the radius of the cylinder (smallest radius related to the neighboring face)
 		float temp_radius = FLT_MAX;
 		for (int j = 0; j < ptr_cad->vertices[i - ptr_cad->n_faces - (int)ptr_cad->edges.size()].faceIDs.size(); j++)
 		{
@@ -318,7 +318,7 @@ void Polyhedron::UpdateBoundingVolumes()
 {
 	//Evaluating x0f and Q0f
 	
-	//Conversão da matriz de rotação para single precision
+	//Conversion of the rotation matrix for single precision
 	*x0f = *x0ip;
 	*Q0f = *Qip;
 	 
@@ -371,10 +371,10 @@ void Polyhedron::SaveLagrange()
 
 	///////////////////////Potential gravitational energy//////////////////////////////////////////
 	Matrix center(3);	//Updated center of mass of the body
-	Matrix g(3);		//Vetor gravidade
+	Matrix g(3);		//Vector gravidade
 	if (db.environment_exist == true)
 	{
-		//Se existe campo gravitacional
+		//If exists field gravitacional
 		if (db.environment->g_exist == true)
 		{
 			//Gravity field
@@ -484,7 +484,7 @@ bool Polyhedron::CheckInside(Matrix& point, int other_particle_ID)
 		}
 		else
 		{
-			//TODO - based on Jordan Theorem
+			//ALL - based on Jordan Theorem
 			return_value = false;
 		}
 		return return_value;
@@ -498,7 +498,7 @@ bool Polyhedron::CheckInsideEdge(Matrix& point, int edge_ID, double tol)
 {
 	STLSurface* ptr_cad = static_cast<STLSurface*>(db.cad_data[CADDATA_ID - 1]);
 
-	//Checando se e uma aresta côncava. Se assim o for, retorna false
+	//Checando if and a aresta côncava. If thus the for, returns false
 	if (ptr_cad->edges[edge_ID - 1].concave_indicator == 1)
 		return false;
 	else
@@ -507,18 +507,18 @@ bool Polyhedron::CheckInsideEdge(Matrix& point, int edge_ID, double tol)
 		Matrix n2(3);
 		Matrix t(3);
 		Matrix O(3);
-		//Vertices da aresta em questão
+		//Vertices of the aresta in question
 		O = *x0ip + (*Qip)*(*ptr_cad->vertices[ptr_cad->edges[edge_ID - 1].verticesIDs[0] - 1].coord_double);
 		n1 = (*Qip)*(*ptr_cad->faces[ptr_cad->edges[edge_ID - 1].faceIDs[0] - 1]->normal);
 		n2 = (*Qip)*(*ptr_cad->faces[ptr_cad->edges[edge_ID - 1].faceIDs[1] - 1]->normal);
 		t = (1.0/norm(cross(n1, n2)))*cross(n1, n2);
-		//Condição 1
+		//Condition 1
 		if (dot(point - O, n1) < tol && dot(point - O, cross(t, n1)) < tol)
 			return true;
-		//Condição 2
+		//Condition 2
 		if (dot(point - O, n2) < tol && dot(point - O, cross(n2, t)) < tol)
 			return true;
-		//Condições não atendidas (nem uma nem outra - ponto fora)
+		//Conditions not atendidas (nem a nem other - point outside)
 		return false;
 	}
 }
@@ -535,23 +535,23 @@ void Polyhedron::Alloc()
 	cs = 0;
 
 	DOFs = new int[db.number_GLs_node];
-	type_name = new char[20];//Nome do tipo da particula
+	type_name = new char[20];//Name of the type of the particle
 
-	//Rotina para ativar os GLS do nó da particula
+	//Routine for activate the GLS of the node of the particle
 	for (int j = 0; j < db.number_GLs_node; j++)
 	{
 		DOFs[j] = 0;
 	}
-	//Translação
+	//Translation
 	DOFs[0] = 1;
 	DOFs[1] = 1;
 	DOFs[2] = 1;
-	//Rotação
+	//Rotation
 	DOFs[3] = 1;
 	DOFs[4] = 1;
 	DOFs[5] = 1;
 
-	//Variaveis internas
+	//Variables internal
 	mass = 0.0;
 
 	I3 = new Matrix(3, 3);
@@ -669,7 +669,7 @@ void Polyhedron::UpdateVariables()
 
 void Polyhedron::Mount()
 {
-	//Zera matrizes diversas
+	//Zeroes matrices diversas
 	for (int i = 0; i < 6; i++)
 	{
 		dfield[i] = 0.0;
@@ -680,7 +680,7 @@ void Polyhedron::Mount()
 			DdT[i][j] = 0.0;
 		}
 	}
-	//Valores de variaveis cinematicas - atribuição
+	//Values of variables cinematicas - assignment
 	for (int i = 0; i < 3; i++)
 	{
 		alphai[i] = db.nodes[node - 1]->copy_coordinates[i + 3];
@@ -699,7 +699,7 @@ void Polyhedron::Mount()
 //Explicit
 void Polyhedron::InitialEvaluations()
 {
-	//Seta variaveis nodais associadas com o tratamento que essa particula vai empregar
+	//Sets variables nodal associated with the tratamento that this particle vai empregar
 	*db.nodes[node - 1]->Q0 = *Q0;
 	db.nodes[node - 1]->flag_material_description = true;
 	db.nodes[node - 1]->flag_pseudo_moment = false;
@@ -725,7 +725,7 @@ void Polyhedron::InitialEvaluations()
 		}
 	}
 
-	//Distribuição da matriz de massa 6x6 (fragmentação)
+	//Distribuição of the mass matrix 6x6 (fragmentação)
 	for (int i = 0; i < db.nodes[node - 1]->n_GL_free; i++)
 		for (int j = 0; j < db.nodes[node - 1]->n_GL_free; j++)
 			(*invMAA)(i, j) = (*MassMatrix)(GLA[i], GLA[j]);
@@ -735,7 +735,7 @@ void Polyhedron::InitialEvaluations()
 	for (int i = 0; i < db.nodes[node - 1]->n_GL_fixed; i++)
 		for (int j = 0; j < db.nodes[node - 1]->n_GL_fixed; j++)
 			(*MBB)(i, j) = (*MassMatrix)(GLB[i], GLB[j]);
-	//Inversa da matriz MAA
+	//Inversa of the matrix MAA
 	*invMAA = invert(*invMAA);
 }
 
@@ -754,15 +754,15 @@ void Polyhedron::EvaluateExplicit()
 	Matrix force_i = - 1.0 * mass * skew(*nd->omega) * (cross(*nd->omega, *mbrlocal));
 	Matrix moment_i = - 1.0 * skew(*nd->omega) * ((*mJrlocal) * (*nd->omega));
 	
-	//Peso próprio
+	//Weight próprio
 	Matrix force_w;
 	Matrix moment_w;
 
-	//Variaveis para calculo de steps
+	//Variables for calculation of steps
 	double l_factor;
 	if (db.environment_exist == true)
 	{
-		//Se existe campo gravitacional
+		//If exists field gravitacional
 		if (db.environment->g_exist == true)
 		{
 			l_factor = db.environment->bool_g.GetLinearFactorAtCurrentTime();
@@ -782,13 +782,13 @@ void Polyhedron::EvaluateExplicit()
 	}
 
 	//Espalhamento - Residual vector
-	//Variaveis temporarias para salvar a indexação global dos graus de liberdade a serem setados na matriz de rigidez global
+	//Temporary variables for save the indexing global of the degrees of freedom the to be set in the stiffness matrix global
 	int GL_global = 0;
 	double anterior = 0;
 	for (int i = 0; i < 6; i++)
 	{
 		GL_global = db.nodes[node - 1]->GLs[i];
-		//Caso o grau de liberdade seja livre:
+		//Case the degree of freedom be free:
 		if (GL_global > 0)
 		{
 			anterior = db.global_P_A(GL_global - 1, 0);
@@ -820,18 +820,18 @@ void Polyhedron::EvaluateAccelerations()
 	Matrix accelB(db.nodes[node - 1]->n_GL_fixed);
 	Matrix accel(6);
 
-	//Tomando as informações do vetor global e copiando em residualA:
+	//Tomando the information of the vector global and copying in residualA:
 	int GL_global = 0;
 	for (int i = 0; i < db.nodes[node - 1]->n_GL_free; i++)
 	{
 		GL_global = db.nodes[node-1]->GLs[GLA[i]];
 		residualA(i, 0) = db.global_P_A(GL_global - 1, 0);
 	}
-	//Tomando as informações de accelB:
+	//Tomando the information of accelB:
 	for (int i = 0; i < db.nodes[node - 1]->n_GL_fixed; i++)
 		accelB(i, 0) = db.nodes[node - 1]->accel[GLB[i]];
 	
-	//Calculando accelA:
+	//Calculating accelA:
 	if (db.nodes[node - 1]->n_GL_free != 0 && db.nodes[node - 1]->n_GL_fixed != 0)
 		accelA = (*invMAA)*((residualA) - (*MAB) * accelB);
 	else
@@ -839,7 +839,7 @@ void Polyhedron::EvaluateAccelerations()
 		if (db.nodes[node - 1]->n_GL_fixed == 0)
 			accelA = (*invMAA)*(residualA);
 	}
-	//Calculando residualB:
+	//Calculating residualB:
 	if (db.nodes[node - 1]->n_GL_free != 0 && db.nodes[node - 1]->n_GL_fixed != 0)
 		residualB = transp(*MAB) * accelA + (*MBB) * accelB;
 	else
@@ -848,12 +848,12 @@ void Polyhedron::EvaluateAccelerations()
 			residualB = (*MBB) * accelB;
 	}
 	
-	//Calculando o vetor accel(6):
+	//Calculating the vector accel(6):
 	for (int i = 0; i < db.nodes[node - 1]->n_GL_free; i++)
 		accel(GLA[i], 0) = accelA(i, 0);
 	for (int i = 0; i < db.nodes[node - 1]->n_GL_fixed; i++)
 		accel(GLB[i], 0) = accelB(i, 0);
-	//Salvando accelerações nos nós
+	//Saving accelerações in the nodes
 	for (int k = 0; k < 3; k++)
 	{
 		GL_global = db.nodes[node - 1]->GLs[k];
@@ -867,7 +867,7 @@ void Polyhedron::EvaluateAccelerations()
 		if (GL_global > 0)
 			(*db.nodes[node - 1]->domega)(k, 0) = accel(k + 3, 0);
 	}
-	//Salvando reações vinculares em P_B
+	//Saving reações vinculares in P_B
 	for (int i = 0; i < db.nodes[node - 1]->n_GL_fixed; i++)
 	{
 		GL_global = db.nodes[node - 1]->GLs[GLB[i]];
@@ -878,17 +878,17 @@ void Polyhedron::EvaluateAccelerations()
 
 void Polyhedron::MountGlobal()
 {
-	//Variaveis temporarias para salvar a indexação global dos graus de liberdade a serem setados na matriz de rigidez global
+	//Temporary variables for save the indexing global of the degrees of freedom the to be set in the stiffness matrix global
 	int GL_global_1 = 0;
 	int GL_global_2 = 0;
 	double anterior = 0;
 	for (int i = 0; i < 6; i++)
 	{
-		//////////////MONTAGEM DO VETOR DE ESFORÇOS DESBALANCEADOS//////////////////
-		//Toma do vetor de GL globais, a indexação de cada grau de liberdade global
+		//////////////ASSEMBLY OF THE VECTOR OF INTERNAL FORCES UNBALANCED//////////////////
+		//Takes of the global-DOF vector, the indexing of each global degree of freedom
 		GL_global_1 = db.nodes[node - 1]->GLs[i];
 
-		//Caso o grau de liberdade seja livre:
+		//Case the degree of freedom be free:
 		if (GL_global_1 > 0)
 		{
 			anterior = db.global_P_A(GL_global_1 - 1, 0);
@@ -903,19 +903,19 @@ void Polyhedron::MountGlobal()
 		}
 		for (int j = 0; j < 6; j++)
 		{
-			//////////////////////MONTAGEM DA MATRIZ DE RIGIDEZ/////////////////////////
-			//Toma do vetor de GL globais, a indexação de cada grau de liberdade global
+			//////////////////////ASSEMBLY OF THE STIFFNESS MATRIX/////////////////////////
+			//Takes of the global-DOF vector, the indexing of each global degree of freedom
 			GL_global_2 = db.nodes[node - 1]->GLs[j];
-			//Caso os graus de liberdade sejam ambos livres (Matriz Kaa)
+			//Case the degrees of freedom be both free (Matrix Kaa)
 			if (GL_global_1 > 0 && GL_global_2 > 0)
 				db.global_stiffness_AA.setValue(GL_global_1 - 1, GL_global_2 - 1, (DdT[i][j] - Ddfield[i][j]));
-			//Caso os graus de liberdade sejam ambos fixos (Matriz Kbb)
+			//Case the degrees of freedom be both fixed (Matrix Kbb)
 			if (GL_global_1 < 0 && GL_global_2 < 0)
 				db.global_stiffness_BB.setValue(-GL_global_1 - 1, -GL_global_2 - 1, (DdT[i][j] - Ddfield[i][j]));
-			//Caso os graus de liberdade sejam livre e fixo (Matriz Kab)
+			//Case the degrees of freedom be free and fixed (Matrix Kab)
 			if (GL_global_1 > 0 && GL_global_2 < 0)
 				db.global_stiffness_AB.setValue(GL_global_1 - 1, -GL_global_2 - 1, (DdT[i][j] - Ddfield[i][j]));
-			//Caso os graus de liberdade sejam fixo e livre (Matriz Kba)
+			//Case the degrees of freedom be fixed and free (Matrix Kba)
 			if (GL_global_1 < 0 && GL_global_2 > 0)
 				db.global_stiffness_BA.setValue(-GL_global_1 - 1, GL_global_2 - 1, (DdT[i][j] - Ddfield[i][j]));
 		}
@@ -924,15 +924,15 @@ void Polyhedron::MountGlobal()
 
 void Polyhedron::MountFieldLoading()
 {
-	//Ponteiro para o valor da massa
+	//Pointer for the value of the mass
 	double* m = &mass;
-	double v[1000];													//Variavel necessaria para o AceGen		
-	//Variaveis para calculo de steps
+	double v[1000];													//Variable necessary for the AceGen		
+	//Variables for calculation of steps
 	double l_factor;
 	bool in_gcs_domain = true;
 	if (db.environment_exist == true)
 	{
-		//Se existe campo gravitacional
+		//If exists field gravitacional
 		if (db.environment->g_exist == true)
 		{
 			//if (db.gcs_exist)
@@ -961,7 +961,7 @@ void Polyhedron::MountFieldLoading()
 			if (in_gcs_domain)
 			{
 				l_factor = db.environment->bool_g.GetLinearFactorAtCurrentTime();
-				double g[3];					//Vetor gravidade
+				double g[3];					//Vector gravidade
 				g[0] = l_factor * db.environment->G(0, 0);
 				g[1] = l_factor * db.environment->G(1, 0);
 				g[2] = l_factor * db.environment->G(2, 0);
@@ -1138,10 +1138,10 @@ void Polyhedron::MountFieldLoading()
 		}
 	}
 
-	//Outras contribuições de esforços de campo, colocar aqui...
+	//Other contributions of internal forces of field, place here...
 }
 
-//Calcula contribuições de inercia
+//Calculates contributions of inertia
 void Polyhedron::InertialContributions()
 {
 	double value = 0.0;
@@ -1159,7 +1159,7 @@ void Polyhedron::InertialContributions()
 	if (typeid(*db.solution[db.current_solution_number - 1]) == typeid(Dynamic))
 	{
 		Dynamic* ptr_sol = static_cast<Dynamic*>(db.solution[db.current_solution_number - 1]);
-		//Ponteiros para parametros do Newmark
+		//Pointers for parameters of the Newmark
 		a1 = &ptr_sol->a1;
 		a2 = &ptr_sol->a2;
 		a3 = &ptr_sol->a3;
@@ -1177,9 +1177,9 @@ void Polyhedron::InertialContributions()
 		a6 = &value;
 	}
 
-	//Ponteiro para o valor da massa
+	//Pointer for the value of the mass
 	double* m = &mass;
-	double v[1000];													//Variavel necessaria para o AceGen		
+	double v[1000];													//Variable necessary for the AceGen		
 	//AceGen
 	v[134] = Power(alphai[0], 2);
 	v[132] = 0.5e0*alphai[0] * alphai[1];

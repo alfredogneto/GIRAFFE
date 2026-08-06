@@ -1,10 +1,10 @@
 #include "ConcomitantSolution.h"
-#include <direct.h>
+#include "PlatformCompat.h"
 
 #include "Modal.h"
 
 #include "Database.h"
-//Variaveis globais
+//Global variables
 extern
 Database db;
 
@@ -23,7 +23,7 @@ ConcomitantSolution::~ConcomitantSolution()
 		delete sol;
 }
 
-//Leitura
+//Reading
 bool ConcomitantSolution::Read(FILE *f)
 {
 	char s[1000];
@@ -70,7 +70,7 @@ bool ConcomitantSolution::Read(FILE *f)
 	return true;
 }
 
-//Gravação
+//Recording
 void ConcomitantSolution::Write(FILE *f)
 {
 	Modal* ptr = static_cast<Modal*>(sol);
@@ -87,16 +87,16 @@ bool ConcomitantSolution::Check()
 void ConcomitantSolution::StartConcomitantSolution()
 {
 	Modal* ptr = static_cast<Modal*>(sol);
-	//Abre os arquivos dos nós
+	//Opens the files of the nodes
 	char name[200];
 	strcpy(name, db.folder_name);
 	strcat(name, "post/");
-	_mkdir(name);
+	GIRAFFE_MKDIR(name);
 	strcat(name, "concomitant_solution/");
-	_mkdir(name);
+	GIRAFFE_MKDIR(name);
 	strcat(name, "concomitant_solution.txt");
 	f_output = fopen(name, "w");
-	//Cabeçalho
+	//Header
 	fprintf(f_output, "TIME\t");
 	for (int i = 0; i < ptr->number_modes; i++)
 		fprintf(f_output, "Re_%d\tIm_%d\t", i + 1, i + 1);
@@ -105,7 +105,7 @@ void ConcomitantSolution::StartConcomitantSolution()
 
 void ConcomitantSolution::UpdateConcomitantSolution(double time)
 {
-	//Somente atualiza se for ativo para a atual solution
+	//Only updates if for active for the current solution
 	if (bool_concomitant.GetAt(db.current_solution_number - 1))
 	{
 		Modal* ptr = static_cast<Modal*>(sol);

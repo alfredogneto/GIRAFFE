@@ -586,7 +586,7 @@ bool CollisionDetection(BoundingTriangularBox* bv_1, BoundingBoxAxesOriented* bv
 	return false;
 }
 
-//Detects if there is intersection between a triangular face and a straight line
+//Detects if there is intersection between the triangular face and the straight line
 bool RayTest(MatrixFloat& P0, MatrixFloat& P1, MatrixFloat& P2, MatrixFloat& S, MatrixFloat& T)
 {
 	//Returns:	true (intersection found)

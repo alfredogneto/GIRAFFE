@@ -8,7 +8,7 @@
 #include "Encoding.h"
 #include "IO.h"
 #include"Database.h"
-//Variaveis globais
+//Global variables
 extern
 Database db;
 
@@ -37,10 +37,10 @@ NodalFollowerLoad::NodalFollowerLoad()
 	I(1, 1) = 1.0;
 	I(2, 2) = 1.0;
 
-	n_nodes_f = new int[3];			//numero de nós para divisão de forças - 3 componentes
-	n_nodes_m = new int[3];			//numero de nós para divisão de momentos - 3 componentes
-	mult_f = new double[3];			//multiplicador para os esforços de força
-	mult_m = new double[3];			//multiplicador para os esforços de momento
+	n_nodes_f = new int[3];			//number of nodes for divisão of forces - 3 components
+	n_nodes_m = new int[3];			//number of nodes for divisão of moments - 3 components
+	mult_f = new double[3];			//multiplicador for the internal forces of force
+	mult_m = new double[3];			//multiplicador for the internal forces of moment
 }
 
 NodalFollowerLoad::~NodalFollowerLoad()
@@ -140,41 +140,41 @@ void NodalFollowerLoad::Write(FILE *f)
 	}
 }
 
-//Realiza pre-calculos do esforço seguidor
+//Performs pre-calculations of the internal force seguidor
 void NodalFollowerLoad::PreCalc()
 {
 	n_nodes_copy = db.node_sets[node_set - 1]->n_nodes;
-	//Alocando q
+	//Allocating q
 	q = new Matrix*[n_nodes_copy];
 	for (int i = 0; i < db.node_sets[node_set - 1]->n_nodes; i++)
 		q[i] = new Matrix(6);
 }
 
-//Atualiza dados necessarios e que sejam dependentes de DOFs ativos/inativos - chamado no inicio de cada solution step
+//Updates data necessarios and that be dependentes of DOFs active/inativos - called in the start of each solution step
 void NodalFollowerLoad::UpdateforSolutionStep()
 {
 	int node;
 	int n_nodes = db.node_sets[node_set - 1]->n_nodes;
-	for (int j = 0; j < 3; j++)	//zerando os contadores
+	for (int j = 0; j < 3; j++)	//zeroing the contadores
 	{
 		n_nodes_f[j] = 0;
 		n_nodes_m[j] = 0;
 		mult_f[j] = 0.0;
 		mult_m[j] = 0.0;
 	}
-	//Percorre os nós do NodeSet
+	//Iterates over the nodes of the NodeSet
 	for (int i = 0; i < n_nodes; i++)
 	{
 		node = db.node_sets[node_set - 1]->node_list[i];
 		for (int j = 0; j < 3; j++)
 		{
-			if (db.nodes[node - 1]->active_GL[j] != 0)	//se o GL em questão e ativo
+			if (db.nodes[node - 1]->active_GL[j] != 0)	//if the GL in question and active
 				n_nodes_f[j]++;
-			if (db.nodes[node - 1]->active_GL[j + 3] != 0)	//se o GL em questão e ativo
+			if (db.nodes[node - 1]->active_GL[j + 3] != 0)	//if the GL in question and active
 				n_nodes_m[j]++;
 		}
 	}
-	//Calculando os multiplicadores
+	//Calculating the multiplicadores
 	for (int j = 0; j < 3; j++)
 	{
 		mult_f[j] = 1.0 / n_nodes_f[j];
@@ -198,7 +198,7 @@ void NodalFollowerLoad::EvaluateExplicit(double t)
 		alpha_escalar = norm(*db.nodes[node-1]->alpha);
 		A = skew(alpha);
 		g = 4.0 / (4.0 + alpha_escalar * alpha_escalar);
-		//Calculo da matriz de rotação Q
+		//Calculation of the rotation matrix Q
 		Q = I + g * (A + 0.5*(A*A));
 		
 		//Evaluating input data at current time
@@ -225,7 +225,7 @@ void NodalFollowerLoad::EvaluateExplicit(double t)
 			GL_lin = db.nodes[node - 1]->GLs[lin];
 			if (db.nodes[node - 1]->active_GL[lin] == 1)
 			{
-				if (GL_lin > 0)	//Grau de liberdade livre e ativo
+				if (GL_lin > 0)	//Free degree of freedom and active
 				{
 					db.global_P_A(GL_lin - 1, 0) += 1.0*(*q[index])(lin, 0);
 					db.global_I_A(GL_lin - 1, 0) += 1.0*(*q[index])(lin, 0);
@@ -239,7 +239,7 @@ void NodalFollowerLoad::EvaluateExplicit(double t)
 }
 
 
-//Calcula o esforço e o operador tangente
+//Calculates the internal force and the operator tangent
 void NodalFollowerLoad::Mount()
 {
 	int node;
@@ -266,9 +266,9 @@ void NodalFollowerLoad::Mount()
 		alpha_escalar = norm(alpha);
 		A = skew(alpha);
 		g = 4.0 / (4.0 + alpha_escalar*alpha_escalar);
-		//Calculo da matriz de rotação Q
+		//Calculation of the rotation matrix Q
 		Q = I + g*(A + 0.5*(A*A));
-		//Calculando o operador Xi	
+		//Calculating the operator Xi	
 		Xi = g*(I + 0.5*A);
 		//Evaluating input data at current time
 		for (int i = 0; i < 3; i++)
@@ -300,7 +300,7 @@ void NodalFollowerLoad::Mount()
 			GL_lin = db.nodes[node - 1]->GLs[lin];
 			if (db.nodes[node - 1]->active_GL[lin] == 1)
 			{
-				if (GL_lin > 0)	//Grau de liberdade livre e ativo
+				if (GL_lin > 0)	//Free degree of freedom and active
 					db.global_P_A(GL_lin - 1, 0) += -1.0*(*q[index])(lin, 0);
 				else
 					db.global_P_B(-GL_lin - 1, 0) += -1.0*(*q[index])(lin, 0);
@@ -326,7 +326,7 @@ void NodalFollowerLoad::Mount()
 
 void NodalFollowerLoad::WriteVTK_XML(FILE *f)
 {
-	//vetores para escrita no formato binario - usando a função 'enconde'
+	//vectors for writing in the formato binary - using the function 'enconde'
 	std::vector<float> float_vector;
 	std::vector<int> int_vector;
 	int count = db.node_sets[node_set - 1]->n_nodes;
@@ -337,7 +337,7 @@ void NodalFollowerLoad::WriteVTK_XML(FILE *f)
 	//Opens DataArray
 	fprintf(f, "\t\t\t\t<DataArray type=\"Float32\" NumberOfComponents=\"3\" format=\"binary\">\n");
 	float_vector.clear();
-	//Preenchendo as coordenadas dos pontos
+	//Filling the coordinates of the points
 	int node;
 	for (int index = 0; index < db.node_sets[node_set - 1]->n_nodes; index++)
 	{

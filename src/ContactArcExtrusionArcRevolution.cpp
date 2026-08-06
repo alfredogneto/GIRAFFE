@@ -8,14 +8,16 @@
 #include "ArcExtrusion.h"
 #include "Dynamic.h"
 #include "Database.h"
-//Variaveis globais
+//Global variables
 extern
 Database db;
 
 ////////////////////////////////////////////////////////////////////
 #define _CRTDBG_MAP_ALLOC
 #include <stdlib.h>
+#ifdef _WIN32
 #include <crtdbg.h>
+#endif
 #ifdef _DEBUG
 #define DBG_NEW new ( _NORMAL_BLOCK , __FILE__ , __LINE__ )
 // Replace _NORMAL_BLOCK with _CLIENT_BLOCK if you want the
@@ -158,7 +160,7 @@ void ContactArcExtrusionArcRevolution::Free()
 	}
 }
 
-//Chute inicial para coordenadas convectivas do par de superficies
+//Initial guess for convective coordinates of the pair of surfaces
 void ContactArcExtrusionArcRevolution::InitialGuess()
 {
 	//Local specific pointers
@@ -176,32 +178,32 @@ void ContactArcExtrusionArcRevolution::InitialGuess()
 	}
 	
 
-	//Determinação de zeta_barra
-	//b,t calculados a partir das posições nodais do arco extrudado (eq. reta). Centro do arco revolucionado e projetado nesta reta, estimando o zeta_barra
+	//Determination of zeta_bar
+	//b,t calculated the partir of the positions nodal of the arc extrudado (eq. reta). Center of the arc revolucionado and projetado in this reta, estimando the zeta_bar
 	Matrix b = 0.5*(*sA_local->x_Ap + *sA_local->x_Bp);
 	Matrix t = 0.5*(*sA_local->x_Bp - *sA_local->x_Ap);
 	Matrix center = *sB_local->x_Ap + (*sB_local->Q_Ap) * (*sB_local->center_local);
 	double zeta_barra = (dot(t, center) - dot(t, b)) / (dot(t, t));
 	Matrix x_barra = b + zeta_barra * t;
 	
-	//Determinação do phi_barra
+	//Determination of the phi_bar
 	Matrix dir = x_barra - center;
 	Matrix e1(3);
 	Matrix e2(3);
 	Matrix e3(3);
-	//Obs: eixos ja escritos no sistema local
+	//Note: eixos already written in the system local
 	e1(0, 0) = 1.0;
 	e2(1, 0) = 1.0;
 	e3(2, 0) = 1.0;
-	//Orientações atuais dos eixos e1, e2 e e3
+	//Orientações current of the eixos e1, e2 and e3
 	e1 = (*sB_local->Q_Ap)*e1;
 	e2 = (*sB_local->Q_Ap)*e2;
 	e3 = (*sB_local->Q_Ap)*e3;
-	dir = dir - dot(dir, e2)*e2;	//projetando dir no plano e1e3
-	dir = (1.0 / norm(dir))*dir;	//normalização de dir
+	dir = dir - dot(dir, e2)*e2;	//projetando dir in the plane e1e3
+	dir = (1.0 / norm(dir))*dir;	//normalização of dir
 	double e1_dir = dot(e1, dir);
 	double e3_dir = dot(e3, dir);
-	//Testes para evitar erros de arredondamento
+	//Tests for avoid errors of arredondamento
 	if (e1_dir > 1.0)
 		e1_dir = 1.0;
 	if (e1_dir < -1.0)
@@ -229,12 +231,12 @@ void ContactArcExtrusionArcRevolution::InitialGuess()
 	/*if (sA_local->number == 19 && sB_local->number == 5)
 	{
 		center.print();
-		x_barra.print();
+		x_bar.print();
 		e1.print();
 		e3.print();
 	}*/
 
-	//Preenchendo as coordenadas convectivas:
+	//Filling the convective coordinates:
 	cd->convective[0][0] = zeta_barra;
 	cd->convective[0][1] = db.arcs[sA_local->arc_ID - 1]->CentralTheta();
 	cd->convective[0][2] = phi_barra;
@@ -432,7 +434,7 @@ void ContactArcExtrusionArcRevolution::InitializeConvectiveRange()
 	}
 }
 
-//Verifica range de coordenadas convectivas
+//Checks range of convective coordinates
 int ContactArcExtrusionArcRevolution::VerifyConvectiveRange(Matrix& mc)
 {
 	//Local specific pointers
@@ -450,14 +452,14 @@ int ContactArcExtrusionArcRevolution::VerifyConvectiveRange(Matrix& mc)
 	}
 
 	//Retornos:
-	//0 - Range fisico da superficie
-	//3 - Fora do range fisico da superficie e em região proibida de parametro
-	//4 - Fora do range fisico da superficie
+	//0 - Range physical of the surface
+	//3 - Outside of the range physical of the surface and in região proibida of parameter
+	//4 - Outside of the range physical of the surface
 
 	//if (sA_local->number == 7 && sB_local->number == 2)
 	//	int test = 1;
 
-	//Primeiro teste - região proibitiva de parametro theta - relacionada a revolução (theta_2)
+	//First test - região proibitiva of parameter theta - relacionada the revolução (theta_2)
 	if (ArcReduction(mc(3, 0)) < sB_local->theta_valid_min || ArcReduction(mc(3, 0)) > sB_local->theta_valid_max)
 		return 3;
 	
@@ -480,8 +482,8 @@ void ContactArcExtrusionArcRevolution::CompactReport()
 	db.myprintf("Gap %.6e\n", cd->g_n[0]);
 }
 
-//Calcula a função objetivo para um conjunto de coordenadas convectivas - Phase 1
-double ContactArcExtrusionArcRevolution::ObjectivePhase1(Matrix& mc)
+//Calculates the objective function for a set of convective coordinates - Phase 1
+double ContactArcExtrusionArcRevolution::ObjectivePhase1(const Matrix& mc)
 {
 	double v[2000];
 	double *c = mc.getMatrix();
@@ -569,7 +571,7 @@ double ContactArcExtrusionArcRevolution::ObjectivePhase1(Matrix& mc)
 	return Ob;
 }
 
-//Calcula o Gradiente da função objetivo - Phase 1
+//Calculates the Gradient of the objective function - Phase 1
 void ContactArcExtrusionArcRevolution::GradientPhase1(Matrix& mc, Matrix& mGra)
 {
 	double v[2000];
@@ -693,7 +695,7 @@ void ContactArcExtrusionArcRevolution::GradientPhase1(Matrix& mc, Matrix& mGra)
 		mGra(i, 0) = Gra[i];
 }
 
-//Calcula a Hessiana da função objetivo - Phase 1
+//Calculates the Hessian of the objective function - Phase 1
 void ContactArcExtrusionArcRevolution::HessianPhase1(Matrix& mc, Matrix& mHes)
 {
 	double v[2000];
@@ -898,10 +900,10 @@ void ContactArcExtrusionArcRevolution::HessianPhase1(Matrix& mc, Matrix& mHes)
 			mHes(i, j) = Hes[i][j];
 }
 
-//Calcula e rotorna o gap (com sinal)
-double ContactArcExtrusionArcRevolution::Gap(Matrix& mc, bool fixed_normals, Matrix& nA, Matrix& nB)
+//Calculates and rotorna the gap (with sign)
+double ContactArcExtrusionArcRevolution::Gap(const Matrix& mc, bool fixed_normals, Matrix& nA, Matrix& nB)
 {
-	double v[2000];		//variavel temporaria - AceGen
+	double v[2000];		//temporary variable - AceGen
 	double gap;
 	double *c = mc.getMatrix();
 
@@ -1043,10 +1045,10 @@ double ContactArcExtrusionArcRevolution::Gap(Matrix& mc, bool fixed_normals, Mat
 	return gap;
 }
 
-//Calcula o Gradiente do gap
+//Calculates the Gradient of the gap
 void ContactArcExtrusionArcRevolution::GradientGap(Matrix& mc, Matrix& mGra, bool fixed_normals, Matrix& nA, Matrix& nB)
 {
-	double v[2000];		//variavel temporaria - AceGen
+	double v[2000];		//temporary variable - AceGen
 	double *c = mc.getMatrix();
 	double Gra[4];
 	
@@ -1283,10 +1285,10 @@ void ContactArcExtrusionArcRevolution::GradientGap(Matrix& mc, Matrix& mGra, boo
 		mGra(i, 0) = Gra[i];
 }
 
-//Calcula a Hessiana do gap
+//Calculates the Hessian of the gap
 void ContactArcExtrusionArcRevolution::HessianGap(Matrix& mc, Matrix& mHes, bool fixed_normals, Matrix& nA, Matrix& nB)
 {
-	double v[2000];		//variavel temporaria - AceGen
+	double v[2000];		//temporary variable - AceGen
 	double *c = mc.getMatrix();
 	double Hes[4][4];
 
@@ -1775,7 +1777,7 @@ void ContactArcExtrusionArcRevolution::MountLocalContributions()
 		a5 = &value;
 		a6 = &value;
 	}
-	//Zerando matrizes e vetores
+	//Zeroing matrices and vectors
 	for (int i = 0; i < nDOF; i++)
 	{
 		Rc[i] = 0.0;
@@ -1785,7 +1787,7 @@ void ContactArcExtrusionArcRevolution::MountLocalContributions()
 
 	bool *previouscontact = &prev_eligible;
 
-	//Avalia contribuições de contato
+	//Evaluates contributions of contact
 
 	//ACEGEN
 	double v01; double v010; double v011; double v012; double v013; double v014;

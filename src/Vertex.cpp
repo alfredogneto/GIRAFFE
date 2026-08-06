@@ -11,7 +11,7 @@ Vertex::Vertex()
 	edgeIDs.clear();
 }
 
-//Construtor de cópia
+//Copy constructor
 Vertex::Vertex(const Vertex &copied)
 {
 	coord_float = new MatrixFloat(3);
@@ -52,8 +52,8 @@ Vertex::~Vertex()
 	edgeIDs.clear();
 }
 
-//Verificação de igualdade
-bool operator == (Vertex &v1, Vertex &v2)
+//Equality check
+bool operator == (const Vertex &v1, const Vertex &v2)
 {
 	float tol_equal;
 	if (v1.tol > v2.tol)

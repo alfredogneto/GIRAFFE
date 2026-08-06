@@ -8,7 +8,7 @@
 #include "Encoding.h"
 #include "Dynamic.h"
 #include "Database.h"
-//Variaveis globais
+//Global variables
 extern
 Database db;
 #define PI 3.1415926535897932384626433832795
@@ -107,7 +107,7 @@ void Spline::Write(FILE *f)
 		radius,
 		nodeset
 	);
-	//Escrever o knot vector
+	//Write the knot vector
 	//for (int i = 0; i < (6 + db.node_sets[nodeset - 1]->n_nodes - 3); i++)
 	//{
 	//	fprintf(f, "%.6e\n", knot[i]);
@@ -116,23 +116,23 @@ void Spline::Write(FILE *f)
 
 void Spline::PreCalc()
 {
-	//Numero de nós do nodeset
+	//Number of nodes of the nodeset
 	size_nodeset = db.node_sets[nodeset - 1]->n_nodes;
-	//Lista de nós do nodeset
+	//List of nodes of the nodeset
 	nodeset_list = db.node_sets[nodeset - 1]->node_list;
-	//Numero de elementos de spline (segmentos/trechos)
+	//Number of elements of spline (segmentos/trechos)
 	size_sp_elements = db.node_sets[nodeset - 1]->n_nodes - 2;
 
-	//Vetor de elementos de spline
+	//Vector of elements of spline
 	sp_element = new SplineElement*[size_sp_elements];
-	//ID de cada elemento de spline
+	//ID of each element of spline
 	sp_elements_list = new int[size_sp_elements];
 	for (int i = 0; i < size_sp_elements; i++) {
 		sp_element[i] = new SplineElement();
 		sp_elements_list[i] = i;
 	}
 
-	//Criando o knot vector entre 0 e 1 de acordo com o numero de pontos do nodeset
+	//Creating the knot vector between 0 and 1 according to the number of points of the nodeset
 	knot = new double[size_nodeset + 3];
 	knot[0] = 0;
 	knot[1] = 0;
@@ -145,7 +145,7 @@ void Spline::PreCalc()
 	knot[size_nodeset + 1] = 1;
 	knot[size_nodeset + 2] = 1;
 
-	//Definindo as variaveis de cada elemento da spline
+	//Defining the variables of each element of the spline
 	for (int i = 0; i < size_sp_elements; i++) {
 
 		*sp_element[i]->radius = radius;
@@ -174,7 +174,7 @@ void Spline::PreCalc()
 		(*sp_element[i]->x_Ci)(2, 0) = db.nodes[nodeset_list[i + 2] - 1]->copy_coordinates[2];
 	}
 
-	//Quantidade total de pontos para plotagem da spline
+	//Quantidade total of points for plotting of the spline
 	size_sp_nodes = 2 * size_nodeset - 3;
 
 	x_Ai = new Matrix*[size_nodeset];
@@ -214,15 +214,15 @@ void Spline::PreCalc()
 		x_sp_normal[i] = new Matrix(3);
 	}
 
-	//Calculando os pesos para todos os trechos da spline
+	//Calculating the pesos for all the trechos of the spline
 	sp0 = new double[size_nodeset + 2];
 
 	sp1 = new double[size_nodeset + 1];
-	sp1_dd = new double[size_nodeset + 1];	//Segunda derivada
+	sp1_dd = new double[size_nodeset + 1];	//Second derivative
 
 	sp2 = new double*[size_sp_nodes];
-	sp2_d = new double*[size_sp_elements * 3];		//Primeira derivada
-	sp2_dd = new double*[size_sp_elements * 3];		//Segunda derivada
+	sp2_d = new double*[size_sp_elements * 3];		//First derivative
+	sp2_dd = new double*[size_sp_elements * 3];		//Second derivative
 
 	for (int i = 0; i < size_sp_nodes; i++)
 		sp2[i] = new double[size_nodeset];
@@ -233,7 +233,7 @@ void Spline::PreCalc()
 		sp2_dd[i] = new double[size_nodeset];
 	}
 
-	//Calculo dos coeficientes (pesos) para os pontos da spline
+	//Calculation of the coefficients (pesos) for the points of the spline
 	for (int j = 0; j < size_sp_nodes; j++)
 	{
 		double zeta = j / (1.0*size_sp_nodes - 1);
@@ -292,7 +292,7 @@ void Spline::PreCalc()
 		}
 	}
 
-	//Calculo dos coeficientes (pesos) para os pontos da derivada e da segunda derivada da spline
+	//Calculation of the coefficients (pesos) for the points of the derivative and of the second derivative of the spline
 	for (int j = 0; j < size_sp_elements * 3; j++)
 	{
 		double zeta_step = 1 / (1.0*size_sp_nodes - 1);
@@ -318,8 +318,8 @@ void Spline::PreCalc()
 		}
 
 		double a, b;
-		double a_d, b_d; //primeira derivada
-		double a_dd, b_dd; //segunda derivada
+		double a_d, b_d; //first derivative
+		double a_dd, b_dd; //second derivative
 
 		int p = 1;
 		for (int i = 0; i < size_nodeset + 1; i++) {
@@ -369,7 +369,7 @@ void Spline::PreCalc()
 			sp2_dd[j][i] = a_dd - b_dd;
 		}
 	}
-	////Limpando o vetor de Splines
+	////Limpando the vector of Splines
 	//(*x_sp_Ai[j])(0, 0) = 0;
 	//(*x_sp_Ai[j])(1, 0) = 0;
 	//(*x_sp_Ai[j])(2, 0) = 0;
@@ -388,7 +388,7 @@ void Spline::CalculateSpline() {
 
 	for (int j = 0; j < size_sp_nodes; j++)
 	{
-		//Limpando o vetor de Splines
+		//Limpando the vector of Splines
 		(*x_sp_Ai[j])(0, 0) = 0;
 		(*x_sp_Ai[j])(1, 0) = 0;
 		(*x_sp_Ai[j])(2, 0) = 0;
@@ -404,27 +404,27 @@ void Spline::CalculateSpline() {
 
 void Spline::CalculateSplineTangentNormal()
 {
-	//Preenchendo os pontos com as derivadas
+	//Filling the points with the derivatives
 	for (int j = 0; j < size_sp_elements * 3; j++)
 	{
-		//Limpando a primeira derivada
+		//Limpando the first derivative
 		(*x_sp_d[j])(0, 0) = 0;
 		(*x_sp_d[j])(1, 0) = 0;
 		(*x_sp_d[j])(2, 0) = 0;
 
-		//Limpando a segunda derivada
+		//Limpando the second derivative
 		(*x_sp_dd[j])(0, 0) = 0;
 		(*x_sp_dd[j])(1, 0) = 0;
 		(*x_sp_dd[j])(2, 0) = 0;
 
 		for (int k = 0; k < size_nodeset; k++)
 		{
-			//Primeira derivada
+			//First derivative
 			(*x_sp_d[j])(0, 0) += sp2_d[j][k] * (*x_Ai[k])(0, 0);
 			(*x_sp_d[j])(1, 0) += sp2_d[j][k] * (*x_Ai[k])(1, 0);
 			(*x_sp_d[j])(2, 0) += sp2_d[j][k] * (*x_Ai[k])(2, 0);
 
-			//Segunda derivada
+			//Second derivative
 			(*x_sp_dd[j])(0, 0) += sp2_dd[j][k] * (*x_Ai[k])(0, 0);
 			(*x_sp_dd[j])(1, 0) += sp2_dd[j][k] * (*x_Ai[k])(1, 0);
 			(*x_sp_dd[j])(2, 0) += sp2_dd[j][k] * (*x_Ai[k])(2, 0);
@@ -432,22 +432,22 @@ void Spline::CalculateSplineTangentNormal()
 	}
 	for (int j = 0; j < size_sp_elements; j++)
 	{
-		//Testando colinearidade entre pontos
+		//Testando colinearidade between points
 		double tol = 0.00000001;
 		double collinear_test = norm(cross((*x_Ai[j + 1] - *x_Ai[j]), (*x_Ai[j + 2] - *x_Ai[j])));
 		if (collinear_test <tol && collinear_test >-tol) {
-			//Calculando tangente e normal para pontos colineares
-			//Tangente
+			//Calculating tangent and normal for points colineares
+			//Tangent
 			*x_sp_tangent[j * 3] = (*x_Ai[j + 1] - *x_Ai[j]) * (1 / norm((*x_Ai[j + 1] - *x_Ai[j])));
 			*x_sp_tangent[j * 3 + 1] = *x_sp_tangent[j * 3];
 			*x_sp_tangent[j * 3 + 2] = *x_sp_tangent[j * 3];
 
 			//Normal
-			Matrix unit(3); //Ponto arbitrario
+			Matrix unit(3); //Point arbitrario
 			unit(0, 0) = 1;
 			unit(1, 0) = 1;
 			unit(2, 0) = 1;
-			if (norm(cross(*x_sp_tangent[j * 3], *x_sp_tangent[j * 3] + unit)) == 0) //Testando alinhamento dos vetores
+			if (norm(cross(*x_sp_tangent[j * 3], *x_sp_tangent[j * 3] + unit)) == 0) //Testando alinhamento of the vectors
 				unit(1, 0) = 1 + tol;
 			*x_sp_normal[j * 3] = cross(*x_sp_tangent[j * 3], *x_sp_tangent[j * 3] + unit);
 			*x_sp_normal[j * 3] = *x_sp_normal[j * 3] * (1 / norm(*x_sp_normal[j * 3]));
@@ -456,8 +456,8 @@ void Spline::CalculateSplineTangentNormal()
 		}
 		else
 		{
-			//Calculando tangente e normal pelo Triedro de Frenet
-			//Tangente
+			//Calculating tangent and normal through the Triedro of Frenet
+			//Tangent
 			*x_sp_tangent[j * 3] = *x_sp_d[j * 3] * (1 / norm(*x_sp_d[j * 3]));
 			*x_sp_tangent[j * 3 + 1] = *x_sp_d[j * 3 + 1] * (1 / norm(*x_sp_d[j * 3 + 1]));
 			*x_sp_tangent[j * 3 + 2] = *x_sp_d[j * 3 + 2] * (1 / norm(*x_sp_d[j * 3 + 2]));
@@ -503,15 +503,15 @@ void Spline::WriteVTK_XML_SplineMesh(FILE *f) {
 	if (db.post_files->WriteSpline_flag == true)
 	{
 		CalculateSpline();
-		//vetores para escrita no formato binario - usando a função 'enconde'
+		//vectors for writing in the formato binary - using the function 'enconde'
 		std::vector<float> float_vector;
 		std::vector<int> int_vector;
 		Matrix* vec_P;
 		vec_P = new Matrix(3);
 
-		//Numero de pontos a serem gerados
+		//Number of points the to be gerados
 		int n_points = size_sp_nodes;
-		//Numero de celulas a serem geradas
+		//Number of celulas the to be geradas
 		int n_cells = (size_sp_nodes - 1) / 2;
 		//Opens Piece
 		fprintf(f, "\t\t<Piece NumberOfPoints=\"%d\" NumberOfCells=\"%d\">\n", n_points, n_cells);
@@ -520,10 +520,10 @@ void Spline::WriteVTK_XML_SplineMesh(FILE *f) {
 		//Opens DataArray
 		fprintf(f, "\t\t\t\t<DataArray type=\"Float32\" NumberOfComponents=\"3\" format=\"binary\">\n");
 		float_vector.clear();
-		//Preenchendo as coordenadas dos pontos
-		for (int i = 0; i < size_sp_nodes; i++)//percorrendo os nós
+		//Filling the coordinates of the points
+		for (int i = 0; i < size_sp_nodes; i++)//percorrendo the nodes
 		{
-			//Posição de cada ponto 
+			//Position of each point 
 			(*vec_P)(0, 0) = (*x_sp_Ai[i])(0, 0);
 			(*vec_P)(1, 0) = (*x_sp_Ai[i])(1, 0);
 			(*vec_P)(2, 0) = (*x_sp_Ai[i])(2, 0);
@@ -598,16 +598,16 @@ void Spline::WriteVTK_XML_SplineRender(FILE * f)
 		int n_circ = 16;
 		double theta = 0;
 
-		//vetores para escrita no formato binario - usando a função 'enconde'
+		//vectors for writing in the formato binary - using the function 'enconde'
 		std::vector<float> float_vector;
 		std::vector<int> int_vector;
 
 		Matrix vec_x(3);
 		Matrix vec_P(3);
 		Matrix vec_P_radius(3);
-		//Numero de pontos a serem gerados
+		//Number of points the to be gerados
 		int n_points = size_sp_elements * 40;
-		//Numero de celulas a serem geradas
+		//Number of celulas the to be geradas
 		int n_cells = size_sp_elements * 8;
 		//Opens Piece
 		fprintf(f, "\t\t<Piece NumberOfPoints=\"%d\" NumberOfCells=\"%d\">\n", n_points, n_cells);
@@ -616,23 +616,23 @@ void Spline::WriteVTK_XML_SplineRender(FILE * f)
 		//Opens DataArray
 		fprintf(f, "\t\t\t\t<DataArray type=\"Float32\" NumberOfComponents=\"3\" format=\"binary\">\n");
 		float_vector.clear();
-		//Preenchendo as coordenadas dos pontos
-		for (int i = 0; i < size_sp_elements * 3; i++)//percorrendo os cada ponto da spline
+		//Filling the coordinates of the points
+		for (int i = 0; i < size_sp_elements * 3; i++)//percorrendo the each point of the spline
 		{
 			theta = 0;
 			vec_P_radius = *x_sp_normal[i] * radius;
 			int i_aux = i / 3;
 			vec_x = *x_sp_Ai[i - i_aux];
 			if ((i + 2) % 3 == 0) {
-				//Pontos intermediarios do trecho de spline
-				for (int point = 0; point < n_circ; point = point + 2)//Percorre os nós que descrevem o perimetro da ST
+				//Points intermediarios of the trecho of spline
+				for (int point = 0; point < n_circ; point = point + 2)//Iterates over the nodes that descrevem the perimetro of the ST
 				{
-					//Atualização do angulo theta
+					//Update of the angle theta
 					theta = 2 * (2 * PI) / n_circ;
-					//Rotação da normal a spline pela fórmula de rodrigues em torno da tangente
+					//Rotation of the normal the spline through the fórmula of rodrigues in torno of the tangent
 					vec_P_radius = vec_P_radius * cos(theta) + cross(*x_sp_tangent[i], vec_P_radius)*sin(theta) + *x_sp_tangent[i] * dot(*x_sp_tangent[i], vec_P_radius)*(1 - cos(theta));
 
-					//Posição de cada ponto P da spline junto ao ponto da superficie
+					//Position of each point P of the spline junto to the point of the surface
 					vec_P(0, 0) = vec_x(0, 0) + vec_P_radius(0, 0);
 					vec_P(1, 0) = vec_x(1, 0) + vec_P_radius(1, 0);
 					vec_P(2, 0) = vec_x(2, 0) + vec_P_radius(2, 0);
@@ -644,15 +644,15 @@ void Spline::WriteVTK_XML_SplineRender(FILE * f)
 			}
 			else
 			{
-				//Ponto inicial ou final do trecho de spline
-				for (int point = 0; point < n_circ; point++)//Percorre os nós que descrevem o perimetro da ST
+				//Point initial or final of the trecho of spline
+				for (int point = 0; point < n_circ; point++)//Iterates over the nodes that descrevem the perimetro of the ST
 				{
-					//Atualização do angulo theta
+					//Update of the angle theta
 					theta = (2 * PI) / n_circ;
-					//Rotação da normal a spline pela fórmula de rodrigues em torno da tangente
+					//Rotation of the normal the spline through the fórmula of rodrigues in torno of the tangent
 					vec_P_radius = vec_P_radius * cos(theta) + cross(*x_sp_tangent[i], vec_P_radius)*sin(theta) + *x_sp_tangent[i] * dot(*x_sp_tangent[i], vec_P_radius)*(1 - cos(theta));
 
-					//Posição de cada ponto P da spline junto ao ponto da superficie
+					//Position of each point P of the spline junto to the point of the surface
 					vec_P(0, 0) = vec_x(0, 0) + vec_P_radius(0, 0);
 					vec_P(1, 0) = vec_x(1, 0) + vec_P_radius(1, 0);
 					vec_P(2, 0) = vec_x(2, 0) + vec_P_radius(2, 0);

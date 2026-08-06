@@ -1,6 +1,6 @@
 #include "ConfigurationSave.h"
 
-#include <direct.h>
+#include "PlatformCompat.h"
 
 #include "Node.h"
 #include "Boundary.h"
@@ -9,7 +9,7 @@
 
 #include"Database.h"
 #include"IO.h"
-//Variaveis globais
+//Global variables
 extern Database db;
 extern IO io;
 
@@ -30,7 +30,7 @@ bool ConfigurationSave::Check()
 bool ConfigurationSave::Read(FILE *f)
 {
 	char s[1000];
-	//Verifica a palavra chave "Sample"
+	//Checks the keyword "Sample"
 	fscanf(f, "%s", s);
 	if (!strcmp(s, "Sample"))
 	{
@@ -55,15 +55,15 @@ void ConfigurationSave::ExportConfiguration(double time)
 	struct stat info;
 	char config_name[100];
 	sprintf(config_name, "configuration_%d_time_", acumulated_config_number);
-	sprintf(time_char, "%lf", time);	//Converte o time para char
+	sprintf(time_char, "%lf", time);	//Converts the time for char
 	strcat(config_name, time_char);
 	
-	strcpy(name, db.folder_name);	//pasta do job
-	strcat(name, "config/");		//diretório de configurações salvas
-	if (stat(name, &info) != 0)		//checa existência do diretório packs
-		_mkdir(name);				//criando diretório packs
-	strcat(name, config_name);		//nome do pack
-	strcat(name, ".inp");			//criando arquivo
+	strcpy(name, db.folder_name);	//folder of the job
+	strcat(name, "config/");		//directory of configurações saved
+	if (stat(name, &info) != 0)		//checks existência of the directory packs
+		GIRAFFE_MKDIR(name);				//creating directory packs
+	strcat(name, config_name);		//name of the pack
+	strcat(name, ".inp");			//creating file
 	FILE* f;
 	f = fopen(name, "w");
 
@@ -77,28 +77,28 @@ void ConfigurationSave::ExportConfiguration(double time)
 	{
 		fprintf(f, "\nNodes\t%d\n", db.number_nodes);
 		for (int i = 0; i < db.number_nodes; i++)
-			db.nodes[i]->WriteUpdated(f);			//Escrita dos dados 
+			db.nodes[i]->WriteUpdated(f);			//Data writing 
 	}
-	//Geração de boundaries
+	//Geração of boundaries
 	if (db.boundaries_exist == true)
 	{
 		fprintf(f, "\nBoundaries\t%d\n", db.number_boundaries);
 		for (int i = 0; i < db.number_boundaries; i++)
 		{
 
-			db.boundaries[i]->WriteModifyingParameters(f, db.boundaries[i]->material, db.boundaries[i]->node, db.boundaries[i]->number, db.boundaries[i]->number + 1);					//Escrita dos dados 
+			db.boundaries[i]->WriteModifyingParameters(f, db.boundaries[i]->material, db.boundaries[i]->node, db.boundaries[i]->number, db.boundaries[i]->number + 1);					//Data writing 
 		}
 	}
-	//Geração de particulas
+	//Geração of particles
 	if (db.particles_exist == true)
 	{
 		fprintf(f, "\nParticles\t%d\n", db.number_particles);
 		for (int i = 0; i < db.number_particles; i++)
 		{
-			db.particles[i]->WriteModifyingParameters(f, db.particles[i]->material, db.particles[i]->node, db.particles[i]->number, db.particles[i]->number+1 + db.number_boundaries);	//Escrita dos dados 
+			db.particles[i]->WriteModifyingParameters(f, db.particles[i]->material, db.particles[i]->node, db.particles[i]->number, db.particles[i]->number+1 + db.number_boundaries);	//Data writing 
 		}
 	}
-	//Geração de Coordinate Systems
+	//Geração of Coordinate Systems
 	fprintf(f, "\nCoordinateSystems\t%d\n", db.number_particles + db.number_boundaries + 1);
 	//1 - global
 	fprintf(f, "CS\t%d\tE1\t%.12e\t%.12e\t%.12e\tE3\t%.12e\t%.12e\t%.12e\n", 1, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0);
@@ -131,14 +131,14 @@ void ConfigurationSave::ExportConfiguration(double time)
 			fprintf(f, "CS\t%d\tE1\t%.12e\t%.12e\t%.12e\tE3\t%.12e\t%.12e\t%.12e\n", i + 2 + db.number_boundaries, e1(0, 0), e1(1, 0), e1(2, 0), e3(0, 0), e3(1, 0), e3(2, 0));
 		}
 	}
-	//Condições iniciais
+	//Initial conditions
 	if (db.nodes_exist == true)
 	{
 		fprintf(f, "\nInitialConditions\t%d\n", db.number_nodes);
 		for (int i = 0; i < db.number_nodes; i++)
 		{
 			fprintf(f, "InitialCondition\t%d\t", i + 1);
-			db.nodes[i]->WriteInitialConditions(f);			//Escrita dos dados 
+			db.nodes[i]->WriteInitialConditions(f);			//Data writing 
 			fprintf(f, "SolutionStep\t%d\n", 2);
 		}
 	}

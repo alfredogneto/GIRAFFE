@@ -7,50 +7,50 @@ class RigidBody_1 :
 public:
 	RigidBody_1();
 	~RigidBody_1();
-	bool Check();													//Checa inconsistências no elemento para evitar erros de execução
-	bool Read(FILE *f);												//Leitura do arquivo de entrada
-	void Write(FILE *f);											//Escrita do arquivo de saida
-	void WriteResults(FILE *f);										//Escreve arquivo de resultados
-	void WriteMonitor(FILE *f, bool first_record, double time);		//Escreve no monitor do elemento
-	void WriteVTK_XMLBase(std::vector<float> *float_vector);		//Escrita VTK XML - usado no arquivo base
-	void WriteVTK_XMLRender(FILE *f);								//Escrita VTK XML - usado no arquivo render
-	void Mount();													//Monta contribuições do elemento para rigidez e residuo
-	void MountElementLoads();										//Monta carregamentos associados ao elemento
-	void MountMass();												//Monta a matriz de massa
-	void MountMassModal();											//Monta a matriz de massa para realização da analise modal
-	void MountDampingModal();										//Monta a matriz de amortecimento para realização da analise modal
-	void MountDamping(bool update_rayleigh);						//Monta a matriz de amortecimento
-	void MountDyn();												//Montagens - Newmark
-	void MountDynModal();											//Montagens para analise modal - inserção da matriz de massa e amortecimento na matriz de rigidez para posterior montagem global
-	void TransformMatrix();											//Monta matriz de transformação de coordenadas
-	void MountGlobal();												//Preenche a contribuição do elemento nas matrizes globais
-	void Zeros();													//Zera algumas matrizes utilizadas nos calculos
-	void SaveLagrange();											//Salva dados para configuração convergida
-	void PreCalc();													//Pre-calculo de variaveis que e feito uma unica vez no inicio
-	void InertialContributions();				                    //Calcula contribuições de inercia do Rigid Body
-	void MountFieldLoading();											//Calcula a contribuição dos esforços de campo (aceleração da gravidade)
+	bool Check();													//Checks inconsistencies in the element for avoid errors of execution
+	bool Read(FILE *f);												//Reading of the input file
+	void Write(FILE *f);											//File writing of output
+	void WriteResults(FILE *f);										//Writes file of results
+	void WriteMonitor(FILE *f, bool first_record, double time);		//Writes in the monitor of the element
+	void WriteVTK_XMLBase(std::vector<float> *float_vector);		//Writing VTK XML - used in the file base
+	void WriteVTK_XMLRender(FILE *f);								//Writing VTK XML - used in the file render
+	void Mount();													//Assembles contributions of the element for stiffness and residual
+	void MountElementLoads();										//Assembles loadings associated to the element
+	void MountMass();												//Assembles the mass matrix
+	void MountMassModal();											//Assembles the mass matrix for performing of the analysis modal
+	void MountDampingModal();										//Assembles the damping matrix for performing of the analysis modal
+	void MountDamping(bool update_rayleigh);						//Assembles the damping matrix
+	void MountDyn();												//Assemblies - Newmark
+	void MountDynModal();											//Assemblies for analysis modal - insertion of the mass matrix and damping in the stiffness matrix for subsequent assembly global
+	void TransformMatrix();											//Assembles transformation matrix of coordinates
+	void MountGlobal();												//Fills the contribution of the element in the matrices global
+	void Zeros();													//Zeroes some matrices used in the calculations
+	void SaveLagrange();											//Saves data for configuration converged
+	void PreCalc();													//Pre-calculation of variables that and done a single time in the start
+	void InertialContributions();				                    //Calculates contributions of inertia of the Rigid Body
+	void MountFieldLoading();											//Calculates the contribution of the internal forces of field (acceleration of the gravidade)
 
-	//Variaveis do elemento
-	int RB_data_ID;													//ID dos parametros do Rigid Body
-	double v[1000];													//Variavel necessaria para o AceGen			
-	double** Jr;													//Tensor de inercia - formato double**
-	double* br;														//Vetor br - formato double*
-	double** DdT;													//Operador tangente
-	double* dT;														//Residuo
-	double** Ddfield;												//Carregamento de campo linearizado
-	double* dfield;													//Residuo carregamento de campo
+	//Variables of the element
+	int RB_data_ID;													//ID of the parameters of the Rigid Body
+	double v[1000];													//Variable necessary for the AceGen			
+	double** Jr;													//Tensor of inertia - formato double**
+	double* br;														//Vector br - formato double*
+	double** DdT;													//Operator tangent
+	double* dT;														//Residual
+	double** Ddfield;												//Loading of field linearizado
+	double* dfield;													//Residual loading of field
 	
-	double*	T1;														//Energia cinetica translacional
-	double*	T2;														//Energia cinetica rotacional
-	double*	T3;														//Energia cinetica acoplamento
-	double*	T;														//Energia cinetica
+	double*	T1;														//Kinetic energy translacional
+	double*	T2;														//Kinetic energy rotacional
+	double*	T3;														//Kinetic energy acoplamento
+	double*	T;														//Kinetic energy
 	double* L;														//Momentum Linear 
 	double* magL;													//Momentum Linear 
 	double* HG;													    //Momentum Angular around Barycenter
 	double* magHG;												    //Momentum Angular around Barycenter
 
 	
-	//Variaveis cinematicas - declaração
+	//Variables cinematicas - declaração
 	double alphai[3];
 	double ud[3];
 	double alphad[3];

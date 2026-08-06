@@ -10,57 +10,57 @@ class SplineElementPair
 public:
 	SplineElementPair();
 	virtual ~SplineElementPair();
-	//Chute inicial para coordenadas convectivas do par de superficies
+	//Initial guess for convective coordinates of the pair of surfaces
 	virtual void InitialGuess(SPContactData* c_data) = 0;
 	//Single function for both contributions
 	virtual void ContactSS(bool *stick, bool *stickupdated, bool *previouscontact, double* Rc, double** Kc, double** invH, double* convective, double* copy_convective, double* gti, double* gtpupdated, double* epsn, double* epsn_n, double* epst, double* cn, double* ct, double* mus, double* mud, double* fn, double* ft) = 0;
 	
-	virtual double ObjectivePhase1(Matrix& mc) = 0;								//Calcula a função objetivo para um conjunto de coordenadas convectivas - Phase 1
-	virtual void GradientPhase1(Matrix& mc, Matrix& mGra) = 0;					//Calcula o Gradiente da função objetivo - Phase 1
-	virtual void HessianPhase1(Matrix& mc, Matrix& mHes) = 0;					//Calcula a Hessiana da função objetivo - Phase 1
+	virtual double ObjectivePhase1(const Matrix& mc) = 0;								//Calculates the objective function for a set of convective coordinates - Phase 1
+	virtual void GradientPhase1(Matrix& mc, Matrix& mGra) = 0;					//Calculates the Gradient of the objective function - Phase 1
+	virtual void HessianPhase1(Matrix& mc, Matrix& mHes) = 0;					//Calculates the Hessian of the objective function - Phase 1
 
-	virtual int VerifyConvectiveRange(Matrix& mc) = 0;							//Verifica range de coordenadas convectivas
+	virtual int VerifyConvectiveRange(Matrix& mc) = 0;							//Checks range of convective coordinates
 	virtual void InitializeConvectiveRange() = 0;								//Initialize range of validity of convective coordinates
 
-	void WriteConvectiveRange();						//Escreve convective range no report
-	void PreCalc();																										//Pre calculo
-	void Alloc(SPContactData* c_data);																				//Aloca memória
-	void Free();																										//Libera memória											
-	void DefaultValues();																								//Valores Default de tolerancias e outras variaveis
+	void WriteConvectiveRange();						//Writes convective range in the report
+	void PreCalc();																										//Pre calculation
+	void Alloc(SPContactData* c_data);																				//Allocates memory
+	void Free();																										//Frees memory											
+	void DefaultValues();																								//Values Default of tolerancias and other variables
 
-	void EvaluateInvertedHessian(SPContactData* c_data);																//Calcula a inversa da Hessiana
-	bool FindMinimumSolution(SPContactData* c_data, Matrix* solution, int &return_info);								//Otimização - determinação de minimo
-	bool FindMinimumSolutionDegenerated(SPContactData* c_data, Matrix* P_0, Matrix* solution);							//Otimização - determinação de minimo
+	void EvaluateInvertedHessian(SPContactData* c_data);																//Calculates the inversa of the Hessian
+	bool FindMinimumSolution(SPContactData* c_data, Matrix* solution, int &return_info);								//Optimization - determination of minimum
+	bool FindMinimumSolutionDegenerated(SPContactData* c_data, Matrix* P_0, Matrix* solution);							//Optimization - determination of minimum
 
 	void BeginStepCheck(SPContactData* c_data);
 	bool EndStepCheck(SPContactData* c_data);
-	void SolveLCP(SPContactData* c_data);																				//Resolve problema local de contato
+	void SolveLCP(SPContactData* c_data);																				//Solves problem local of contact
 
 	int CharacterizeCriticalPoint(Matrix* solution);
 	int CharacterizeCriticalPointDegenerated(Matrix* solution, Matrix* P_0, bool print = false);
 
-	//Variaveis internas
-	int spline1_ID;			//ID da spline 1
-	int spline2_ID;			//ID da spline 2
+	//Variables internal
+	int spline1_ID;			//ID of the spline 1
+	int spline2_ID;			//ID of the spline 2
 	int surf1_ID;			//ID do spline element 1
 	int surf2_ID;			//ID do spline element 2
 	
 	bool alloc_control;
-	Matrix** cNR1;			//Solução da phase 1
+	Matrix** cNR1;			//Solution of the phase 1
 
-	double tol_small_1;		//Criterio para numero muito pequeno - residuo != 0
-	double tol_eig;			//Criterio para autovalor baixo
-	double tol_convective;	//Criterio para maximo erro nas coordenadas convectivas
+	double tol_small_1;		//Criterion for number very small - residual != 0
+	double tol_eig;			//Criterion for eigenvalue baixo
+	double tol_convective;	//Criterion for maximum error in the convective coordinates
 	double tol_ascent;
 	int seq_number;
 
-	int max_it_1;			//Numero maximo de iterações para otimização - phase 1
+	int max_it_1;			//Maximum number of iterations for optimization - phase 1
 
-	int n_pointwise;		//Numero de interações pointwise (atribuido no construtor)
+	int n_pointwise;		//Number of interações pointwise (assigned in the constructor)
 		
-	Matrix convective_range;//Matrix que guarda os ranges de coordenadas convectivas validas para as superficies
-	Matrix convective_max;	//Matrix que guarda os valores maximos de coordenadas convectivas
-	Matrix convective_min;	//Matrix que guarda os valores minimos de coordenadas convectivas
+	Matrix convective_range;//Matrix that stores the ranges of convective coordinates validas for the surfaces
+	Matrix convective_max;	//Matrix that stores the values maximos of convective coordinates
+	Matrix convective_min;	//Matrix that stores the values minimos of convective coordinates
 	double minimum_convective_range;
 	//TR report
 	FILE **f_TR_report;

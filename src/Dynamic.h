@@ -11,7 +11,7 @@ public:
 	void Write(FILE *f);		//Writes output file
 	bool Solve();				//Solves solution routine
 	void UpdateDyn();			//Atualizações - Newmark
-	void WriteResults(double time_value);		//Escreve resultados de acordo com uma amostragem especificada
+	void WriteResults(double time_value);		//Writes results according to a amostragem specified
 
 	//Parameters
 	double i_time_step;

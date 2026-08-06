@@ -39,7 +39,7 @@ bool SecRectangle::Read(FILE *f)
 	else
 		return false;
 
-	//Salva a posição (stream)
+	//Saves the position (stream)
 	fpos_t pos;
 	fgetpos(f, &pos);
 	fscanf(f, "%s", s);
@@ -69,7 +69,7 @@ bool SecRectangle::Read(FILE *f)
 			return false;
 	}
 	else
-		fsetpos(f, &pos);	//volta a posição anterior
+		fsetpos(f, &pos);	//turn the position previous
 
 	return true;
 }
@@ -87,7 +87,7 @@ void SecRectangle::PreCalc()
 	I22 = h*b*b*b / 12.0;
 	I12 = 0.0;
 	I33 = I11 + I22;
-	//Momento de torção - Timoshenko - solução da torção de Saint-Venant - Theory of Elasticity - pag. ~278 eq 160
+	//Moment of torção - Timoshenko - solution of the torção of Saint-Venant - Theory of Elasticity - pag. ~278 eq 160
 	double temp = 0;
 	for (int n = 1; n < 22; n = n + 2)
 	{ 

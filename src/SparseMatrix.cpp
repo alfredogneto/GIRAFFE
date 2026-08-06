@@ -1,6 +1,10 @@
 #include "SparseMatrix.h"
 #include <iostream>
+#ifdef GIRAFFE_USE_MKL
 #include <mkl.h>
+#else
+#include <Eigen/SparseLU>
+#endif
 
 #include <arpack.hpp>
 #include <debug_c.hpp>  // debug arpack.
@@ -9,7 +13,7 @@
 #include "Matrix.h"
 #include "SolverOptions.h"
 #include "Database.h"
-//Variaveis globais
+//Global variables
 extern
 Database db;
 
@@ -19,20 +23,20 @@ SparseMatrix::SparseMatrix()
 	rows = 1;
 	cols = 1;
 	non_null_estimative = 1;
-	m_matrix.resize(1, 1);				//tamanho da matriz
-	tripletList.reserve(1);				//pre-aloca o triplet list
+	m_matrix.resize(1, 1);				//size of the matrix
+	tripletList.reserve(1);				//pre-allocates the triplet list
 }
 SparseMatrix::SparseMatrix(int e_rows,int e_cols, int e_non_null_estimative)
 {
 	rows = e_rows;
 	cols = e_cols;
 	non_null_estimative = e_non_null_estimative;
-	m_matrix.resize(e_rows, e_cols);					//tamanho da matriz
+	m_matrix.resize(e_rows, e_cols);					//size of the matrix
 	m_matrix.reserve(e_non_null_estimative);
-	tripletList.reserve(2*e_non_null_estimative);		//pre-aloca o triplet list
+	tripletList.reserve(2*e_non_null_estimative);		//pre-allocates the triplet list
 	mounted = false;
 }
-SparseMatrix::SparseMatrix(SparseMatrix &copied)
+SparseMatrix::SparseMatrix(const SparseMatrix &copied)
 {
 	this->rows = copied.rows;
 	this->cols = copied.cols;
@@ -44,48 +48,54 @@ SparseMatrix::SparseMatrix(SparseMatrix &copied)
 
 SparseMatrix::~SparseMatrix()
 {
-	//Não ha variaveis a serem desalocadas manualmente (todas são automaticas)
+	//Nï¿½o there is variables the to be deallocated manualmente (all sï¿½o automaticas)
 }
 
-//Zera coeficientes da matriz esparsa (alocados na tripletList)
+//Zeroes coefficients of the sparse matrix (allocated in the tripletList)
 void SparseMatrix::Clear()
 {
 	tripletList.erase(tripletList.begin(), tripletList.end());
 	mounted = false;
 }
 
-//Seta na posição (i,j) da matriz quadrada o valor v
+//Sets in the posiï¿½ï¿½o (i,j) of the square matrix the value v
 void SparseMatrix::setValue(int i, int j, double v)
 {
 	if (i + 1 > m_matrix.rows() || j + 1 > m_matrix.cols())
 		printf("Error assigning sparse matrix value\n");
 	else
 		tripletList.push_back(T(i, j, v));
-	if (mounted)//se houve inserção após montagem, seta montagem como falso
+	if (mounted)//if there was inserï¿½ï¿½o apï¿½s assembly, sets assembly as false
 		mounted = false;
 }
-void SparseMatrix::Mount()
+void SparseMatrix::Mount() const
 {
-	m_matrix.setFromTriplets(tripletList.begin(), tripletList.end());		//preparação da matriz - montagem a partir do triplet list
+	m_matrix.setFromTriplets(tripletList.begin(), tripletList.end());		//preparaï¿½ï¿½o of the matrix - assembly the partir of the triplet list
 	mounted = true;
 }
 
-//Resolve o sistema linear da forma Ax=b
-Matrix sparsesystem(SparseMatrix &A, Matrix &b, int *info_fail,int processors,int solver_type)	
+//Solves the linear system of the way Ax=b
+Matrix sparsesystem(SparseMatrix &A, Matrix &b, int *info_fail,int processors,int solver_type)
 {
 	if (A.mounted == false)
 		A.Mount();
-	
-	//Parametros - PARDISO
-	int			mtype = 11;						//Tipo de solução -- Real unsymmetric matrix
-	int			nrhs = 1;						//Numero de colunas do lado direito da equacao
-	void*		pt[64];							//Ponteiro de memoria interno do PARDISO
-	int			iparm[64];						//Parametros de controle do PARDISO
-	int			maxfct = 1;						//Numero maximo de fatorizacoes numericas salvas na memória
-	int			mnum = 1;						//Qual fatorizacao utilizar
-	int			phase;							//Fase do processo de solução
-	int			msglvl = 0;						//Imprime informações estatisticas
-	int			solver;							//0 - Esparso 
+
+	int			n = (int)A.m_matrix.rows();						//Number of rows of the matrix
+	Matrix		x(n);										//Matrix of return - soluï¿½ï¿½o
+	if (n == 0)
+		return n;
+
+#ifdef GIRAFFE_USE_MKL
+	//Parameters - PARDISO
+	int			mtype = 11;						//Type of soluï¿½ï¿½o -- Real unsymmetric matrix
+	int			nrhs = 1;						//Number of columns of the lado direito of the equacao
+	void*		pt[64];							//Pointer of memory internal of the PARDISO
+	int			iparm[64];						//Parameters of control of the PARDISO
+	int			maxfct = 1;						//Maximum number of fatorizacoes numericas saved in the memï¿½ria
+	int			mnum = 1;						//Qual fatorizacao use
+	int			phase;							//Fase of the processo of soluï¿½ï¿½o
+	int			msglvl = 0;						//Prints informaï¿½ï¿½es estatisticas
+	int			solver;							//0 - Esparso
 												//1 - Iterativo
 	if (solver_type != 0 && solver_type != 1)
 	{
@@ -96,81 +106,104 @@ Matrix sparsesystem(SparseMatrix &A, Matrix &b, int *info_fail,int processors,in
 	{
 		solver = solver_type;
 	}
-	//Variaveis auxiliares
-	double		ddum;										//Variavel dummy
-	int			idum;										//Variavel dummy
+	//Auxiliary variables
+	double		ddum;										//Variable dummy
+	int			idum;										//Variable dummy
 
-	double*		a = A.m_matrix.valuePtr();					//Valores da matriz
-	int*		ia = A.m_matrix.outerIndexPtr();			//indice dos valores "outer" da matriz
-	int*		ja = A.m_matrix.innerIndexPtr();			//indice do primeiro valor da linha da matriz
+	double*		a = A.m_matrix.valuePtr();					//Values of the matrix
+	int*		ia = A.m_matrix.outerIndexPtr();			//indice of the values "outer" of the matrix
+	int*		ja = A.m_matrix.innerIndexPtr();			//indice of the first value of the linha of the matrix
 
-	int			n = (int)A.m_matrix.rows();						//Numero de linhas da matriz
-	int			nnz = ia[n];								//Numero de valores na matriz
-	Matrix		x(n);										//Matriz de retorno - solução
-	if (n == 0)
-		return n;
+	int			nnz = ia[n];								//Number of values in the matrix
 	///////////////////////////////////////////////////////////////////////////
-	//     Inicializa parametros de controle                                 //
+	//     Initializes parameters of control                                 //
 	///////////////////////////////////////////////////////////////////////////
 	pardisoinit(pt, &mtype, iparm);
-	//Setando algumas variaveis especificas de controle
+	//Setting some variables especificas of control
 	iparm[1] = 3;
 	if (solver == 1)//solve iterativo
 		iparm[3] = 31;
 	///////////////////////////////////////////////////////////////////////////
-	//     Adiciona 1 ao indice - 1-index (FORTRAN)                          //
+	//     Adds 1 to the indice - 1-index (FORTRAN)                          //
 	///////////////////////////////////////////////////////////////////////////
-	for (size_t i = 0, iLen = n + 1; i < iLen; i++) 
+	for (size_t i = 0, iLen = n + 1; i < iLen; i++)
 	{
 		ia[i] += 1;
 	}
 
-	for (size_t i = 0, iLen = nnz; i < iLen; i++) 
+	for (size_t i = 0, iLen = nnz; i < iLen; i++)
 	{
 		ja[i] += 1;
 	}
 	///////////////////////////////////////////////////////////////////////////
-	//     Fase de analise, fatorização numerica, solução e refinamento      //
+	//     Fase of analysis, fatorizaï¿½ï¿½o numerica, soluï¿½ï¿½o and refinamento      //
 	//     iterativo                                                         //
 	///////////////////////////////////////////////////////////////////////////
 	phase = 13;
 
 	pardiso(pt, &maxfct, &mnum, &mtype, &phase, &n, a, ia, ja, &idum, &nrhs, iparm, &msglvl, b.getMatrix(), x.getMatrix(), info_fail);
 
-	if (*info_fail != 0) 
+	if (*info_fail != 0)
 	{
 		std::cout << "ERROR during analysis, numerical factorization, solver, iterative refinement: " << *info_fail << std::endl;
 	}
 	///////////////////////////////////////////////////////////////////////////
-	//     Subtrai 1 do indice - 0-index (C++)                               //
+	//     Subtrai 1 of the indice - 0-index (C++)                               //
 	///////////////////////////////////////////////////////////////////////////
-	for (size_t i = 0, iLen = n + 1; i < iLen; i++) 
+	for (size_t i = 0, iLen = n + 1; i < iLen; i++)
 	{
 		ia[i] -= 1;
 	}
 
-	for (size_t i = 0, iLen = nnz; i < iLen; i++) 
+	for (size_t i = 0, iLen = nnz; i < iLen; i++)
 	{
 		ja[i] -= 1;
 	}
 	///////////////////////////////////////////////////////////////////////////
-	//     Fase de limpeza de memória                                        //
+	//     Fase of limpeza of memï¿½ria                                        //
 	///////////////////////////////////////////////////////////////////////////
 	phase = -1;
 	int temp_fail = *info_fail;
 	pardiso(pt, &maxfct, &mnum, &mtype, &phase, &n, &ddum, ia, ja, &idum, &nrhs, iparm, &msglvl, &ddum, &ddum, info_fail);
 	if (temp_fail != 0 || *info_fail != 0)
 		*info_fail = 1; //falha
+#else
+	//Non-MKL platforms (macOS/Linux): no PARDISO available, so solve the sparse
+	//system with Eigen's SparseLU instead. Note: this always does a direct
+	//solve - the PARDISO "Iterative" solver_type option has no equivalent here.
+	(void)processors;
+	(void)solver_type;
+	Eigen::SparseMatrix<double, Eigen::ColMajor, int> A_colmajor = A.m_matrix;
+	Eigen::SparseLU<Eigen::SparseMatrix<double, Eigen::ColMajor, int>> solver;
+	solver.compute(A_colmajor);
+	if (solver.info() != Eigen::Success)
+	{
+		std::cout << "ERROR during sparse LU factorization (Eigen SparseLU)." << std::endl;
+		*info_fail = 1;
+		return x;
+	}
+	Eigen::Map<Eigen::VectorXd> b_vec(b.getMatrix(), n);
+	Eigen::VectorXd x_vec = solver.solve(b_vec);
+	if (solver.info() != Eigen::Success)
+	{
+		std::cout << "ERROR during sparse solve (Eigen SparseLU)." << std::endl;
+		*info_fail = 1;
+		return x;
+	}
+	for (int i = 0; i < n; i++)
+		x(i, 0) = x_vec(i);
+	*info_fail = 0;
+#endif
 
 	return x;
 }
 
-//Operador Multiplicacao de matrizes (matrix2 deve necessariamente ser um vetor)
-Matrix operator * (SparseMatrix &matrix1, Matrix &matrix2)
+//Operator Multiplication of matrices (matrix2 must necessariamente be a vector)
+Matrix operator * (const SparseMatrix &matrix1, const Matrix &matrix2)
 {
 	if (matrix1.mounted == false)
 		matrix1.Mount();
-	//Verificação da possibilidade de multiplicação
+	//Verificaï¿½ï¿½o of the possibility of multiplicaï¿½ï¿½o
 	if (matrix1.m_matrix.cols() != matrix2.getLines())
 	{
 		printf("Impossible to multiply matrices. Dimensions are not compatible\n");
@@ -180,10 +213,10 @@ Matrix operator * (SparseMatrix &matrix1, Matrix &matrix2)
 	{
 		Matrix return_m((long)matrix1.m_matrix.rows(), 1);
 
-		double*		a = matrix1.m_matrix.valuePtr();					//Valores da matriz
-		int*		ia = matrix1.m_matrix.outerIndexPtr();			//indice dos valores das colunas da matriz
-		int*		ja = matrix1.m_matrix.innerIndexPtr();			//indice do primeiro valor da linha da matriz
-		//Multiplicação
+		double*		a = matrix1.m_matrix.valuePtr();					//Values of the matrix
+		int*		ia = matrix1.m_matrix.outerIndexPtr();			//indice of the values of the columns of the matrix
+		int*		ja = matrix1.m_matrix.innerIndexPtr();			//indice of the first value of the linha of the matrix
+		//Multiplicaï¿½ï¿½o
 		for (int i = 0; i < matrix1.m_matrix.rows(); i++)
 		{
 			for (int pos = ia[i]; pos < ia[i + 1]; pos++)
@@ -193,8 +226,8 @@ Matrix operator * (SparseMatrix &matrix1, Matrix &matrix2)
 	}
 }
 
-//Operador Multiplicacao de matriz esparsa por escalar
-SparseMatrix operator * (double sigma, SparseMatrix &matrix1)
+//Operator Multiplication of sparse matrix by scalar
+SparseMatrix operator * (double sigma, const SparseMatrix &matrix1)
 {
 	SparseMatrix return_m;
 	if (matrix1.mounted == false)
@@ -208,15 +241,15 @@ SparseMatrix operator * (double sigma, SparseMatrix &matrix1)
 	return return_m;
 }
 
-//Operador Soma de matrizes esparsas
-SparseMatrix operator + (SparseMatrix& matrix1, SparseMatrix& matrix2)
+//Operator Sum of matrices esparsas
+SparseMatrix operator + (const SparseMatrix& matrix1, const SparseMatrix& matrix2)
 {
 	SparseMatrix return_m;
 	if (matrix1.mounted == false)
 		matrix1.Mount();
 	if (matrix2.mounted == false)
 		matrix2.Mount();
-	//Verificação da possibilidade de soma
+	//Verificaï¿½ï¿½o of the possibility of sum
 	if (matrix1.m_matrix.rows() != matrix2.m_matrix.rows() || matrix1.m_matrix.cols() != matrix2.m_matrix.cols())
 	{
 		printf("Impossible to sum matrices. Dimensions are not compatible\n");
@@ -233,11 +266,11 @@ SparseMatrix operator + (SparseMatrix& matrix1, SparseMatrix& matrix2)
 	}
 }
 
-//Função de escrita da matriz em arquivo de texto
+//Funï¿½ï¿½o of matrix writing in file of text
 void SparseMatrix::WriteMatrix(char* name)
 {
 	FILE *f = fopen(name, "w");
-	//Loop para percorrer as linhas
+	//Loop for iterate over the rows
 	fprintf(f, "rows\t%d\n",(int)m_matrix.rows());
 	fprintf(f, "columns\t%d\n",(int)m_matrix.cols());
 	fprintf(f, "row\t");
@@ -253,7 +286,7 @@ void SparseMatrix::WriteMatrix(char* name)
 	fclose(f);
 }
 
-//Operador de atribuição
+//Operator of atribuiï¿½ï¿½o
 SparseMatrix &SparseMatrix::operator = (SparseMatrix const &matrix1)
 {
 	rows = matrix1.rows;
@@ -262,24 +295,24 @@ SparseMatrix &SparseMatrix::operator = (SparseMatrix const &matrix1)
 	non_null_estimative = matrix1.non_null_estimative;
 	mounted = matrix1.mounted;
 	tripletList = matrix1.tripletList;
-	//Retorna esta matriz
+	//Returns this matrix
 	return *this;
 }
 
-//Calcula freq. naturais usando código ARPACK - Shifted inverse mode
+//Calculates freq. naturais using cï¿½digo ARPACK - Shifted inverse mode
 Matrix sparseeigen(SparseMatrix &K, SparseMatrix &M, Matrix &z, int n_e, bool eigenvectors, int* ret, double tolerance)
 {
 	*ret = 0;
-	int ido = 0;				//Parametro de controle
-	char bmat = 'G';			//Autovalor generalizado
-	int n = K.rows;				//Ordem do problema
+	int ido = 0;				//Parameter of control
+	char bmat = 'G';			//Eigenvalue generalizado
+	int n = K.rows;				//Order of the problem
 	char which[2];
-	which[0] = 'L';				//Larger module parts of the eigenvalues (por conta do shift inverse,depois serão transformados para os menores)
+	which[0] = 'L';				//Larger module parts of the eigenvalues (by conta of the shift inverse,depois serï¿½o transformados for the menores)
 	which[1] = 'M';
-	int nev = n_e;				//Numero de autovalores requeridos
-	double tol = tolerance;		//Tolerancia - valor nulo para ativar o calculo interno da precisão de maquina, via Lapack
-	Matrix resid(n);			//Residuo
-	int ncv = 2 * n_e + 1;		//Dimensão da base utilizada para o calculo aproximado
+	int nev = n_e;				//Number of eigenvalues requeridos
+	double tol = tolerance;		//Tolerance - value null for activate the calculation internal of the precisï¿½o of maquina, via Lapack
+	Matrix resid(n);			//Residual
+	int ncv = 2 * n_e + 1;		//Dimensï¿½o of the base used for the calculation aproximado
 	Matrix v(n, ncv);
 	int ldv = n;
 	int* iparam;
@@ -288,19 +321,19 @@ Matrix sparseeigen(SparseMatrix &K, SparseMatrix &M, Matrix &z, int n_e, bool ei
 	iparam[2] = 300;			//Max iterations
 	iparam[6] = 3;				//Mode
 	int* ipntr;
-	ipntr = new int[14];		//Ponteiro para saidas
+	ipntr = new int[14];		//Pointer for saidas
 	Matrix workd(3 * n);
 	int lworkl = 3 * ncv*ncv + 18 * ncv;
 	Matrix workl(lworkl);
-	int info = 0;				//Indica para o ARPACK realizar um chute inicial aleatório
+	int info = 0;				//Indicates for the ARPACK perform a initial guess aleatï¿½rio
 
-	double sigma = 0;			//Shift value - manter zero, para capturar os menores autovalores do problema (transformação espectral de interesse)
+	double sigma = 0;			//Shift value - keep zero, for capturar the menores eigenvalues of the problem (transformaï¿½ï¿½o espectral of interest)
 	double sigmar = sigma;
 	double sigmai = 0;
 
 	Matrix return_m(n_e, 2);
 
-	//Verificações de tamanhos de matrizes
+	//Verificaï¿½ï¿½es of tamanhos of matrices
 	if (ncv > n)
 	{
 		*ret = -1;
@@ -310,22 +343,48 @@ Matrix sparseeigen(SparseMatrix &K, SparseMatrix &M, Matrix &z, int n_e, bool ei
 		
 
 	SparseMatrix C = K + ((-sigma)*M);
-	
+
+#ifndef GIRAFFE_USE_MKL
+	// C never changes across ARPACK's shift-invert iterations - only the
+	// right-hand side does - so factorize it once here instead of letting
+	// every ido==-1/ido==1 solve below re-factorize it from scratch via
+	// sparsesystem(). With PARDISO (Windows/MKL) a from-scratch factorize is
+	// fast enough not to matter; with Eigen::SparseLU it's the dominant cost
+	// of this whole function (one call could take tens of seconds on a model
+	// with a few thousand DOFs and ~300 ARPACK iterations).
+	if (C.mounted == false)
+		C.Mount();
+	Eigen::SparseMatrix<double, Eigen::ColMajor, int> C_colmajor = C.m_matrix;
+	Eigen::SparseLU<Eigen::SparseMatrix<double, Eigen::ColMajor, int>> C_solver;
+	C_solver.compute(C_colmajor);
+	if (C_solver.info() != Eigen::Success)
+	{
+		printf("Error during sparse LU factorization (Eigen SparseLU) in sparseeigen.\n");
+		*ret = -1;
+		return return_m;
+	}
+#endif
+
 	Matrix temp1(n);
 	Matrix Awd(n);
-	///LOOP chamando a função dnaupd do ARPACK////
+	///LOOP chamando a funï¿½ï¿½o dnaupd do ARPACK////
 	while (true)
 	{
 		arpack::internal::dnaupd_c(&ido, &bmat, n, which, nev, tol, resid.getMatrix(),ncv, v.getMatrix(), ldv, iparam, ipntr, workd.getMatrix(), workl.getMatrix(), lworkl, &info);
-		//printf("Iteration \t %lf\n",norm(resid));//Plota norma do residuo
+		//printf("Iteration \t %lf\n",norm(resid));//Plots norm of the residual
 		if (ido == -1)
 		{
 			//printf("IDO = -1\n");
 			for (int i = 0; i<n; i++)
 				temp1(i, 0) = workd(ipntr[0] - 1 + i, 0);
 			Awd = M*temp1;
+#ifdef GIRAFFE_USE_MKL
 			int info_fail = 0;
-			Awd = sparsesystem(C, Awd, &info_fail, db.solver_options->processors, db.solver_options->solver);	//Resolve o sistema linear
+			Awd = sparsesystem(C, Awd, &info_fail, db.solver_options->processors, db.solver_options->solver);	//Solves the linear system
+#else
+			Eigen::Map<Eigen::VectorXd> Awd_vec(Awd.getMatrix(), n);
+			Awd_vec = C_solver.solve(Awd_vec);
+#endif
 			for (int i = 0; i<n; i++)
 				workd(ipntr[1] - 1 + i, 0) = Awd(i, 0);
 		}
@@ -334,8 +393,13 @@ Matrix sparseeigen(SparseMatrix &K, SparseMatrix &M, Matrix &z, int n_e, bool ei
 			//printf("IDO = 1\n");
 			for (int i = 0; i<n; i++)
 				temp1(i, 0) = workd(ipntr[2] - 1 + i, 0);
+#ifdef GIRAFFE_USE_MKL
 			int info_fail = 0;
-			temp1 = sparsesystem(C, temp1, &info_fail, 1, 0);	//Resolve o sistema linear
+			temp1 = sparsesystem(C, temp1, &info_fail, 1, 0);	//Solves the linear system
+#else
+			Eigen::Map<Eigen::VectorXd> temp1_vec(temp1.getMatrix(), n);
+			temp1_vec = C_solver.solve(temp1_vec);
+#endif
 			for (int i = 0; i<n; i++)
 				workd(ipntr[1] - 1 + i, 0) = temp1(i, 0);
 		}
@@ -354,19 +418,19 @@ Matrix sparseeigen(SparseMatrix &K, SparseMatrix &M, Matrix &z, int n_e, bool ei
 			*ret = -1;
 			return return_m;
 		}
-		else//Convergência ocorreu - saida do loop
+		else//Convergï¿½ncia ocorreu - output of the loop
 			break;
 	}//end of while
 
-	//Pós - processamento do ARPACK	
-	//Os autovetores serão armazenados em z (parametro de entrada da função), se requeridos
-	int rvec = int (eigenvectors);		//Computar autovetores ou não
+	//Pï¿½s - processamento do ARPACK	
+	//The eigenvectors serï¿½o armazenados in z (parameter of input of the funï¿½ï¿½o), if requeridos
+	int rvec = int (eigenvectors);		//Compute eigenvectors or nï¿½o
 	char Howmny = 'A';
 	int *select;
 	select = new int[ncv];
-	Matrix dr(nev + 1);		//parte real dos autovalores
-	Matrix di(nev + 1);		//parte imaginaria dos autovalores
-	Matrix res_calc(nev + 1);//para salvar o residuo calculado dos autovetores
+	Matrix dr(nev + 1);		//part real of the eigenvalues
+	Matrix di(nev + 1);		//part imaginaria of the eigenvalues
+	Matrix res_calc(nev + 1);//for save the residual calculated of the eigenvectors
 	int ldz = n;
 	Matrix Workev(3 * ncv);
 	arpack::internal::dneupd_c(rvec, &Howmny, select, dr.getMatrix(), di.getMatrix(), z.getMatrix(),ldz, sigmar, sigmai, Workev.getMatrix(), &bmat, n, which, nev,
@@ -384,16 +448,16 @@ Matrix sparseeigen(SparseMatrix &K, SparseMatrix &M, Matrix &z, int n_e, bool ei
 			return_m(i, 0) = dr(i, 0);
 			return_m(i, 1) = di(i, 0);
 		}
-		//Autovetores
+		//Eigenvectors
 		if (eigenvectors == true)
 		{
 			Matrix xr(n);
 			Matrix xi(n);
-			//Percorre cada um dos autovetores calculados para calculo do erro cometido
+			//Iterates over each a of the eigenvectors calculated for calculation of the error cometido
 			bool first = true;
 			for (int j = 0; j < iparam[4]; j++)
 			{
-				//Autovalor real
+				//Eigenvalue real
 				if (di(j, 0) == 0.0)
 				{
 					for (int cp = 0; cp < n; cp++)
@@ -401,19 +465,19 @@ Matrix sparseeigen(SparseMatrix &K, SparseMatrix &M, Matrix &z, int n_e, bool ei
 					Awd = K*xr - dr(j, 0)*(M*xr);
 					res_calc(j, 0) = norm(Awd)/abs(dr(j,0));
 				}
-				else//Autovalor complexo
+				else//Eigenvalue complexo
 				{
-					if (first)//se for o primeiro dos autovetores (o próximo sera complexo conjugado)
+					if (first)//if for the first of the eigenvectors (the prï¿½ximo will be complexo conjugado)
 					{
 						for (int cp = 0; cp < n; cp++)
 						{
-							xr(cp, 0) = z(cp, j);		//parte real
-							xi(cp, 0) = z(cp, j + 1);	//parte imaginaria
+							xr(cp, 0) = z(cp, j);		//part real
+							xi(cp, 0) = z(cp, j + 1);	//part imaginaria
 						}
-						//parte real
+						//part real
 						Awd = K*xr - dr(j, 0)*(M*xr) + di(j, 0)*(M*xi);
 						res_calc(j, 0) = norm(Awd);
-						//parte imaginaria
+						//part imaginaria
 						Awd = K*xi - dr(j, 0)*(M*xi) - di(j, 0)*(M*xr);
 						double normi = norm(Awd);
 						res_calc(j, 0) = sqrt(res_calc(j, 0)*res_calc(j, 0) + normi*normi);
@@ -428,12 +492,12 @@ Matrix sparseeigen(SparseMatrix &K, SparseMatrix &M, Matrix &z, int n_e, bool ei
 		}
 	}
 
-	//Check final de execução
+	//Check final of execuï¿½ï¿½o
 	double res = norm(res_calc);
 	if (res > tolerance)
 		*ret = -2;
 	
-	//Autovalores e residuos calculados
+	//Eigenvalues and residuals calculated
 	db.myprintf("\nARPACK output:\n");
 	for (int i = 0; i < n_e; i++)
 		db.myprintf("%.6f + %.6f i -> residual %.2e\n", dr(i, 0), di(i, 0), res_calc(i,0));
@@ -444,8 +508,8 @@ Matrix sparseeigen(SparseMatrix &K, SparseMatrix &M, Matrix &z, int n_e, bool ei
 	delete[] select;	
 	return return_m;
 
-	//Valores de retorno
-	//-1 - ocorreu erro durante a execução do dneupd
-	//-2 - chegou a pós-processar, mas não houve convergência com a tolerancia especificada
-	// 0 - execução correta
+	//Values of return
+	//-1 - ocorreu error durante the execuï¿½ï¿½o of the dneupd
+	//-2 - chegou the pï¿½s-processar, but nï¿½o there was convergï¿½ncia with the tolerance specified
+	// 0 - execuï¿½ï¿½o correct
 }

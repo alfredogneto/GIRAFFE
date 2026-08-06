@@ -4,7 +4,7 @@
 #include "Matrix.h"
 
 #include"Database.h"
-//Variaveis globais
+//Global variables
 extern
 Database db;
 
@@ -31,7 +31,7 @@ bool NodeSet::Read(FILE *f)
 {
 	char s[1000];
 	fscanf(f, "%s", s);
-	//Verifica a palavra chave "Set"
+	//Checks the keyword "Set"
 	if (!strcmp(s, "NodeSet"))
 	{
 		fscanf(f, "%s", s);
@@ -40,17 +40,17 @@ bool NodeSet::Read(FILE *f)
 	else
 		return false;
 	fscanf(f, "%s", s);
-	//Verifica a palavra chave "Nodes"
+	//Checks the keyword "Nodes"
 	if (!strcmp(s, "Nodes"))
 	{
 		fscanf(f, "%s", s);
 		n_nodes = atoi(s);
-		//Alocação do vetor de nós
+		//Allocation of the vector of nodes
 		node_list = new int[n_nodes];
 	}
 	else
 		return false;
-	//Duas possibilidades de leitura:
+	//Two possibilities of reading:
 	//1 - List
 	//2 - Sequence
 	fscanf(f, "%s", s);
@@ -59,7 +59,7 @@ bool NodeSet::Read(FILE *f)
 		list = true;
 		for (int i = 0; i < n_nodes; i++)
 		{
-			fscanf(f, "%s", s);//Leitura do numero do nó
+			fscanf(f, "%s", s);//Reading of the number of the node
 			node_list[i] = atoi(s);
 		}
 	}
@@ -84,7 +84,7 @@ bool NodeSet::Read(FILE *f)
 			}
 			else
 				return false;
-			//Geração da lista de nós
+			//Geração of the list of nodes
 			for (int i = 0; i < n_nodes; i++)
 			{
 				node_list[i] = initial+i*increment;
@@ -93,7 +93,7 @@ bool NodeSet::Read(FILE *f)
 		else
 			return false;
 	}
-	//Se atingiu esse ponto, sinal de leitura correta de tudo: retorna true
+	//If atingiu this point, sign of reading correct of tudo: returns true
 	return true;
 }
 
@@ -107,7 +107,7 @@ void NodeSet::Write(FILE *f)
 
 void NodeSet::WriteMonitor(FILE *f, bool first_record, double time)
 {
-	//Variaveis do NodeSet para Monitor
+	//Variables of the NodeSet for Monitor
 	Matrix coordinates(3);
 	Matrix rot_euler(3);
 	Matrix force(3);
@@ -115,8 +115,8 @@ void NodeSet::WriteMonitor(FILE *f, bool first_record, double time)
 	Matrix temp_vec(3);
 	Matrix temp_coordinates(3);
 	Matrix temp_force(3);
-	//Percorre todos os nós de dentro do "set", salvando alguns resultados
-	//Calculo do angulo de rotação
+	//Iterates over all the nodes of inside of the "set", saving some results
+	//Calculation of the angle of rotation
 	int current_node;
 	Node *tempnode;
 	
@@ -133,7 +133,7 @@ void NodeSet::WriteMonitor(FILE *f, bool first_record, double time)
 		rot_euler(1, 0) = rot_euler(1, 0) + tempnode->copy_rot_euler[1];
 		rot_euler(2, 0) = rot_euler(2, 0) + tempnode->copy_rot_euler[2];
 	}
-	//Posição media dos nós da lista - esse sera o pólo para o momento a ser transportado no monitor
+	//Position media of the nodes of the list - this will be the pole for the moment the be transportado in the monitor
 	coordinates = (1.0 / n_nodes)*coordinates;
 	rot_euler = (1.0 / n_nodes)*rot_euler;
 
@@ -150,45 +150,45 @@ void NodeSet::WriteMonitor(FILE *f, bool first_record, double time)
 		(*tempnode->rot_rodrigues)(1, 0) = (tempnode->displacements)[4];
 		(*tempnode->rot_rodrigues)(2, 0) = (tempnode->displacements)[5];
 
-		//Esforços
+		//Internal forces
 		for (int j = 0; j < db.number_GLs_node; j++)
 		{
-			if (tempnode->GLs[j] < 0 && tempnode->active_GL[j] == 1)	//Se o grau de liberdade for fixo e ativo
+			if (tempnode->GLs[j] < 0 && tempnode->active_GL[j] == 1)	//If the degree of freedom for fixed and active
 				(*tempnode->load)(j, 0) = db.global_P_B(-tempnode->GLs[j] - 1, 0);
-			if (tempnode->GLs[j] > 0 && tempnode->active_GL[j] == 1)	//Se o grau de liberdade for livre e ativo
+			if (tempnode->GLs[j] > 0 && tempnode->active_GL[j] == 1)	//If the degree of freedom for free and active
 				(*tempnode->load)(j, 0) = db.global_I_A(+tempnode->GLs[j] - 1, 0);
 		}
-		//Conversão do pseudo-momento para momento (parametros de rotação de Rodrigues)
+		//Conversion of the pseudo-moment for moment (parameters of rotation of Rodrigues)
 		for (int j = 0; j < 3; j++)
 			(*tempnode->moment)(j, 0) = (*tempnode->load)(j + 3, 0);
-		//Calculando o operador Xi
-		*tempnode->A = skew(*tempnode->rot_rodrigues);			//Matriz A
-		tempnode->g = 4.0 / (4.0 + norm(*tempnode->rot_rodrigues)*norm(*tempnode->rot_rodrigues));		//função g(alpha) - em algumas ref. tb. chamado de h(alpha)
+		//Calculating the operator Xi
+		*tempnode->A = skew(*tempnode->rot_rodrigues);			//Matrix A
+		tempnode->g = 4.0 / (4.0 + norm(*tempnode->rot_rodrigues)*norm(*tempnode->rot_rodrigues));		//function g(alpha) - in some ref. tb. called of h(alpha)
 		*tempnode->Xi = tempnode->g*(*tempnode->I + 0.5*(*tempnode->A));
 		*tempnode->Xi_T_inv = invert3x3(transp(*tempnode->Xi));
 		*tempnode->moment = (*tempnode->Xi_T_inv)*(*tempnode->moment);
 		for (int j = 0; j < 3; j++)
 			(*tempnode->load)(j + 3, 0) = (*tempnode->moment)(j, 0);
 
-		//Atualização com contribuição da força do nó atual
+		//Update with contribution of the force of the node current
 		for (int j = 0; j < 3; j++)
 		{
-			force(j, 0) = force(j, 0) + (*tempnode->load)(j, 0);		//incremento na força total
-			temp_force(j, 0) = (*tempnode->load)(j, 0);					//salvando a força só do nó atual (para transporte do momento)
+			force(j, 0) = force(j, 0) + (*tempnode->load)(j, 0);		//increment in the force total
+			temp_force(j, 0) = (*tempnode->load)(j, 0);					//saving the force só of the node current (for transporte of the moment)
 		}
 			
-		//Atualização com contribuição do momento do nó atual
+		//Update with contribution of the moment of the node current
 		//Transporte
-		temp_vec = cross(temp_coordinates - coordinates, temp_force);	//binario de transporte
+		temp_vec = cross(temp_coordinates - coordinates, temp_force);	//binary of transporte
 		for (int j = 0; j < 3; j++)
 			moment(j, 0) = moment(j, 0) + (*tempnode->load)(j + 3, 0) + temp_vec(j,0);
 
 	}
 	
-	//Cabeçalho
+	//Header
 	if (first_record == true)
 		fprintf(f, "TIME\tX\tY\tZ\tROTX\tROTY\tROTZ\tFX\tFY\tFZ\tMX\tMY\tMZ\n");
-	//Informações a serem salvas
+	//Information the to be saved
 	fprintf(f, "%.6e\t%.6e\t%.6e\t%.6e\t%.6e\t%.6e\t%.6e\t%.6e\t%.6e\t%.6e\t%.6e\t%.6e\t%.6e\n",
 		time,
 		coordinates(0, 0),

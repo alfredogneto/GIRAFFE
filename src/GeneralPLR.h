@@ -11,36 +11,36 @@ public:
 	GeneralPLR();
 	~GeneralPLR();
 
-	bool Check();				//Checa inconsistências no elemento para evitar erros de execução
-	void Mount();													//Monta contatos
-	void MountGlobal();												//Preenche a contribuição do contato nas matrizes globais
+	bool Check();				//Checks inconsistencies in the element for avoid errors of execution
+	void Mount();													//Assembles contacts
+	void MountGlobal();												//Fills the contribution of the contact in the matrices global
 	bool Read(FILE *f);
 	void Write(FILE *f);
-	void WriteResults(FILE *f);										//Escreve arquivo de resultados
-	void WriteMonitor(FILE *f, bool first_record, double time);		//Escreve no monitor do contato
-	void PreCalc();													//Pre-calculo de variaveis que e feito uma unica vez no inicio
+	void WriteResults(FILE *f);										//Writes file of results
+	void WriteMonitor(FILE *f, bool first_record, double time);		//Writes in the monitor of the contact
+	void PreCalc();													//Pre-calculation of variables that and done a single time in the start
 	void PinballCheck();											//Checks proximity between each beam from LR to AS
-	void BeginStepCheck();											//checagem inicial do contato  - inicio de cada incremento
-	void SaveLagrange();											//Salva variaveis para descrição lagrangiana atualizada
-	bool HaveErrors();												//Retorna 1 - ha algum erro, mesmo que tenha convergido. Ex: penetração excessiva
-	void Band(int* band_fixed, int* band_free);						//Calcula a banda gerada na matriz global pelo contato
-	void MountDyn();												//Montagens - Newmark
-	void Alloc();													//Aloca estrutura de matrizes para endereçar vetores e matrizes devidos ao contato
-	void AllocSpecific(int i, int j);								//Aloca matrizes para contato especifico
-	void FreeSpecific(int i, int j);								//Aloca matrizes para contato especifico
+	void BeginStepCheck();											//check initial of the contact  - start of each increment
+	void SaveLagrange();											//Saves variables for description lagrangiana updated
+	bool HaveErrors();												//Returns 1 - there is some error, same that tenha converged. Ex: penetração excessiva
+	void Band(int* band_fixed, int* band_free);						//Calculates the band generated in the matrix global through the contact
+	void MountDyn();												//Assemblies - Newmark
+	void Alloc();													//Allocates structure of matrices for endereçar vectors and matrices devidos to the contact
+	void AllocSpecific(int i, int j);								//Allocates matrices for contact specific
+	void FreeSpecific(int i, int j);								//Allocates matrices for contact specific
 	void WriteVTK_XMLRender(FILE *f);
 	void WriteVTK_XMLForces(FILE *f);
-	//Variaveis internas
+	//Variables internal
 	double mu, epn, ept, pinball;
-	double c;														//Coeficiente de dissipação de energia
-	Matrix z1, z2;													//Posições centrais das particulas no PinballSearch
-	int n_particles;												//Numero de particulas
-	int n_elements;													//Numero de elementos dentro do line region
-	int n_LR;														//Numero (indice) do line region associado ao contato
-	Matrix ****c_stiffness;											//Matriz de rigidez
-	Matrix ****c_damping;											//Matriz de amortecimento
-	Matrix ****c_loading;											//Vetor de esforços externos
-	bool** alloc_control;											//Controle de alocação dinamica
+	double c;														//Coefficient of dissipação of energy
+	Matrix z1, z2;													//Positions centrais of the particles in the PinballSearch
+	int n_particles;												//Number of particles
+	int n_elements;													//Number of elements inside of the line region
+	int n_LR;														//Number (indice) of the line region associated to the contact
+	Matrix ****c_stiffness;											//Stiffness matrix
+	Matrix ****c_damping;											//Damping matrix
+	Matrix ****c_loading;											//Vector of internal forces external
+	bool** alloc_control;											//Control of allocation dynamics
 	Matrix I3;
 };
 

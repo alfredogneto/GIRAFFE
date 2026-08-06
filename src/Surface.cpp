@@ -17,13 +17,13 @@ bool Surface::ReadCommon(FILE *f)
 {
 	char s[1000];
 
-	//Salva a posição (stream)
+	//Saves the position (stream)
 	fpos_t pos;
 	fgetpos(f, &pos);
 	fscanf(f, "%s", s);
 	if (!strcmp(s, "Degeneration"))
 	{
-		//Salva a posição (stream)
+		//Saves the position (stream)
 		fgetpos(f, &pos);
 		fscanf(f, "%s", s);
 		if (!strcmp(s, "Coord1"))
@@ -36,7 +36,7 @@ bool Surface::ReadCommon(FILE *f)
 		else
 			fsetpos(f, &pos);
 
-		//Salva a posição (stream)
+		//Saves the position (stream)
 		fgetpos(f, &pos);
 		fscanf(f, "%s", s);
 		if (!strcmp(s, "Coord2"))
@@ -49,7 +49,7 @@ bool Surface::ReadCommon(FILE *f)
 		else
 			fsetpos(f, &pos);
 
-		//Salva a posição (stream)
+		//Saves the position (stream)
 		fgetpos(f, &pos);
 		fscanf(f, "%s", s);
 		if (!strcmp(s, "Div1"))
@@ -60,7 +60,7 @@ bool Surface::ReadCommon(FILE *f)
 		}
 		else
 			fsetpos(f, &pos);
-		//Salva a posição (stream)
+		//Saves the position (stream)
 		fgetpos(f, &pos);
 		fscanf(f, "%s", s);
 		if (!strcmp(s, "Div2"))
@@ -144,7 +144,7 @@ void Surface::InitializeDegeneration()
 
 void Surface::DegenerationPreCalc()
 {
-	//Alocação de acordo com nivel de degeneração
+	//Allocation according to nivel of degeneration
 	double copy_u1, copy_u2;
 	if (entered_u1)
 	{
@@ -162,7 +162,7 @@ void Surface::DegenerationPreCalc()
 	AllocDegeneration();
 	SetMinMaxRange();
 
-	//Preenche valores de coordenadas degeneradas
+	//Fills values of coordinates degeneradas
 	double step_u1 = (u1_max - u1_min) / div1;
 	double step_u2 = (u2_max - u2_min) / div2;
 	double cur_u1 = u1_min + 0.5 * step_u1;
@@ -179,7 +179,7 @@ void Surface::DegenerationPreCalc()
 		}
 		cur_u1 += step_u1;
 	}
-	//Correção em caso de entrada manual de coordenadas
+	//Correção in case of input manual of coordinates
 	if (entered_u1)
 	{
 		for (int j = 0; j < div2; j++)

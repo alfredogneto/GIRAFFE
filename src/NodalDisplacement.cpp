@@ -59,7 +59,7 @@ bool  NodalDisplacement::Read(FILE *f)
 	else
 		return false;
 	//////////////////////////////////////////
-	//Salva a posição (stream)
+	//Saves the position (stream)
 	fpos_t pos;
 	fgetpos(f, &pos);
 	fscanf(f, "%s", s);
@@ -74,7 +74,7 @@ bool  NodalDisplacement::Read(FILE *f)
 		sprintf(angular_parameters, "EulerAngles");//default
 	}
 	///////////////////////////////////////////
-	//Salva a posição (stream)
+	//Saves the position (stream)
 	fgetpos(f, &pos);
 	fscanf(f, "%s", s);
 	if (!strcmp(s, "BoolTable"))
@@ -163,7 +163,7 @@ void NodalDisplacement::Mount()
 		int GL;
 		double time_value = db.last_converged_time + db.current_time_step;
 		double dt = db.current_time_step;
-		//Varredura no node set pelos nós definidos, para imposição dos deslocamentos
+		//Sweep in the node set through the nodes definidos, for imposição of the displacements
 		for (int index_node = 0; index_node < db.node_sets[node_set - 1]->n_nodes; index_node++)
 		{
 			temp_node = db.node_sets[node_set - 1]->node_list[index_node];
@@ -181,26 +181,26 @@ void NodalDisplacement::Mount()
 					GL = -db.nodes[temp_node - 1]->GLs[j] - 1;
 					db.global_X_B(GL, 0) = disp(j, 0);
 					db.nodes[temp_node - 1]->displacements[j] = db.global_X_B(GL, 0);
-					db.nodes[temp_node - 1]->vel[j] = db.global_X_B(GL, 0) / dt;	//Velocidade prescrita
-					db.nodes[temp_node - 1]->accel[j] = (db.nodes[temp_node - 1]->vel[j] - db.nodes[temp_node - 1]->copy_vel[j]) / dt;	//Aceleração prescrita
+					db.nodes[temp_node - 1]->vel[j] = db.global_X_B(GL, 0) / dt;	//Velocity prescrita
+					db.nodes[temp_node - 1]->accel[j] = (db.nodes[temp_node - 1]->vel[j] - db.nodes[temp_node - 1]->copy_vel[j]) / dt;	//Acceleration prescrita
 				}
 			}
 
-			//Rotações
+			//Rotations
 			Matrix euler(3, 1);
 			Matrix rodrigues(3, 1);
 			MountEulerVector(&euler, &rodrigues, temp_node, time_value);
 
 			for (int j = 3; j < 6; j++)
 			{
-				//Se o grau de liberdade for fixo
+				//If the degree of freedom for fixed
 				if (db.nodes[temp_node - 1]->constraints[j] == 1 && db.nodes[temp_node - 1]->active_GL[j] == 1)
 				{
 					GL = -db.nodes[temp_node - 1]->GLs[j] - 1;
 					db.global_X_B(GL, 0) = rodrigues(j - 3, 0);
 					db.nodes[temp_node - 1]->displacements[j] = db.global_X_B(GL, 0);
-					db.nodes[temp_node - 1]->vel[j] = euler(j - 3, 0) / dt;	//Velocidade prescrita
-					db.nodes[temp_node - 1]->accel[j] = (db.nodes[temp_node - 1]->vel[j] - db.nodes[temp_node - 1]->copy_vel[j]) / dt;	//Aceleração prescrita
+					db.nodes[temp_node - 1]->vel[j] = euler(j - 3, 0) / dt;	//Velocity prescrita
+					db.nodes[temp_node - 1]->accel[j] = (db.nodes[temp_node - 1]->vel[j] - db.nodes[temp_node - 1]->copy_vel[j]) / dt;	//Acceleration prescrita
 				}
 			}
 		}
@@ -217,7 +217,7 @@ void NodalDisplacement::EvaluateExplicit(double t)
 		double t0 = db.last_converged_time;
 		if (t == t0)
 			t0 = db.last_converged_time - db.current_time_step;
-		//Varredura no node set pelos nós definidos, para imposição dos deslocamentos
+		//Sweep in the node set through the nodes definidos, for imposição of the displacements
 		for (int index_node = 0; index_node < db.node_sets[node_set - 1]->n_nodes; index_node++)
 		{
 			temp_node = db.node_sets[node_set - 1]->node_list[index_node];
@@ -246,14 +246,14 @@ void NodalDisplacement::EvaluateExplicit(double t)
 					
 			}
 
-			//Rotações
+			//Rotations
 			Matrix euler(3, 1);
 			Matrix rodrigues(3, 1);
 			MountEulerVector(&euler, &rodrigues, temp_node, t);
 
 			for (int j = 0; j < 3; j++)
 			{
-				//Se o grau de liberdade for fixo
+				//If the degree of freedom for fixed
 				if (db.nodes[temp_node - 1]->constraints[j + 3] == 1 && db.nodes[temp_node - 1]->active_GL[j + 3] == 1)
 				{
 					(*db.nodes[temp_node - 1]->alpha)(j, 0) = rodrigues(j, 0);
@@ -292,25 +292,25 @@ void NodalDisplacement::MountSingleNodeDisplacement()
 				GL = -db.nodes[temp_node - 1]->GLs[j] - 1;
 				db.global_X_B(GL, 0) = disp(j, 0);
 				db.nodes[temp_node - 1]->displacements[j] = db.global_X_B(GL, 0);
-				db.nodes[temp_node - 1]->vel[j] = db.global_X_B(GL, 0) / dt;	//Velocidade prescrita
-				db.nodes[temp_node - 1]->accel[j] = (db.nodes[temp_node - 1]->vel[j] - db.nodes[temp_node - 1]->copy_vel[j]) / dt;	//Aceleração prescrita
+				db.nodes[temp_node - 1]->vel[j] = db.global_X_B(GL, 0) / dt;	//Velocity prescrita
+				db.nodes[temp_node - 1]->accel[j] = (db.nodes[temp_node - 1]->vel[j] - db.nodes[temp_node - 1]->copy_vel[j]) / dt;	//Acceleration prescrita
 			}
 		}
-		//Rotações
+		//Rotations
 		Matrix euler(3, 1);
 		Matrix rodrigues(3, 1);
 		MountEulerVector(&euler, &rodrigues, temp_node, time_value);
 
 		for (int j = 3; j < 6; j++)
 		{
-			//Se o grau de liberdade for fixo
+			//If the degree of freedom for fixed
 			if (db.nodes[temp_node - 1]->constraints[j] == 1 && db.nodes[temp_node - 1]->active_GL[j] == 1)
 			{
 				GL = -db.nodes[temp_node - 1]->GLs[j] - 1;
 				db.global_X_B(GL, 0) = rodrigues(j - 3, 0);
 				db.nodes[temp_node - 1]->displacements[j] = db.global_X_B(GL, 0);
-				db.nodes[temp_node - 1]->vel[j] = euler(j - 3, 0) / dt;	//Velocidade prescrita
-				db.nodes[temp_node - 1]->accel[j] = (db.nodes[temp_node - 1]->vel[j] - db.nodes[temp_node - 1]->copy_vel[j]) / dt;	//Aceleração prescrita
+				db.nodes[temp_node - 1]->vel[j] = euler(j - 3, 0) / dt;	//Velocity prescrita
+				db.nodes[temp_node - 1]->accel[j] = (db.nodes[temp_node - 1]->vel[j] - db.nodes[temp_node - 1]->copy_vel[j]) / dt;	//Acceleration prescrita
 			}
 		}
 	}
@@ -326,7 +326,7 @@ double NodalDisplacement::GetValueAt(double t, int position)
 
 void NodalDisplacement::MountEulerVector(Matrix* euler, Matrix* rodrigues, int temp_node, double time)
 {
-	//Rotações
+	//Rotations
 	if (!strcmp(angular_parameters, "EulerVector"))
 	{
 		Matrix euler_ip(3, 1);
@@ -350,7 +350,7 @@ void NodalDisplacement::MountEulerVector(Matrix* euler, Matrix* rodrigues, int t
 		Q = I + g * (A + 0.5*A*A);
 		////////////////////////////////////////////////////////////////////////////////////////
 	}
-	//Rotações
+	//Rotations
 	if (!strcmp(angular_parameters, "EulerAngles"))
 	{
 		double phi = 0.0;

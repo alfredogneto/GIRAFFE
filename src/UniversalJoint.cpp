@@ -4,13 +4,13 @@
 #include "InitialCondition.h"
 #include "CoordinateSystem.h"
 #include"Database.h"
-//Variaveis globais
+//Global variables
 extern
 Database db;
 
 UniversalJoint::UniversalJoint()
 {
-	n_GL = 4;						//Dois graus de liberdade (esse vinculo possui 4 multiplicadores de lagrange)
+	n_GL = 4;						//Two degrees of freedom (this constraint has 4 Lagrange multipliers)
 	active_lambda = new int[n_GL];
 	lambda = new double[n_GL];
 	copy_lambda = new double[n_GL];
@@ -24,7 +24,7 @@ UniversalJoint::UniversalJoint()
 	{
 		active_lambda[i] = 0;
 		GLs[i] = 0;
-		//Chute inicial para os lambdas: valores nulos
+		//Initial guess for the lambdas: values null
 		lambda[i] = 0.0;
 		copy_lambda[i] = 0.0;
 	}
@@ -47,13 +47,13 @@ UniversalJoint::UniversalJoint()
 	ei1A = Matrix(3);
 	ei2B = Matrix(3);
 	
-	//As contribuições estão divididas em duas partes:
-	//Parte 1 - exatamente a mesma contribuição do Same Displacement
-	//Parte 2 - restrições das rotações
-	//Matriz de rigidez tangente e vetor residuo
+	//The contributions estão divididas in two parts:
+	//Part 1 - exatamente the same contribution of the Same Displacement
+	//Part 2 - constraints of the rotations
+	//Stiffness matrix tangent and vector residual
 	stiffness1 = new Matrix(9, 9);
 	residual1 = new Matrix(9, 1);
-	//Matriz de rigidez tangente e vetor residuo
+	//Stiffness matrix tangent and vector residual
 	stiffness2 = new double*[7];
 	for (int i = 0; i < 7; i++)
 		stiffness2[i] = new double[7];
@@ -77,7 +77,7 @@ UniversalJoint::~UniversalJoint()
 	delete[]temp_lambda;
 }
 
-//Leitura
+//Reading
 bool UniversalJoint::Read(FILE *f)
 {
 	char s[1000];
@@ -113,7 +113,7 @@ bool UniversalJoint::Read(FILE *f)
 	}
 	else
 		return false;
-	//Salva a posição (stream)
+	//Saves the position (stream)
 	fpos_t pos;
 	fgetpos(f, &pos);
 	fscanf(f, "%s", s);
@@ -125,7 +125,7 @@ bool UniversalJoint::Read(FILE *f)
 		bool_table.SetDefault(true);
 	}
 
-	//TESTE para verificar ortogonalidade entre E1A e E2B
+	//TEST for check orthogonality between E1A and E2B
 	if (dot(*db.CS[csA - 1]->E1, *db.CS[csB - 1]->E2) != 0.0)
 	{
 		db.myprintf("Error in UniversalJoint %d. E1 from CSA must be orthogonal to E2 from CSB.\n",number);
@@ -135,7 +135,7 @@ bool UniversalJoint::Read(FILE *f)
 	return true;
 }
 
-//Gravação
+//Recording
 void UniversalJoint::Write(FILE *f)
 {
 	fprintf(f, "UniversalJoint\t%d\tNodes\t%d\t%d\tCSA\t%d\tCSB\t%d\n",
@@ -146,7 +146,7 @@ void UniversalJoint::Write(FILE *f)
 		csB);
 }
 
-//Escreve no monitor do SpecialConstraint
+//Writes in the monitor of the SpecialConstraint
 void UniversalJoint::WriteMonitor(FILE *f, bool first_record, double time)
 {
 
@@ -157,7 +157,7 @@ void UniversalJoint::WriteVTK_XMLRender(FILE *f)
 
 }
 
-//Checa inconsistências no SC para evitar erros de execução
+//Checks inconsistencies in the SC for avoid errors of execution
 bool UniversalJoint::Check()
 {	
 	if (node_A > db.number_nodes)
@@ -168,7 +168,7 @@ bool UniversalJoint::Check()
 		return false;
 	if (csB > db.number_CS)
 		return false;
-	//Checagem das condições iniciais
+	//Check of the initial conditions
 	int temp_node = 0;
 	for (int i = 0; i < db.number_IC; i++)
 	{
@@ -181,18 +181,18 @@ bool UniversalJoint::Check()
 	return true;
 }
 
-//Montagem dos residuos e rigidez tangente
+//Assembly of the residuals and stiffness tangent
 void UniversalJoint::Mount()
 {
-	//Nesse vinculo a rigidez tangente da parte 1 não se modifica nunca. e montada no PreCalc()
-	//Montagem do residuo da parte 1:
+	//In this constraint the stiffness tangent of the part 1 not if modifies never. and montada in the PreCalc()
+	//Assembly of the residual of the part 1:
 	if (active_lambda[0] == 1 && active_lambda[1] == 1 && active_lambda[2] == 1)
 	{
 		for (int i = 0; i < 3; i++)
 			r1(i, 0) = (db.nodes[node_A - 1]->copy_coordinates[i] - db.nodes[node_A - 1]->ref_coordinates[i] + db.nodes[node_A - 1]->displacements[i]) -
 			(db.nodes[node_B - 1]->copy_coordinates[i] - db.nodes[node_B - 1]->ref_coordinates[i] + db.nodes[node_B - 1]->displacements[i]);
 
-		//Atualização do vetor de residuos
+		//Update of the vector of residuals
 		(*residual1)(0, 0) = lambda[0];
 		(*residual1)(1, 0) = lambda[1];
 		(*residual1)(2, 0) = lambda[2];
@@ -206,28 +206,28 @@ void UniversalJoint::Mount()
 		(*residual1)(8, 0) = r1(2, 0);
 	}
 
-	//Montagem da rigidez tangente e residuo da parte 2:
+	//Assembly of the stiffness tangent and residual of the part 2:
 	if (active_lambda[3] == 1)
 	{
 		for (int i = 0; i < 3; i++)
 		{
-			alphaA(i, 0) = db.nodes[node_A - 1]->displacements[i + 3];	//vetor rotação (atual) do nó A
-			alphaB(i, 0) = db.nodes[node_B - 1]->displacements[i + 3];	//vetor rotação (atual) do nó B
-			alphaiA(i, 0) = db.nodes[node_A - 1]->copy_coordinates[i + 3];	//vetor rotação acumulada (do inicio) do nó A
-			alphaiB(i, 0) = db.nodes[node_B - 1]->copy_coordinates[i + 3];	//vetor rotação acumulada (do inicio) do nó B
+			alphaA(i, 0) = db.nodes[node_A - 1]->displacements[i + 3];	//vector rotation (current) of the node A
+			alphaB(i, 0) = db.nodes[node_B - 1]->displacements[i + 3];	//vector rotation (current) of the node B
+			alphaiA(i, 0) = db.nodes[node_A - 1]->copy_coordinates[i + 3];	//vector rotation acumulada (of the start) of the node A
+			alphaiB(i, 0) = db.nodes[node_B - 1]->copy_coordinates[i + 3];	//vector rotation acumulada (of the start) of the node B
 		}
 		
 		alpha_escalar_i = norm(alphaiA);
 		A = skew(alphaiA);
 		g = 4.0 / (4.0 + alpha_escalar_i*alpha_escalar_i);
 		QA = I3 + g*(A + 0.5*(A*A));
-		ei1A = QA*(*db.CS[csA - 1]->E1);	//Eixo e1 no inicio do incremento
+		ei1A = QA*(*db.CS[csA - 1]->E1);	//Axis e1 in the start of the increment
 		
 		alpha_escalar_i = norm(alphaiB);
 		A = skew(alphaiB);
 		g = 4.0 / (4.0 + alpha_escalar_i*alpha_escalar_i);
 		QB = I3 + g*(A + 0.5*(A*A));
-		ei2B = QB*(*db.CS[csB - 1]->E2);	//Eixo e2 no inicio do incremento
+		ei2B = QB*(*db.CS[csB - 1]->E2);	//Axis e2 in the start of the increment
 		
 		temp_lambda[0] = lambda[3];
 		EvaluateUniversalJointContribution(temp_v, residual2, stiffness2, alphaA.getMatrix(), alphaB.getMatrix(), ei1A.getMatrix(), ei2B.getMatrix(), temp_lambda);
@@ -239,21 +239,21 @@ void UniversalJoint::Mount()
 	}
 }
 
-//Preenche a contribuição do elemento nas matrizes globais
+//Fills the contribution of the element in the matrices global
 void UniversalJoint::MountGlobal()
 {
-	//Variaveis temporarias para salvar a indexação global dos graus de liberdade a serem setados na matriz de rigidez global
+	//Temporary variables for save the indexing global of the degrees of freedom the to be set in the stiffness matrix global
 	int GL_global_1 = 0;
 	int GL_global_2 = 0;
 	double anterior = 0;
 
-	//PARTE 1 - deslocamentos
+	//PART 1 - displacements
 	if (active_lambda[0] == 1 && active_lambda[1] == 1 && active_lambda[2] == 1)
 	{
 		for (int i = 0; i < 9; i++)
 		{
-			//////////////MONTAGEM DO VETOR DE ESFORÇOS DESBALANCEADOS//////////////////
-			//Toma do vetor de GL globais, a indexação de cada grau de liberdade global
+			//////////////ASSEMBLY OF THE VECTOR OF INTERNAL FORCES UNBALANCED//////////////////
+			//Takes of the global-DOF vector, the indexing of each global degree of freedom
 			if (i < 3)//uA
 				GL_global_1 = db.nodes[node_A - 1]->GLs[i];
 			else
@@ -267,7 +267,7 @@ void UniversalJoint::MountGlobal()
 				}
 			}
 
-			//Caso o grau de liberdade seja livre:
+			//Case the degree of freedom be free:
 			if (GL_global_1 > 0)
 			{
 				anterior = db.global_P_A(GL_global_1 - 1, 0);
@@ -282,8 +282,8 @@ void UniversalJoint::MountGlobal()
 			}
 			for (int j = 0; j < 9; j++)
 			{
-				//////////////////////MONTAGEM DA MATRIZ DE RIGIDEZ/////////////////////////
-				//Toma do vetor de GL globais, a indexação de cada grau de liberdade global
+				//////////////////////ASSEMBLY OF THE STIFFNESS MATRIX/////////////////////////
+				//Takes of the global-DOF vector, the indexing of each global degree of freedom
 				if (j < 3)//uA
 					GL_global_2 = db.nodes[node_A - 1]->GLs[j];
 				else
@@ -297,29 +297,29 @@ void UniversalJoint::MountGlobal()
 					}
 				}
 
-				//Caso os graus de liberdade sejam ambos livres (Matriz Kaa)
+				//Case the degrees of freedom be both free (Matrix Kaa)
 				if (GL_global_1 > 0 && GL_global_2 > 0)
 					db.global_stiffness_AA.setValue(GL_global_1 - 1, GL_global_2 - 1, (*stiffness1)(i, j));
-				//Caso os graus de liberdade sejam ambos fixos (Matriz Kbb)
+				//Case the degrees of freedom be both fixed (Matrix Kbb)
 				if (GL_global_1 < 0 && GL_global_2 < 0)
 					db.global_stiffness_BB.setValue(-GL_global_1 - 1, -GL_global_2 - 1, (*stiffness1)(i, j));
-				//Caso os graus de liberdade sejam livre e fixo (Matriz Kab)
+				//Case the degrees of freedom be free and fixed (Matrix Kab)
 				if (GL_global_1 > 0 && GL_global_2 < 0)
 					db.global_stiffness_AB.setValue(GL_global_1 - 1, -GL_global_2 - 1, (*stiffness1)(i, j));
-				//Caso os graus de liberdade sejam fixo e livre (Matriz Kba)
+				//Case the degrees of freedom be fixed and free (Matrix Kba)
 				if (GL_global_1 < 0 && GL_global_2 > 0)
 					db.global_stiffness_BA.setValue(-GL_global_1 - 1, GL_global_2 - 1, (*stiffness1)(i, j));
 			}
 		}
 	}
 
-	//PARTE 2 - rotações
+	//PART 2 - rotations
 	if (active_lambda[3] == 1)
 	{
 		for (int i = 0; i < 7; i++)
 		{
-			//////////////MONTAGEM DO VETOR DE ESFORÇOS DESBALANCEADOS//////////////////
-			//Toma do vetor de GL globais, a indexação de cada grau de liberdade global
+			//////////////ASSEMBLY OF THE VECTOR OF INTERNAL FORCES UNBALANCED//////////////////
+			//Takes of the global-DOF vector, the indexing of each global degree of freedom
 			if (i < 3)//alpha_A -> i=0,1,2
 				GL_global_1 = db.nodes[node_A - 1]->GLs[i + 3];
 			else
@@ -333,7 +333,7 @@ void UniversalJoint::MountGlobal()
 				}
 			}
 
-			//Caso o grau de liberdade seja livre:
+			//Case the degree of freedom be free:
 			if (GL_global_1 > 0)
 			{
 				anterior = db.global_P_A(GL_global_1 - 1, 0);
@@ -348,8 +348,8 @@ void UniversalJoint::MountGlobal()
 			}
 			for (int j = 0; j < 7; j++)
 			{
-				//////////////////////MONTAGEM DA MATRIZ DE RIGIDEZ/////////////////////////
-				//Toma do vetor de GL globais, a indexação de cada grau de liberdade global
+				//////////////////////ASSEMBLY OF THE STIFFNESS MATRIX/////////////////////////
+				//Takes of the global-DOF vector, the indexing of each global degree of freedom
 				if (j < 3)//alpha_A -> j=0,1,2
 					GL_global_2 = db.nodes[node_A - 1]->GLs[j + 3];
 				else
@@ -363,16 +363,16 @@ void UniversalJoint::MountGlobal()
 					}
 				}
 
-				//Caso os graus de liberdade sejam ambos livres (Matriz Kaa)
+				//Case the degrees of freedom be both free (Matrix Kaa)
 				if (GL_global_1 > 0 && GL_global_2 > 0)
 					db.global_stiffness_AA.setValue(GL_global_1 - 1, GL_global_2 - 1, stiffness2[i][j]);
-				//Caso os graus de liberdade sejam ambos fixos (Matriz Kbb)
+				//Case the degrees of freedom be both fixed (Matrix Kbb)
 				if (GL_global_1 < 0 && GL_global_2 < 0)
 					db.global_stiffness_BB.setValue(-GL_global_1 - 1, -GL_global_2 - 1, stiffness2[i][j]);
-				//Caso os graus de liberdade sejam livre e fixo (Matriz Kab)
+				//Case the degrees of freedom be free and fixed (Matrix Kab)
 				if (GL_global_1 > 0 && GL_global_2 < 0)
 					db.global_stiffness_AB.setValue(GL_global_1 - 1, -GL_global_2 - 1, stiffness2[i][j]);
-				//Caso os graus de liberdade sejam fixo e livre (Matriz Kba)
+				//Case the degrees of freedom be fixed and free (Matrix Kba)
 				if (GL_global_1 < 0 && GL_global_2 > 0)
 					db.global_stiffness_BA.setValue(-GL_global_1 - 1, GL_global_2 - 1, stiffness2[i][j]);
 			}
@@ -382,10 +382,10 @@ void UniversalJoint::MountGlobal()
 
 void UniversalJoint::ComputeInitialGuessDisplacements()
 {
-	//Se for o step de criação do vinculo inicializa condições iniciais
+	//If for the step of creation of the constraint initializes initial conditions
 	if (bool_table.GetAt(db.current_solution_number - 1) == true)
 	{
-		//Percorre GL e seta condições iniciais
+		//Iterates over GL and sets initial conditions
 		for (int i = 0; i < 3; i++)
 		{
 			if (active_lambda[i] == 1)
@@ -394,7 +394,7 @@ void UniversalJoint::ComputeInitialGuessDisplacements()
 			}
 		}
 
-		//Projeção da velocidade angular inicial no sistema local - para impor somente velocidade nos GL restritos - impõe mesma velocidade angular na direção do eixo da articulação
+		//Projeção of the velocity angular initial in the system local - for impose only velocity in the GL restritos - impõe same velocity angular in the direction of the axis of the articulação
 		Matrix omega_global_A(3);
 		omega_global_A(0, 0) = db.nodes[node_A - 1]->displacements[3];
 		omega_global_A(1, 0) = db.nodes[node_A - 1]->displacements[4];
@@ -404,10 +404,10 @@ void UniversalJoint::ComputeInitialGuessDisplacements()
 		omega_global_B(1, 0) = db.nodes[node_B - 1]->displacements[4];
 		omega_global_B(2, 0) = db.nodes[node_B - 1]->displacements[5];
 		Matrix omega_local_A = (*db.CS[csA - 1]->Q)*omega_global_A;
-		Matrix omega_local_B = (*db.CS[csA - 1]->Q)*omega_global_B; //Obs: csA e csB possuem mesma direção E3!
-		//Imposições de mesma condição inicial no sistema local - somente direções 1 e 2 locais
+		Matrix omega_local_B = (*db.CS[csA - 1]->Q)*omega_global_B; //Note: csA and csB possuem same direction E3!
+		//Imposições of same initial condition in the system local - only directions 1 and 2 local
 		omega_local_B(2, 0) = omega_local_A(2, 0);
-		//De volta para o sistema global - nó B
+		//Of turn for the system global - node B
 		omega_global_B = transp(*db.CS[csA - 1]->Q)*omega_local_B;
 		if (active_lambda[3] == 1 && active_lambda[4] == 1)
 		{
@@ -418,13 +418,13 @@ void UniversalJoint::ComputeInitialGuessDisplacements()
 	}
 }
 
-//Computa efeito das condições iniciais nos nós da restrição
+//Computes effect of the initial conditions in the nodes of the constraint
 void UniversalJoint::ComputeVelAccel()
 {
-	//Se for o step de criação do vinculo inicializa condições iniciais
+	//If for the step of creation of the constraint initializes initial conditions
 	if (bool_table.GetAt(db.current_solution_number - 1) == true)
 	{
-		//Percorre GL e seta condições iniciais
+		//Iterates over GL and sets initial conditions
 		for (int i = 0; i < 3; i++)
 		{
 			if (active_lambda[i] == 1)
@@ -434,7 +434,7 @@ void UniversalJoint::ComputeVelAccel()
 			}
 		}
 
-		//Projeção da velocidade angular inicial no sistema local - para impor somente velocidade nos GL restritos - impõe mesma velocidade angular na direção do eixo da articulação
+		//Projeção of the velocity angular initial in the system local - for impose only velocity in the GL restritos - impõe same velocity angular in the direction of the axis of the articulação
 		Matrix omega_global_A(3);
 		omega_global_A(0, 0) = db.nodes[node_A - 1]->vel[3];
 		omega_global_A(1, 0) = db.nodes[node_A - 1]->vel[4];
@@ -444,10 +444,10 @@ void UniversalJoint::ComputeVelAccel()
 		omega_global_B(1, 0) = db.nodes[node_B - 1]->vel[4];
 		omega_global_B(2, 0) = db.nodes[node_B - 1]->vel[5];
 		Matrix omega_local_A = (*db.CS[csA - 1]->Q)*omega_global_A;
-		Matrix omega_local_B = (*db.CS[csA - 1]->Q)*omega_global_B; //Obs: csA e csB possuem mesma direção E3!
-		//Imposições de mesma condição inicial no sistema local - somente direções 1 e 2 locais
+		Matrix omega_local_B = (*db.CS[csA - 1]->Q)*omega_global_B; //Note: csA and csB possuem same direction E3!
+		//Imposições of same initial condition in the system local - only directions 1 and 2 local
 		omega_local_B(2, 0) = omega_local_A(2, 0);
-		//De volta para o sistema global - nó B
+		//Of turn for the system global - node B
 		omega_global_B = transp(*db.CS[csA - 1]->Q)*omega_local_B;
 		if (active_lambda[3] == 1 && active_lambda[4] == 1)
 		{
@@ -460,7 +460,7 @@ void UniversalJoint::ComputeVelAccel()
 	
 }
 
-//Pre-calculo de variaveis que e feito uma unica vez no inicio
+//Pre-calculation of variables that and done a single time in the start
 void UniversalJoint::PreCalc()
 {
 	for (int i = 0; i < 3; i++)
@@ -474,7 +474,7 @@ void UniversalJoint::PreCalc()
 		}
 	}
 
-	//Zerando contribuição dos residuos e rigidez 2
+	//Zeroing contribution of the residuals and stiffness 2
 	for (int i = 0; i < 7; i++)
 	{
 		residual2[i] = 0.0;
@@ -485,17 +485,17 @@ void UniversalJoint::PreCalc()
 	}
 }
 
-//Salvando variaveis da configuração convergida
+//Saving variables of the configuration converged
 void UniversalJoint::SaveLagrange()
 {
 	for (int i = 0; i < n_GL; i++)
 		copy_lambda[i] = lambda[i];
 }
 
-//Checa quais multiplicadores de lagrange serão ativados,de acordo com a ativação dos GLs dos nós dos quais a special constraint participa
+//Checks which Lagrange multipliers will be ativados,according to the activation of the GLs of the nodes of the which the special constraint participates
 void UniversalJoint::ActivateDOFs()
 {
-	//Ativa GLs de translação e rotação dos nós A e B
+	//Active GLs of translation and rotation of the nodes A and B
 	for (int i = 0; i < 6; i++)
 		db.nodes[node_A - 1]->active_GL[i] = 1;
 	for (int i = 0; i < 6; i++)
@@ -503,7 +503,7 @@ void UniversalJoint::ActivateDOFs()
 
 	if (bool_table.GetAt(db.current_solution_number - 1))
 	{
-		//Ativa GLs de multiplicadores de Lagrange
+		//Active GLs of Lagrange multipliers
 		active_lambda[0] = 1;
 		active_lambda[1] = 1;
 		active_lambda[2] = 1;
@@ -518,7 +518,7 @@ void UniversalJoint::ActivateDOFs()
 	}
 }
 
-//Calcula contribuições do residuo e operador tangente - gerado no AceGen
+//Calculates contributions of the residual and operator tangent - generated in the AceGen
 void UniversalJoint::EvaluateUniversalJointContribution(double *v, double *residual
 	, double **stiffness, double *alphaA, double *alphaB, double *ei1A
 	, double *ei2B, double *lambda)
@@ -885,7 +885,7 @@ void UniversalJoint::EvaluateUniversalJointContribution(double *v, double *resid
 	};
 };
 
-//Calcula contribuições do residuo e operador tangente - gerado no AceGen - sem usar SMSD
+//Calculates contributions of the residual and operator tangent - generated in the AceGen - without use SMSD
 void UniversalJoint::EvaluateUniversalJointContribution2(double *v, double *residual
 	, double **stiffness, double *alphaA, double *alphaB, double *ei1A
 	, double *ei2B, double *lambda)

@@ -4,57 +4,58 @@
 class MatrixFloat
 {
 public:
-	//Constructors and Destrutor
-	MatrixFloat(void);													//Construtor Padrão
-	MatrixFloat(long lines);											//Construtor de matriz coluna
-	MatrixFloat(long lines, long columns);								//Construtor Parametrico
-	MatrixFloat(const MatrixFloat &copied);									//Construtor de cópia
-	~MatrixFloat(void);													//Destrutor Padrão
+	//Constructors and Destructor
+	MatrixFloat(void);													//Constructor Padrï¿½o
+	MatrixFloat(long lines);											//Constructor of column matrix
+	MatrixFloat(long lines, long columns);								//Parametric constructor
+	MatrixFloat(const MatrixFloat &copied);									//Constructor of cï¿½pia
+	~MatrixFloat(void);													//Destructor Padrï¿½o
 
 	//Gets and Sets
-	long getLines();												//Retorna o numero de linhas da matriz
-	long getColumns();												//Retorna o numero de colunas da matriz 
+	long getLines() const;											//Returns the number of rows of the matrix
+	long getColumns() const;										//Returns the number of columns of the matrix
 
-	void setLines(long value);										//Define o numero de linhas da matriz 
-	void setColumns(long value);									//Define o numero de colunas da matriz 
-	float* getMatrix();												//Retorna o endereço de uma matriz
-	
+	void setLines(long value);										//Defines the number of rows of the matrix
+	void setColumns(long value);									//Defines the number of columns of the matrix
+	float* getMatrix() const;										//Returns the endereï¿½o of a matrix
+
 	//General Functions
-	void print();													//Imprime a matriz no console
-	void fprint(char* s);											//Imprime a matriz em um arquivo de texto, cujo nome esta no char s
-	bool alloc();													//Aloca a matriz
-	bool flush();													//Libera a memória ocupada pela matriz
-	void clear();													//Zera a matriz, mantando as dimensões atuais
+	void print();													//Prints the matrix in the console
+	void fprint(char* s);											//Prints the matrix in a file of text, whose name this in the char s
+	bool alloc();													//Allocates the matrix
+	bool flush();													//Frees the memï¿½ria occupied through the matrix
+	void clear();													//Zeroes the matrix, keeping the dimensï¿½es current
 
-	
-	float &operator() (long line, long column);						//Retorno do valor na posição especificada
-	MatrixFloat &operator = (MatrixFloat const &matrix1);			//Operador de Atribuição
-	MatrixFloat &operator = (Matrix const &matrix1);				//Operador de Atribuição 2
+
+	float &operator() (long line, long column);						//Return of the value in the posiï¿½ï¿½o specified
+	float operator() (long line, long column) const;					//Return of the value in the posiï¿½ï¿½o specified (version const)
+	MatrixFloat &operator = (MatrixFloat const &matrix1);			//Operator of Atribuiï¿½ï¿½o
+	MatrixFloat &operator = (Matrix const &matrix1);				//Operator of Atribuiï¿½ï¿½o 2
 
 	///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	float*  m_matrix;												//Matriz unidimensional
-	long     m_lines;												//Numero de linhas
-	long     m_columns;												//Numero de colunas
-	long	 m_alloced_lines;										//Numero de linhas atualmente alocadas
-	bool	 m_lines_deleted;										//Flag que indica se as linhas foram desalocadas				
+	float*  m_matrix;												//Matrix one-dimensional
+	long     m_lines;												//Number of rows
+	long     m_columns;												//Number of columns
+	long	 m_alloced_lines;										//Number of rows currently allocated
+	bool	 m_lines_deleted;										//Flag that indicates if the rows were deallocated				
 };
 
-MatrixFloat operator + (MatrixFloat &matrix1, MatrixFloat &matrix2);				//Operador Soma
-MatrixFloat operator + (Matrix &matrix1, MatrixFloat &matrix2);						//Operador Soma
-MatrixFloat operator - (MatrixFloat &matrix1, MatrixFloat &matrix2);				//Operador Subtração
-MatrixFloat operator * (MatrixFloat &matrix1, MatrixFloat &matrix2);				//Operador Multiplicacao de matrizes
-MatrixFloat operator * (Matrix &matrix1, MatrixFloat &matrix2);				//Operador Multiplicacao de matrizes
-MatrixFloat operator * (float escalar, MatrixFloat &matrix1);				//Operador Multiplicacao por escalar
-MatrixFloat operator * (MatrixFloat &matrix1, float escalar);				//Operador Multiplicacao por escalar
-bool operator == (MatrixFloat &matrix1, MatrixFloat &matrix2);				//Verificação de igualdade
-bool operator != (MatrixFloat &matrix1, MatrixFloat &matrix2);				//Verificação de inegualdade
-float dot(MatrixFloat &matrix1, MatrixFloat &matrix2);						//Produto escalar entre dois vetores
-double dot(MatrixFloat &matrix1, Matrix &matrix2);							//Produto escalar entre dois vetores
-MatrixFloat cross(MatrixFloat &matrix1, MatrixFloat &matrix2);						//Operador produto vetorial entre duas matrizes
-MatrixFloat dyadic(MatrixFloat &matrix1, MatrixFloat &matrix2);					//Operador produto vetorial entre duas matrizes
-MatrixFloat skew(MatrixFloat &matrix1);										//Operador skew de um vetor
-MatrixFloat axial(MatrixFloat &matrix1);										//Operador axial de um vetor
+MatrixFloat operator + (const MatrixFloat &matrix1, const MatrixFloat &matrix2);				//Operator Sum
+MatrixFloat operator + (const Matrix &matrix1, const MatrixFloat &matrix2);						//Operator Sum
+MatrixFloat operator - (const MatrixFloat &matrix1, const MatrixFloat &matrix2);				//Operator Subtraï¿½ï¿½o
+MatrixFloat operator * (const MatrixFloat &matrix1, const MatrixFloat &matrix2);				//Operator Multiplication of matrices
+MatrixFloat operator * (const Matrix &matrix1, const MatrixFloat &matrix2);				//Operator Multiplication of matrices
+MatrixFloat operator * (float escalar, const MatrixFloat &matrix1);				//Operator Multiplication by scalar
+MatrixFloat operator * (const MatrixFloat &matrix1, float escalar);				//Operator Multiplication by scalar
+bool operator == (const MatrixFloat &matrix1, const MatrixFloat &matrix2);				//Verificaï¿½ï¿½o of equality
+bool operator != (const MatrixFloat &matrix1, const MatrixFloat &matrix2);				//Verificaï¿½ï¿½o of inequality
+float dot(const MatrixFloat &matrix1, const MatrixFloat &matrix2);						//Dot product between two vectors
+double dot(const MatrixFloat &matrix1, const Matrix &matrix2);							//Dot product between two vectors
+MatrixFloat cross(const MatrixFloat &matrix1, const MatrixFloat &matrix2);						//Operator cross product between two matrices
+MatrixFloat dyadic(const MatrixFloat &matrix1, const MatrixFloat &matrix2);					//Operator cross product between two matrices
+MatrixFloat skew(const MatrixFloat &matrix1);										//Operator skew of a vector
+MatrixFloat axial(const MatrixFloat &matrix1);										//Operator axial of a vector
 
-float norm(MatrixFloat &matrix1);										//Retorna a norma de um vetor
-MatrixFloat transp(MatrixFloat &matrix1);								//Retorna a transposta de uma matriz
-void zeros(MatrixFloat* matrix1);										//Zera a matriz
+float norm(const MatrixFloat &matrix1);										//Returns the norm of a vector
+MatrixFloat transp(const MatrixFloat &matrix1);								//Returns the transposta of a matrix
+void zeros(MatrixFloat* matrix1);										//Zeroes the matrix

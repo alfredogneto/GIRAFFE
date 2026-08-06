@@ -16,8 +16,8 @@ public:
 	double* ref_coordinates;	//Reference coordinates
 	double* copy_coordinates;	//Last converged coordinates
 	double* displacements;		//Displacements on DOFs
-	double* vel;				//Velocidades on DOFs
-	double* copy_vel;			//Velocidades on DOFs (copy of last converged)
+	double* vel;				//Velocities on DOFs
+	double* copy_vel;			//Velocities on DOFs (copy of last converged)
 	double* accel;				//Accelerations on DOFs 
 	double* copy_accel;			//Accelerations on DOFs (copy of last converged)
 

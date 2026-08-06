@@ -64,10 +64,44 @@ option(USE_oneMKL "MKL -> oneMKL from Intel oneAPI" ON)
 
 
 
-#-- Search for oneMKL
-find_package(MKL CONFIG REQUIRED)
-#package arpack-ng
-#find_package(arpackng CONFIG REQUIRED)
+#-- Search for math/eigensolver dependencies (platform specific)
+if(WIN32)
+	#-- Search for oneMKL
+	find_package(MKL CONFIG REQUIRED)
+else()
+	#-- macOS/Linux: use OpenBLAS (BLAS+LAPACK) and arpack-ng from Homebrew instead of oneMKL/vcpkg
+	if(APPLE)
+		# openblas/arpack/libomp are keg-only on macOS (Accelerate.framework owns the
+		# default BLAS/LAPACK slot), so their .pc files aren't on the default
+		# pkg-config search path. Add the Homebrew keg paths for both Apple Silicon
+		# and Intel prefixes before looking them up.
+		set(_giraffe_brew_pkgconfig_dirs "")
+		foreach(_prefix /opt/homebrew /usr/local)
+			foreach(_pkg openblas arpack)
+				if(EXISTS "${_prefix}/opt/${_pkg}/lib/pkgconfig")
+					list(APPEND _giraffe_brew_pkgconfig_dirs "${_prefix}/opt/${_pkg}/lib/pkgconfig")
+				endif()
+			endforeach()
+		endforeach()
+		if(_giraffe_brew_pkgconfig_dirs)
+			string(REPLACE ";" ":" _giraffe_brew_pkgconfig_path "${_giraffe_brew_pkgconfig_dirs}")
+			set(ENV{PKG_CONFIG_PATH} "${_giraffe_brew_pkgconfig_path}:$ENV{PKG_CONFIG_PATH}")
+		endif()
+	endif()
+
+	find_package(PkgConfig REQUIRED)
+	pkg_check_modules(OPENBLAS REQUIRED IMPORTED_TARGET openblas)
+	pkg_check_modules(ARPACK REQUIRED IMPORTED_TARGET arpack)
+
+	# Homebrew's libomp is keg-only (no pkg-config/cmake package), so locate it by hand.
+	find_path(LIBOMP_INCLUDE_DIR omp.h
+		HINTS /opt/homebrew/opt/libomp/include /usr/local/opt/libomp/include)
+	find_library(LIBOMP_LIBRARY omp
+		HINTS /opt/homebrew/opt/libomp/lib /usr/local/opt/libomp/lib)
+	if(NOT LIBOMP_INCLUDE_DIR OR NOT LIBOMP_LIBRARY)
+		message(FATAL_ERROR "libomp not found. Install it with 'brew install libomp'.")
+	endif()
+endif()
 
 ## Organize files in solution explorer with a "filter tree"
 FILE(GLOB_RECURSE files
@@ -109,54 +143,95 @@ set_target_properties(${PROJECT_NAME} PROPERTIES
 # Include directories
 ################################################################################
 target_include_directories(${PROJECT_NAME} PUBLIC
-	$<TARGET_PROPERTY:MKL::MKL,INTERFACE_INCLUDE_DIRECTORIES> # oneMKL
 	${CMAKE_CURRENT_SOURCE_DIR}/dependencies/exprtk
 	${CMAKE_CURRENT_SOURCE_DIR}/dependencies/eigen
-	${CMAKE_CURRENT_SOURCE_DIR}/dependencies/vcpkg/packages/arpack-ng_x64-windows/include/arpack
 )
 
-target_link_libraries(${PROJECT_NAME} 
-PUBLIC 
-	$<LINK_ONLY:MKL::MKL> 
-	${CMAKE_CURRENT_SOURCE_DIR}/dependencies/vcpkg/packages/arpack-ng_x64-windows/lib/libarpack.lib
+if(WIN32)
+	target_include_directories(${PROJECT_NAME} PUBLIC
+		$<TARGET_PROPERTY:MKL::MKL,INTERFACE_INCLUDE_DIRECTORIES> # oneMKL
+		${CMAKE_CURRENT_SOURCE_DIR}/dependencies/vcpkg/packages/arpack-ng_x64-windows/include/arpack
 	)
+	target_link_libraries(${PROJECT_NAME}
+	PUBLIC
+		$<LINK_ONLY:MKL::MKL>
+		${CMAKE_CURRENT_SOURCE_DIR}/dependencies/vcpkg/packages/arpack-ng_x64-windows/lib/libarpack.lib
+	)
+	target_compile_definitions(${PROJECT_NAME} PRIVATE "GIRAFFE_USE_MKL")
+else()
+	target_include_directories(${PROJECT_NAME} PUBLIC ${LIBOMP_INCLUDE_DIR})
+	target_link_libraries(${PROJECT_NAME}
+	PUBLIC
+		PkgConfig::ARPACK
+		PkgConfig::OPENBLAS
+		${LIBOMP_LIBRARY}
+	)
+endif()
 
 ################################################################################
 # Compile definitions
 ################################################################################
+if(MSVC)
 target_compile_definitions(${PROJECT_NAME} PRIVATE
     "_CRT_SECURE_NO_WARNINGS;"
     "_MBCS"
 )
+endif()
 
 ##
 ## Define different options for oneMKL or DLLs
 ##
 #set(ADDITIONAL_LIBRARY_DEPENDENCIES "arpack_win64")
 	
-target_compile_options(${PROJECT_NAME} 
-  PUBLIC 
-	$<TARGET_PROPERTY:MKL::MKL,INTERFACE_COMPILE_OPTIONS>
-  PRIVATE
-	$<$<CXX_COMPILER_ID:MSVC>:/W3> # '/WX' to treat warnings as erros in VS
-	$<$<NOT:$<CXX_COMPILER_ID:MSVC>>:-Wall -Wextra -pedantic> # '-Werror' to treat warnings as errors in other compilers
-	$<$<CONFIG:Debug>:
-		/Od;
-		/sdl;
-		/bigobj
-	>
-	$<$<CONFIG:Release>:
-		/O2;
-		/Oi;
-		/sdl-;
-		/Gy
-	>
-	/MP;
-	/W3;
-	${DEFAULT_CXX_DEBUG_INFORMATION_FORMAT};
-	${DEFAULT_CXX_EXCEPTION_HANDLING};
-	/openmp
-	)
+if(MSVC)
+	target_compile_options(${PROJECT_NAME}
+	  PUBLIC
+		$<TARGET_PROPERTY:MKL::MKL,INTERFACE_COMPILE_OPTIONS>
+	  PRIVATE
+		/W3 # '/WX' to treat warnings as erros in VS
+		$<$<CONFIG:Debug>:
+			/Od;
+			/sdl;
+			/bigobj
+		>
+		$<$<CONFIG:Release>:
+			/O2;
+			/Oi;
+			/sdl-;
+			/Gy
+		>
+		/MP;
+		${DEFAULT_CXX_DEBUG_INFORMATION_FORMAT};
+		${DEFAULT_CXX_EXCEPTION_HANDLING};
+		/openmp
+		)
+else()
+	target_compile_options(${PROJECT_NAME}
+	  PRIVATE
+		-Wall -Wextra -pedantic # '-Werror' to treat warnings as errors
+		# Legacy codebase was only ever built with MSVC, which is far more lax
+		# about these; silence the categories that just add noise without
+		# flagging real bugs, keep the rest.
+		-Wno-unused-variable
+		-Wno-unused-but-set-variable
+		-Wno-unused-parameter
+		-Wno-sign-compare
+		-Wno-format-security
+		-Wno-deprecated-declarations
+		-Wno-invalid-utf8
+		-Xpreprocessor -fopenmp
+		# The codebase was only ever built with MSVC, whose standard headers
+		# transitively pull in <cstdlib>/<cfloat>/etc. libc++/libstdc++ don't,
+		# so force-include the handful of C headers many files rely on without
+		# including directly (atoi/atof, FLT_MAX/DBL_EPSILON, ...).
+		"SHELL:-include cstdlib"
+		"SHELL:-include cfloat"
+		"SHELL:-include cstring"
+		"SHELL:-include cstdio"
+		$<$<CONFIG:Debug>:-Og;-g>
+		$<$<CONFIG:Release>:-O2>
+		)
+endif()
 
 
 ## Compiler flags

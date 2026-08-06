@@ -6,7 +6,7 @@
 
 SecGeneral::SecGeneral()
 {
-	//aloca, mas não utiliza section details
+	//allocates, but not uses section details
 	sec_details = new SolidSection();
 }
 
@@ -66,7 +66,7 @@ bool SecGeneral::Read(FILE *f)
 	else
 		return false;
 
-	//Salva a posição (stream)
+	//Saves the position (stream)
 	fpos_t pos;
 	fgetpos(f, &pos);
 	fscanf(f, "%s", s);
@@ -96,7 +96,7 @@ bool SecGeneral::Read(FILE *f)
 			return false;
 	}
 	else
-		fsetpos(f, &pos);	//volta a posição anterior
+		fsetpos(f, &pos);	//turn the position previous
 
 	return true;
 }

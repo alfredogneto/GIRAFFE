@@ -6,7 +6,7 @@
 #include "Node.h"
 #include "CADData.h"
 #include"Database.h"
-//Variaveis globais
+//Global variables
 extern
 Database db;
 #define PI 3.1415926535897932384626433832795
@@ -19,6 +19,8 @@ RigidBodyData::RigidBodyData()
 	G = new Matrix(3);
 	CADData_ID = 0;
 	CAD_entered = false;
+	CAD_file[0] = '\0';
+	CAD_file_entered = false;
 }
 
 RigidBodyData::~RigidBodyData()
@@ -32,7 +34,7 @@ bool RigidBodyData::Read(FILE *f)
 	char s[1000];
 	
 	fscanf(f, "%s", s);
-	//Verifica a palavra chave "RB"
+	//Checks the keyword "RB"
 	if (!strcmp(s, "RBData"))
 	{
 		fscanf(f, "%s", s);
@@ -40,7 +42,7 @@ bool RigidBodyData::Read(FILE *f)
 	}
 	else
 		return false;
-	//Massa
+	//Mass
 	fscanf(f, "%s", s);
 	if (!strcmp(s, "Mass"))
 	{
@@ -49,7 +51,7 @@ bool RigidBodyData::Read(FILE *f)
 	}
 	else
 		return false;
-	//Tensor de inercia
+	//Tensor of inertia
 	fscanf(f, "%s", s);
 	if (!strcmp(s, "J11"))
 	{
@@ -115,7 +117,7 @@ bool RigidBodyData::Read(FILE *f)
 	else
 		return false;
 	
-	//Salva a posição (stream)
+	//Saves the position (stream)
 	fpos_t pos;
 	fgetpos(f, &pos);
 	fscanf(f, "%s", s);
@@ -125,6 +127,16 @@ bool RigidBodyData::Read(FILE *f)
 		CAD_entered = true;
 		fscanf(f, "%s", s);
 		CADData_ID = atoi(s);
+	}
+	else if (!strcmp(s, "CADFile"))
+	{
+		//Direct-embedded mesh filename (used elsewhere, e.g. STLSurface, purely
+		//for rendering). Mass/inertia/barycenter above are already explicit, so
+		//not rendering a CAD mesh here doesn't affect the physics - it just
+		//means WriteVTK_XMLRender falls back to its default rigid body shape.
+		fscanf(f, "%s", s);
+		strcpy(CAD_file, s);
+		CAD_file_entered = true;
 	}
 	else
 		fsetpos(f, &pos);
@@ -140,6 +152,8 @@ void RigidBodyData::Write(FILE *f)
 	fprintf(f, "Barycenter\t%.6f\t%.6f\t%.6f\n", (*G)(0, 0), (*G)(1, 0), (*G)(2, 0));
 	if (CAD_entered == true)
 		fprintf(f, "CADData\t%d\n", CADData_ID);
+	if (CAD_file_entered == true)
+		fprintf(f, "CADFile\t%s\n", CAD_file);
 }
 
 void RigidBodyData::PreCalc()
@@ -147,12 +161,12 @@ void RigidBodyData::PreCalc()
 	
 }
 
-//Plota corpo rigido - formato XML VTK - recebe o numero do nó que e o pólo e o sistema de coordenadas de referência (que e atualizado de acordo com rotações sofridas pelo nó)
+//Plots rigid body - formato XML VTK - receives the number of the node that and the pole and the coordinate system of reference (that and updated according to rotations sofridas through the node)
 void RigidBodyData::WriteVTK_XMLRender(FILE *f, int pole_node, int cs)
 {
 	if (CAD_entered == true)
 	{
-		//Transformação de coordenadas - local para global
+		//Transformation of coordinates - local for global
 		Matrix Q(3, 3);
 		Q(0, 0) = (*db.CS[cs - 1]->E1)(0, 0);
 		Q(1, 0) = (*db.CS[cs - 1]->E1)(1, 0);
@@ -169,14 +183,14 @@ void RigidBodyData::WriteVTK_XMLRender(FILE *f, int pole_node, int cs)
 		I3(0, 0) = 1.0;
 		I3(1, 1) = 1.0;
 		I3(2, 2) = 1.0;
-		//Calculo do Q_alpha - rotação do slave node
+		//Calculation of the Q_alpha - rotation of the slave node
 		alpha(0, 0) = db.nodes[pole_node - 1]->copy_coordinates[3];
 		alpha(1, 0) = db.nodes[pole_node - 1]->copy_coordinates[4];
 		alpha(2, 0) = db.nodes[pole_node - 1]->copy_coordinates[5];
 		double alpha_escalar = norm(alpha);
 		double g = 4.0 / (4.0 + alpha_escalar * alpha_escalar);
 		Q_alpha = I3 + g * (skew(alpha) + 0.5*skew(alpha)*skew(alpha));
-		Q = Q_alpha * Q;	//Aplicar o operador Q para escrever os pontos no sistema de coordenadas global - rotação de corpo rigido - entrar com vetor de pontos no sistema local
+		Q = Q_alpha * Q;	//Apply the operator Q for write the points in the global coordinate system - rotation of rigid body - enter with vector of points in the system local
 		Matrix xO(3);
 		xO(0, 0) = db.nodes[pole_node - 1]->copy_coordinates[0];
 		xO(1, 0) = db.nodes[pole_node - 1]->copy_coordinates[1];

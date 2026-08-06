@@ -7,7 +7,7 @@ public:
 	PostFiles();
 	~PostFiles();
 
-	double mag_factor;		//Fator de magnificação de deslocamentos
+	double mag_factor;		//Factor of magnificação of displacements
 
 	int alloced_files;
 	
@@ -48,16 +48,16 @@ public:
 	void EndSinglePartPostFiles(int sol_index);
 	void EndMultiplePartPostFiles(int sol_index);
 	
-	void WriteVTK_XMLRender(int sol_index, double time, int index, int part);	//Gerando arquivo para o Paraview (VTK) - formato XML
-	void WriteVTK_XMLBase(int sol_index, double time, int index, int part);		//Gerando arquivo para o Paraview (VTK) - formato XML
-	void WriteVTK_XMLContact(int sol_index, double time, int index);			//Gerando arquivo para o Paraview (VTK) - formato XML
-	void WriteVTK_XMLSymbols(int sol_index, double time, int index);			//Gerando arquivo para o Paraview (VTK) - formato XML
-	void WriteVTK_XMLContactForces(int sol_index, double time, int index);		//Gerando arquivo para o Paraview (VTK) - formato XML
-	void WriteVTK_XMLRBParticles(int sol_index, double time, int index);		//Gerando arquivo para o Paraview (VTK) - formato XML
-	void WriteVTK_XMLConstraints(int sol_index, double time, int index);		//Gerando arquivo para o Paraview (VTK) - formato XML
-	void WriteVTK_XMLForces(int sol_index, double time, int index);				//Gerando arquivo para o Paraview (VTK) - formato XML
-	void WriteVTK_XMLSpline(int sol_index, double time, int index);				//Gerando arquivo para o Paraview (VTK) - formato XML
-	void WriteVTK_XMLRenderSpline(int sol_index, double time, int index);		//Gerando arquivo para o Paraview (VTK) - formato XML
+	void WriteVTK_XMLRender(int sol_index, double time, int index, int part);	//Generating file for the Paraview (VTK) - formato XML
+	void WriteVTK_XMLBase(int sol_index, double time, int index, int part);		//Generating file for the Paraview (VTK) - formato XML
+	void WriteVTK_XMLContact(int sol_index, double time, int index);			//Generating file for the Paraview (VTK) - formato XML
+	void WriteVTK_XMLSymbols(int sol_index, double time, int index);			//Generating file for the Paraview (VTK) - formato XML
+	void WriteVTK_XMLContactForces(int sol_index, double time, int index);		//Generating file for the Paraview (VTK) - formato XML
+	void WriteVTK_XMLRBParticles(int sol_index, double time, int index);		//Generating file for the Paraview (VTK) - formato XML
+	void WriteVTK_XMLConstraints(int sol_index, double time, int index);		//Generating file for the Paraview (VTK) - formato XML
+	void WriteVTK_XMLForces(int sol_index, double time, int index);				//Generating file for the Paraview (VTK) - formato XML
+	void WriteVTK_XMLSpline(int sol_index, double time, int index);				//Generating file for the Paraview (VTK) - formato XML
+	void WriteVTK_XMLRenderSpline(int sol_index, double time, int index);		//Generating file for the Paraview (VTK) - formato XML
 
 	void WriteConfigurationResults(int sol_index, double time, int index);
 

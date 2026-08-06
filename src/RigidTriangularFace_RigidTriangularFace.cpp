@@ -13,7 +13,7 @@
 
 
 #include"Database.h"
-//Variaveis globais
+//Global variables
 extern
 Database db;
 #define PI 3.1415926535897932384626433832795
@@ -21,7 +21,9 @@ Database db;
 ////////////////////////////////////////////////////////////////////
 #define _CRTDBG_MAP_ALLOC
 #include <stdlib.h>
+#ifdef _WIN32
 #include <crtdbg.h>
+#endif
 #ifdef _DEBUG
 #define DBG_NEW new ( _NORMAL_BLOCK , __FILE__ , __LINE__ )
 // Replace _NORMAL_BLOCK with _CLIENT_BLOCK if you want the
@@ -39,17 +41,17 @@ RigidTriangularFace_RigidTriangularFace::RigidTriangularFace_RigidTriangularFace
 	sub_index2 = 0;			//sub index 2
 	active = false;			//default: unnactive
 
-	deg_pointA = 0;	//ID of the point in surface 1 to be considered in the degeneration (zero if no degeneration)
-	deg_curveA = 0; //ID of the curve in surface 1 to be considered in the degeneration (zero if no degeneration)
-	deg_pointB = 0; //ID of the point in surface 2 to be considered in the degeneration (zero if no degeneration)
-	deg_curveB = 0; //ID of the curve in surface 2 to be considered in the degeneration (zero if no degeneration)
+	deg_pointA = 0;	//ID of the point in surface 1 to be considered in the degeneration (zero if in the degeneration)
+	deg_curveA = 0; //ID of the curve in surface 1 to be considered in the degeneration (zero if in the degeneration)
+	deg_pointB = 0; //ID of the point in surface 2 to be considered in the degeneration (zero if in the degeneration)
+	deg_curveB = 0; //ID of the curve in surface 2 to be considered in the degeneration (zero if in the degeneration)
 
 	faceAID = 0;	//ID of face A
 	faceBID = 0;	//ID of face B
 	CAD_AID = 0;	//ID of CAD A
 	CAD_BID = 0;	//ID of CAD B
-	node_A = 0;		//ID of nó A
-	node_B = 0;		//ID of nó B
+	node_A = 0;		//ID of node A
+	node_B = 0;		//ID of node B
 	material_A = 0;	//ID of material A (for interface law atribution)
 	material_B = 0;	//ID of material B (for interface law atribution)
 
@@ -755,11 +757,11 @@ void RigidTriangularFace_RigidTriangularFace::PreCalc()
 
 void RigidTriangularFace_RigidTriangularFace::EvaluateNormalGap()
 {
-	//Calculo da função gap (escalar)
+	//Calculation of the function gap (scalar)
 	SurfacePoints();
-	//Gap vetorial
+	//Gap cross
 	*cd->g[0] = *GammaA - *GammaB;
-	//Normal do contato
+	//Normal of the contact
 	if (norm(*cd->g[0]) != 0.0)
 		*cd->n[0] = (1.0 / norm(*cd->g[0]))*(*cd->g[0]);
 	else
@@ -956,10 +958,10 @@ void RigidTriangularFace_RigidTriangularFace::SolveLCP()
 		zeta_A = 0.0;
 		zeta_B = 0.0;
 		int ret_value;
-		//Se não houver paralelismo
+		//If not there is paralelismo
 		if (abs(dot(tA, tA)*dot(tB, tB) - dot(tA, tB)*dot(tA, tB)) > tol_ortho)
 		{
-			// baseado em Wriggers e Zavarise, 1997
+			// based in Wriggers and Zavarise, 1997
 			zeta_A = dot(bA - bB, (1.0 / (dot(tA, tA)*dot(tB, tB) - dot(tA, tB)*dot(tA, tB)))*(tB*dot(tA, tB) - tA * dot(tB, tB)));
 			zeta_B = -1.0*dot(bA - bB, (1.0 / (dot(tA, tA)*dot(tB, tB) - dot(tA, tB)*dot(tA, tB)))*(tA*dot(tA, tB) - tB * dot(tA, tA)));
 
@@ -1159,14 +1161,14 @@ void RigidTriangularFace_RigidTriangularFace::SolvePreviousContact()
 	//LCP
 	SolveLCP();
 	SurfacePoints();
-	//Gap vetorial
+	//Gap cross
 	*cd->copy_g[0] = *GammaA - *GammaB;
-	//Normal do contato
+	//Normal of the contact
 	if (norm(*cd->copy_g[0]) != 0.0)
 		*cd->copy_n[0] = (1.0 / norm(*cd->copy_g[0]))*(*cd->copy_g[0]);
 	else
 		zeros(cd->copy_n[0]);
-	//Gap escalar
+	//Gap scalar
 	*cd->copy_g_n = norm(*cd->copy_g[0]);
 	previous_evaluation = false;
 }
@@ -1293,7 +1295,7 @@ void RigidTriangularFace_RigidTriangularFace::MountLocalContributions()
 		a5 = &value;
 		a6 = &value;
 	}
-	//Zerando matrizes e vetores
+	//Zeroing matrices and vectors
 	for (int i = 0; i < 12; i++)
 	{
 		Rc[i] = 0.0;
@@ -1303,7 +1305,7 @@ void RigidTriangularFace_RigidTriangularFace::MountLocalContributions()
 
 	bool *previouscontact = &prev_eligible;
 	
-	//Avalia contribuições de contato
+	//Evaluates contributions of contact
 
 //
 //#pragma region AceGen
@@ -13503,7 +13505,7 @@ void RigidTriangularFace_RigidTriangularFace::PredictorTimeStep(double kin)
 			td->time_step_impact = (1.0 / td->n_steps_impact)* PI * sqrt((*meq) / stif);
 		}
 		//else
-		//	td->time_step_impact = db.solution[db.current_solution_number - 1]->end_time;	//valor alto
+		//	td->time_step_impact = db.solution[db.current_solution_number - 1]->end_time;	//value alto
 		
 	}
 	else
@@ -13529,7 +13531,7 @@ void RigidTriangularFace_RigidTriangularFace::PredictorTimeStep(double kin)
 			dalphaB(i, 0) = db.nodes[node_B - 1]->copy_vel[i + 3];
 		}
 
-		//Obs: Xi e I3 nesse caso - acaba de salvar a configuração e o alpha avaliado em torno desse valor e nulo.
+		//Note: Xi and I3 in this case - acaba of save the configuration and the alpha avaliado in torno desse value and null.
 		Matrix omega_A =  dalphaA;
 		Matrix omega_B =  dalphaB;
 
@@ -13541,7 +13543,7 @@ void RigidTriangularFace_RigidTriangularFace::PredictorTimeStep(double kin)
 		if (vrel < 0)
 			td->time_step_impact = (deltaS) / (-vrel);
 		else
-			td->time_step_impact = db.solution[db.current_solution_number - 1]->end_time;	//valor alto
+			td->time_step_impact = db.solution[db.current_solution_number - 1]->end_time;	//value alto
 	}
 }
 

@@ -5,7 +5,7 @@
 
 #include"Database.h"
 #include "IO.h"
-//Variaveis globais
+//Global variables
 extern 
 Database db;
 
@@ -23,7 +23,7 @@ Environment::Environment(void)
 	reference_position = Matrix(3);
 	transform3 = Matrix(3, 3);
 
-	//Variaveis booleanas para controlar o que existe de dados ambientais
+	//Variables booleanas for controlar the that exists of data ambientais
 	g_exist = false;
 	ocean_data_exist = false;
 	wind_data_exist = false;
@@ -37,7 +37,7 @@ Environment::~Environment(void)
 {
 	flush();
 } 
-//Seta o numero de pontos de dados de correnteza maritima
+//Sets the number of points of data of correnteza maritima
 void Environment::SetNCurrentPoints(int value)
 {
 	flush();
@@ -46,7 +46,7 @@ void Environment::SetNCurrentPoints(int value)
 	for (int i = 0; i < n_current_points; i++)
 		current[i] = new double[3];
 }
-//Seta o numero de pontos de dados do vento
+//Sets the number of points of data of the wind
 void Environment::SetNWindPoints(int value)
 {
 	flush();
@@ -55,7 +55,7 @@ void Environment::SetNWindPoints(int value)
 	for (int i = 0; i < n_wind_points; i++)
 		wind[i]= new double[8];
 }
-//Deleta alocações da memória
+//Deletes alocações of the memory
 void Environment::flush()
 {
 	if (current != NULL && n_current_points != 0)
@@ -73,14 +73,14 @@ void Environment::flush()
 	}
 	wind = NULL;
 }
-//Seta na linha "line" as variaveis referentes a correnteza
+//Sets in the linha "line" the variables referring to the correnteza
 void Environment::SetCurrentData(int line,double depth,double speed, double alpha)
 {
 	current[line][0] = depth;
 	current[line][1] = speed;
 	current[line][2] = alpha*PI/180;
 }
-//Seta na linha "line" as variaveis referentes ao vento
+//Sets in the linha "line" the variables referring to to the wind
 void Environment::SetWindData(int line, double time, double wind_speed, double delta, double wind_vert,
 	double HSHR, double VSHR, double Lin_VSHR, double gust_speed)
 {
@@ -93,12 +93,12 @@ void Environment::SetWindData(int line, double time, double wind_speed, double d
 	wind[line][6] = Lin_VSHR;
 	wind[line][7] = gust_speed;
 }
-//Realiza interpolação linear e retorna o valor da velocidade em certa profundidade
+//Performs interpolation linear and returns the value of the velocity in certa profundidade
 Matrix Environment::VelocityAt(double dep)
 {
 	Matrix ret_vel(3);
 	int index = 0;
-	//Verificação do H - se estiver fora do range de dados da corrente, retorna um valor nulo de velocidade
+	//Check of the H - if is outside of the range of data of the corrente, returns a value null of velocity
 	if (dep <= current[0][0])
 	{
 		ret_vel(0, 0) = current[0][1] * cos(current[0][2]);
@@ -113,15 +113,15 @@ Matrix Environment::VelocityAt(double dep)
 			ret_vel(1, 0) = current[n_current_points - 1][1] * sin(current[n_current_points - 1][2]);
 			return ret_vel;
 		}
-		//Se não, faz a interpolação
+		//If not, does the interpolation
 		else
 		{
 			while (dep > current[index][0])
 				index++;
 			if (index != 0)
 			{
-				//Interpolação linear
-				//O ponto de interesse estara entre os indices index e index -1
+				//Interpolation linear
+				//O point of interest will be between the indices index and index -1
 				double factor = (dep - current[index - 1][0]) / (current[index][0] - current[index - 1][0]);
 				double interp_speed = current[index - 1][1] + factor*(current[index][1] - current[index - 1][1]);
 				double interp_alpha = current[index - 1][2] + factor*(current[index][2] - current[index - 1][2]);
@@ -136,36 +136,36 @@ Matrix Environment::VelocityAt(double dep)
 		}
 	}
 }
-//Retorna o Depth no devido index
+//Returns the Depth in the due index
 double Environment::GetDepthAtIndex(int index)
 {
 	return current[index][0];
 }
-//Retorna o Speed no devido index
+//Returns the Speed in the due index
 double Environment::GetSpeedAtIndex(int index)
 {
 	return current[index][1];
 }
-//Retorna o Angle no devido index
+//Returns the Angle in the due index
 double Environment::GetAngleAtIndex(int index)
 {
 	return current[index][2];
 }
-//Realiza calculo da velocidade horizontal
+//Performs calculation of the velocity horizontal
 double Environment::VHor(double proj, double zlocal, double zhub, double wind_speed, double HSHR, double Lin_VSHR, double VSHR, double Vgust)
 {
 	double vret = wind_speed*(pow(((zlocal + zhub) / zhub), VSHR) + HSHR*proj + Lin_VSHR*zlocal) + Vgust;
 	return vret;
-	//Expressão do aerodyn
+	//Expressão of the aerodyn
 	//V1 = V_tmp * ((InputPosition(3) / RefHt) ** VShr_tmp + (HShr_tmp * (InputPosition(2) * CosDelta + InputPosition(1) * SinDelta) + VLinShr_tmp * (InputPosition(3) - RefHt)) / RefWid) + VGUST_tmp
 }
 
-//Realiza interpolação linear no tempo
+//Performs interpolation linear in the time
 Matrix Environment::TimeAt(double time)
 {
 	Matrix ret_vel(8);
 	int index = 0;
-	//Verificação do tempo - se estiver fora do range de dados do vento, retorna um valor nulo de velocidade
+	//Check of the time - if is outside of the range of data of the wind, returns a value null of velocity
 	if (time <= wind[0][0])
 	{
 		ret_vel(0, 0) = wind[0][0];
@@ -192,15 +192,15 @@ Matrix Environment::TimeAt(double time)
 			ret_vel(7, 0) = wind[n_wind_points - 1][7];
 			return ret_vel;
 		}
-		//Se não, faz a interpolação
+		//If not, does the interpolation
 		else
 		{
 			while (time > wind[index][0])
 				index++;
 			if (index != 0)
 			{
-				//Interpolação linear
-				//O ponto de interesse estara entre os indices index e index -1
+				//Interpolation linear
+				//O point of interest will be between the indices index and index -1
 				double factor = (time - wind[index - 1][0]) / (wind[index][0] - wind[index - 1][0]);
 				double int_time = wind[index - 1][0] + factor*(wind[index][0] - wind[index - 1][0]);
 				double int_windhor = wind[index - 1][1] + factor*(wind[index][1] - wind[index - 1][1]);
@@ -227,21 +227,21 @@ Matrix Environment::TimeAt(double time)
 		}
 	}
 }
-//Realiza interpolação linear e retorna o valor da velocidade
+//Performs interpolation linear and returns the value of the velocity
 Matrix Environment::WindVelocityAt(Matrix pos, double time)
 {
-	//Interpolação no tempo
-	Matrix vel_info(8);		//info ja interpolada no tempo
-	Matrix local(3);		//posição no sistema local
-	Matrix ref(3);			//referência no sistema local
-	Matrix V(3);			//vetor velocidade do vento no sistema local
-	Matrix ret_vel(3);		//retorno de velocidade no sistema global
+	//Interpolation in the time
+	Matrix vel_info(8);		//info already interpolada in the time
+	Matrix local(3);		//position in the system local
+	Matrix ref(3);			//reference in the system local
+	Matrix V(3);			//vector velocity of the wind in the system local
+	Matrix ret_vel(3);		//return of velocity in the system global
 	vel_info = TimeAt(time);
 
-	//Calculo da matriz de transformação de coordenadas
+	//Calculation of the transformation matrix of coordinates
 	if (transform3_calculated == false)
 	{
-		//Conversão do sistema de coordenadas global para o local
+		//Conversion of the global coordinate system for the local
 		Matrix e1(3);
 		e1(0, 0) = 1.0;
 		Matrix e2(3);
@@ -251,7 +251,7 @@ Matrix Environment::WindVelocityAt(Matrix pos, double time)
 		Matrix e1r = *db.CS[cs - 1]->E1;
 		Matrix e2r = *db.CS[cs - 1]->E2;
 		Matrix e3r = *db.CS[cs - 1]->E3;
-		//Preenche a matriz de transformação de coordenadas
+		//Fills the transformation matrix of coordinates
 		transform3(0, 0) = dot(e1r, e1);
 		transform3(0, 1) = dot(e1r, e2);
 		transform3(0, 2) = dot(e1r, e3);
@@ -267,11 +267,11 @@ Matrix Environment::WindVelocityAt(Matrix pos, double time)
 		transform3_calculated = true;
 	}
 
-	//Conversão global-local
+	//Conversion global-local
 	local = transform3*pos;
 	ref = transform3*reference_position;
 
-	//Pegando dados do vel_info
+	//Pegando data of the vel_info
 	double wind_speed = vel_info(1, 0);
 	double delta = vel_info(2, 0);
 	double v_vertical = vel_info(3,0);
@@ -280,20 +280,20 @@ Matrix Environment::WindVelocityAt(Matrix pos, double time)
 	double Lin_VSHR = vel_info(6, 0);
 	double Vgust = vel_info(7, 0);
 	
-	//Translação - informação da referência
+	//Translation - information of the reference
 	local = local - ref;
 
-	//Interpolação no espaço
-	//orientação do plano de referência
+	//Interpolation in the espaço
+	//orientation of the plane of reference
 	Matrix t(3);
 	t(0, 0) = sin(delta);
 	t(1, 0) = cos(delta);
 	t(2, 0) = 0;
-	//produto escalar local*t
+	//dot product local*t
 	double proj = dot(t, local);
 	double velh = VHor(proj, local(2, 0), ref(2, 0), wind_speed, HSHR, Lin_VSHR, VSHR, Vgust);
 
-	// montagem do ret_vel  
+	// assembly of the ret_vel  
 	ret_vel(0, 0) = velh * cos(delta);
 	ret_vel(1, 0) = -velh * sin(delta);
 	ret_vel(2, 0) = v_vertical;
@@ -301,42 +301,42 @@ Matrix Environment::WindVelocityAt(Matrix pos, double time)
 
 	return ret_vel;
 }
-//Retorna o Time no devido index
+//Returns the Time in the due index
 double Environment::GetTimeAt(int index)
 {
 	return wind[index][0];
 }
-//Retorna o Wind Speed no devido index
+//Returns the Wind Speed in the due index
 double Environment::GetWindSpeedAt(int index)
 {
 	return wind[index][1];
 }
-//Retorna o Delta no devido index
+//Returns the Delta in the due index
 double Environment::GetDeltaAt(int index)
 {
 	return wind[index][2];
 }
-//Retorna o Wind Vert no devido index
+//Returns the Wind Vert in the due index
 double Environment::GetWindVertAt(int index)
 {
 	return wind[index][3];
 }
-//Retorna o Shear linear horizontal no devido index
+//Returns the Shear linear horizontal in the due index
 double Environment::GetHorizShearAt(int index)
 {
 	return wind[index][4];
 }
-//Retorna o Power Law Shear vertical no devido index
+//Returns the Power Law Shear vertical in the due index
 double Environment::GetVertPLShearAt(int index)
 {
 	return wind[index][5];
 }
-//Retorna o Shear Linear vertical no devido index
+//Returns the Shear Linear vertical in the due index
 double Environment::GetVertLinShearAt(int index)
 {
 	return wind[index][6];
 }
-//Retorna o Gust Speed no devido index
+//Returns the Gust Speed in the due index
 double Environment::GetGustSpeedAt(int index)
 {
 	return wind[index][7];
@@ -344,17 +344,17 @@ double Environment::GetGustSpeedAt(int index)
 
 bool Environment::Read(FILE *f)
 {
-	char s[1000];			//salva palavras-chave lidas e valores lidos
-	fpos_t pos;				//variavel que salva ponto do stream de leitura
-	bool any_read = true;	//marca que alguma das palavras-chave foi encontrada e realizada a leitura
+	char s[1000];			//saves words-key lidas and values lidos
+	fpos_t pos;				//variable that saves point of the stream of reading
+	bool any_read = true;	//marca that some of the words-key was encontrada and realizada the reading
 
 	while (any_read == true)
 	{
-		fgetpos(f, &pos);	//Salva a posição (stream) do inicio da leitura
-		any_read = false;	//indica que ainda não leu nada
+		fgetpos(f, &pos);	//Saves the position (stream) of the start of the reading
+		any_read = false;	//indicates that still not leu nada
 		TryComment(f);
 		//////////////////////////////////////////////////////
-		//Leitura do GravityData
+		//Reading of the GravityData
 		fscanf(f, "%s", s);
 		if (!strcmp(s, "GravityData") && any_read == false)
 		{
@@ -369,7 +369,7 @@ bool Environment::Read(FILE *f)
 				fscanf(f, "%s", s);
 				G(2, 0) = atof(s);
 
-				//Leitura do BoolTable do G
+				//Reading of the BoolTable of the G
 				fscanf(f, "%s", s);
 				if (!strcmp(s, "BoolTable"))
 				{
@@ -378,14 +378,14 @@ bool Environment::Read(FILE *f)
 				else
 					return false;
 			}
-			any_read = true;		//Marca que foi realizada leitura
+			any_read = true;		//Marca that was realizada reading
 		}
 		//////////////////////////////////////////////////////
-		//Leitura do OceanData
+		//Reading of the OceanData
 		if (!strcmp(s, "OceanData") && any_read == false)
 		{
 			ocean_data_exist = true;
-			//Leitura do RhoFluid
+			//Reading of the RhoFluid
 			fscanf(f, "%s", s);
 			if (!strcmp(s, "RhoFluid"))
 			{
@@ -395,7 +395,7 @@ bool Environment::Read(FILE *f)
 			else
 				return false;
 
-			//Leitura do SurfacePosition	
+			//Reading of the SurfacePosition	
 			fscanf(f, "%s", s);
 			if (!strcmp(s, "SurfacePosition"))
 			{
@@ -409,11 +409,11 @@ bool Environment::Read(FILE *f)
 			else
 				return false;
 			TryComment(f);
-			//Leitura da corrente maritima
+			//Reading of the corrente maritima
 			fscanf(f, "%s", s);
 			if (!strcmp(s, "SeaCurrent"))
 			{
-				//Leitura do numero de pontos da corrente (N)
+				//Reading of the number of points of the corrente (N)
 				fscanf(f, "%s", s);
 				if (!strcmp(s, "N"))
 				{
@@ -423,7 +423,7 @@ bool Environment::Read(FILE *f)
 				else
 					return false;
 
-				//Leitura do BoolTable
+				//Reading of the BoolTable
 				fscanf(f, "%s", s);
 				if (!strcmp(s, "BoolTable"))
 				{
@@ -433,11 +433,11 @@ bool Environment::Read(FILE *f)
 					return false;
 
 				SetNCurrentPoints(n_current_points);
-				//Leitura dos pontos da corrente
+				//Reading of the points of the corrente
 				for (int i = 0; i < n_current_points; i++)
 				{
 					TryComment(f);
-					//Leitura de cada ponto da corrente
+					//Reading of each point of the corrente
 					double tempD, tempSpeed, tempAngle;
 					//Depth
 					fscanf(f, "%s", s);
@@ -469,21 +469,21 @@ bool Environment::Read(FILE *f)
 					else
 						return false;
 
-					//Grava no vetor
+					//Grava in the vector
 					SetCurrentData(i, tempD, tempSpeed, tempAngle);
 				}
 			}
 			else
 				return false;
-			any_read = true;		//Marca que foi realizada leitura
+			any_read = true;		//Marca that was realizada reading
 		}
 		//////////////////////////////////////////////////////
-		//Leitura do WindData
+		//Reading of the WindData
 		if (!strcmp(s, "WindData") && any_read == false)
 		{
 			wind_data_exist = true;
-			//Inserir dados de leitura aqui
-			//Leitura do Rho_air
+			//Insert data of reading here
+			//Reading of the Rho_air
 			fscanf(f, "%s", s);
 			if (!strcmp(s, "RhoAir"))
 			{
@@ -493,7 +493,7 @@ bool Environment::Read(FILE *f)
 			else
 				return false;
 
-			//Leitura do ReferencePosition	
+			//Reading of the ReferencePosition	
 			fscanf(f, "%s", s);
 			if (!strcmp(s, "ReferencePosition"))
 			{
@@ -506,7 +506,7 @@ bool Environment::Read(FILE *f)
 			}
 			else
 				return false;
-			//Leitura do Sistema de Coordenadas
+			//Reading of the Coordinate system
 			fscanf(f, "%s", s);
 			if (!strcmp(s, "CS"))
 			{
@@ -515,11 +515,11 @@ bool Environment::Read(FILE *f)
 			}
 			else
 				return false;
-			//Leitura do vento
+			//Reading of the wind
 			fscanf(f, "%s", s);
 			if (!strcmp(s, "Wind"))
 			{
-				//Leitura do numero de pontos do vento (N)
+				//Reading of the number of points of the wind (N)
 				fscanf(f, "%s", s);
 				if (!strcmp(s, "N"))
 				{
@@ -529,10 +529,10 @@ bool Environment::Read(FILE *f)
 				else
 					return false;
 				SetNWindPoints(n_wind_points);
-				//Leitura dos pontos do vento
+				//Reading of the points of the wind
 				for (int i = 0; i < n_wind_points; i++)
 				{
-					//Leitura de cada ponto da corrente
+					//Reading of each point of the corrente
 					double temp_time, temp_WindSpeed, temp_Delta, temp_WindVert, temp_HSHR, temp_VSHR, temp_VLIN, temp_VGUST;
 
 					//Time
@@ -607,25 +607,25 @@ bool Environment::Read(FILE *f)
 					}
 					else
 						return false;
-					//Verificação do VSHR e VLIN
+					//Check of the VSHR and VLIN
 					if (temp_VSHR != 0.0 && temp_VLIN != 0.0)
 					{
 						db.myprintf("Error in WindData parameters: VSHR or VLIN has to be null!\n");
 						return false;
 					}
 						
-					//Grava no vetor
+					//Grava in the vector
 					SetWindData(i, temp_time, temp_WindSpeed, temp_Delta, temp_WindVert, temp_HSHR, temp_VSHR, temp_VLIN, temp_VGUST);
 				}
 			}
 			else
 				return false;
-			any_read = true;		//Marca que foi realizada leitura
+			any_read = true;		//Marca that was realizada reading
 		}
 		//////////////////////////////////////////////////////
 
-		//Se não houve leitura de nada - sinal de que ja e uma palavra-chave não pertencente ao bloco "Environment". 
-		//Com isso, salva a posição de leitura salva anterior e para a leitura.
+		//If not there was reading of nada - sign of that already and a keyword not pertencente to the bloco "Environment". 
+		//With this, saves the position of reading saves previous and for the reading.
 		if (any_read == false)
 			fsetpos(f, &pos);
 	}//while

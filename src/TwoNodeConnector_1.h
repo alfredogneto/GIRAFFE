@@ -8,39 +8,39 @@ public:
 	TwoNodeConnector_1();
 	~TwoNodeConnector_1();
 
-	bool Check();												//Checa inconsistências no elemento para evitar erros de execução
+	bool Check();												//Checks inconsistencies in the element for avoid errors of execution
 	bool Read(FILE *f);
 	void Write(FILE *f);
-	void WriteResults(FILE *f);									//Escreve arquivo de resultados
-	void WriteMonitor(FILE *f, bool first_record, double time);	//Escreve no monitor do elemento
+	void WriteResults(FILE *f);									//Writes file of results
+	void WriteMonitor(FILE *f, bool first_record, double time);	//Writes in the monitor of the element
 	void WriteVTK_XMLBase(std::vector<float> *float_vector);
 	void WriteVTK_XMLRender(FILE *f);
-	void Mount();												//Monta elemento
-	void MountElementLoads();									//Monta carregamentos associados ao elemento
-	void MountMass();											//Monta a matriz de massa
-	void MountMassModal();										//Monta a matriz de massa para realização da analise modal
-	void MountDampingModal();									//Monta a matriz de amortecimento para realização da analise modal
-	void MountDamping(bool update_rayleigh);					//Monta a matriz de amortecimento
-	void MountDyn();											//Montagens - Newmark
-	void MountDynModal();										//Montagens para analise modal - inserção da matriz de massa e amortecimento na matriz de rigidez para posterior montagem global
-	void TransformMatrix();										//Monta matriz de transformação de coordenadas
-	void MountGlobal();											//Preenche a contribuição do elemento nas matrizes globais
-	void Zeros();												//Zera algumas matrizes utilizadas nos calculos
+	void Mount();												//Assembles element
+	void MountElementLoads();									//Assembles loadings associated to the element
+	void MountMass();											//Assembles the mass matrix
+	void MountMassModal();										//Assembles the mass matrix for performing of the analysis modal
+	void MountDampingModal();									//Assembles the damping matrix for performing of the analysis modal
+	void MountDamping(bool update_rayleigh);					//Assembles the damping matrix
+	void MountDyn();											//Assemblies - Newmark
+	void MountDynModal();										//Assemblies for analysis modal - insertion of the mass matrix and damping in the stiffness matrix for subsequent assembly global
+	void TransformMatrix();										//Assembles transformation matrix of coordinates
+	void MountGlobal();											//Fills the contribution of the element in the matrices global
+	void Zeros();												//Zeroes some matrices used in the calculations
 
-	void SaveLagrange();										//Salva variaveis nos pontos de Gauss uteis para descrição lagrangiana atualizada
-	void PreCalc();												//Pre-calculo de variaveis que e feito uma unica vez no inicio
+	void SaveLagrange();										//Saves variables in the gauss points useful for description lagrangiana updated
+	void PreCalc();												//Pre-calculation of variables that and done a single time in the start
 
-	//Variaveis do elemento
-	Matrix* K;													//Matriz de rigidez 12x12
-	Matrix* C;													//Matriz de amortecimento 12x12
-	Matrix* Q;													//Transformação de coordenadas 12x12
+	//Variables of the element
+	Matrix* K;													//Stiffness matrix 12x12
+	Matrix* C;													//Damping matrix 12x12
+	Matrix* Q;													//Transformation of coordinates 12x12
 
-	Matrix* K_m;												//Matriz de rigidez 6x6
-	Matrix* C_m;												//Matriz de amortecimento 6x6
-	Matrix* Q_m;												//Transformação de coordenadas 6x6
+	Matrix* K_m;												//Stiffness matrix 6x6
+	Matrix* C_m;												//Damping matrix 6x6
+	Matrix* Q_m;												//Transformation of coordinates 6x6
 
-	Matrix* f;													//Força para compor global
-	Matrix* fd;													//Força - parte do amortecimento
-	Matrix* Kt;													//Operador tangente para compor global
-	Matrix* Ct;													//Operador tangente - parte do amortecimento
+	Matrix* f;													//Force for compor global
+	Matrix* fd;													//Force - part of the damping
+	Matrix* Kt;													//Operator tangent for compor global
+	Matrix* Ct;													//Operator tangent - part of the damping
 };

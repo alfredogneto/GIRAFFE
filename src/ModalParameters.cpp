@@ -22,7 +22,7 @@ bool ModalParameters::Read(FILE *f)
 	if (!strcmp(s, "ExportMatrices"))
 	{
 		fscanf(f, "%s", s);
-		if (atoi(s) != 0 && atoi(s) != 1)//Se não for 0 ou 1
+		if (atoi(s) != 0 && atoi(s) != 1)//If not for 0 or 1
 			return false;
 		if (atoi(s) == 1)
 			export_matrices = true;
@@ -54,7 +54,7 @@ bool ModalParameters::Read(FILE *f)
 	if (!strcmp(s, "ComputeEigenvectors"))
 	{
 		fscanf(f, "%s", s);
-		if (atoi(s) != 0 && atoi(s) != 1)//Se não for 0 ou 1
+		if (atoi(s) != 0 && atoi(s) != 1)//If not for 0 or 1
 			return false;
 		if (atoi(s) == 1)
 			compute_eigenvectors = true;
@@ -73,7 +73,7 @@ bool ModalParameters::Read(FILE *f)
 	else
 		return false;
 	
-	//Palavras chaves opcionais (analise modal concomitante)
+	//Words chaves opcionais (analysis modal concomitante)
 	
 	fpos_t pos;
 	fgetpos(f, &pos);
@@ -81,7 +81,7 @@ bool ModalParameters::Read(FILE *f)
 	if (!strcmp(s, "ConcomitantModal"))
 	{
 		fscanf(f, "%s", s);
-		if (atoi(s) != 0 && atoi(s) != 1)//Se não for 0 ou 1
+		if (atoi(s) != 0 && atoi(s) != 1)//If not for 0 or 1
 			return false;
 		if (atoi(s) == 1)
 			concomitant_modal = true;

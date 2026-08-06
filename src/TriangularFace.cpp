@@ -4,7 +4,7 @@
 #include "Matrix.h"
 #include "MatrixFloat.h"
 #include"Database.h"
-//Variaveis globais
+//Global variables
 extern
 Database db;
 #define PI 3.1415926535897932384626433832795
@@ -37,22 +37,22 @@ void TriangularFace::PreCalc()
 	area = 0.5 * norm(cross(e1, e2));
 
 	double temp;
-	//Ponderações angulares dos vertices (de acordo com o angulo interno do triangulo)
-	//vertice [0]
+	//Ponderações angulares of the vertices (according to the angle internal of the triangulo)
+	//vertex [0]
 	e1 = *ptr->vertices[verticesIDs[1] - 1].coord_double - *ptr->vertices[verticesIDs[0] - 1].coord_double;
 	e2 = *ptr->vertices[verticesIDs[2] - 1].coord_double - *ptr->vertices[verticesIDs[0] - 1].coord_double;
 	temp = asin(norm(cross(e1, e2)) / (norm(e1)*norm(e2)));
 	if (dot(e1, e2) < 0.0)
 		temp = PI - temp;
 	vertice_weight[0] = temp / PI;
-	//vertice [1]
+	//vertex [1]
 	e1 = *ptr->vertices[verticesIDs[0] - 1].coord_double - *ptr->vertices[verticesIDs[1] - 1].coord_double;
 	e2 = *ptr->vertices[verticesIDs[2] - 1].coord_double - *ptr->vertices[verticesIDs[1] - 1].coord_double;
 	temp = asin(norm(cross(e1, e2)) / (norm(e1)*norm(e2)));
 	if (dot(e1, e2) < 0.0)
 		temp = PI - temp;
 	vertice_weight[1] = temp / PI;
-	//vertice [2]
+	//vertex [2]
 	e1 = *ptr->vertices[verticesIDs[0] - 1].coord_double - *ptr->vertices[verticesIDs[2] - 1].coord_double;
 	e2 = *ptr->vertices[verticesIDs[1] - 1].coord_double - *ptr->vertices[verticesIDs[2] - 1].coord_double;
 	temp = asin(norm(cross(e1, e2)) / (norm(e1)*norm(e2)));

@@ -29,7 +29,7 @@ bool LineRegion::Read(FILE *f)
 			fscanf(f, "%s", s);
 			n_elements = atoi(s);
 
-			//Alocação do vetor de elementos
+			//Allocation of the vector of elements
 			elements = new int[n_elements];
 		}
 		else

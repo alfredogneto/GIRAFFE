@@ -9,18 +9,18 @@ public:
 	Modal();
 	~Modal();
 
-	bool Read(FILE *f);											//Leitura de arquivo de entrada
-	void Write(FILE *f);										//Gravação de arquivo de saida
+	bool Read(FILE *f);											//Reading of input file
+	void Write(FILE *f);										//Recording of output file
 	bool Solve();												//Solves solution routine
 	void CreateOutputFolder();									//Creates output folder
-	void WriteResults(double time_value);						//Escreve resultados
-	void WriteMatrices();										//Escreve as matrizes na pasta modal
-	void WriteModes();											//Escreve arquivos com os modos de vibrar
-	void WriteVTK_XML();										//Escreve modos de vibrar de todos os elementos
+	void WriteResults(double time_value);						//Writes results
+	void WriteMatrices();										//Writes the matrices in the folder modal
+	void WriteModes();											//Writes files with the modos of vibrar
+	void WriteVTK_XML();										//Writes modos of vibrar of all the elements
 
 	//Functions to evaluate mode displacements
-	void ComputeModalDisplacement(int node, int DOF, int mode, double* Re, double* Im);	//Calcula o valor do deslocamento modal no nó e grau de liberdade em questão
-	double ComputeModeNorm(int mode);													//Computa a norma do autovetor
+	void ComputeModalDisplacement(int node, int DOF, int mode, double* Re, double* Im);	//Calculates the value of the displacement modal in the node and degree of freedom in question
+	double ComputeModeNorm(int mode);													//Computes the norm of the eigenvector
 	
 	//Input variables
 	bool export_matrices;
@@ -30,17 +30,17 @@ public:
 	int number_frames;
 
 	//Internal variables
-	char copy_name[1000];										//Endereco do diretorio para salvar arquivos
-	Matrix eig;													//Matrix com autovalores complexos
-	Matrix eigenvectors;										//Matrix com autovetores complexos
-	double mode_factor;											//Fator multiplicativo para o modo de vibrar
-	bool concomitant_solution;									//Flag que indica se e analise concomitante
+	char copy_name[1000];										//Address of the directory for save files
+	Matrix eig;													//Matrix with eigenvalues complexos
+	Matrix eigenvectors;										//Matrix with eigenvectors complexos
+	double mode_factor;											//Factor multiplicativo for the modo of vibrar
+	bool concomitant_solution;									//Flag that indicates if and analysis concomitante
 	
 	//Special functions for matrices
-	void ZerosLocalMatrices();				//Zera matrizes dos elementos (para uso na analise modal)
-	void MountMassModal();					//Monta matriz de massa para analise modal
-	void MountDampingModal();				//Monta matriz de amortecimento para analise modal
-	void MountDynModal();					//Montagens para analise Modal
+	void ZerosLocalMatrices();				//Zeroes matrices of the elements (for use in the analysis modal)
+	void MountMassModal();					//Assembles mass matrix for analysis modal
+	void MountDampingModal();				//Assembles damping matrix for analysis modal
+	void MountDynModal();					//Assemblies for analysis Modal
 
 };
 

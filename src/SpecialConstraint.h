@@ -8,27 +8,27 @@ public:
 	SpecialConstraint() {}
 	virtual ~SpecialConstraint() {}
 
-	virtual bool Read(FILE *f) = 0;		//Leitura
-	virtual void Write(FILE *f) = 0;	//Gravação
-	virtual void Mount() = 0;			//Montagem dos residuos e rigidez tangente
-	virtual void MountGlobal() = 0;		//Preenche a contribuição do elemento nas matrizes globais
-	virtual void PreCalc() = 0;			//Pre-calculo de variaveis que e feito uma unica vez no inicio
-	virtual void SaveLagrange() = 0;	//Salvando variaveis da configuração convergida
-	virtual void ActivateDOFs() = 0;	//Realiza ativação dos GLs dos nós dos quais a special constraint participa
-	virtual bool Check() = 0;			//Checa inconsistências no SC para evitar erros de execução
-	virtual void ComputeVelAccel() = 0;	//Computa efeito das condições iniciais nos nós da restrição
+	virtual bool Read(FILE *f) = 0;		//Reading
+	virtual void Write(FILE *f) = 0;	//Recording
+	virtual void Mount() = 0;			//Assembly of the residuals and stiffness tangent
+	virtual void MountGlobal() = 0;		//Fills the contribution of the element in the matrices global
+	virtual void PreCalc() = 0;			//Pre-calculation of variables that and done a single time in the start
+	virtual void SaveLagrange() = 0;	//Saving variables of the configuration converged
+	virtual void ActivateDOFs() = 0;	//Performs activation of the GLs of the nodes of the which the special constraint participates
+	virtual bool Check() = 0;			//Checks inconsistencies in the SC for avoid errors of execution
+	virtual void ComputeVelAccel() = 0;	//Computes effect of the initial conditions in the nodes of the constraint
 	virtual void WriteVTK_XMLRender(FILE *f) = 0;
 	virtual void ComputeInitialGuessDisplacements() = 0;
-	virtual void WriteMonitor(FILE *f, bool first_record, double time) = 0;	//Escreve no monitor do SpecialConstraint
-	int number;							//ID da Special Constraint
+	virtual void WriteMonitor(FILE *f, bool first_record, double time) = 0;	//Writes in the monitor of the SpecialConstraint
+	int number;							//ID of the Special Constraint
 
-	int* active_lambda;					//Controle da ativação ou não dos multiplicadores de lagrange, de acordo com a ativação ou não dos GLs dos nós associados ao vinculo					
-	//1 - GL ativo
-	//0 - GL inativo
-	int* GLs;							//Numeros dos GLs dos multiplicadores de lagrange
-	int n_GL;							//Numero de multiplicadores de lagrange
-	double* lambda;						//Multiplicadores de lagrange do vinculo
-	double* copy_lambda;				//Multiplicadores de lagrange do vinculo (ultima configuração convergida)
-	BoolTable bool_table;				//Bool table que ativa ou desativa na seq. de solutions
+	int* active_lambda;					//Control of the activation or not of the Lagrange multipliers, according to the activation or not of the GLs of the nodes associated to the constraint					
+	//1 - GL active
+	//0 - GL inactive
+	int* GLs;							//Numbers of the GLs of the Lagrange multipliers
+	int n_GL;							//Number of Lagrange multipliers
+	double* lambda;						//Lagrange multipliers of the constraint
+	double* copy_lambda;				//Lagrange multipliers of the constraint (last configuration converged)
+	BoolTable bool_table;				//Bool table that active or desativa in the seq. of solutions
 };
 

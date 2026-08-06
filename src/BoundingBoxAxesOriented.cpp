@@ -3,7 +3,7 @@
 #include "MatrixFloat.h"
 #include "Database.h"
 
-//Variaveis globais
+//Global variables
 extern
 Database db;
 //extern

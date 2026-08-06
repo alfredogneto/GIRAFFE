@@ -12,23 +12,23 @@ public:
 	FlexibleSECylinder_1_FlexibleTriangularSurface_2();
 	~FlexibleSECylinder_1_FlexibleTriangularSurface_2();
 
-	//Chute inicial para coordenadas convectivas do par de superficies
+	//Initial guess for convective coordinates of the pair of surfaces
 	void InitialGuess(SSContactData* c_data);
 	
 	void ContactSS(bool *stick, bool *stickupdated, bool *previouscontact, double* Rc, double** Kc, double** invH, double* convective, double* copy_convective, double* gti, double* gtpupdated, double* epsn, double* epsn0, double* epst, double* cn, double* ct, double* mus, double* mud, double* fn, double* ft);
-	double ObjectivePhase1(Matrix& mc);								//Calcula a função objetivo para um conjunto de coordenadas convectivas - Phase 1
-	void GradientPhase1(Matrix& mc, Matrix& mGra);					//Calcula o Gradiente da função objetivo - Phase 1
-	void HessianPhase1(Matrix& mc, Matrix& mHes);					//Calcula a Hessiana da função objetivo - Phase 1
+	double ObjectivePhase1(const Matrix& mc);								//Calculates the objective function for a set of convective coordinates - Phase 1
+	void GradientPhase1(Matrix& mc, Matrix& mGra);					//Calculates the Gradient of the objective function - Phase 1
+	void HessianPhase1(Matrix& mc, Matrix& mHes);					//Calculates the Hessian of the objective function - Phase 1
 	
-	double Gap(Matrix& mc, bool fixed_normals, Matrix& nA, Matrix& nB);											//Calcula e rotorna o gap (com sinal)
-	void GradientGap(Matrix& mc, Matrix& mGra, bool fixed_normals, Matrix& nA, Matrix& nB);						//Calcula o Gradiente do gap
-	void HessianGap(Matrix& mc, Matrix& mHes, bool fixed_normals, Matrix& nA, Matrix& nB);						//Calcula a Hessiana do gap
-	int VerifyConvectiveRange(Matrix& mc);							//Verifica range de coordenadas convectivas
+	double Gap(const Matrix& mc, bool fixed_normals, Matrix& nA, Matrix& nB);											//Calculates and rotorna the gap (with sign)
+	void GradientGap(Matrix& mc, Matrix& mGra, bool fixed_normals, Matrix& nA, Matrix& nB);						//Calculates the Gradient of the gap
+	void HessianGap(Matrix& mc, Matrix& mHes, bool fixed_normals, Matrix& nA, Matrix& nB);						//Calculates the Hessian of the gap
+	int VerifyConvectiveRange(Matrix& mc);							//Checks range of convective coordinates
 	void InitializeConvectiveRange();								//Initialize range of validity of convective coordinates
 
 	void EvaluateDOFsVariables();									//Evaluates the necessary DOFs variables to be used as input to AceGen routines
 	//AceGen Variables or Pointers
-	FlexibleSECylinder_1* surf1;			//Ponteiro para a superficie 1
+	FlexibleSECylinder_1* surf1;			//Pointer to the surface 1
 	double* aA;
 	double* bA;
 	double* eA;
@@ -40,7 +40,7 @@ public:
 	double* xBAi;
 	double QAAi[3][3];
 	double QBAi[3][3];
-	FlexibleTriangularSurface_2* surf2;		//Ponteiro para a superficie 2
+	FlexibleTriangularSurface_2* surf2;		//Pointer to the surface 2
 	double* dB;
 	double* duiB;
 	double* dduiB;

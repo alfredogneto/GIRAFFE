@@ -1,91 +1,95 @@
 #include "MatrixFloat.h"
+#ifdef GIRAFFE_USE_MKL
 #include <mkl.h>
+#else
+#include <cblas.h>
+#endif
 #include <float.h>
 #define PI 3.1415926535897932384626433832795
 
-//Construtor Padrão
+//Constructor Padrï¿½o
 MatrixFloat::MatrixFloat(void)
 {
 	m_lines_deleted = true;
 	m_alloced_lines = 0;
 	m_lines = 1;
 	m_columns = 1;
-	//Inicializa a matriz como null e tenta aloca-la
+	//Initializes the matrix as null and tries allocates-it
 	m_matrix = NULL;
 	if(!alloc())
 		printf("Nao foi possivel alocar matriz! \n");
 }
-//Construtor de matriz quadrada
+//Constructor of square matrix
 MatrixFloat::MatrixFloat(long lines)
 {
 	m_lines_deleted = true;
 	m_alloced_lines = 0;
 	m_lines = lines;
 	m_columns = 1;
-	//Inicializa a matriz como null e tenta aloca-la
+	//Initializes the matrix as null and tries allocates-it
 	m_matrix = NULL;
 	if(!alloc())
 		printf("Nao foi possivel alocar matriz! \n");
 }
-//Construtor Parametrico
+//Parametric constructor
 MatrixFloat::MatrixFloat(long lines, long columns)
 {
 	m_lines_deleted = true;
 	m_alloced_lines = 0;
 	m_lines = lines;
 	m_columns = columns;
-	//Inicializa a matriz como null e tenta aloca-la
+	//Initializes the matrix as null and tries allocates-it
 	m_matrix = NULL;
 	if(!alloc())
 		printf("Nao foi possivel alocar matriz! \n");
 }
-//Construtor de cópia
+//Constructor of cï¿½pia
 MatrixFloat::MatrixFloat(const MatrixFloat &copied)
 {
-	//Verifica dimensões da matriz - se necessario, faz re-alocação
+	//Checks dimensï¿½es of the matrix - if necessary, does re-alocaï¿½ï¿½o
 	//if (copied.m_alloced_lines != m_alloced_lines)
 	//{
 		m_alloced_lines = 0;
 		m_lines = copied.m_lines;
 		m_columns = copied.m_columns;
 		m_lines_deleted = true;
-		//Inicializa a matriz como null e tenta aloca-la
+		//Initializes the matrix as null and tries allocates-it
 		m_matrix = NULL;
 		if(!alloc())
 			printf("Nao foi possivel alocar matriz! \n");
 	//}
-	//Copia os valores na nova matriz
+	//Copies the values in the new matrix
 	for(long i=0; i < copied.m_alloced_lines; i++)
 		m_matrix[i] = copied.m_matrix[i];	
 }
-//Destrutor Padrão
+//Destructor Padrï¿½o
 MatrixFloat::~MatrixFloat(void)
 {
 	flush();
 }
 
-//Retorna o numero de linhas da matriz
-long MatrixFloat::getLines()
+//Returns the number of rows of the matrix
+long MatrixFloat::getLines() const
 {
 	return this->m_lines;
 }
-//Retorna o numero de colunas da matriz 
-long MatrixFloat::getColumns()
+//Returns the number of columns of the matrix 
+long MatrixFloat::getColumns() const
 {
 	return this->m_columns;
 }
-//Define o numero de linhas da matriz
+//Defines the number of rows of the matrix
 void MatrixFloat::setLines(long value)
 {
 	m_lines = value;
 }
-//Define o numero de colunas da matriz
+//Defines the number of columns of the matrix
 void MatrixFloat::setColumns(long value)
 {
 	m_columns = value;
 }
 
-//Imprime a matriz na tela
+//Prints the matrix in the tela
 void MatrixFloat::print()
 {
 	printf("\n");
@@ -103,7 +107,7 @@ void MatrixFloat::print()
 	}
 	printf("\n");
 }
-//Imprime a matriz em um arquivo de texto, cujo nome esta no char s
+//Prints the matrix in a file of text, whose name this in the char s
 void MatrixFloat::fprint(char* s)
 {
 	FILE *file1 = fopen(s,"w");
@@ -122,15 +126,15 @@ void MatrixFloat::fprint(char* s)
 	fprintf(file1,"\n");
 	fclose(file1);
 }
-//Aloca a matriz
+//Allocates the matrix
 bool MatrixFloat::alloc()
 {
 	flush();
-	//Tenta alocar a matriz
+	//Tries allocate the matrix
 	if(!(m_matrix = new float[m_lines*m_columns]))
 			//Falha
 			return false;
-	//Caso consiga
+	//Case consiga
 	else
 	{
 		m_alloced_lines = m_lines*m_columns;
@@ -141,112 +145,112 @@ bool MatrixFloat::alloc()
 		return true;
 	}	
 }
-//Libera a memória ocupada pela matriz
+//Frees the memï¿½ria occupied through the matrix
 bool MatrixFloat::flush()
 {
-	//Percorre as linhas
-	//Se ha linhas para desalocar
+	//Iterates over the rows
+	//If there is rows for deallocate
 	if (this->m_lines_deleted == false)
 	{
 		if (m_matrix)
 			delete[]m_matrix;
-		//Desalocada com sucesso
-		m_lines_deleted=true;	//para evitar desalocação novamente
+		//Desalocada with sucesso
+		m_lines_deleted=true;	//for avoid desalocaï¿½ï¿½o novamente
 		m_matrix = NULL;
 		m_alloced_lines = 0;
 	}
 	return true;
 }
-//Zera a matriz, mantando as dimensões atuais
+//Zeroes the matrix, keeping the dimensï¿½es current
 void MatrixFloat::clear()
 {
 	for(int i=0; i < m_alloced_lines; i++)
 			m_matrix[i] = 0.0;
 }
 
-//Operador Soma
-MatrixFloat operator + (MatrixFloat &matrix1, MatrixFloat &matrix2)
+//Operator Sum
+MatrixFloat operator + (const MatrixFloat &matrix1, const MatrixFloat &matrix2)
 {
-	//Verifica se as dimensões das matrizes são compativeis
+	//Checks if the dimensï¿½es of the matrices sï¿½o compatible
 	if((matrix1.getLines() != matrix2.getLines()) || (matrix1.getColumns() != matrix2.getColumns()))
 	{
-		//Mensagem de erro - Dimensões Incompativeis
+		//Mensagem of error - Dimensï¿½es Incompatible
 		printf("Matrizes devem possuir a mesma dimensao! \n");
-		//Retorna vazio
+		//Returns vazio
 		return NULL;
 	}
-	//Caso as dimensões sejam compativeis
+	//Case the dimensï¿½es be compatible
 	else
 	{
-		//Cria uma matriz de retorno
+		//Creates a matrix of return
 		MatrixFloat return_matrix(matrix1.getLines(),matrix1.getColumns());
 		
-		//Subtrai elemento a elemento da matriz
+		//Subtrai element the element of the matrix
 		for(long i=0; i < matrix1.m_alloced_lines; i++)
 			return_matrix.m_matrix[i] = matrix1.m_matrix[i] + matrix2.m_matrix[i];
 		
-		//Retorna a matriz subtração
+		//Returns the matrix subtraï¿½ï¿½o
 		return return_matrix;
 	}
 }
-//Operador Soma
-MatrixFloat operator + (Matrix &matrix1, MatrixFloat &matrix2)			
+//Operator Sum
+MatrixFloat operator + (const Matrix &matrix1, const MatrixFloat &matrix2)			
 {
-	//Verifica se as dimensões das matrizes são compativeis
+	//Checks if the dimensï¿½es of the matrices sï¿½o compatible
 	if ((matrix1.getLines() != matrix2.getLines()) || (matrix1.getColumns() != matrix2.getColumns()))
 	{
-		//Mensagem de erro - Dimensões Incompativeis
+		//Mensagem of error - Dimensï¿½es Incompatible
 		printf("Matrizes devem possuir a mesma dimensao! \n");
-		//Retorna vazio
+		//Returns vazio
 		return NULL;
 	}
-	//Caso as dimensões sejam compativeis
+	//Case the dimensï¿½es be compatible
 	else
 	{
-		//Cria uma matriz de retorno
+		//Creates a matrix of return
 		MatrixFloat return_matrix(matrix1.getLines(), matrix1.getColumns());
 
-		//Subtrai elemento a elemento da matriz
+		//Subtrai element the element of the matrix
 		for (long i = 0; i < matrix1.m_alloced_lines; i++)
 			return_matrix.m_matrix[i] = (float)matrix1.m_matrix[i] + matrix2.m_matrix[i];
 
-		//Retorna a matriz subtração
+		//Returns the matrix subtraï¿½ï¿½o
 		return return_matrix;
 	}
 }
 
-//Operador Subtração
-MatrixFloat operator - (MatrixFloat &matrix1, MatrixFloat &matrix2)
+//Operator Subtraï¿½ï¿½o
+MatrixFloat operator - (const MatrixFloat &matrix1, const MatrixFloat &matrix2)
 {
-	//Verifica se as dimensões das matrizes são compativeis
+	//Checks if the dimensï¿½es of the matrices sï¿½o compatible
 	if((matrix1.getLines() != matrix2.getLines()) || (matrix1.getColumns() != matrix2.getColumns()))
 	{
-		//Mensagem de erro - Dimensões Incompativeis
+		//Mensagem of error - Dimensï¿½es Incompatible
 		printf("Matrizes devem possuir a mesma dimensao! \n");
-		//Retorna vazio
+		//Returns vazio
 		return NULL;
 	}
-	//Caso as dimensões sejam compativeis
+	//Case the dimensï¿½es be compatible
 	else
 	{
-		//Cria uma matriz de retorno
+		//Creates a matrix of return
 		MatrixFloat return_matrix(matrix1.getLines(),matrix1.getColumns());
 		
-		//Subtrai elemento a elemento da matriz
+		//Subtrai element the element of the matrix
 		for(long i=0; i < matrix1.m_alloced_lines; i++)
 			return_matrix.m_matrix[i] = matrix1.m_matrix[i] - matrix2.m_matrix[i];
 		
-		//Retorna a matriz subtração
+		//Returns the matrix subtraï¿½ï¿½o
 		return return_matrix;
 	}
 }
-//Operador Multiplicacao de matrizes
-MatrixFloat operator * (MatrixFloat &matrix1, MatrixFloat &matrix2)
+//Operator Multiplication of matrices
+MatrixFloat operator * (const MatrixFloat &matrix1, const MatrixFloat &matrix2)
 {
-	//Verificação da possibilidade de multiplicação
+	//Verificaï¿½ï¿½o of the possibility of multiplicaï¿½ï¿½o
 	if (matrix1.m_columns != matrix2.m_lines)
 	{
-		//Produto escalar
+		//Dot product
 		if (matrix1.m_lines == matrix2.m_lines)
 		{
 			MatrixFloat ret(1,1);
@@ -264,10 +268,10 @@ MatrixFloat operator * (MatrixFloat &matrix1, MatrixFloat &matrix2)
 	{
 		
 		MatrixFloat return_m(matrix1.m_lines,matrix2.m_columns);
-		//Se a segunda matriz for um vetor
+		//If the second matrix for a vector
 		if (matrix2.m_columns == 1)
 			cblas_sgemv(CblasColMajor,CblasNoTrans,matrix1.m_lines,matrix1.m_columns,1.0,matrix1.m_matrix,matrix1.m_lines,matrix2.m_matrix,1,0.0,return_m.m_matrix,1);
-		//Se não
+		//Se nï¿½o
 		else
 			cblas_sgemm(CblasColMajor,CblasNoTrans,CblasNoTrans,matrix1.m_lines,matrix2.m_columns,matrix2.m_lines,1.0,matrix1.m_matrix,matrix1.m_lines,matrix2.m_matrix,matrix2.m_lines,1,return_m.m_matrix,return_m.m_lines);
 		//return_m.print();
@@ -275,13 +279,13 @@ MatrixFloat operator * (MatrixFloat &matrix1, MatrixFloat &matrix2)
 	}
 }
 
-//Operador Multiplicacao de matrizes
-MatrixFloat operator * (Matrix &matrix1, MatrixFloat &matrix2)
+//Operator Multiplication of matrices
+MatrixFloat operator * (const Matrix &matrix1, const MatrixFloat &matrix2)
 {
-	//Verificação da possibilidade de multiplicação
+	//Verificaï¿½ï¿½o of the possibility of multiplicaï¿½ï¿½o
 	if (matrix1.m_columns != matrix2.m_lines)
 	{
-		//Produto escalar
+		//Dot product
 		if (matrix1.m_lines == matrix2.m_lines)
 		{
 			MatrixFloat ret(1, 1);
@@ -302,10 +306,10 @@ MatrixFloat operator * (Matrix &matrix1, MatrixFloat &matrix2)
 			tempmatrix[i] = (float)matrix1.m_matrix[i];
 
 		MatrixFloat return_m(matrix1.m_lines, matrix2.m_columns);
-		//Se a segunda matriz for um vetor
+		//If the second matrix for a vector
 		if (matrix2.m_columns == 1)
 			cblas_sgemv(CblasColMajor, CblasNoTrans, matrix1.m_lines, matrix1.m_columns, 1.0, tempmatrix, matrix1.m_lines, matrix2.m_matrix, 1, 0.0, return_m.m_matrix, 1);
-		//Se não
+		//Se nï¿½o
 		else
 			cblas_sgemm(CblasColMajor, CblasNoTrans, CblasNoTrans, matrix1.m_lines, matrix2.m_columns, matrix2.m_lines, 1.0, tempmatrix, matrix1.m_lines, matrix2.m_matrix, matrix2.m_lines, 1, return_m.m_matrix, return_m.m_lines);
 		
@@ -315,51 +319,51 @@ MatrixFloat operator * (Matrix &matrix1, MatrixFloat &matrix2)
 	}
 }
 
-//Operador Multiplicacao por escalar
-MatrixFloat operator * (float escalar, MatrixFloat &matrix1)
+//Operator Multiplication by scalar
+MatrixFloat operator * (float escalar, const MatrixFloat &matrix1)
 {
-	//Cria uma matriz de retorno
+	//Creates a matrix of return
 	MatrixFloat return_matrix(matrix1.getLines(),matrix1.getColumns());
 
-	//Faz o produto de cada elemento da matriz pelo escalar
+	//Does the product of each element of the matrix through the scalar
 	for(long i=0; i < return_matrix.m_alloced_lines; i++)
 		return_matrix.m_matrix[i] = matrix1.m_matrix[i]*escalar;
 	
-	//Retorna a matriz produto por escalar
+	//Returns the matrix product by scalar
 	return return_matrix;
 
 	
 }
-//Operador Multiplicacao por escalar
-MatrixFloat operator * (MatrixFloat &matrix1, float escalar)
+//Operator Multiplication by scalar
+MatrixFloat operator * (const MatrixFloat &matrix1, float escalar)
 {
-	//Retorna a função anterior, ja que esta operação e comutativa
+	//Returns the funï¿½ï¿½o previous, already that this operaï¿½ï¿½o and comutativa
 	return escalar*matrix1;
 }
-//Verificação de igualdade
-bool operator == (MatrixFloat &matrix1, MatrixFloat &matrix2)
+//Verificaï¿½ï¿½o of equality
+bool operator == (const MatrixFloat &matrix1, const MatrixFloat &matrix2)
 {
-	//Verifica a igualdade de dimensões
+	//Checks the equality of dimensï¿½es
 	if((matrix1.getLines() != matrix2.getLines()) || (matrix1.getColumns() != matrix2.getColumns()))
 		return false;
 	else
 	{
-		//Varre a matriz e verifica a igualdade de elementos
+		//Varre the matrix and checks the equality of elements
 		for(long i=0; i < matrix1.m_alloced_lines; i++)
 				if(matrix1.m_matrix[i] != matrix2.m_matrix[i]) return false;
-		//Matrizes iguais
+		//Matrices iguais
 		return true;
 	}
 }
-//Verificação de inegualdade
-bool operator != (MatrixFloat &matrix1, MatrixFloat &matrix2)
+//Verificaï¿½ï¿½o of inequality
+bool operator != (const MatrixFloat &matrix1, const MatrixFloat &matrix2)
 {
 	return !(matrix1 == matrix2);
 }
-//Operador de Atribuição	
+//Operator of Atribuiï¿½ï¿½o	
 MatrixFloat &MatrixFloat::operator = (MatrixFloat const &matrix1)
 {
-	//Verifica dimensões da matriz - se necessario, faz re-alocação
+	//Checks dimensï¿½es of the matrix - if necessary, does re-alocaï¿½ï¿½o
 	if (matrix1.m_alloced_lines != m_alloced_lines)
 	{
 		this->flush();
@@ -367,23 +371,23 @@ MatrixFloat &MatrixFloat::operator = (MatrixFloat const &matrix1)
 		m_lines = matrix1.m_lines;
 		m_columns = matrix1.m_columns;
 		m_lines_deleted = matrix1.m_lines_deleted;
-		//Inicializa a matriz como null e tenta aloca-la
+		//Initializes the matrix as null and tries allocates-it
 		m_matrix = NULL;
 		if(!alloc())
 			printf("Nao foi possivel alocar matriz! \n");
 	}
-	//Copia os valores na nova matriz
+	//Copies the values in the new matrix
 	for(long i=0; i < matrix1.m_alloced_lines; i++)
 		m_matrix[i] = matrix1.m_matrix[i];
 
-	//Retorna esta matriz
+	//Returns this matrix
 	return *this;
 }
 
-//Operador de Atribuição 2
+//Operator of Atribuiï¿½ï¿½o 2
 MatrixFloat &MatrixFloat::operator = (Matrix const &matrix1)
 {
-	//Verifica dimensões da matriz - se necessario, faz re-alocação
+	//Checks dimensï¿½es of the matrix - if necessary, does re-alocaï¿½ï¿½o
 	if (matrix1.m_alloced_lines != m_alloced_lines)
 	{
 		this->flush();
@@ -391,23 +395,23 @@ MatrixFloat &MatrixFloat::operator = (Matrix const &matrix1)
 		m_lines = matrix1.m_lines;
 		m_columns = matrix1.m_columns;
 		m_lines_deleted = matrix1.m_lines_deleted;
-		//Inicializa a matriz como null e tenta aloca-la
+		//Initializes the matrix as null and tries allocates-it
 		m_matrix = NULL;
 		if (!alloc())
 			printf("Nao foi possivel alocar matriz! \n");
 	}
-	//Copia os valores na nova matriz
+	//Copies the values in the new matrix
 	for (long i = 0; i < matrix1.m_alloced_lines; i++)
 		m_matrix[i] = (float)matrix1.m_matrix[i];
 
-	//Retorna esta matriz
+	//Returns this matrix
 	return *this;
 }
 
-//Retorno do valor na posição especificada
+//Return of the value in the posiï¿½ï¿½o specified
 float &MatrixFloat::operator() (long line, long column)
 {
-	//Verifica se a posição e valida
+	//Checks if the posiï¿½ï¿½o and valida
 	if(line > this->m_lines-1 || column > this->m_columns-1 || line < 0 || column < 0)
 	{
 		printf("Not valid position accessed in matrix! (%d,%d)\n",line,column);
@@ -416,13 +420,24 @@ float &MatrixFloat::operator() (long line, long column)
 		return ret[0];
 	}
 	else
-		//Retorna o valor na posição desejada
+		//Returns the value in the posiï¿½ï¿½o desired
 		return this->m_matrix[line + column*m_lines];
 }
-//Operador produto escalar entre dois vetores
-float dot(MatrixFloat &matrix1, MatrixFloat &matrix2)
+//Return of the value in the posiï¿½ï¿½o specified (version const)
+float MatrixFloat::operator() (long line, long column) const
 {
-	//Verificação da possibilidade do produto
+	if(line > this->m_lines-1 || column > this->m_columns-1 || line < 0 || column < 0)
+	{
+		printf("Not valid position accessed in matrix! (%d,%d)\n",line,column);
+		return 0;
+	}
+	else
+		return this->m_matrix[line + column*m_lines];
+}
+//Operator dot product between two vectors
+float dot(const MatrixFloat &matrix1, const MatrixFloat &matrix2)
+{
+	//Verificaï¿½ï¿½o of the possibility of the product
 	if (matrix1.m_lines != matrix2.m_lines)
 	{
 		printf("Nao e possivel calcular o produto escalar. Dimensoes incompativeis!");
@@ -437,10 +452,10 @@ float dot(MatrixFloat &matrix1, MatrixFloat &matrix2)
 	}
 }
 
-//Operador produto escalar entre dois vetores
-double dot(MatrixFloat &matrix1, Matrix &matrix2)
+//Operator dot product between two vectors
+double dot(const MatrixFloat &matrix1, const Matrix &matrix2)
 {
-	//Verificação da possibilidade do produto
+	//Verificaï¿½ï¿½o of the possibility of the product
 	if (matrix1.m_lines != matrix2.m_lines)
 	{
 		printf("Nao e possivel calcular o produto escalar. Dimensoes incompativeis!");
@@ -455,10 +470,10 @@ double dot(MatrixFloat &matrix1, Matrix &matrix2)
 	}
 }
 
-//Operador produto vetorial entre dois vetores
-MatrixFloat cross(MatrixFloat &matrix1, MatrixFloat &matrix2)
+//Operator cross product between two vectors
+MatrixFloat cross(const MatrixFloat &matrix1, const MatrixFloat &matrix2)
 {
-	//Verificação da possibilidade do produto
+	//Verificaï¿½ï¿½o of the possibility of the product
 	if (matrix1.m_columns != 1 || matrix2.m_columns != 1 || matrix1.m_lines != 3 || matrix2.m_lines != 3)
 	{
 		printf("Nao e possivel calcular o produto vetorial. Dimensoes incompativeis!");
@@ -475,10 +490,10 @@ MatrixFloat cross(MatrixFloat &matrix1, MatrixFloat &matrix2)
 }
 
 
-//Operador produto tensorial entre dois vetores
-MatrixFloat dyadic(MatrixFloat &matrix1, MatrixFloat &matrix2)
+//Operator tensor (dyadic) product between two vectors
+MatrixFloat dyadic(const MatrixFloat &matrix1, const MatrixFloat &matrix2)
 {
-	//Verificação da possibilidade do produto
+	//Verificaï¿½ï¿½o of the possibility of the product
 	if (matrix1.m_columns != 1 || matrix2.m_columns != 1 || matrix1.m_lines != matrix2.m_lines)
 	{
 		printf("Nao e possivel calcular o produto tensorial. Dimensoes incompativeis!");
@@ -494,10 +509,10 @@ MatrixFloat dyadic(MatrixFloat &matrix1, MatrixFloat &matrix2)
 		return return_m;
 	}
 }
-//Operador skew de um vetor
-MatrixFloat skew(MatrixFloat &matrix1)
+//Operator skew of a vector
+MatrixFloat skew(const MatrixFloat &matrix1)
 {
-	//Verificação da possibilidade do produto
+	//Verificaï¿½ï¿½o of the possibility of the product
 	if (matrix1.m_columns != 1 || matrix1.m_lines != 3)
 	{
 		printf("Nao e possivel calcular o produto escalar. Dimensoes incompativeis!");
@@ -516,10 +531,10 @@ MatrixFloat skew(MatrixFloat &matrix1)
 		return return_m;
 	}
 }
-//Operador axial de um vetor
-MatrixFloat axial(MatrixFloat &matrix1)
+//Operator axial of a vector
+MatrixFloat axial(const MatrixFloat &matrix1)
 {
-	//Verificação da possibilidade do produto
+	//Verificaï¿½ï¿½o of the possibility of the product
 	if (matrix1.m_columns != 3 || matrix1.m_lines != 3)
 	{
 		printf("Nao e possivel calcular o produto escalar. Dimensoes incompativeis!");
@@ -535,14 +550,14 @@ MatrixFloat axial(MatrixFloat &matrix1)
 	}
 }
 
-//Retorna o endereço de uma matriz
-float* MatrixFloat::getMatrix()
+//Returns the endereï¿½o of a matrix
+float* MatrixFloat::getMatrix() const
 {
 	return m_matrix;
 }
 
-//Retorna a norma de um vetor
-float norm(MatrixFloat &matrix1)
+//Returns the norm of a vector
+float norm(const MatrixFloat &matrix1)
 {
 	if (matrix1.getColumns() != 1)
 		printf("Dimensao nao consistente para calculo da norma");
@@ -574,14 +589,14 @@ float norm(MatrixFloat &matrix1)
 					matrix1(5, 0)*matrix1(5, 0));
 				return return_value;
 			}
-			//printf("Norma infinito\n");
+			//printf("Norm infinito\n");
 			float max = 0;
 			for (int i=0; i< matrix1.getLines(); i++)
 			{
-				//Detecção de NaN
+				//Detecï¿½ï¿½o of NaN
 				if (matrix1(i, 0) == matrix1(i, 0))
 				{
-					//Detecção de infinito
+					//Detecï¿½ï¿½o of infinito
 					if (matrix1(i, 0) >= FLT_MAX || matrix1(i, 0) <= -FLT_MAX)
 						return FLT_MAX;
 					else
@@ -596,7 +611,7 @@ float norm(MatrixFloat &matrix1)
 					
 				}
 				else
-					return FLT_MAX;//valor muito alto, pois detectou NaN
+					return FLT_MAX;//value very alto, since detectou NaN
 				
 			}
 			return max;
@@ -612,8 +627,8 @@ float norm(MatrixFloat &matrix1)
 	return 0;
 }
 
-//Retorna a transposta de uma matriz
-MatrixFloat transp(MatrixFloat &matrix1)
+//Returns the transposta of a matrix
+MatrixFloat transp(const MatrixFloat &matrix1)
 {
 	MatrixFloat answer(matrix1.getColumns(),matrix1.getLines());
 	for (int j=0;j<matrix1.getColumns();j++)
@@ -625,7 +640,7 @@ MatrixFloat transp(MatrixFloat &matrix1)
 	}
 	return answer;
 }
-//Zera a matriz
+//Zeroes the matrix
 void zeros(MatrixFloat* matrix1)
 {
 	for (int j=0;j<matrix1->getColumns();j++)

@@ -36,7 +36,7 @@ void PipeLoad::PreCalc()
 
 }
 
-//Atualiza dados necessarios e que sejam dependentes de DOFs ativos/inativos - chamado no inicio de cada solution step
+//Updates data necessarios and that be dependentes of DOFs active/inativos - called in the start of each solution step
 void PipeLoad::UpdateforSolutionStep()
 {
 
@@ -48,7 +48,7 @@ bool PipeLoad::Read(FILE *f)
 	fscanf(f, "%s", s);
 	number = atoi(s);
 
-	//Leitura do ElementSet
+	//Reading of the ElementSet
 	fscanf(f, "%s", s);
 	if (!strcmp(s, "ElementSet"))
 	{
@@ -122,7 +122,7 @@ void PipeLoad::Write(FILE *f)
 
 void PipeLoad::Mount()
 {
-	//Percorre elementos
+	//Iterates over elements
 	int element;
 	for (int index = 0; index < db.element_sets[element_set - 1]->n_el; index++)
 	{

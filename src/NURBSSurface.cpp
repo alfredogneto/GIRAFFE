@@ -4,7 +4,7 @@
 #include "Encoding.h"
 
 #include"Database.h"
-//Variaveis globais
+//Global variables
 extern
 Database db;
 
@@ -68,7 +68,7 @@ NURBSSurface::~NURBSSurface()
 	}
 }
 
-//Leitura do arquivo de entrada
+//Reading of the input file
 bool NURBSSurface::Read(FILE *f)
 {
 	char s[1000];
@@ -78,7 +78,7 @@ bool NURBSSurface::Read(FILE *f)
 	number = atoi(s);
 	fscanf(f, "%s", s);
 	strcpy(file, s);
-	//Leitura do arquivo CAD
+	//File reading CAD
 	CADread = ReadCADFile();
 	if (CADread == false)
 	{
@@ -89,7 +89,7 @@ bool NURBSSurface::Read(FILE *f)
 	return true;
 }
 
-//Escrita do arquivo de saida
+//File writing of output
 void NURBSSurface::Write(FILE *f)
 {
 	fprintf(f, "NURBSSurface\t%d\t%s\n",
@@ -100,7 +100,7 @@ void NURBSSurface::Write(FILE *f)
 
 void NURBSSurface::PreCalc()
 {
-	//Aloca Pw
+	//Allocates Pw
 	Pw = new Matrix*[U_dim];
 	for (int i = 0; i < U_dim; i++)
 	{
@@ -108,7 +108,7 @@ void NURBSSurface::PreCalc()
 		for (int j = 0; j < V_dim; j++)
 			Pw[i][j] = Matrix(4);
 	}
-	//Preenche Pw
+	//Fills Pw
 	for (int i = 0; i < U_dim; i++)
 	{
 		for (int j = 0; j < V_dim; j++)
@@ -146,11 +146,11 @@ void NURBSSurface::PreCalc()
 	EvaluateInertiaTensor();
 }
 
-//Leitura do arquivo de CAD
+//File reading of CAD
 bool  NURBSSurface::ReadCADFile()
 {
-	//Faz leitura do arquivo 'file'
-	//Atribui valor para variaveis de NURBS e aloca matrizes de NURBS
+	//Does file reading 'file'
+	//Assigns value for variables of NURBS and allocates matrices of NURBS
 
 	FILE *f1 = NULL;
 	char name_file[500];
@@ -159,12 +159,12 @@ bool  NURBSSurface::ReadCADFile()
 	strcat(name_file, file);
 	f1 = fopen(name_file, "r");
 	if (f1 == NULL)
-		return false;//Erro de leitura do arquivo de CAD
+		return false;//Error of file reading of CAD
 
-	//Leitura do aquivo
+	//Reading of the aquivo
 	char s[200];
 
-	//Leitura UDim
+	//Reading UDim
 	fscanf(f1, "%s", s);
 	if (!strcmp(s, "UDim"))
 	{
@@ -173,7 +173,7 @@ bool  NURBSSurface::ReadCADFile()
 	}
 	else
 		return false;
-	//Leitura UOrder
+	//Reading UOrder
 	fscanf(f1, "%s", s);
 	if (!strcmp(s, "UOrder"))
 	{
@@ -182,9 +182,9 @@ bool  NURBSSurface::ReadCADFile()
 	}
 	else
 		return false;
-	//Aloca U knot vector
+	//Allocates U knot vector
 	U_knot_vector = new double[U_dim + U_order + 1];
-	//Leitura U knot vector
+	//Reading U knot vector
 	fscanf(f1, "%s", s);
 	if (!strcmp(s, "UKnotVector"))
 	{
@@ -197,7 +197,7 @@ bool  NURBSSurface::ReadCADFile()
 	else
 		return false;
 
-	//Leitura VDim
+	//Reading VDim
 	fscanf(f1, "%s", s);
 	if (!strcmp(s, "VDim"))
 	{
@@ -206,7 +206,7 @@ bool  NURBSSurface::ReadCADFile()
 	}
 	else
 		return false;
-	//Leitura VOrder
+	//Reading VOrder
 	fscanf(f1, "%s", s);
 	if (!strcmp(s, "VOrder"))
 	{
@@ -215,9 +215,9 @@ bool  NURBSSurface::ReadCADFile()
 	}
 	else
 		return false;
-	//Aloca V knot vector
+	//Allocates V knot vector
 	V_knot_vector = new double[V_dim + V_order + 1];
-	//Leitura V knot vector
+	//Reading V knot vector
 	fscanf(f1, "%s", s);
 	if (!strcmp(s, "VKnotVector"))
 	{
@@ -236,11 +236,11 @@ bool  NURBSSurface::ReadCADFile()
 	with that, if i varies along u and j varies along v, the position related to a given i,j in the vector weights is given at position [i][j]
 	The same applies for control points.
 	*/
-	//Aloca weights
+	//Allocates weights
 	weights = new double*[U_dim];
 	for (int i = 0; i < U_dim; i++)
 		weights[i] = new double[V_dim];
-	//Aloca control points
+	//Allocates control points
 	control_points = new Matrix*[U_dim];
 	for (int i = 0; i < U_dim; i++)
 	{
@@ -249,7 +249,7 @@ bool  NURBSSurface::ReadCADFile()
 			control_points[i][j] = Matrix(3);
 	}
 
-	//Leitura weights
+	//Reading weights
 	fscanf(f1, "%s", s);
 	if (!strcmp(s, "Weights"))
 	{
@@ -264,7 +264,7 @@ bool  NURBSSurface::ReadCADFile()
 	}
 	else
 		return false;
-	//Leitura control points
+	//Reading control points
 	fscanf(f1, "%s", s);
 	if (!strcmp(s, "ControlPoints"))
 	{
@@ -287,12 +287,12 @@ bool  NURBSSurface::ReadCADFile()
 	return true;
 }
 
-int NURBSSurface::FindSpan(int &n, int &p, double &u, double* U)
+int NURBSSurface::FindSpan(int &n, int &p, const double &u, double* U)
 {
 	/* Determine the knot span index */
 	/* Input: n,p,u,U */
 	/* Return: the knot span index */
-	/*Obs: n is equal to the approximation number of control points -1, because the summation starts on zero.*/
+	/*Note: n is equal to the approximation number of control points -1, because the summation starts on zero.*/
 
 	//Prevention of problems with  span:
 	if (u > U[n + 1])
@@ -326,7 +326,7 @@ void NURBSSurface::BasisFunctions(int &i, double &u, int &p, double* U, double* 
 			  U: complete knot vector
 	*/
 	/* Output: N - array with dimension p+1 - functions N_(i-p),p,...,N_(i),p*/
-	/* OBS: the entire knot vector has to be input. The function makes use of knot span to decide where to evaluate basis function index i)*/
+	/* NOTE: the entire knot vector has to be input. The function makes use of knot span to decide where to evaluate basis function index i)*/
 	N[0] = 1.0;
 	double* left;
 	double* right;
@@ -352,7 +352,7 @@ void NURBSSurface::BasisFunctions(int &i, double &u, int &p, double* U, double* 
 	delete[] right;
 }
 
-void NURBSSurface::DersBasisFunctions(int &i, double &u, int &p, int &n, double* U, double** ders)
+void NURBSSurface::DersBasisFunctions(int &i, const double &u, int &p, int &n, double* U, double** ders)
 {
 	/* Compute nonzero basis functions and their derivatives*/
 	/*
@@ -456,7 +456,7 @@ void NURBSSurface::DersBasisFunctions(int &i, double &u, int &p, int &n, double*
 		r *= (p - k);
 	}
 
-	//De-allocating auxiliary variables
+	//Of-allocating auxiliary variables
 	for (int i = 0; i < p + 1; i++)
 		delete[]ndu[i];
 	delete[]ndu;
@@ -507,7 +507,7 @@ void NURBSSurface::NURBSPoint(double &uc, double &vc, Matrix &point)
 	delete[] N_v;
 }
 
-void NURBSSurface::NURBSDerivatives(double &uc, double &vc, Matrix** &Skl, int &d)
+void NURBSSurface::NURBSDerivatives(const double &uc, const double &vc, Matrix** &Skl, int &d)
 {
 	/*Input: u,v - knot vector coordinates
 			 d - order of maximum derivative 0<=(k+l)<=d
@@ -611,9 +611,9 @@ void NURBSSurface::NURBSDerivatives(double &uc, double &vc, Matrix** &Skl, int &
 	delete[] Skl1;
 }
 
-void NURBSSurface::WriteVTK_XMLRender(FILE *f, Matrix& pos, Matrix& rot, int number)
+void NURBSSurface::WriteVTK_XMLRender(FILE *f, const Matrix& pos, const Matrix& rot, int number)
 {
-	//vetores para escrita no formato binario - usando a função 'enconde'
+	//vectors for writing in the formato binary - using the function 'enconde'
 	std::vector<float> float_vector;
 	std::vector<int> int_vector;
 
@@ -698,7 +698,7 @@ void NURBSSurface::WriteVTK_XMLRender(FILE *f, Matrix& pos, Matrix& rot, int num
 	fprintf(f, "\t\t\t<Cells>\n");
 	//Opens DataArray
 	fprintf(f, "\t\t\t\t<DataArray type=\"Int32\" Name=\"connectivity\" format=\"binary\">\n");
-	//Linhas
+	//Rows
 	int nj = (2 * n_div_v + 1);
 	int_vector.clear();
 	for (int i = 0; i < (2 * n_div_u - 1); i = i + 2)
@@ -760,12 +760,12 @@ void NURBSSurface::WriteVTK_XMLRender(FILE *f, Matrix& pos, Matrix& rot, int num
 
 void NURBSSurface::EvaluateVolume()
 {
-	//TODO
+	//ALL
 	volume = 0.0;
 }
 void NURBSSurface::EvaluateCentroid()
 {
-	//TODO
+	//ALL
 	//Centroid in local coordinate system
 	(*G)(0, 0) = 0.0;
 	(*G)(1, 0) = 0.0;
@@ -773,7 +773,7 @@ void NURBSSurface::EvaluateCentroid()
 }
 void NURBSSurface::EvaluateInertiaTensor()
 {
-	//TODO
+	//ALL
 	//Inertia tensor with respect to the origin in local coordinate system
 					//      | Jxx -Jxy -Jxz|     //
 					//      |-Jxy  Jyy -Jyz|     //
@@ -791,6 +791,6 @@ void NURBSSurface::EvaluateInertiaTensor()
 }
 void NURBSSurface::EvaluateRadius()
 {
-	//TODO
+	//ALL
 	radius = 0.0;
 }

@@ -1,15 +1,18 @@
 #include "SolverOptions.h"
+#ifdef GIRAFFE_USE_MKL
 #include <mkl.h>
+#endif
+#include <omp.h>
 
 #include"Database.h"
-//Variaveis globais
+//Global variables
 extern
 Database db;
 
 SolverOptions::SolverOptions()
 {
-	processors = 1;						//Numero de processadores - processamento paralelo - PARDISO
-	solver = 0;							//Tipo de solver - 0 diretor 1 iterativo - PARDISO
+	processors = 1;						//Number of processors - parallel processing - PARDISO
+	solver = 0;							//Solver type - 0 diretor 1 iterativo - PARDISO
 }
 
 
@@ -62,9 +65,11 @@ void SolverOptions::Write(FILE *f)
 
 void SolverOptions::PreCalc()
 {
+#ifdef GIRAFFE_USE_MKL
 	if (processors != 1)
 		MKL_Set_Num_Threads(processors - 1);
 	else
 		MKL_Set_Num_Threads(processors);
+#endif
 	omp_set_num_threads(processors);
 }

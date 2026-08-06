@@ -7,7 +7,7 @@
 
 
 #include"Database.h"
-//Variaveis globais
+//Global variables
 extern
 Database db;
 
@@ -26,12 +26,12 @@ BEM::~BEM()
 {
 }
 
-//Leitura
+//Reading
 bool BEM::Read(FILE *f)
 {
 	char s[1000];
 	fscanf(f, "%s", s);
-	//Verifica a palavra chave "NumberBlades"
+	//Checks the keyword "NumberBlades"
 	if (!strcmp(s, "NumberBlades"))
 	{
 		fscanf(f, "%s", s);
@@ -41,7 +41,7 @@ bool BEM::Read(FILE *f)
 		return false;
 
 	fscanf(f, "%s", s);
-	//Verifica a palavra chave "RotorRadius"
+	//Checks the keyword "RotorRadius"
 	if (!strcmp(s, "RotorRadius"))
 	{
 		fscanf(f, "%s", s);
@@ -51,7 +51,7 @@ bool BEM::Read(FILE *f)
 		return false;
 
 	fscanf(f, "%s", s);
-	//Verifica a palavra chave "HubRadius"
+	//Checks the keyword "HubRadius"
 	if (!strcmp(s, "HubRadius"))
 	{
 		fscanf(f, "%s", s);
@@ -61,7 +61,7 @@ bool BEM::Read(FILE *f)
 		return false;
 
 	fscanf(f, "%s", s);
-	//Verifica a palavra chave "RotorCS"
+	//Checks the keyword "RotorCS"
 	if (!strcmp(s, "RotorCS"))
 	{
 		fscanf(f, "%s", s);
@@ -71,7 +71,7 @@ bool BEM::Read(FILE *f)
 		return false;
 
 	fscanf(f, "%s", s);
-	//Verifica a palavra chave "RotorNode"
+	//Checks the keyword "RotorNode"
 	if (!strcmp(s, "RotorNode"))
 	{
 		fscanf(f, "%s", s);
@@ -93,7 +93,7 @@ bool BEM::Check()
 	return true;
 }
 
-//Gravação
+//Recording
 void BEM::Write(FILE *f)
 {
 	fprintf(f, "BEM\nNumberBlades\t%d\nRotorRadius\t%.6e\nHubRadius\t%.6e\tRotorCS\t%d\tRotorNode\t%d\n", B,R,Rhub, CS_rotor, node_rotor);

@@ -7,7 +7,7 @@
 #include "Node.h"
 #include "Dynamic.h"
 #include"Database.h"
-//Variaveis globais
+//Global variables
 extern
 Database db;
 
@@ -50,12 +50,12 @@ RigidNURBS_1_RigidNURBS_1::~RigidNURBS_1_RigidNURBS_1()
 	delete[]dataB;
 }
 
-//Chute inicial para coordenadas convectivas do par de superficies
+//Initial guess for convective coordinates of the pair of surfaces
 void RigidNURBS_1_RigidNURBS_1::InitialGuess(SSContactData* c_data)
 {
-	///////////////////////////////Ponteiros e variaveis para facilitar acesso//////////////////////////////////////////
-	RigidNURBS_1* surfA;		//Ponteiro para a superficie A
-	RigidNURBS_1* surfB;		//Ponteiro para a superficie B
+	///////////////////////////////Pointers and variables to make access easier//////////////////////////////////////////
+	RigidNURBS_1* surfA;		//Pointer to the surface A
+	RigidNURBS_1* surfB;		//Pointer to the surface B
 	surfA = static_cast<RigidNURBS_1*>(db.surfaces[surf1_ID - 1]);
 	surfB = static_cast<RigidNURBS_1*>(db.surfaces[surf2_ID - 1]);
 
@@ -66,7 +66,7 @@ void RigidNURBS_1_RigidNURBS_1::InitialGuess(SSContactData* c_data)
 
 	for (int ip = 1; ip < c_data->n_solutions; ip++)
 	{
-		//Preenchendo as coordenadas convectivas:
+		//Filling the convective coordinates:
 		c_data->convective[ip][0] = c_data->convective[0][0];
 		c_data->convective[ip][1] = c_data->convective[0][1];
 		c_data->convective[ip][2] = c_data->convective[0][2];
@@ -76,7 +76,7 @@ void RigidNURBS_1_RigidNURBS_1::InitialGuess(SSContactData* c_data)
 }
 
 //Evaluates the necessary derivatives to be used as input to AceGen routines
-void RigidNURBS_1_RigidNURBS_1::EvaluateNURBSDerivatives_p(Matrix& mc)
+void RigidNURBS_1_RigidNURBS_1::EvaluateNURBSDerivatives_p(const Matrix& mc)
 {
 	if (mc == last_cp && first_cp == false)
 		return;
@@ -86,9 +86,9 @@ void RigidNURBS_1_RigidNURBS_1::EvaluateNURBSDerivatives_p(Matrix& mc)
 		first_cp = false;
 	}
 		
-	///////////////////////////////Ponteiros e variaveis para facilitar acesso//////////////////////////////////////////
-	RigidNURBS_1* surfA;		//Ponteiro para a superficie A
-	RigidNURBS_1* surfB;		//Ponteiro para a superficie B
+	///////////////////////////////Pointers and variables to make access easier//////////////////////////////////////////
+	RigidNURBS_1* surfA;		//Pointer to the surface A
+	RigidNURBS_1* surfB;		//Pointer to the surface B
 	surfA = static_cast<RigidNURBS_1*>(db.surfaces[surf1_ID - 1]);
 	surfB = static_cast<RigidNURBS_1*>(db.surfaces[surf2_ID - 1]);
 	//Evaluates data and store in dataA and dataB
@@ -145,9 +145,9 @@ void RigidNURBS_1_RigidNURBS_1::EvaluateNURBSDerivatives_i(Matrix& mc)
 		last_ci = mc;
 		first_ci = false;
 	}
-	///////////////////////////////Ponteiros e variaveis para facilitar acesso//////////////////////////////////////////
-	RigidNURBS_1* surfA;		//Ponteiro para a superficie A
-	RigidNURBS_1* surfB;		//Ponteiro para a superficie B
+	///////////////////////////////Pointers and variables to make access easier//////////////////////////////////////////
+	RigidNURBS_1* surfA;		//Pointer to the surface A
+	RigidNURBS_1* surfB;		//Pointer to the surface B
 	surfA = static_cast<RigidNURBS_1*>(db.surfaces[surf1_ID - 1]);
 	surfB = static_cast<RigidNURBS_1*>(db.surfaces[surf2_ID - 1]);
 	//Evaluates data and store in dataA and dataB
@@ -174,9 +174,9 @@ void RigidNURBS_1_RigidNURBS_1::EvaluateNURBSDerivatives_i(Matrix& mc)
 //Evaluates the necessary DOFs variables to be used as input to AceGen routines
 void RigidNURBS_1_RigidNURBS_1::EvaluateNURBSDOFsVariables()
 {
-	///////////////////////////////Ponteiros e variaveis para facilitar acesso//////////////////////////////////////////
-	RigidNURBS_1* surfA;		//Ponteiro para a superficie A
-	RigidNURBS_1* surfB;		//Ponteiro para a superficie B
+	///////////////////////////////Pointers and variables to make access easier//////////////////////////////////////////
+	RigidNURBS_1* surfA;		//Pointer to the surface A
+	RigidNURBS_1* surfB;		//Pointer to the surface B
 	surfA = static_cast<RigidNURBS_1*>(db.surfaces[surf1_ID - 1]);
 	surfB = static_cast<RigidNURBS_1*>(db.surfaces[surf2_ID - 1]);
 
@@ -233,7 +233,7 @@ void RigidNURBS_1_RigidNURBS_1::ContactSS(bool *stick, bool *stickupdated, bool 
 		a5 = &value;
 		a6 = &value;
 	}
-	//Zerando matrizes e vetores
+	//Zeroing matrices and vectors
 	for (int i = 0; i < 12; i++)
 	{
 		Rc[i] = 0.0;
@@ -4220,8 +4220,8 @@ void RigidNURBS_1_RigidNURBS_1::ContactSS(bool *stick, bool *stickupdated, bool 
 
 }
 
-//Calcula a função objetivo para um conjunto de coordenadas convectivas - Phase 1
-double RigidNURBS_1_RigidNURBS_1::ObjectivePhase1(Matrix& mc)
+//Calculates the objective function for a set of convective coordinates - Phase 1
+double RigidNURBS_1_RigidNURBS_1::ObjectivePhase1(const Matrix& mc)
 {
 	//AceGen variables or pointers
 	double v[2000];
@@ -4281,7 +4281,7 @@ double RigidNURBS_1_RigidNURBS_1::ObjectivePhase1(Matrix& mc)
 	return Ob;
 }
 
-//Calcula o Gradiente da função objetivo - Phase 1
+//Calculates the Gradient of the objective function - Phase 1
 void RigidNURBS_1_RigidNURBS_1::GradientPhase1(Matrix& mc, Matrix& mGra)
 {
 	//AceGen variables or pointers
@@ -4366,7 +4366,7 @@ void RigidNURBS_1_RigidNURBS_1::GradientPhase1(Matrix& mc, Matrix& mGra)
 		mGra(i, 0) = Gra[i];
 }
 
-//Calcula a Hessiana da função objetivo - Phase 1
+//Calculates the Hessian of the objective function - Phase 1
 void RigidNURBS_1_RigidNURBS_1::HessianPhase1(Matrix& mc, Matrix& mHes)
 {
 	//AceGen variables or pointers
@@ -4494,8 +4494,8 @@ void RigidNURBS_1_RigidNURBS_1::HessianPhase1(Matrix& mc, Matrix& mHes)
 			mHes(i, j) = Hes[i][j];
 }
 
-//Calcula e rotorna o gap (com sinal)
-double RigidNURBS_1_RigidNURBS_1::Gap(Matrix& mc, bool fixed_normals, Matrix& nA, Matrix& nB)
+//Calculates and rotorna the gap (with sign)
+double RigidNURBS_1_RigidNURBS_1::Gap(const Matrix& mc, bool fixed_normals, Matrix& nA, Matrix& nB)
 {
 	//AceGen variables or pointers
 	double v[2000];
@@ -4598,7 +4598,7 @@ double RigidNURBS_1_RigidNURBS_1::Gap(Matrix& mc, bool fixed_normals, Matrix& nA
 	return Gap;
 }
 
-//Calcula o Gradiente do gap
+//Calculates the Gradient of the gap
 void RigidNURBS_1_RigidNURBS_1::GradientGap(Matrix& mc, Matrix& mGra, bool fixed_normals, Matrix& nA, Matrix& nB)
 {
 	//AceGen variables or pointers
@@ -4795,7 +4795,7 @@ void RigidNURBS_1_RigidNURBS_1::GradientGap(Matrix& mc, Matrix& mGra, bool fixed
 		mGra(i, 0) = Gra[i];
 }
 
-//Calcula a Hessiana do gap
+//Calculates the Hessian of the gap
 void RigidNURBS_1_RigidNURBS_1::HessianGap(Matrix& mc, Matrix& mHes, bool fixed_normals, Matrix& nA, Matrix& nB)
 {
 	//AceGen variables or pointers
@@ -5228,20 +5228,20 @@ void RigidNURBS_1_RigidNURBS_1::HessianGap(Matrix& mc, Matrix& mHes, bool fixed_
 			mHes(i, j) = Hes[i][j];
 }
 
-//Verifica range de coordenadas convectivas
+//Checks range of convective coordinates
 int RigidNURBS_1_RigidNURBS_1::VerifyConvectiveRange(Matrix& mc)
 {
 	//Retornos:
-	//0 - Range fisico da superficie
-	//4 - Fora do range fisico da superficie - proximo
-	//2 - Fora do range fisico da superficie - distante (nao strong) 
+	//0 - Range physical of the surface
+	//4 - Outside of the range physical of the surface - next
+	//2 - Outside of the range physical of the surface - distante (not strong) 
 
-	NURBSSurface* surf1;		//Ponteiro para a superficie 1
-	NURBSSurface* surf2;		//Ponteiro para a superficie 2
+	NURBSSurface* surf1;		//Pointer to the surface 1
+	NURBSSurface* surf2;		//Pointer to the surface 2
 	surf1 = static_cast<RigidNURBS_1*>(db.surfaces[surf1_ID - 1])->surf;
 	surf2 = static_cast<RigidNURBS_1*>(db.surfaces[surf2_ID - 1])->surf;
 	
-	//Variaveis de medicao de range de coordenadas convectivas
+	//Variables of medicao of range of convective coordinates
 	double range_u1;
 	double range_v1;
 	double range_u2;
@@ -5295,7 +5295,7 @@ int RigidNURBS_1_RigidNURBS_1::VerifyConvectiveRange(Matrix& mc)
 			return_vector[3] = 2;
 	}
 	///////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	//Varredura final para retorno
+	//Sweep final for return
 	int return_value = 0;
 	for (int i = 0; i < 4; i++)
 	{
@@ -5314,13 +5314,13 @@ int RigidNURBS_1_RigidNURBS_1::VerifyConvectiveRange(Matrix& mc)
 //Initialize range of validity of convective coordinates
 void RigidNURBS_1_RigidNURBS_1::InitializeConvectiveRange()
 {
-	NURBSSurface* surf1;		//Ponteiro para a superficie 1
-	NURBSSurface* surf2;		//Ponteiro para a superficie 2
+	NURBSSurface* surf1;		//Pointer to the surface 1
+	NURBSSurface* surf2;		//Pointer to the surface 2
 	surf1 = static_cast<RigidNURBS_1*>(db.surfaces[surf1_ID - 1])->surf;
 	surf2 = static_cast<RigidNURBS_1*>(db.surfaces[surf2_ID - 1])->surf;
 
-	RigidNURBS_1* surf1a;		//Ponteiro para a superficie 1
-	RigidNURBS_1* surf2a;		//Ponteiro para a superficie 2
+	RigidNURBS_1* surf1a;		//Pointer to the surface 1
+	RigidNURBS_1* surf2a;		//Pointer to the surface 2
 	surf1a = static_cast<RigidNURBS_1*>(db.surfaces[surf1_ID - 1]);
 	surf2a = static_cast<RigidNURBS_1*>(db.surfaces[surf2_ID - 1]);
 

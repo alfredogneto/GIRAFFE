@@ -9,23 +9,23 @@ public:
 	UniversalJoint();
 	~UniversalJoint();
 
-	bool Read(FILE *f);		//Leitura
-	void Write(FILE *f);	//Gravação
-	void Mount();			//Montagem dos residuos e rigidez tangente
-	void MountGlobal();		//Preenche a contribuição do elemento nas matrizes globais
-	void PreCalc();			//Pre-calculo de variaveis que e feito uma unica vez no inicio
-	void SaveLagrange();	//Salvando variaveis da configuração convergida
-	void ActivateDOFs();	//Checa quais multiplicadores de lagrange serão ativados,de acordo com a ativação dos GLs dos nós dos quais a special constraint participa
-	bool Check();			//Checa inconsistências no SC para evitar erros de execução
-	void ComputeVelAccel();		//Computa efeito das condições iniciais nos nós da restrição
+	bool Read(FILE *f);		//Reading
+	void Write(FILE *f);	//Recording
+	void Mount();			//Assembly of the residuals and stiffness tangent
+	void MountGlobal();		//Fills the contribution of the element in the matrices global
+	void PreCalc();			//Pre-calculation of variables that and done a single time in the start
+	void SaveLagrange();	//Saving variables of the configuration converged
+	void ActivateDOFs();	//Checks which Lagrange multipliers will be ativados,according to the activation of the GLs of the nodes of the which the special constraint participates
+	bool Check();			//Checks inconsistencies in the SC for avoid errors of execution
+	void ComputeVelAccel();		//Computes effect of the initial conditions in the nodes of the constraint
 	void ComputeInitialGuessDisplacements();
 	void WriteVTK_XMLRender(FILE *f);
-	void WriteMonitor(FILE *f, bool first_record, double time);	//Escreve no monitor do SpecialConstraint
-	//Variaveis
+	void WriteMonitor(FILE *f, bool first_record, double time);	//Writes in the monitor of the SpecialConstraint
+	//Variables
 	int node_A;
 	int node_B;
-	int csA;//coordinate system - e3 sera a orientação em que a rotação e transmitida
-	int csB;//coordinate system - e3 sera a orientação em que a rotação e transmitida
+	int csA;//coordinate system - e3 will be the orientation in that the rotation and transmitida
+	int csB;//coordinate system - e3 will be the orientation in that the rotation and transmitida
 
 	Matrix I3;
 	Matrix r1;
@@ -41,19 +41,19 @@ public:
 	Matrix ei1A;
 	Matrix ei2B;
 
-	//Matriz de rigidez tangente e vetor residuo
+	//Stiffness matrix tangent and vector residual
 	Matrix* stiffness1;
 	Matrix* residual1;
 	double** stiffness2;
 	double* residual2;
 	double* temp_lambda;
 
-	double temp_v[1000];	//Para funções do AceGen
-	//Calcula contribuições do residuo e operador tangente - gerado no AceGen
+	double temp_v[1000];	//For functions of the AceGen
+	//Calculates contributions of the residual and operator tangent - generated in the AceGen
 	void EvaluateUniversalJointContribution(double *v, double *residual
 		, double **stiffness, double *alphaA, double *alphaB, double *ei1A
 		, double *ei2B, double *lambda);
-	//Calcula contribuições do residuo e operador tangente - gerado no AceGen - sem usar SMSD
+	//Calculates contributions of the residual and operator tangent - generated in the AceGen - without use SMSD
 	void EvaluateUniversalJointContribution2(double *v, double *residual
 		, double **stiffness, double *alphaA, double *alphaB, double *ei1A
 		, double *ei2B, double *lambda);

@@ -3,7 +3,7 @@
 #include "Encoding.h"	
 
 #include"Database.h"
-//Variaveis globais
+//Global variables
 extern
 Database db;
 
@@ -34,7 +34,7 @@ Solid_1::Solid_1()
 	for (int i = 0; i < n_nodes;i++)
 		DOFs[i] = new int[db.number_GLs_node];
 
-	//Rotina para ativar os GLS de cada nó do elemento
+	//Routine for activate the GLS of each node of the element
 	for (int i = 0; i < n_nodes; i++)
 	{
 		for (int j = 0; j < db.number_GLs_node; j++)
@@ -59,7 +59,7 @@ Solid_1::~Solid_1()
 	}
 }
 
-//Checa inconsistências no elemento para evitar erros de execução
+//Checks inconsistencies in the element for avoid errors of execution
 bool Solid_1::Check()
 {
 	return true;
@@ -118,7 +118,7 @@ void Solid_1::Write(FILE *f)
 		nodes[6], 
 		nodes[7] );
 }
-//Escreve arquivo de resultados
+//Writes file of results
 void Solid_1::WriteResults(FILE *f)
 {
 
@@ -126,9 +126,9 @@ void Solid_1::WriteResults(FILE *f)
 
 void Solid_1::WriteVTK_XMLBase(std::vector<float> *float_vector)
 {
-	//Imprime os resultados do elemento
+	//Prints the results of the element
 	int res_element = 0;
-	//Imprime valores nulos para resultados que não fazem sentido para esse tipo de elemento
+	//Prints values null for results that not fazem sentido for this element type
 	for (int i = res_element; i < db.n_element_results; i++)
 		float_vector->push_back(0.0);
 }
@@ -138,80 +138,80 @@ void Solid_1::WriteVTK_XMLRender(FILE *f)
 	//DOES NOTHING
 }
 
-//Escreve no monitor do elemento//Escreve no monitor do elemento
+//Writes in the monitor of the element//Writes in the monitor of the element
 void Solid_1::WriteMonitor(FILE *f, bool first_record, double time)
 {
 
 }
 
-//Monta elementos
+//Assembles elements
 void Solid_1::Mount()
 {
 
 }
-//Monta carregamentos associados ao elemento
+//Assembles loadings associated to the element
 void Solid_1::MountElementLoads()
 {
 
 }
-//Monta matriz de transformação de coordenadas
+//Assembles transformation matrix of coordinates
 void Solid_1::TransformMatrix()
 {
 
 }
-//Preenche a contribuição do elemento nas matrizes globais
+//Fills the contribution of the element in the matrices global
 void Solid_1::MountGlobal()
 {
 
 }
-//Salva variaveis nos pontos de Gauss uteis para descrição lagrangiana atualizada
+//Saves variables in the gauss points useful for description lagrangiana updated
 void Solid_1::SaveLagrange()
 {
 
 }
-//Pre-calculo de variaveis que e feito uma unica vez no inicio
+//Pre-calculation of variables that and done a single time in the start
 void Solid_1::PreCalc()
 {
 
 }
 
-//Monta a matriz de massa
+//Assembles the mass matrix
 void Solid_1::MountMass()
 {
 
 }
 
-//Monta a matriz de massa
+//Assembles the mass matrix
 void Solid_1::MountMassModal()
 {
 	Zeros();
 }
 
-//Monta a matriz de amortecimento para realização da analise modal
+//Assembles the damping matrix for performing of the analysis modal
 void Solid_1::MountDampingModal()
 {
 	Zeros();
 }
 
-//Monta a matriz de amortecimento
+//Assembles the damping matrix
 void Solid_1::MountDamping(bool update_rayleigh)
 {
 
 }
 
-//Montagens - Newmark
+//Assemblies - Newmark
 void Solid_1::MountDyn()
 {
 
 }
 
-//Montagens para analise modal - inserção da matriz de massa e amortecimento na matriz de rigidez para posterior montagem global
+//Assemblies for analysis modal - insertion of the mass matrix and damping in the stiffness matrix for subsequent assembly global
 void Solid_1::MountDynModal()
 {
 	
 }
 
-//Zera matrizes locais do elemento
+//Zeroes matrices local of the element
 void Solid_1::Zeros()
 {
 	kinetic_energy = 0.0;

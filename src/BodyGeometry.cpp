@@ -4,7 +4,7 @@
 #include "BoundingBoxAxesAligned.h"
 #include "GeneralContactSearch.h"
 #include"Database.h"
-//Variaveis globais
+//Global variables
 extern
 Database db;
 
@@ -66,12 +66,12 @@ bool BodyGeometry::Read(FILE *f)
 	{
 		fscanf(f, "%s", s);
 		n_items = atoi(s);
-		//Alocação do vetor
+		//Allocation of the vector
 		list_items = new int[n_items];
 	}
 	else
 		return false;
-	//Duas possibilidades de leitura:
+	//Two possibilities of reading:
 	//1 - List
 	//2 - Sequence
 	fscanf(f, "%s", s);
@@ -80,7 +80,7 @@ bool BodyGeometry::Read(FILE *f)
 		list = true;
 		for (int i = 0; i < n_items; i++)
 		{
-			fscanf(f, "%s", s);//Leitura do numero do nó
+			fscanf(f, "%s", s);//Reading of the number of the node
 			list_items[i] = atoi(s);
 		}
 	}
@@ -105,7 +105,7 @@ bool BodyGeometry::Read(FILE *f)
 			}
 			else
 				return false;
-			//Geração da lista de nós
+			//Geração of the list of nodes
 			for (int i = 0; i < n_items; i++)
 			{
 				list_items[i] = initial + i * increment;
@@ -114,7 +114,7 @@ bool BodyGeometry::Read(FILE *f)
 		else
 			return false;
 	}
-	//Se atingiu esse ponto, sinal de leitura correta de tudo: retorna true
+	//If atingiu this point, sign of reading correct of tudo: returns true
 	return true;
 }
 
@@ -159,9 +159,9 @@ void BodyGeometry::PreCalc()
 		db.geometries[list_items[i] - 1]->bv->associated_type = 'G';
 		db.geometries[list_items[i] - 1]->bv->associated_ID = number;
 		db.geometries[list_items[i] - 1]->bv->associated_sub_ID = i;//zero-based
-		//calcula maximo offset por parametro de tamanho, raio e/ou espessura
-		//avaliado por varredura de BV's de geometries, coletando informações - salva na variavel max_offset - 
-		//OBS: ja inclui o inc_len_factor
+		//calculates maximum offset by parameter of size, radius and/or espessura
+		//avaliado by sweep of BV's of geometries, coletando information - saves in the variable max_offset - 
+		//NOTE: already inclui the inc_len_factor
 		if (db.geometries[list_items[i] - 1]->bv_offset > max_offset)
 			max_offset = db.geometries[list_items[i] - 1]->bv_offset;
 	}

@@ -6,7 +6,7 @@
 #include "SpecialConstraint.h"
 
 #include"Database.h"
-//Variaveis globais
+//Global variables
 extern
 Database db;
 
@@ -14,29 +14,29 @@ Database db;
 
 ConvergenceCriteria::ConvergenceCriteria()
 {
-	force_tol = 1e-4;			//Fator aplicado a norma do vetor de forças do sistema para estabelecer criterio de convergência
-	moment_tol = 1e-4;			//Fator aplicado a norma do vetor de momentos do sistema para estabelecer criterio de convergência
+	force_tol = 1e-4;			//Factor applied the norm of the force vector of the system for estabelecer convergence criterion
+	moment_tol = 1e-4;			//Factor applied the norm of the vector of moments of the system for estabelecer convergence criterion
 
-	force_min = 1e-5;			//Valor de força considerado pequeno - usado quando ha somente forças nulas - valor dimensional
-	moment_min = 1e-5;			//Valor de momento considerado pequeno - usado quando ha somente momentos nulos - valor dimensional
-	constraint_min = 1e-7;		//Valor de erro de constraint, considerado pequeno - sempre e utilizado quando ha joints
+	force_min = 1e-5;			//Value of force considered small - used when there is only forces nulas - value dimensional
+	moment_min = 1e-5;			//Value of moment considered small - used when there is only moments null - value dimensional
+	constraint_min = 1e-7;		//Value of error of constraint, considered small - always and used when there is joints
 
-	disp_tol = 1e-4;			//Fator aplicado a norma do vetor de deslocamentos incrementais do sistema para estabelecer criterio de convergência
-	rot_tol = 1e-4;				//Fator aplicado a norma do vetor de rotações incrementais do sistema para estabelecer criterio de convergência
-	lag_tol = 1e-4;				//Fator aplicado a norma do vetor de multiplicadores de lagrange do sistema para estabelecer criterio de convergência
+	disp_tol = 1e-4;			//Factor applied the norm of the displacement vector incrementais of the system for estabelecer convergence criterion
+	rot_tol = 1e-4;				//Factor applied the norm of the vector of rotations incrementais of the system for estabelecer convergence criterion
+	lag_tol = 1e-4;				//Factor applied the norm of the vector of Lagrange multipliers of the system for estabelecer convergence criterion
 
-	disp_min = 1e-6;			//Valor de deslocamento considerado pequeno - usado quando ha somente deslocamentos nulos - valor dimensional
-	rot_min = 1e-6;				//Valor de rotação considerado pequeno - usado quando ha somente rotações nulos - valor dimensional
-	lag_min = 1e-6;				//Valor de multiplicador de lagrange considerado pequeno - usado quando ha somente multiplicadores de lagrange nulos - valor dimensional
+	disp_min = 1e-6;			//Value of displacement considered small - used when there is only displacements null - value dimensional
+	rot_min = 1e-6;				//Value of rotation considered small - used when there is only rotations null - value dimensional
+	lag_min = 1e-6;				//Value of Lagrange multiplier considered small - used when there is only Lagrange multipliers null - value dimensional
 
-	divergence_ref = 1e15;		//Valor bastante elevado que indica divergência do modelo
+	divergence_ref = 1e15;		//Value bastante elevado that indicates divergence of the modelo
 
-	disp_criterion = 0.0;		//Criterio de convergência para norma de deslocamento - calculado automaticamente
-	rot_criterion = 0.0;		//Criterio de convergência para norma de rotação - calculado automaticamente
-	lag_criterion = 0.0;		//Criterio de convergência para norma de multiplicador de lagrange - calculado automaticamente
-	force_criterion = 0.0;		//Criterio de convergência para norma de força - calculado automaticamente
-	moment_criterion = 0.0;		//Criterio de convergência para norma de momento - calculado automaticamente	
-	constraint_criterion = 0.0;	//Criterio de convergência para norma de constraint - calculado automaticamente
+	disp_criterion = 0.0;		//Convergence criterion for norm of displacement - calculated automaticamente
+	rot_criterion = 0.0;		//Convergence criterion for norm of rotation - calculated automaticamente
+	lag_criterion = 0.0;		//Convergence criterion for norm of Lagrange multiplier - calculated automaticamente
+	force_criterion = 0.0;		//Convergence criterion for norm of force - calculated automaticamente
+	moment_criterion = 0.0;		//Convergence criterion for norm of moment - calculated automaticamente	
+	constraint_criterion = 0.0;	//Convergence criterion for norm of constraint - calculated automaticamente
 
 	diverged = false;
 
@@ -49,10 +49,10 @@ ConvergenceCriteria::ConvergenceCriteria()
 	node_moment = 0;
 	sc_constraint = 0;
 
-	force_ref = 0.0;			//Valor de referência para avaliação do criterio de parada de forças
-	force_n_times = 0;			//Numero de valores utilizado no calculo da media do valor de referência
-	moment_ref = 0.0;			//Valor de referência para avaliação do criterio de parada de momentos
-	moment_n_times = 0;			//Numero de valores utilizado no calculo da media do valor de referência
+	force_ref = 0.0;			//Value of reference for evaluation of the stopping criterion of forces
+	force_n_times = 0;			//Number of values used in the calculation of the media of the value of reference
+	moment_ref = 0.0;			//Value of reference for evaluation of the stopping criterion of moments
+	moment_n_times = 0;			//Number of values used in the calculation of the media of the value of reference
 
 	n_conv_evaluated = 0;
 }
@@ -166,7 +166,7 @@ bool ConvergenceCriteria::Read(FILE *f)
 
 void ConvergenceCriteria::Write(FILE *f)
 {
-	//Escrita
+	//Writing
 	fprintf(f, "ForceTolerance\t%.6e\n",force_tol);
 	fprintf(f, "MomentTolerance\t%.6e\n", moment_tol);
 
@@ -197,8 +197,8 @@ void ConvergenceCriteria::EstablishResidualCriteria()
 
 
 	int GL = 0;
-	double value = 0;//variavel temporaria para salvar valores de GL
-	//Varredura dos nós
+	double value = 0;//temporary variable for save values of GL
+	//Sweep of the nodes
 	for (int node = 0; node < db.number_nodes; node++)
 	{
 		for (int i = 0; i < db.number_GLs_node; i++)
@@ -233,7 +233,7 @@ void ConvergenceCriteria::EstablishResidualCriteria()
 			}
 		}
 	}
-	//Varredura dos super nodes
+	//Sweep of the super nodes
 	for (int s_node = 0; s_node < db.number_super_nodes; s_node++)
 	{
 		for (int i = 0; i < db.super_nodes[s_node]->n_displacement_DOFs; i++)
@@ -256,7 +256,7 @@ void ConvergenceCriteria::EstablishResidualCriteria()
 	double prev_force_criterion = force_criterion;
 	double prev_moment_criterion = moment_criterion;
 
-	//Estabelecendo os criterios
+	//Estabelecendo the criteria
 	if (max_force*force_tol > force_min*force_tol)
 		force_criterion = max_force*force_tol;
 	else
@@ -274,7 +274,7 @@ void ConvergenceCriteria::EstablishResidualCriteria()
 	//double max_force_new = sum_forces / n_forces;
 	//double max_moment_new = sum_moments / n_moments;
 
-	////Estabelecendo os criterios - new
+	////Estabelecendo the criteria - new
 	//if (max_force_new*force_tol > force_min*force_tol)
 	//	force_criterion = max_force_new * force_tol;
 	//else
@@ -294,7 +294,7 @@ bool ConvergenceCriteria::CheckGLConvergence()
 	double max_disp_inc = 0;
 	double max_rot_inc = 0;
 	double max_lag_inc = 0;
-	//Valores dos GLs
+	//Values of the GLs
 	double max_disp_value = 0;
 	double max_rot_value = 0;
 	double max_lag_value = 0;
@@ -303,9 +303,9 @@ bool ConvergenceCriteria::CheckGLConvergence()
 	bool plot_force_disp = false;
 	bool plot_moment_rot = false;
 	
-	double inc = 0;//variavel temporaria para salvar incrementos de GL
-	double value = 0;//variavel temporaria para salvar valores de GL
-	//Varredura dos nós
+	double inc = 0;//temporary variable for save incrementos of GL
+	double value = 0;//temporary variable for save values of GL
+	//Sweep of the nodes
 	for (int node = 0; node < db.number_nodes; node++)
 	{
 		for (int i = 0; i < db.number_GLs_node; i++)
@@ -346,7 +346,7 @@ bool ConvergenceCriteria::CheckGLConvergence()
 		}
 	}
 
-	//Varredura dos super nodes
+	//Sweep of the super nodes
 	for (int s_node = 0; s_node < db.number_super_nodes; s_node++)
 	{
 		for (int i = 0; i < db.super_nodes[s_node]->n_displacement_DOFs; i++)
@@ -372,7 +372,7 @@ bool ConvergenceCriteria::CheckGLConvergence()
 		}
 	}
 
-	//varredura dos special constraints
+	//sweep of the special constraints
 	if (db.special_constraints_exist == true)
 	{
 		for (int sc = 0; sc < db.number_special_constraints; sc++)
@@ -400,13 +400,13 @@ bool ConvergenceCriteria::CheckGLConvergence()
 	}
 	
 	
-	//Estabelecendo os criterios de convergência
-	//Deslocamentos
+	//Estabelecendo the criteria of convergence
+	//Displacements
 	if (max_disp_value*disp_tol > disp_min*disp_tol)
 		disp_criterion = disp_tol*max_disp_value;
 	else
 		disp_criterion = disp_min*disp_tol;
-	//Rotações
+	//Rotations
 	if (max_rot_value*rot_tol > rot_min*rot_tol)
 		rot_criterion = rot_tol*max_rot_value;
 	else
@@ -417,7 +417,7 @@ bool ConvergenceCriteria::CheckGLConvergence()
 	else
 		lag_criterion = lag_min*lag_tol;
 
-	//Testes de divergência
+	//Tests of divergence
 	if (disp_criterion > divergence_ref || rot_criterion > divergence_ref || lag_criterion > divergence_ref)
 	{
 		diverged = true;
@@ -427,7 +427,7 @@ bool ConvergenceCriteria::CheckGLConvergence()
 		
 	if (plot_force_disp == true)
 	{
-		//Testes de convergência
+		//Tests of convergence
 		db.myprintf("\tDisplacement: Residual %.3e Criterion %.3e  ", max_disp_inc, disp_criterion);
 		if (max_disp_inc > disp_criterion)
 			converged = false;
@@ -470,9 +470,9 @@ bool ConvergenceCriteria::CheckResidualConvergence()
 	bool plot_force_disp = false;
 	bool plot_moment_rot = false;
 	
-	double value = 0;//variavel temporaria para salvar valores de GL
+	double value = 0;//temporary variable for save values of GL
 	double error = 0;
-	//Varredura dos nós
+	//Sweep of the nodes
 	for (int node = 0; node < db.number_nodes; node++)
 	{
 		for (int i = 0; i < db.number_GLs_node; i++)
@@ -506,7 +506,7 @@ bool ConvergenceCriteria::CheckResidualConvergence()
 			}
 		}
 	}
-	//Varredura dos super nodes
+	//Sweep of the super nodes
 	for (int s_node = 0; s_node < db.number_super_nodes; s_node++)
 	{
 		for (int i = 0; i < db.super_nodes[s_node]->n_displacement_DOFs; i++)
@@ -528,7 +528,7 @@ bool ConvergenceCriteria::CheckResidualConvergence()
 			}
 		}
 	}
-	//varredura dos special constraints
+	//sweep of the special constraints
 	if (db.special_constraints_exist == true)
 	{
 		for (int sc = 0; sc < db.number_special_constraints; sc++)
@@ -552,7 +552,7 @@ bool ConvergenceCriteria::CheckResidualConvergence()
 		}
 	}
 
-	//Testes de divergência
+	//Tests of divergence
 	if (max_force > divergence_ref || max_moment > divergence_ref || max_constraint > divergence_ref)
 	{
 		diverged = true;
@@ -560,11 +560,11 @@ bool ConvergenceCriteria::CheckResidualConvergence()
 		return converged;
 	}
 	
-	//Testes de convergência
+	//Tests of convergence
 
 	if (plot_force_disp == true)
 	{
-		//Força
+		//Force
 		db.myprintf("\tForce       : Residual %.3e Criterion %.3e  ", max_force, force_criterion);
 		if (max_force > force_criterion)
 			converged = false;
@@ -575,7 +575,7 @@ bool ConvergenceCriteria::CheckResidualConvergence()
 	if (plot_moment_rot == true)
 	{
 
-		//Momento
+		//Moment
 		db.myprintf("\tMoment      : Residual %.3e Criterion %.3e  ", max_moment, moment_criterion);
 		if (max_moment > moment_criterion)
 			converged = false;
@@ -599,14 +599,14 @@ bool ConvergenceCriteria::CheckResidualConvergence()
 
 bool ConvergenceCriteria::NaNDetector(double &value)
 {
-	//Detecção de NaN
+	//Detecção of NaN
 	if (value == value)
 	{
-		//Detecção de valor muito elevado (erro)
+		//Detecção of value very elevado (error)
 		if (value >= 1e300 || value <= -1e300)
-			return true;//e NaN ou numero muito elevado
+			return true;//and NaN or number very elevado
 		else
-			return false;//Não e NaN
+			return false;//Not and NaN
 	}
 	else
 	{
@@ -615,7 +615,7 @@ bool ConvergenceCriteria::NaNDetector(double &value)
 	}
 		
 }
-//Imprime na tela informações para auxiliar o porquê da divergência
+//Prints in the tela information for auxiliary the because of the divergence
 void ConvergenceCriteria::PlotDivergenceReport()
 {
 	db.myprintf("\nThe model has diverged! Applying Bisection on loading.\n");

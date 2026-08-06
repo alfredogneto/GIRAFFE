@@ -31,7 +31,7 @@ NSContactData::~NSContactData()
 	Free();
 }
 
-//Aloca matrizes
+//Allocates matrices
 void NSContactData::Alloc()
 {
 	if (alloced == false)
@@ -100,7 +100,7 @@ void NSContactData::Alloc()
 			convective[i][0] = 0.0;
 			convective[i][1] = 0.0;
 			g_n[i] = 0.0;
-			copy_g_n[i] = 1.0;	//Assumindo que não ha contato anterior
+			copy_g_n[i] = 1.0;	//Assumindo that not there is contact previous
 			return_value[i] = 1;
 			repeated[i] = true;
 		}
@@ -108,7 +108,7 @@ void NSContactData::Alloc()
 	}
 }
 
-//Desaloca matrizes
+//Deallocates matrices
 void NSContactData::Free()
 {
 	if (alloced == true)
@@ -221,7 +221,7 @@ void NSContactData::Free()
 	n_i = NULL;
 }
 
-//Checa repetição de raizes e salva a informação na matriz 'repeated'
+//Checks repetição of raizes and saves the information in the matrix 'repeated'
 void NSContactData::CheckRepeated(double tol_coordinate_value)
 {
 	for (int i = 0; i < n_solutions; i++)
@@ -229,7 +229,7 @@ void NSContactData::CheckRepeated(double tol_coordinate_value)
 		repeated[i] = false;
 		for (int j = 0; j < i; j++)
 		{
-			if (return_value[i] != 1)//se não houve divergência
+			if (return_value[i] != 1)//if not there was divergence
 			{
 				if (abs(convective[i][0] - convective[j][0]) <= tol_coordinate_value && abs(convective[i][1] - convective[j][1]) <= tol_coordinate_value)
 					repeated[i] = true;

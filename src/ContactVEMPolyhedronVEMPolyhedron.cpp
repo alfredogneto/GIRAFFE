@@ -11,7 +11,7 @@
 #include "SuperNode.h"
 
 #include "Database.h"
-//Variaveis globais
+//Global variables
 extern
 Database db;
 
@@ -70,7 +70,7 @@ void ContactVEMPolyhedronVEMPolyhedron::PreCalc()
 
 	if (sub_index1 < n_facesA)
 	{
-		//No degeneration on face A
+		//In the degeneration on face A
 		deg_pointA = 0;
 		deg_curveA = 0;
 		//Face associated
@@ -102,7 +102,7 @@ void ContactVEMPolyhedronVEMPolyhedron::PreCalc()
 	int n_verticesB = (int)surfB->vertices.size();
 	if (sub_index2 < n_facesB)
 	{
-		//No degeneration on face B
+		//In the degeneration on face B
 		deg_pointB = 0;
 		deg_curveB = 0;
 		//Face associated
@@ -226,7 +226,7 @@ void ContactVEMPolyhedronVEMPolyhedron::FinalProcessSurfacePairExplicit(int list
 	double prev_g_n = contact_pairs[list_index]->cd->g_n[0];
 
 	contact_pairs[list_index]->SolveLCP();
-	contact_pairs[list_index]->EvaluateNormalGap();//here the normal of contact is updated, which ensures a successful test for penetration in HaveErrors function
+	contact_pairs[list_index]->EvaluateNormalGap();//here the normal of contact is updated, which ensures the successful test for penetration in HaveErrors function
 
 	//Returning values modified in SolveLCP and EvaluateNormalGap routines (except gap and normal)
 	contact_pairs[list_index]->eligible = prev_elig;
@@ -246,12 +246,12 @@ void ContactVEMPolyhedronVEMPolyhedron::FinalProcessSurfacePairsExplicit(double 
 
 void ContactVEMPolyhedronVEMPolyhedron::MountGlobalExplicit()
 {
-	//TODO-Explicit
+	//ALL-Explicit
 }
 
 void ContactVEMPolyhedronVEMPolyhedron::MountGlobal()
 {
-	//Variaveis temporarias para salvar a indexação global dos graus de liberdade a serem setados na matriz de rigidez global
+	//Temporary variables for save the indexing global of the degrees of freedom the to be set in the stiffness matrix global
 	int GL_global_1 = 0;
 	int GL_global_2 = 0;
 	double anterior = 0;
@@ -277,7 +277,7 @@ void ContactVEMPolyhedronVEMPolyhedron::MountGlobal()
 					if (i >= 15)
 						GL_global_1 = db.super_nodes[db.particles[index2]->super_node - 1]->DOFs[(ptr->vertexIDsB[2] - 1) * 3 + (i - 15)];
 
-					//Caso o grau de liberdade seja livre:
+					//Case the degree of freedom be free:
 					if (GL_global_1 > 0)
 					{
 						anterior = db.global_P_A(GL_global_1 - 1, 0);
@@ -285,8 +285,8 @@ void ContactVEMPolyhedronVEMPolyhedron::MountGlobal()
 						anterior = db.global_I_A(GL_global_1 - 1, 0);
 						db.global_I_A(GL_global_1 - 1, 0) = anterior + ptr->Rc[i];
 						////Convergence criteria
-						//anterior = db.global_ABS_P_A(GL_global_1 - 1, 0);
-						//db.global_ABS_P_A(GL_global_1 - 1, 0) = anterior + abs(ptr->Rc[i]);
+						//previous = db.global_ABS_P_A(GL_global_1 - 1, 0);
+						//db.global_ABS_P_A(GL_global_1 - 1, 0) = previous + abs(ptr->Rc[i]);
 						//db.global_COUNT_ABS_P_A(GL_global_1 - 1, 0) = db.global_COUNT_ABS_P_A(GL_global_1 - 1, 0) + 1.0;
 					}
 					if (GL_global_1 < 0)
@@ -294,8 +294,8 @@ void ContactVEMPolyhedronVEMPolyhedron::MountGlobal()
 						anterior = db.global_P_B(-GL_global_1 - 1, 0);
 						db.global_P_B(-GL_global_1 - 1, 0) = anterior + ptr->Rc[i];
 						////Convergence criteria
-						//anterior = db.global_ABS_P_B(-GL_global_1 - 1, 0);
-						//db.global_ABS_P_B(-GL_global_1 - 1, 0) = anterior + abs(ptr->Rc[i]);
+						//previous = db.global_ABS_P_B(-GL_global_1 - 1, 0);
+						//db.global_ABS_P_B(-GL_global_1 - 1, 0) = previous + abs(ptr->Rc[i]);
 						//db.global_COUNT_ABS_P_B(-GL_global_1 - 1, 0) = db.global_COUNT_ABS_P_B(-GL_global_1 - 1, 0) + 1.0;
 					}
 					for (int j = 0; j < 18; j++)
@@ -313,16 +313,16 @@ void ContactVEMPolyhedronVEMPolyhedron::MountGlobal()
 						if (j >= 15)
 							GL_global_2 = db.super_nodes[db.particles[index2]->super_node - 1]->DOFs[(ptr->vertexIDsB[2] - 1) * 3 + (j - 15)];
 
-						//Caso os graus de liberdade sejam ambos livres (Matriz Kaa)
+						//Case the degrees of freedom be both free (Matrix Kaa)
 						if (GL_global_1 > 0 && GL_global_2 > 0)
 							db.global_stiffness_AA.setValue(GL_global_1 - 1, GL_global_2 - 1, ptr->Kc[i][j]);
-						//Caso os graus de liberdade sejam ambos fixos (Matriz Kbb)
+						//Case the degrees of freedom be both fixed (Matrix Kbb)
 						if (GL_global_1 < 0 && GL_global_2 < 0)
 							db.global_stiffness_BB.setValue(-GL_global_1 - 1, -GL_global_2 - 1, ptr->Kc[i][j]);
-						//Caso os graus de liberdade sejam livre e fixo (Matriz Kab)
+						//Case the degrees of freedom be free and fixed (Matrix Kab)
 						if (GL_global_1 > 0 && GL_global_2 < 0)
 							db.global_stiffness_AB.setValue(GL_global_1 - 1, -GL_global_2 - 1, ptr->Kc[i][j]);
-						//Caso os graus de liberdade sejam fixo e livre (Matriz Kba)
+						//Case the degrees of freedom be fixed and free (Matrix Kba)
 						if (GL_global_1 < 0 && GL_global_2 > 0)
 							db.global_stiffness_BA.setValue(-GL_global_1 - 1, GL_global_2 - 1, ptr->Kc[i][j]);
 					}

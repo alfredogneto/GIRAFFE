@@ -14,7 +14,7 @@
 #include "SpecialConstraint.h"
 
 #include "Database.h"
-//Variaveis globais
+//Global variables
 extern
 Database db;
 
@@ -40,7 +40,7 @@ Dynamic::Dynamic()
 	//Damping
 	alpha = 0;
 	beta = 0;
-	update = 0;	//booleana
+	update = 0;	//boolean
 
 	a1 = 0.0;
 	a2 = 0.0;
@@ -49,7 +49,7 @@ Dynamic::Dynamic()
 	a5 = 0.0;
 	a6 = 0.0;
 
-	file_index = 1;								//Numero do arquivo para salvar resultados
+	file_index = 1;								//Number of the file for save results
 
 	contact_impact_control = false;
 	n_steps_impact = 0;
@@ -206,7 +206,7 @@ bool Dynamic::Read(FILE *f)
 	else
 		return false;
 
-	//Salva a posição (stream)
+	//Saves the position (stream)
 	fpos_t pos;
 	fgetpos(f, &pos);
 	fscanf(f, "%s", s);
@@ -217,7 +217,7 @@ bool Dynamic::Read(FILE *f)
 
 
 
-	//Salva a posição (stream)
+	//Saves the position (stream)
 	//fpos_t pos;
 	fgetpos(f, &pos);
 	fscanf(f, "%s", s);
@@ -254,91 +254,91 @@ void Dynamic::Write(FILE *f)
 //Solves solution routine
 bool Dynamic::Solve()
 {
-	bool aborted = false;						//flag para abortar simulação
-	int convergence_counter = 0;				//contador de numero de vezes seguidas que houve convergência, para possibilitar o incremento de carga
-	int converged_number = 0;					//Contador absoluto do numero de configurações convergidas
-	int counter_iterations;						//Contador do numero de iteraçoes
-	db.conv_criteria->n_conv_evaluated = 0;		//Zerando histórico do contador de criterio de convergência
+	bool aborted = false;						//flag for abortar simulation
+	int convergence_counter = 0;				//contador of number of times seguidas that there was convergence, for possibilitar the load increment
+	int converged_number = 0;					//Contador absoluto of the number of configurações convergidas
+	int counter_iterations;						//Contador of the number of iterations
+	db.conv_criteria->n_conv_evaluated = 0;		//Zeroing histórico of the contador of convergence criterion
 	db.last_converged_time = start_time;
-	//Atualiza monitor - somente se for o primeira solution
+	//Updates monitor - only if for the first solution
 	if (db.monitor_exist == true && solution_number == 1)
 		db.monitor->UpdateMonitor(db.last_converged_time);
-	//Atualiza analise concomitante
+	//Updates analysis concomitante
 	if (db.concomitant_solution_exist == true)
 		db.concomitant_solution->UpdateConcomitantSolution(db.last_converged_time);
-	WriteResults(start_time);								//salvando resultados
-	high_resolution_clock::time_point t1 = high_resolution_clock::now();//Inicia a marcação de tempo de execução
-	//Plotagem do dia da simulação
+	WriteResults(start_time);								//saving results
+	high_resolution_clock::time_point t1 = high_resolution_clock::now();//Inicia the marcação of time of execution
+	//Plotting of the dia of the simulation
 	system_clock::time_point today = system_clock::now();
 	time_t tt;
 	tt = system_clock::to_time_t(today);
 	db.myprintf("\nSolution step %d started at %s\n", solution_number, ctime(&tt));
-	DOFsActive();								//Para cada nó ativa DOFs - tambem opera sobre multiplicadores de Lagrange de SpecialConstraints
-	SetGlobalDOFs();							//Numeração de graus de liberdade
-	SetGlobalSize();							//Calcula o tamanho da matriz global - com base nos GLs livres e fixos
+	DOFsActive();								//For each node active DOFs - tambem opera on Lagrange multipliers of SpecialConstraints
+	SetGlobalDOFs();							//Numbering of degrees of freedom
+	SetGlobalSize();							//Calculates the size of the matrix global - with base in the GLs free and fixed
 	
 	//Time variables
 	double time_step = i_time_step;
 	double time = db.last_converged_time;	//last converged time
-	ComputeInitialConditions(zero_IC_flag);				//Computa as condições iniciais nodais impostas
-	bool first = true;						//Flag para saber quando computar Rayleigh Damping
+	ComputeInitialConditions(zero_IC_flag);				//Computes the initial conditions nodal impostas
+	bool first = true;						//Flag for saber when compute Rayleigh Damping
 	
 	if (db.gcs_exist)
 		if (db.gcs->bool_table.GetAt(db.current_solution_number - 1))
 			db.gcs->SolutionStepInitialCheck();					//General contact initial check
 
-	aborted = false;	//Flag que indica se o caso deve ser abortado
-	db.conv_criteria->diverged = false;	//Flag que indica que não divergiu (false)
+	aborted = false;	//Flag that indicates if the case must be abortado
+	db.conv_criteria->diverged = false;	//Flag that indicates that not divergiu (false)
 	////////////////////////////////////////////////////////////////////////////////
 	while ((time < end_time || db.conv_criteria->diverged == true) && aborted == false)
 	{
-		//Setando variaveis no database
+		//Setting variables in the database
 		db.last_converged_time = time;
-		time += time_step;	//Incremento do time step, de acordo com a progressão da solução
-		if (time > 0.99999999*end_time)//Se ja estiver muito próximo do ultimo instante de interesse	
+		time += time_step;	//Increment of the time step, according to the progressão of the solution
+		if (time > 0.99999999*end_time)//If already is very next of the last instant of interest	
 		{
 			time = end_time;
 			time_step = end_time - db.last_converged_time;
 		}
 		db.current_time_step = time_step;
-		//Calcula os coeficientes do Metodo de Newmark
+		//Calculates the coefficients of the Newmark method
 		CalculateNewmarkCoeff(time_step);
 		db.myprintf("\nTime: %.9f\t\tTime step: %.9f\n\n", time, time_step);
-		//Loop de iterações do Newton-Raphson
+		//Loop of iterations of the Newton-Raphson
 		counter_iterations = 1;
 		db.current_iteration_number = counter_iterations;
 		Zeros();
-		//Imposição de deslocamentos
+		//Imposição of displacements
 		MountDisplacements();
-		PinballCheck();			//Varre contatos - verificação de pinball
+		PinballCheck();			//Varre contacts - check of pinball
 		BeginStepCheck();
-		UpdateDyn();		//Realiza a primeira integração ao longo do tempo
+		UpdateDyn();		//Performs the first integration to the longo of the time
 		bool res_converged = false;
 		bool GL_converged = false;
-		db.conv_criteria->diverged = false;	//Flag que indica que não divergiu (false)
+		db.conv_criteria->diverged = false;	//Flag that indicates that not divergiu (false)
 		//Newton Raphson
 		while ((res_converged == false || GL_converged == false) && (db.conv_criteria->diverged == false) && (aborted == false))
 		{
 			db.current_iteration_number = counter_iterations;
 			Clear();										//Clean global matrices	
-			MountSpecialConstraints();						//Montagem das special constraints
-			MountContacts();								//Montagem dos contatos
-			MountLocal();									//Montagem dos elementos e particulas (informações locais)
-			MountElementLoads();							//Montagem de carregamentos de campo em elementos
+			MountSpecialConstraints();						//Assembly of the special constraints
+			MountContacts();								//Assembly of the contacts
+			MountLocal();									//Assembly of the elements and particles (information local)
+			MountElementLoads();							//Assembly of loadings of field in elements
 			MountLoads();				
-			MountMass();									//Montagem da matriz de massa dos elementos e particulas
+			MountMass();									//Assembly of the mass matrix of the elements and particles
 			if (first == true || update == 1)
 			{
-				MountDamping(true);							//Montagem da matriz de amortecimento dos elementos
+				MountDamping(true);							//Assembly of the damping matrix of the elements
 				first = false;
 			}
 			else
-				MountDamping(false);						//Montagem da matriz de amortecimento dos elementos
+				MountDamping(false);						//Assembly of the damping matrix of the elements
 			MountDyn();										
-			MountGlobal();									//Espalhamento das informações locais nas matrizes/vetores globais
-			db.global_P_A = -1.0*db.global_P_A;			//Inverte o sinal do esforço desbalanceado
+			MountGlobal();									//Espalhamento of the information local in the matrices/vectors global
+			db.global_P_A = -1.0*db.global_P_A;			//Inverte the sign of the internal force unbalanced
 			MountSparse();
-			//Apenas na primeira iteração insere os deslocamentos impostos
+			//Only in the first iteration inserts the displacements impostos
 			high_resolution_clock::time_point t_last = high_resolution_clock::now();
 			if (counter_iterations == 1)
 				db.global_P_A = db.global_P_A - 1.0*(db.global_stiffness_AB*db.global_X_B);
@@ -346,73 +346,73 @@ bool Dynamic::Solve()
 			if (db.plot_times == true)
 				cout << "ImposeDisplacements duration:\t" << duration / 1e6 << " sec." << "\n\n";
 			if (counter_iterations == 1)
-				db.conv_criteria->EstablishResidualCriteria();	//Estabelece criterios de parada, com base no vetor de esforços desbalanceados iniciais do incremento
+				db.conv_criteria->EstablishResidualCriteria();	//Estabelece criteria of parada, with base in the vector of internal forces unbalanced initial of the increment
 			res_converged = db.conv_criteria->CheckResidualConvergence();
 			int info_fail = 0;
-			//Se houve convergência do residuo calculado com os ultimos incrementos avaliados, não e necessario avaliar novamente
+			//If there was convergence of the residual calculated with the ultimos incrementos avaliados, not and necessary evaluate novamente
 			if (!(res_converged && GL_converged))
 			{
 				db.myprintf("It.: %d\n", counter_iterations);
 				t_last = high_resolution_clock::now();
-				db.global_P_A = sparsesystem(db.global_stiffness_AA, db.global_P_A, &info_fail, db.solver_options->processors, db.solver_options->solver);	//Resolve o sistema linear
+				db.global_P_A = sparsesystem(db.global_stiffness_AA, db.global_P_A, &info_fail, db.solver_options->processors, db.solver_options->solver);	//Solves the linear system
 				duration = std::chrono::duration_cast<std::chrono::microseconds>(high_resolution_clock::now() - t_last).count();
 				if (db.plot_times == true)
 					cout << "SparseSystem duration:\t" << duration / 1e6 << " sec." << "\n\n";
-				res_converged = false;//Seta fomo false, para obrigar a entrar no while mais uma vez para recalcular residuo com inc de deslocamentos atual
-				UpdateDisps();														//Atualiza os deslocamentos nodais
+				res_converged = false;//Sets fomo false, for obrigar the enter in the while more once for recalcular residual with inc of displacements current
+				UpdateDisps();														//Updates the displacements nodal
 				UpdateDyn();														//Atualizações - Newmark
-				GL_converged = db.conv_criteria->CheckGLConvergence();	//Com os GL ja atualizados avalia o criterio de convergência
+				GL_converged = db.conv_criteria->CheckGLConvergence();	//With the GL already atualizados evaluates the convergence criterion
 			}
-			//Divergência: algum dos criterios não convergiu e atingiu a #max_it ou houve falha na iteração (ex: NaN)
+			//Divergence: some of the criteria not converged and atingiu the #max_it or there was falha in the iteration (ex: NaN)
 			if ((counter_iterations == max_it && !(res_converged && GL_converged)) || info_fail == 1)
 				db.conv_criteria->diverged = true;
-			//Teste para avaliar a divergência
+			//Test for evaluate the divergence
 			if (db.conv_criteria->diverged == true)
 				db.conv_criteria->PlotDivergenceReport();
-			//Teste para avaliar que o time step esta muito pequeno - ABORT SIMULATION
+			//Test for evaluate that the time step this very small - ABORT SIMULATION
 			if (time_step < min_time_step && time != end_time)
 			{
 				db.myprintf("\nAborting simulation. Step size is too small!\n\n");
 				aborted = true;
 			}
 			counter_iterations++;
-		}//Fim de iterações
-		//Verificação de erros(impeditivos de convergência)
+		}//End of iterations
+		//Check of errors(impeditivos of convergence)
 		if (db.conv_criteria->diverged == false)
 			if (HaveErrors() == true)
 				db.conv_criteria->diverged = true;
-		/////////////////////////////////SALVANDO CONFIGURAÇÃO CONVERGIDA/////////////////////////////////
+		/////////////////////////////////SAVING CONFIGURATION CONVERGED/////////////////////////////////
 		if (db.conv_criteria->diverged == false)
 		{
 			converged_number++;
-			SaveConfiguration();	//Salva configuração convergida
-			convergence_counter++;	//Incrementa o numero de convergências seguidas
+			SaveConfiguration();	//Saves configuration converged
+			convergence_counter++;	//Increments the number of convergências seguidas
 			
-			//Escrita em arquivos de resultados
-			if (aborted == false)	//Salva o arquivo, de acordo com amostragem
+			//Writing in files of results
+			if (aborted == false)	//Saves the file, according to amostragem
 			{
 				if ((converged_number%sample == 0 || time == end_time))
 				{
-					WriteResults(time);								//salvando resultados
+					WriteResults(time);								//saving results
 				}
-				//Atualiza monitor
+				//Updates monitor
 				if (db.monitor_exist == true && (converged_number%db.monitor->sample == 0 || time == end_time))
 					db.monitor->UpdateMonitor(time);
-				//Atualiza analise concomitante
+				//Updates analysis concomitante
 				if (db.concomitant_solution_exist == true && (converged_number%db.concomitant_solution->sample == 0 || time == end_time))
 					db.concomitant_solution->UpdateConcomitantSolution(time);
-				//Atualiza configuration save
+				//Updates configuration save
 				if (db.config_save_exist == true && (converged_number%db.config_save->sample == 0 || time == end_time))
 					db.config_save->ExportConfiguration(time);
 			}
 			
-			//Analise da facilidade de convergência:
+			//Analysis of the facilidade of convergence:
 			if (((counter_iterations) <= min_it || convergence_counter >= conv_increase))
 			{
 				time_step = time_step * inc_factor;
 				if (time_step > max_time_step)
 					time_step = max_time_step;
-				convergence_counter = 0;	//Zera o convergence counter
+				convergence_counter = 0;	//Zeroes the convergence counter
 			}
 			//Contact impact control
 			if (contact_impact_control)
@@ -439,38 +439,38 @@ bool Dynamic::Solve()
 				}
 			}
 		}
-		/////////////////////////////////RETOMANDO CONFIGURAÇÃO CONVERGIDA/////////////////////////////////
+		/////////////////////////////////RETOMANDO CONFIGURATION CONVERGED/////////////////////////////////
 		else
 		{
-			RestoreConfiguration();	//Restaura a ultima configuração que convergiu
-			//Modificação do loading factor increment:
+			RestoreConfiguration();	//Restaura the last configuration that converged
+			//Modificação of the loading factor increment:
 			time -= time_step;
 			time_step = time_step / 2.0;	 //Bissecção
 			db.conv_criteria->diverged = false;
-			convergence_counter = 0;		//Zera o convergence counter
+			convergence_counter = 0;		//Zeroes the convergence counter
 		}
 		high_resolution_clock::time_point t2 = high_resolution_clock::now();
 		auto duration = std::chrono::duration_cast<std::chrono::microseconds>(t2 - t1).count();
 		db.myprintf("\nElapsed time:\t   %lf sec.\n", duration / 1e6);
-	}//Fim de sub steps
+	}//End of sub steps
 	high_resolution_clock::time_point t2 = high_resolution_clock::now();
 	auto duration = std::chrono::duration_cast<std::chrono::microseconds>(t2 - t1).count();
 	db.myprintf("\nSolution step %d time:\t   %lf sec.\n", solution_number, duration / 1e6);
-	//Plotagem do dia da simulação
+	//Plotting of the dia of the simulation
 	today = system_clock::now();
 	tt = system_clock::to_time_t(today);
 	db.myprintf("\nSolution step %d finished at %s\n", solution_number, ctime(&tt));
 
 	if (aborted == true)
-		return false;//Erro
+		return false;//Error
 	else
-		return true;//Não erro
+		return true;//Not error
 }
 
-//Escreve resultados
+//Writes results
 void Dynamic::WriteResults(double time_value)
 {
-	//Atualiza arquivos de pós-processamento
+	//Updates files of pós-processamento
 	db.post_files->UpdateSinglePartPostFiles(solution_number, time_value, file_index);
 	db.post_files->WriteConfigurationResults(solution_number, time_value, file_index);
 	file_index++;
@@ -483,12 +483,12 @@ void Dynamic::UpdateDyn()
 	Matrix A_delta;
 	double alpha_escalar_delta;
 	double g;
-	Matrix I(3, 3);		//Identidade de ordem 3
+	Matrix I(3, 3);		//Identidade of order 3
 	I(0, 0) = 1.0;
 	I(1, 1) = 1.0;
 	I(2, 2) = 1.0;
 	Matrix Q_delta(3, 3);
-	//Variaveis auxiliares
+	//Auxiliary variables
 	Matrix vel_aux(3, 1);
 	Matrix ace_aux(3, 1);
 	for (int i = 0; i < db.number_nodes; i++)
@@ -496,39 +496,39 @@ void Dynamic::UpdateDyn()
 		//Translações
 		for (int j = 0; j<3; j++)
 		{
-			/////////////VELOCIDADES/////////////////
-			//Se o GL for livre:
+			/////////////VELOCITIES/////////////////
+			//If the GL for free:
 			if (db.nodes[i]->GLs[j] > 0)
 				db.nodes[i]->vel[j] = db.nodes[i]->displacements[j] * a4 +
 				db.nodes[i]->copy_vel[j] * a5 +
 				db.nodes[i]->copy_accel[j] * a6;
 			/////////////ACELERAÇÕES/////////////////
-			//Se o GL for livre:
+			//If the GL for free:
 			if (db.nodes[i]->GLs[j] > 0)
 				db.nodes[i]->accel[j] = db.nodes[i]->displacements[j] * a1 -
 				db.nodes[i]->copy_vel[j] * a2 -
 				db.nodes[i]->copy_accel[j] * a3;
 		}
-		//Rotações
-		//Calculos referentes ao tensor rotação Q delta - para realizar o Newmark no mesmo espaço tangente (paper do Ibrahimbegovic, 2000)
+		//Rotations
+		//Calculations referring to to the tensor rotation Q delta - for perform the Newmark in the same espaço tangent (paper of the Ibrahimbegovic, 2000)
 		alpha_delta(0, 0) = db.nodes[i]->displacements[3];
 		alpha_delta(1, 0) = db.nodes[i]->displacements[4];
 		alpha_delta(2, 0) = db.nodes[i]->displacements[5];
-		alpha_escalar_delta = norm(alpha_delta);						//Valor escalar do parametro alpha
-		A_delta = skew(alpha_delta);									//Matriz A
-		g = 4.0 / (4.0 + alpha_escalar_delta*alpha_escalar_delta);		//função g(alpha) - em algumas ref. tb. chamado de h(alpha)
-		Q_delta = I + g*(A_delta + 0.5*(A_delta*A_delta));				//Tensor de rotação
+		alpha_escalar_delta = norm(alpha_delta);						//Value scalar of the parameter alpha
+		A_delta = skew(alpha_delta);									//Matrix A
+		g = 4.0 / (4.0 + alpha_escalar_delta*alpha_escalar_delta);		//function g(alpha) - in some ref. tb. called of h(alpha)
+		Q_delta = I + g*(A_delta + 0.5*(A_delta*A_delta));				//Tensor of rotation
 
 		for (int j = 3; j<6; j++)
 		{
-			/////////////VELOCIDADES/////////////////
-			//Se o GL for livre:
+			/////////////VELOCITIES/////////////////
+			//If the GL for free:
 			if (db.nodes[i]->GLs[j] > 0)
 				vel_aux(j - 3, 0) = db.nodes[i]->displacements[j] * a4 +
 				db.nodes[i]->copy_vel[j] * a5 +
 				db.nodes[i]->copy_accel[j] * a6;
 			/////////////ACELERAÇÕES/////////////////
-			//Se o GL for livre:
+			//If the GL for free:
 			if (db.nodes[i]->GLs[j] > 0)
 				ace_aux(j - 3, 0) = db.nodes[i]->displacements[j] * a1 -
 				db.nodes[i]->copy_vel[j] * a2 -
@@ -540,12 +540,12 @@ void Dynamic::UpdateDyn()
 
 		for (int j = 3; j<6; j++)
 		{
-			/////////////VELOCIDADES/////////////////
-			//Se o GL for livre:
+			/////////////VELOCITIES/////////////////
+			//If the GL for free:
 			if (db.nodes[i]->GLs[j] > 0)
 				db.nodes[i]->vel[j] = vel_aux(j - 3, 0);
 			/////////////ACELERAÇÕES/////////////////
-			//Se o GL for livre:
+			//If the GL for free:
 			if (db.nodes[i]->GLs[j] > 0)
 				db.nodes[i]->accel[j] = ace_aux(j - 3, 0);
 		}
@@ -559,7 +559,7 @@ void Dynamic::UpdateDyn()
 			//Free DOF
 			if (db.super_nodes[i]->DOFs[gl] > 0)
 			{
-				/////////////VELOCIDADES/////////////////
+				/////////////VELOCITIES/////////////////
 				db.super_nodes[i]->vel[gl] = db.super_nodes[i]->displacements[gl] * a4 +
 					db.super_nodes[i]->copy_vel[gl] * a5 +
 					db.super_nodes[i]->copy_accel[gl] * a6;
@@ -573,7 +573,7 @@ void Dynamic::UpdateDyn()
 		
 	}
 	//TO INVESTIGATE!!!
-	//Computa velocidade e aceleracao devido a imposição de restrições
+	//Computes velocity and acceleration due the imposição of constraints
 	for (int i = 0; i < db.number_special_constraints; i++)
 		db.special_constraints[i]->ComputeVelAccel();
 

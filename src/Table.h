@@ -9,15 +9,15 @@ public:
 	~Table();
 
 	
-	int n_times;							//Guarda o numero de instantes salvos (linhas)
-	int n_values;							//Numero de valores da tabela (colunas)
+	int n_times;							//Stores the number of instantes saved (rows)
+	int n_values;							//Number of values of the table (columns)
 	
 	void SetTime(int time_index, double time);
 	void SetValue(int time_index, int value_index, double value);
 
 	double GetTime(int time_index);
 	double GetValue(int time_index, int value_index);
-	double GetValueAt(double time_value, int value_index);	//Retorna o valor no instante requerido (interpolação linear)
+	double GetValueAt(double time_value, int value_index);	//Returns the value in the instant required (interpolation linear)
 
 	void flush();
 
@@ -25,6 +25,6 @@ public:
 	void Write(FILE *f);
 
 protected:
-	double** values;						//Guarda os valores em função do tempo
-	double* times;							//Guarda os instantes associados aos valores
+	double** values;						//Stores the values in function of the time
+	double* times;							//Stores the instantes associated to the values
 };

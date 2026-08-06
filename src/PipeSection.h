@@ -9,18 +9,18 @@ public:
 	PipeSection();
 	~PipeSection();
 
-	int number;										//ID da seção
-	double EA;										//EA -  rigidez axial
-	double EI;										//EI -  rigidez flexional 					
-	double GJ;										//GJ -  rigidez a torção
-	double GA;										//GA -  rigidez ao cisalhamento
-	double Rho;										//Massa por unidade de comprimento
-	double CDt;										//Coeficiente de arrasto na direção tangencial
-	double CDn;										//Coeficiente de arrasto na direção normal
-	double CAt;										//Coeficiente de massa adicional na direção tangencial
-	double CAn;										//Coeficiente de massa adicional na direção normal
-	double De;										//Diametro externo
-	double Di;										//Diametro interno
+	int number;										//ID of the section
+	double EA;										//EA -  stiffness axial
+	double EI;										//EI -  stiffness flexional 					
+	double GJ;										//GJ -  stiffness the torção
+	double GA;										//GA -  stiffness to the cisalhamento
+	double Rho;										//Mass by unit of length
+	double CDt;										//Coefficient of arrasto in the direction tangential
+	double CDn;										//Coefficient of arrasto in the normal direction
+	double CAt;										//Coefficient of mass adicional in the direction tangential
+	double CAn;										//Coefficient of mass adicional in the normal direction
+	double De;										//Diametro external
+	double Di;										//Diametro internal
 
 	bool Read(FILE *f);
 	void Write(FILE *f);

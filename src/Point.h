@@ -7,11 +7,11 @@ class Point
 public:
 	Point();
 	~Point();
-	//[0] X - coordenada do ponto
-	//[1] Y - coordenada do ponto
-	//[2] Z - coordenada do ponto
-	Matrix coordinates;			//Coordenadas do ponto
-	int number;	//Numero do ponto
+	//[0] X - coordinate of the point
+	//[1] Y - coordinate of the point
+	//[2] Z - coordinate of the point
+	Matrix coordinates;			//Coordinates of the point
+	int number;	//Number of the point
 	bool Read(FILE *f);
 	void Write(FILE *f);
 };

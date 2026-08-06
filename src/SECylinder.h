@@ -22,18 +22,18 @@ public:
 
 	void UpdateVariables();
 	void UpdateBoundingVolumes();				//Updates bounding volumes
-	void SaveLagrange();						//Salva variaveis
+	void SaveLagrange();						//Saves variables
 
 	//Variables - SECylinder
 	double *a, *b, *n, *e;
 	int csA, csB;
 	bool flag_normal_int;
 
-	//Variaveis para calcular estado atual (nas funcoes de bounding volume)
+	//Variables for calculate state current (in the functions of bounding volume)
 	MatrixFloat* xAf;
 	MatrixFloat* xBf;
 
-	//Variaveis para calcular estado atual (nas funcoes de contato)
+	//Variables for calculate state current (in the functions of contact)
 	Matrix* x_Ai;
 	Matrix* x_Ap;
 	Matrix* x_Bi;

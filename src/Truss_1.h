@@ -9,31 +9,31 @@ public:
 	Truss_1();
 	~Truss_1();
 
-	bool Check();									//Checa inconsistências no elemento para evitar erros de execução
+	bool Check();									//Checks inconsistencies in the element for avoid errors of execution
 	bool Read(FILE *f);
 	void Write(FILE *f);
-	void WriteResults(FILE *f);						//Escreve arquivo de resultados
-	void WriteMonitor(FILE *f, bool first_record, double time);	//Escreve no monitor do elemento
+	void WriteResults(FILE *f);						//Writes file of results
+	void WriteMonitor(FILE *f, bool first_record, double time);	//Writes in the monitor of the element
 	void WriteVTK_XMLBase(std::vector<float> *float_vector);
 	void WriteVTK_XMLRender(FILE *f);
 
-	void Mount();									//Monta elementos
-	void MountMass();								//Monta a matriz de massa
-	void MountAddedMass();							//Monta a matriz de massa adicional
-	void MountAddedMassModal();						//Monta a matriz de massa adicional para analise modal
-	void MountMassModal();							//Monta a matriz de massa para realização da analise modal
-	void MountDampingModal();						//Monta a matriz de amortecimento para realização da analise modal
-	void MountElementLoads();						//Monta carregamentos associados ao elemento
-	void MountDamping(bool update_rayleigh);		//Monta a matriz de amortecimento
-	void TransformMatrix();							//Monta matriz de transformação de coordenadas
-	void MountGlobal();								//Preenche a contribuição do elemento nas matrizes globais
-	void MountSeaCurrentLoading();					//Monta carregamento de correnteza/amortecimento hidro (Morison)
-	void SaveLagrange();							//Salva variaveis nos pontos de Gauss uteis para descrição lagrangiana atualizada
+	void Mount();									//Assembles elements
+	void MountMass();								//Assembles the mass matrix
+	void MountAddedMass();							//Assembles the mass matrix adicional
+	void MountAddedMassModal();						//Assembles the mass matrix adicional for analysis modal
+	void MountMassModal();							//Assembles the mass matrix for performing of the analysis modal
+	void MountDampingModal();						//Assembles the damping matrix for performing of the analysis modal
+	void MountElementLoads();						//Assembles loadings associated to the element
+	void MountDamping(bool update_rayleigh);		//Assembles the damping matrix
+	void TransformMatrix();							//Assembles transformation matrix of coordinates
+	void MountGlobal();								//Fills the contribution of the element in the matrices global
+	void MountSeaCurrentLoading();					//Assembles loading of correnteza/damping hidro (Morison)
+	void SaveLagrange();							//Saves variables in the gauss points useful for description lagrangiana updated
 	
-	void PreCalc();									//Pre-calculo de variaveis que e feito uma unica vez no inicio
-	void MountDyn();								//Montagens - Newmark
-	void MountDynModal();							//Montagens para analise modal - inserção da matriz de massa e amortecimento na matriz de rigidez para posterior montagem global
-	void Zeros();									//Limpa as matrizes internas do elemento
+	void PreCalc();									//Pre-calculation of variables that and done a single time in the start
+	void MountDyn();								//Assemblies - Newmark
+	void MountDynModal();							//Assemblies for analysis modal - insertion of the mass matrix and damping in the stiffness matrix for subsequent assembly global
+	void Zeros();									//Limpa the matrices internal of the element
 
 	Matrix I3;
 	double T;										//Normal force
@@ -55,7 +55,7 @@ public:
 	Matrix c_damping_matrix;						//damping matrix
 	Matrix c_stiffness_matrix;						//stiffness matrix
 	Matrix c_mass_matrix;							//mass matrix
-	Matrix c_external_loads_stiffness;				//Rigidez de carregamentos externos
+	Matrix c_external_loads_stiffness;				//Stiffness of loadings external
 		
 	Matrix c_rayleigh_damping;						//rayleigh damping matrix
 	Matrix c_mass_modal;							//mass matrix for modal analysis
@@ -81,20 +81,20 @@ public:
 	int pipe_sec;
 	double rho_len;
 
-	//Variaveis para calculo de steps
+	//Variables for calculation of steps
 	int t1, t2;
 	double load_multiplier, l_factor, mult;
 
-	double* N1;		//Funções de forma
+	double* N1;		//Functions of way
 	double* N2;
-	Matrix** N;		//Matriz das funções de forma
+	Matrix** N;		//Matrix of the functions of way
 
-	//Variaveis para funções geradas no AceGen
-	double C1t;							//variaveis auxiliares para calculo do Morison
+	//Variables for functions geradas in the AceGen
+	double C1t;							//auxiliary variables for calculation of the Morison
 	double C1n;
-	double rho_adt;						//variaveis auxiliares para calculo da massa adicional
+	double rho_adt;						//auxiliary variables for calculation of the mass adicional
 	double rho_adn;
-	double temp_v[2000];				//variavel temporaria para calculos internos
+	double temp_v[2000];				//temporary variable for calculations internal
 	void EvaluateMorisonContributions(double* v, double(*a4), double
 		(*a5), double(*a6), double(*C1t), double(*C1n), double* dUinf, double* xA, double* xB
 		, double* uA, double* uB, double* ud, double* dui, double* ddui

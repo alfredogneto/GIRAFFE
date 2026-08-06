@@ -7,7 +7,7 @@
 #include "NSContactData.h"
 
 #include"Database.h"
-//Variaveis globais
+//Global variables
 extern
 Database db;
 
@@ -15,7 +15,7 @@ FlexibleTriangularSurface_2::FlexibleTriangularSurface_2()
 {
 	VTK_type = 22;
 	nDOFs = 18;
-	//CORNERS são os nós 1,2,3 e MIDS são os nós 4,5,6
+	//CORNERS are the nodes 1,2,3 and MIDS are the nodes 4,5,6
 	n_nodes = 6;
 	number = 0;
 	nodes = new int[n_nodes];
@@ -30,14 +30,14 @@ FlexibleTriangularSurface_2::FlexibleTriangularSurface_2()
 	VTK_nodes[3] = 3;
 	VTK_nodes[4] = 4;
 	VTK_nodes[5] = 5;
-	//Rotina para ativar os GLS de cada nó
+	//Routine for activate the GLS of each node
 	for (int i = 0; i < n_nodes; i++)
 	{
 		for (int j = 0; j < db.number_GLs_node; j++)
 		{
 			DOFs[i][j] = 0;
 		}
-		//Só translação
+		//Só translation
 		DOFs[i][0] = 1;
 		DOFs[i][1] = 1;
 		DOFs[i][2] = 1;
@@ -115,7 +115,7 @@ void FlexibleTriangularSurface_2::SetMinMaxRange()
 	u2_range = 2.0;
 }
 
-//Obtem ponto da superficie
+//Obtains point of the surface
 void FlexibleTriangularSurface_2::SurfacePoint(double& zeta, double& theta, Matrix& point)
 {
 	double NAp = theta / 2 + theta * theta / 2 + zeta / 2 + theta * zeta + zeta * zeta / 2;
@@ -128,15 +128,15 @@ void FlexibleTriangularSurface_2::SurfacePoint(double& zeta, double& theta, Matr
 	point = NAp*(*xA_p) + NBp * (*xB_p) + NCp * (*xC_p) + NDp * (*xD_p) + NEp * (*xE_p) + NFp * (*xF_p);
 }
 
-//Normal exterior a superficie na posição escolhida
+//Normal exterior the surface in the position chosen
 void FlexibleTriangularSurface_2::NormalExt(double* zeta, double* theta, Matrix* n)
 {
-	double *xAp = xA_p->getMatrix();	//ponteiro para o vetor xA_p
-	double *xBp = xB_p->getMatrix();	//ponteiro para o vetor xB_p
-	double *xCp = xC_p->getMatrix();	//ponteiro para o vetor xC_p
-	double *xDp = xD_p->getMatrix();	//ponteiro para o vetor xD_p
-	double *xEp = xE_p->getMatrix();	//ponteiro para o vetor xE_p
-	double *xFp = xF_p->getMatrix();	//ponteiro para o vetor xF_p
+	double *xAp = xA_p->getMatrix();	//pointer for the vector xA_p
+	double *xBp = xB_p->getMatrix();	//pointer for the vector xB_p
+	double *xCp = xC_p->getMatrix();	//pointer for the vector xC_p
+	double *xDp = xD_p->getMatrix();	//pointer for the vector xD_p
+	double *xEp = xE_p->getMatrix();	//pointer for the vector xE_p
+	double *xFp = xF_p->getMatrix();	//pointer for the vector xF_p
 
 	double* zp = zeta;
 	double* thp = theta;
@@ -177,7 +177,7 @@ void FlexibleTriangularSurface_2::NormalExt(double* zeta, double* theta, Matrix*
 
 }
 
-//Atualiza bounding box
+//Updates bounding box
 void FlexibleTriangularSurface_2::UpdateBox()
 {
 	//Bounding box
@@ -228,7 +228,7 @@ void FlexibleTriangularSurface_2::UpdateBox()
 	y[7] = c(1, 0) + radius;
 	z[7] = c(2, 0) + radius;
 
-	//Setando os vertices
+	//Setting the vertices
 	box.SetVertices(x, y, z);
 }
 
@@ -236,12 +236,12 @@ void FlexibleTriangularSurface_2::WriteVTK_XMLRender(FILE *f)
 {
 	if (db.post_files->WriteFlexibleContactSurfaces_flag == true)
 	{
-		//vetores para escrita no formato binario - usando a função 'enconde'
+		//vectors for writing in the formato binary - using the function 'enconde'
 		std::vector<float> float_vector;
 		std::vector<int> int_vector;
 
-		int n_points = 6;	//seis nós da superficie
-		int n_cells = 1;	//triangulo de segunda ordem
+		int n_points = 6;	//seis nodes of the surface
+		int n_cells = 1;	//triangulo of second order
 	
 		//Opens Piece
 		fprintf(f, "\t\t<Piece NumberOfPoints = \"%d\" NumberOfCells = \"%d\">\n", n_points, n_cells);
@@ -251,7 +251,7 @@ void FlexibleTriangularSurface_2::WriteVTK_XMLRender(FILE *f)
 		fprintf(f, "\t\t\t\t<DataArray type=\"Float32\" NumberOfComponents=\"3\" format=\"binary\">\n");
 		float_vector.clear();
 		
-		//Pontos A,B,C,D,E,F
+		//Points A,B,C,D,E,F
 		
 		float_vector.push_back((float)(*xA_p)(0, 0));
 		float_vector.push_back((float)(*xA_p)(1, 0));
@@ -288,7 +288,7 @@ void FlexibleTriangularSurface_2::WriteVTK_XMLRender(FILE *f)
 		fprintf(f, "\t\t\t<Cells>\n");
 		//Opens DataArray
 		fprintf(f, "\t\t\t\t<DataArray type=\"Int32\" Name=\"connectivity\" format=\"binary\">\n");
-		//Linhas
+		//Rows
 		int_vector.clear();
 		int_vector.push_back(0);
 		int_vector.push_back(1);
@@ -367,7 +367,7 @@ void FlexibleTriangularSurface_2::Write(FILE *f)
 		nodes[5]);
 }
 
-//Checa inconsistências para evitar erros de execução
+//Checks inconsistencies for avoid errors of execution
 bool FlexibleTriangularSurface_2::Check()
 {
 	for (int i = 0; i < n_nodes; i++)
@@ -378,7 +378,7 @@ bool FlexibleTriangularSurface_2::Check()
 	return true;
 }
 
-//Realiza chute inicial para as variaveis zeta e theta
+//Performs initial guess for the variables zeta and theta
 void FlexibleTriangularSurface_2::InitialGuess(Matrix* xS, double** convective, int n_solutions)
 {
 	convective[0][0] = -0.5;
@@ -387,7 +387,7 @@ void FlexibleTriangularSurface_2::InitialGuess(Matrix* xS, double** convective, 
 
 void FlexibleTriangularSurface_2::PreCalc()
 {
-	//Apontando para posição que indica valor dos GLs globais
+	//Pointing for position that indicates value of the GLs global
 	for (int i = 0; i < 3; i++)
 	{
 		GLs[i] = &db.nodes[nodes[0] - 1]->GLs[i];
@@ -403,34 +403,34 @@ void FlexibleTriangularSurface_2::PreCalc()
 	DegenerationPreCalc();
 }
 
-//Retorna as coordenadas da superficie para um par (zeta,theta) - configuração anterior convergida
+//Returns the coordinates of the surface for a pair (zeta,theta) - configuration previous converged
 void FlexibleTriangularSurface_2::Gamma_and_Triad(Matrix* G_p, Matrix* t1_p, Matrix* t2_p, Matrix* n_p, Matrix* G_i, Matrix* t1_i, Matrix* t2_i, Matrix* n_i, Matrix* G_ip, double* zi, double* thi, double* zp, double* thp)
 {
-	double *xAp = xA_p->getMatrix();	//ponteiro para o vetor xA_p
-	double *xBp = xB_p->getMatrix();	//ponteiro para o vetor xB_p
-	double *xCp = xC_p->getMatrix();	//ponteiro para o vetor xC_p
-	double *xDp = xD_p->getMatrix();	//ponteiro para o vetor xD_p
-	double *xEp = xE_p->getMatrix();	//ponteiro para o vetor xE_p
-	double *xFp = xF_p->getMatrix();	//ponteiro para o vetor xF_p
+	double *xAp = xA_p->getMatrix();	//pointer for the vector xA_p
+	double *xBp = xB_p->getMatrix();	//pointer for the vector xB_p
+	double *xCp = xC_p->getMatrix();	//pointer for the vector xC_p
+	double *xDp = xD_p->getMatrix();	//pointer for the vector xD_p
+	double *xEp = xE_p->getMatrix();	//pointer for the vector xE_p
+	double *xFp = xF_p->getMatrix();	//pointer for the vector xF_p
 
-	double *xAi = xA_i->getMatrix();	//ponteiro para o vetor xA_i
-	double *xBi = xB_i->getMatrix();	//ponteiro para o vetor xB_i
-	double *xCi = xC_i->getMatrix();	//ponteiro para o vetor xC_i
-	double *xDi = xD_i->getMatrix();	//ponteiro para o vetor xD_i
-	double *xEi = xE_i->getMatrix();	//ponteiro para o vetor xE_i
-	double *xFi = xF_i->getMatrix();	//ponteiro para o vetor xF_i
+	double *xAi = xA_i->getMatrix();	//pointer for the vector xA_i
+	double *xBi = xB_i->getMatrix();	//pointer for the vector xB_i
+	double *xCi = xC_i->getMatrix();	//pointer for the vector xC_i
+	double *xDi = xD_i->getMatrix();	//pointer for the vector xD_i
+	double *xEi = xE_i->getMatrix();	//pointer for the vector xE_i
+	double *xFi = xF_i->getMatrix();	//pointer for the vector xF_i
 
-	double *Gp = G_p->getMatrix();		//ponteiro para o vetor Gp 
-	double *t1p = t1_p->getMatrix();	//ponteiro para o vetor t1p 
-	double *t2p = t2_p->getMatrix();	//ponteiro para o vetor t2p
-	double *np = n_p->getMatrix();		//ponteiro para o vetor np
+	double *Gp = G_p->getMatrix();		//pointer for the vector Gp 
+	double *t1p = t1_p->getMatrix();	//pointer for the vector t1p 
+	double *t2p = t2_p->getMatrix();	//pointer for the vector t2p
+	double *np = n_p->getMatrix();		//pointer for the vector np
 
-	double *t1i = t1_i->getMatrix();	//ponteiro para o vetor t1i 
-	double *t2i = t2_i->getMatrix();	//ponteiro para o vetor t2i
-	double *ni = n_i->getMatrix();		//ponteiro para o vetor ni
+	double *t1i = t1_i->getMatrix();	//pointer for the vector t1i 
+	double *t2i = t2_i->getMatrix();	//pointer for the vector t2i
+	double *ni = n_i->getMatrix();		//pointer for the vector ni
 
-	double *Gip = G_ip->getMatrix();	//ponteiro para o vetor Gip
-	double *Gi = G_i->getMatrix();		//ponteiro para o vetor Gi
+	double *Gip = G_ip->getMatrix();	//pointer for the vector Gip
+	double *Gi = G_i->getMatrix();		//pointer for the vector Gi
 	double v[1000];
 
 	v[199] = (*thp) / 2e0;
@@ -546,42 +546,42 @@ void FlexibleTriangularSurface_2::Gamma_and_Triad(Matrix* G_p, Matrix* t1_p, Mat
 	Gi[2] = v[68] * xAi[2] + v[200] * xBi[2] + v[201] * xCi[2] + v[77] * xDi[2] + v[78] * xEi[2] + v[80] * xFi[2];
 }
 
-//Dado o ponto xS, calcula as coordenadas (zeta,theta) referentes a minima distancia
+//Data the point xS, calculates the coordinates (zeta,theta) referring to the minimum distance
 void FlexibleTriangularSurface_2::FindMinimimumParameters(Matrix* xS, NSContactData* cd)
 {
-	//Parametros NR
+	//Parameters NR
 	double tol_ortho = 1e-12;
 	int max_it = 20;
 	double v[1000];
 	double** J;
-	//Alocação J
+	//Allocation J
 	J = new double*[2];
 	for (int i = 0; i < 2; i++)
 		J[i] = new double[2];
 	Matrix Jacobian(2, 2);
 	Matrix residual(2);
 	Matrix delta(2);
-	double *xA = xA_p->getMatrix();	//ponteiro para o vetor xA_p
-	double *xB = xB_p->getMatrix();	//ponteiro para o vetor xB_p
-	double *xC = xC_p->getMatrix();	//ponteiro para o vetor xC_p
-	double *xD = xD_p->getMatrix();	//ponteiro para o vetor xD_p
-	double *xE = xE_p->getMatrix();	//ponteiro para o vetor xE_p
-	double *xF = xF_p->getMatrix();	//ponteiro para o vetor xF_p
-	double *pxS = xS->getMatrix();			//ponteiro para o vetor xS
-	double *r = residual.getMatrix();		//ponteiro para o vetor residual
-	double *vi = vNR->getMatrix();			//pointeiro para vNR
+	double *xA = xA_p->getMatrix();	//pointer for the vector xA_p
+	double *xB = xB_p->getMatrix();	//pointer for the vector xB_p
+	double *xC = xC_p->getMatrix();	//pointer for the vector xC_p
+	double *xD = xD_p->getMatrix();	//pointer for the vector xD_p
+	double *xE = xE_p->getMatrix();	//pointer for the vector xE_p
+	double *xF = xF_p->getMatrix();	//pointer for the vector xF_p
+	double *pxS = xS->getMatrix();			//pointer for the vector xS
+	double *r = residual.getMatrix();		//pointer for the vector residual
+	double *vi = vNR->getMatrix();			//pointeiro for vNR
 
-	//Inicialização de chute inicial
+	//Initialization of initial guess
 	(*vNR)(0, 0) = cd->convective[0][0];
 	(*vNR)(1, 0) = cd->convective[0][1];
-	double error = tol_ortho + 1.0;	//Forçando entrar no loop
+	double error = tol_ortho + 1.0;	//Forcing enter in the loop
 	int it = 1;
 	int flag_error;
 	while (error > tol_ortho && it <= max_it)
 	{
 		if (error > tol_ortho)
 		{
-			//Calculo do residuo e jacobiano
+			//Calculation of the residual and Jacobian
 			v[104] = xE[2] - xF[2];
 			v[103] = xE[1] - xF[1];
 			v[102] = xE[0] - xF[0];
@@ -628,17 +628,17 @@ void FlexibleTriangularSurface_2::FindMinimimumParameters(Matrix* xS, NSContactD
 			J[1][0] = v[85];
 			J[1][1] = -(v[70] * v[70]) - (v[72] * v[72]) - (v[74] * v[74]) + v[65] * (xA[0] + xC[0] - 2e0*xF[0]) + v[66] * (xA[1] + xC[1]
 				- 2e0*xF[1]) + v[67] * (xA[2] + xC[2] - 2e0*xF[2]);
-			Jacobian.PtrToMatrix(J, 2);									//Conversão do Jacobiano para matriz
-			delta = fullsystem(Jacobian, -1.0*residual, &flag_error);	//Resolve sistema linear
-			if (flag_error == 0)										//Se conseguiu fazer o sistema linear
+			Jacobian.PtrToMatrix(J, 2);									//Conversion of the Jacobian for matrix
+			delta = fullsystem(Jacobian, -1.0*residual, &flag_error);	//Solves linear system
+			if (flag_error == 0)										//If conseguiu do the linear system
 			{
-				(*vNR) = (*vNR) + delta;								//Atualização das variaveis
-				error = norm(delta);									//Norma do residuo
+				(*vNR) = (*vNR) + delta;								//Update of the variables
+				error = norm(delta);									//Norm of the residual
 				it++;
 			}
 			else
 			{
-				it = max_it + 1;//Força saida - divergência
+				it = max_it + 1;//Force output - divergence
 			}
 		}
 	}//end while NR
@@ -648,21 +648,21 @@ void FlexibleTriangularSurface_2::FindMinimimumParameters(Matrix* xS, NSContactD
 		delete[]J[i];
 	delete[]J;
 
-	//Convergiu - ainda ha ações a verificar...
+	//Converged - still there is ações the check...
 	if (error <= tol_ortho && flag_error == 0)
 	{
-		//Salva nas variaveis
+		//Saves in the variables
 		cd->convective[0][0] = (*vNR)(0, 0);
 		cd->convective[0][1] = (*vNR)(1, 0);
-		//Se esta no range local de interesse - dominio fisico da superficie triangular
+		//If this in the range local of interest - domain physical of the surface triangular
 		if (abs((*vNR)(0, 0)) <= 1.0 && abs((*vNR)(1, 0)) <= 1.0 && (*vNR)(1, 0) <= -(*vNR)(0, 0))
 			cd->return_value[0] = 0;
 		else
 		{
-			//Se esta em região próxima, mas não no range local de interesse
+			//If this in região next, but not in the range local of interest
 			if (abs((*vNR)(0, 0)) < 1.2 && abs((*vNR)(1, 0)) < 1.2 && (*vNR)(1, 0) < -(*vNR)(0, 0) + 0.2)
 				cd->return_value[0] = 3;
-			//Se não estiver no range de interesse
+			//If not is in the range of interest
 			else
 				cd->return_value[0] = 2;
 		}
@@ -670,16 +670,16 @@ void FlexibleTriangularSurface_2::FindMinimimumParameters(Matrix* xS, NSContactD
 	}
 	else
 		cd->return_value[0] = 1;
-	//Retornos da função
-	//0 - Convergiu e esta no range de interesse para contato
-	//1 - Não houve convergência (pode ou não estar no range para contato) - retorno problematico!!
-	//2 - Houve convergência, mas não esta no range para contato
-	//3 - Houve convergência, esta fora do range para contato, mas próximo
+	//Retornos of the function
+	//0 - Converged and this in the range of interest for contact
+	//1 - Not there was convergence (can or not to be in the range for contact) - return problematico!!
+	//2 - There was convergence, but not this in the range for contact
+	//3 - There was convergence, this outside of the range for contact, but next
 	cd->repeated[0] = false;
 	for (int i = 1; i < cd->n_solutions; i++)
 		cd->repeated[i] = true;
 }
-//Atualiza as variaveis internas da superficie, para pegarem info do pilot node para uso posterior com posição atualizada
+//Updates the variables internal of the surface, for grab info of the pilot node for use subsequent with position updated
 void FlexibleTriangularSurface_2::FillNodes()
 {
 	for (int i = 0; i < 3; i++)
@@ -700,13 +700,13 @@ void FlexibleTriangularSurface_2::FillNodes()
 	}
 }
 
-//Retorna coordenadas globais do ponto central da superficie a ser utilizado para calculos grosseiros de sua localização (pinball)
+//Returns coordinates global of the point central of the surface the be used for calculations coarse of its location (pinball)
 void FlexibleTriangularSurface_2::CenterPoint(Matrix* center)
 {
 	*center = 0.33333333333333333333*(*xA_i + *xB_i + *xC_i);
 }
 
-//Salva vetores de configuração convergida
+//Saves vectors of configuration converged
 void FlexibleTriangularSurface_2::SaveConfiguration()
 {
 	d_A->clear();
@@ -735,15 +735,15 @@ void FlexibleTriangularSurface_2::SaveConfiguration()
 	}
 }
 
-//Calcula contribuições de contato entre esfera e superficie
+//Calculates contributions of contact between sphere and surface
 void FlexibleTriangularSurface_2::ContactSphereSurfaceSticking(double* Rc, double** Kc, double zetap, double thetap, double zetai, double thetai, double* gti, int node, double* epsn, double* epst, double* cn, double* ct, double* mu, double* radius)
 {
-	double *xAi = xA_i->getMatrix();	//ponteiro para o vetor xA_i
-	double *xBi = xB_i->getMatrix();	//ponteiro para o vetor xB_i
-	double *xCi = xC_i->getMatrix();	//ponteiro para o vetor xC_i
-	double *xDi = xD_i->getMatrix();	//ponteiro para o vetor xD_i
-	double *xEi = xE_i->getMatrix();	//ponteiro para o vetor xE_i
-	double *xFi = xF_i->getMatrix();	//ponteiro para o vetor xF_i
+	double *xAi = xA_i->getMatrix();	//pointer for the vector xA_i
+	double *xBi = xB_i->getMatrix();	//pointer for the vector xB_i
+	double *xCi = xC_i->getMatrix();	//pointer for the vector xC_i
+	double *xDi = xD_i->getMatrix();	//pointer for the vector xD_i
+	double *xEi = xE_i->getMatrix();	//pointer for the vector xE_i
+	double *xFi = xF_i->getMatrix();	//pointer for the vector xF_i
 	double v[30000];
 	double ci[2];
 	ci[0] = zetai;
@@ -24448,15 +24448,15 @@ void FlexibleTriangularSurface_2::ContactSphereSurfaceSticking(double* Rc, doubl
 
 }
 
-//Calcula contribuições de contato entre esfera e superficie
+//Calculates contributions of contact between sphere and surface
 void FlexibleTriangularSurface_2::ContactSphereSurfaceSliding(double* Rc, double** Kc, double zetap, double thetap, double zetai, double thetai, double* gti, int node, double* epsn, double* epst, double* cn, double* ct, double* mu, double* radius)
 {
-	double *xAi = xA_i->getMatrix();	//ponteiro para o vetor xA_i
-	double *xBi = xB_i->getMatrix();	//ponteiro para o vetor xB_i
-	double *xCi = xC_i->getMatrix();	//ponteiro para o vetor xC_i
-	double *xDi = xD_i->getMatrix();	//ponteiro para o vetor xD_i
-	double *xEi = xE_i->getMatrix();	//ponteiro para o vetor xE_i
-	double *xFi = xF_i->getMatrix();	//ponteiro para o vetor xF_i
+	double *xAi = xA_i->getMatrix();	//pointer for the vector xA_i
+	double *xBi = xB_i->getMatrix();	//pointer for the vector xB_i
+	double *xCi = xC_i->getMatrix();	//pointer for the vector xC_i
+	double *xDi = xD_i->getMatrix();	//pointer for the vector xD_i
+	double *xEi = xE_i->getMatrix();	//pointer for the vector xE_i
+	double *xFi = xF_i->getMatrix();	//pointer for the vector xF_i
 	double v[30000];
 	double ci[2];
 	ci[0] = zetai;

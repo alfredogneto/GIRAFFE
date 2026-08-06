@@ -25,14 +25,14 @@ public:
 	void SurfacePoints();					//Sets GammaA and GammaB with contact positions on both surfaces
 	bool HaveErrors();
 
-	double ObjectivePhase1(Matrix& mc);								//Calcula a função objetivo para um conjunto de coordenadas convectivas - Phase 1
-	void GradientPhase1(Matrix& mc, Matrix& mGra);					//Calcula o Gradiente da função objetivo - Phase 1
-	void HessianPhase1(Matrix& mc, Matrix& mHes);					//Calcula a Hessiana da função objetivo - Phase 1
+	double ObjectivePhase1(const Matrix& mc);								//Calculates the objective function for a set of convective coordinates - Phase 1
+	void GradientPhase1(Matrix& mc, Matrix& mGra);					//Calculates the Gradient of the objective function - Phase 1
+	void HessianPhase1(Matrix& mc, Matrix& mHes);					//Calculates the Hessian of the objective function - Phase 1
 
-	//double Gap(Matrix& mc, bool fixed_normals, Matrix& nA, Matrix& nB);											//Calcula e rotorna o gap (com sinal)
-	//void GradientGap(Matrix& mc, Matrix& mGra, bool fixed_normals, Matrix& nA, Matrix& nB);						//Calcula o Gradiente do gap
-	//void HessianGap(Matrix& mc, Matrix& mHes, bool fixed_normals, Matrix& nA, Matrix& nB);						//Calcula a Hessiana do gap
-	int VerifyConvectiveRange(Matrix& mc);							//Verifica range de coordenadas convectivas
+	//double Gap(const Matrix& mc, bool fixed_normals, Matrix& in the, Matrix& nB);											//Calculates and rotorna the gap (with sign)
+	//void GradientGap(Matrix& mc, Matrix& mGra, bool fixed_normals, Matrix& in the, Matrix& nB);						//Calculates the Gradient of the gap
+	//void HessianGap(Matrix& mc, Matrix& mHes, bool fixed_normals, Matrix& in the, Matrix& nB);						//Calculates the Hessian of the gap
+	int VerifyConvectiveRange(Matrix& mc);							//Checks range of convective coordinates
 	void InitializeConvectiveRange();								//Initialize range of validity of convective coordinates
 
 	void MountGlobal();
@@ -72,8 +72,8 @@ public:
 	int vertexIDsA[3];
 	
 	//AceGen Pointers - specific
-	double* radB;                                           //Raio de curvatura do arco
-	double* cpointB;										//Centro de curvatura do arco
+	double* radB;                                           //Radius of curvature of the arc
+	double* cpointB;										//Center of curvature of the arc
 
 	bool* normalintB;
 	double* xABi;

@@ -49,30 +49,30 @@ public:
 	virtual void CompactReport() = 0;
 	virtual void InitialGuess() = 0;
 	
-	virtual double ObjectivePhase1(Matrix& mc) = 0;								//Calcula a função objetivo para um conjunto de coordenadas convectivas - Phase 1
-	virtual void GradientPhase1(Matrix& mc, Matrix& mGra) = 0;					//Calcula o Gradiente da função objetivo - Phase 1
-	virtual void HessianPhase1(Matrix& mc, Matrix& mHes) = 0;					//Calcula a Hessiana da função objetivo - Phase 1
+	virtual double ObjectivePhase1(const Matrix& mc) = 0;								//Calculates the objective function for a set of convective coordinates - Phase 1
+	virtual void GradientPhase1(Matrix& mc, Matrix& mGra) = 0;					//Calculates the Gradient of the objective function - Phase 1
+	virtual void HessianPhase1(Matrix& mc, Matrix& mHes) = 0;					//Calculates the Hessian of the objective function - Phase 1
 
-	//virtual double Gap(Matrix& mc, bool fixed_normals, Matrix& nA, Matrix& nB) = 0;											//Calcula e rotorna o gap (com sinal)
-	//virtual void GradientGap(Matrix& mc, Matrix& mGra, bool fixed_normals, Matrix& nA, Matrix& nB) = 0;						//Calcula o Gradiente do gap
-	//virtual void HessianGap(Matrix& mc, Matrix& mHes, bool fixed_normals, Matrix& nA, Matrix& nB) = 0;						//Calcula a Hessiana do gap
-	virtual int VerifyConvectiveRange(Matrix& mc) = 0;							//Verifica range de coordenadas convectivas
+	//virtual double Gap(const Matrix& mc, bool fixed_normals, Matrix& in the, Matrix& nB) = 0;											//Calculates and rotorna the gap (with sign)
+	//virtual void GradientGap(Matrix& mc, Matrix& mGra, bool fixed_normals, Matrix& in the, Matrix& nB) = 0;						//Calculates the Gradient of the gap
+	//virtual void HessianGap(Matrix& mc, Matrix& mHes, bool fixed_normals, Matrix& in the, Matrix& nB) = 0;						//Calculates the Hessian of the gap
+	virtual int VerifyConvectiveRange(Matrix& mc) = 0;							//Checks range of convective coordinates
 	virtual void InitializeConvectiveRange() = 0;								//Initialize range of validity of convective coordinates
 
-	bool FindMinimumSolution(SSContactData* c_data, Matrix* solution, int &return_info);								//Otimização - determinação de minimo
-	bool FindMinimumSolutionDegenerated(SSContactData* c_data, Matrix* P_0, Matrix* solution);						//Otimização - determinação de minimo
-	//bool FindSaddleSolution(SSContactData* c_data, Matrix* solution, int &return_info, bool return_gap);				//Otimização - determinação de sela
-	//bool FindSaddleSolutionDegenerated(SSContactData* c_data, Matrix* P_0, Matrix* solution, bool return_gap);		//Otimização - determinação de sela
-	//bool FindMinimumGapDegenerated(SSContactData* c_data, Matrix* P_0, Matrix* solution, int &return_info, bool fixed_normals, Matrix& nA, Matrix& nB);			//Otimização - determinação de minimo do gap com sinal
+	bool FindMinimumSolution(SSContactData* c_data, Matrix* solution, int &return_info);								//Optimization - determination of minimum
+	bool FindMinimumSolutionDegenerated(SSContactData* c_data, Matrix* P_0, Matrix* solution);						//Optimization - determination of minimum
+	//bool FindSaddleSolution(SSContactData* c_data, Matrix* solution, int &return_info, bool return_gap);				//Optimization - determination of saddle
+	//bool FindSaddleSolutionDegenerated(SSContactData* c_data, Matrix* P_0, Matrix* solution, bool return_gap);		//Optimization - determination of saddle
+	//bool FindMinimumGapDegenerated(SSContactData* c_data, Matrix* P_0, Matrix* solution, int &return_info, bool fixed_normals, Matrix& in the, Matrix& nB);			//Optimization - determination of minimum of the gap with sign
 	int CharacterizeCriticalPoint(Matrix* solution);
 	int CharacterizeCriticalPointDegenerated(Matrix* solution, Matrix* P_0, bool print = false);
 	void DefaultValues();
-	double tol_small_1;		//Criterio para numero muito pequeno - residuo != 0
-	double tol_eig;			//Criterio para autovalor baixo
-	double tol_convective;	//Criterio para maximo erro nas coordenadas convectivas
+	double tol_small_1;		//Criterion for number very small - residual != 0
+	double tol_eig;			//Criterion for eigenvalue baixo
+	double tol_convective;	//Criterion for maximum error in the convective coordinates
 	double tol_ascent;
-	int max_it_1;			//Numero maximo de iterações para otimização - phase 1
-	int max_it_2;			//Numero maximo de iterações para otimização - phase 2
+	int max_it_1;			//Maximum number of iterations for optimization - phase 1
+	int max_it_2;			//Maximum number of iterations for optimization - phase 2
 
 	virtual void MountGlobal() = 0;
 	virtual void MountGlobalExplicit() = 0;
@@ -85,10 +85,10 @@ public:
 
 	//Variables for contact evaluation:
 	SSContactData* cd;						//information of the contact between surfaces
-	double* Rc;								//Vetor de esforços internos
-	double** Kc;							//Matriz de rigidez
+	double* Rc;								//Vector of internal forces internal
+	double** Kc;							//Stiffness matrix
 
-	void EvaluateInvertedHessian();			//Calcula a inversa da Hessiana
+	void EvaluateInvertedHessian();			//Calculates the inversa of the Hessian
 	
 	Matrix* I3;
 	Matrix* GammaA;
@@ -115,9 +115,9 @@ public:
 	double*dA_zero;
 	double*dB_zero;
 
-	Matrix* convective_range;	//Matrix que guarda os ranges de coordenadas convectivas validas para as superficies
-	Matrix* convective_max;		//Matrix que guarda os valores maximos de coordenadas convectivas
-	Matrix* convective_min;		//Matrix que guarda os valores minimos de coordenadas convectivas
+	Matrix* convective_range;	//Matrix that stores the ranges of convective coordinates validas for the surfaces
+	Matrix* convective_max;		//Matrix that stores the values maximos of convective coordinates
+	Matrix* convective_min;		//Matrix that stores the values minimos of convective coordinates
 	double minimum_convective_range;
 
 	bool invalid;

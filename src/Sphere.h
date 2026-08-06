@@ -25,26 +25,26 @@ public:
 	void MountFieldLoading();
 	void InertialContributions();
 	void UpdateVariables();
-	void PreCalc();								//Pre-calculo de variaveis que e feito uma unica vez no inicio
+	void PreCalc();								//Pre-calculation of variables that and done a single time in the start
 	void UpdateBoundingVolumes();
-	void SaveLagrange();						//Salva variaveis
+	void SaveLagrange();						//Saves variables
 	void WriteVTK_XMLBase(FILE *f);
 	void WriteVTK_XMLRender(FILE *f);
 
 	
 	double radius;
 	double volume;									//Volume
-	double inertia;									//inercia a rotação
+	double inertia;									//inertia the rotation
 
 	//Rigid body variables
-	double mass;													//Massa
-	double** Jr;													//Tensor de inercia - formato double**
-	double* br;														//Vetor br - formato double*
-	double** DdT;													//Operador tangente
-	double* dT;														//Residuo
-	double** Ddfield;												//Carregamento de campo linearizado
-	double* dfield;													//Residuo carregamento de campo
-	//Variaveis cinematicas
+	double mass;													//Mass
+	double** Jr;													//Tensor of inertia - formato double**
+	double* br;														//Vector br - formato double*
+	double** DdT;													//Operator tangent
+	double* dT;														//Residual
+	double** Ddfield;												//Loading of field linearizado
+	double* dfield;													//Residual loading of field
+	//Variables cinematicas
 	double alphai[3];
 	double ud[3];
 	double alphad[3];

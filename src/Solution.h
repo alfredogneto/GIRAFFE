@@ -17,29 +17,29 @@ public:
 	virtual void Write(FILE *f) = 0;		//Writes output file
 	virtual bool Solve() = 0;				//Solves solution routine
 
-	void SetGlobalDOFs();					//Realiza a numeração dos graus de liberdade globais
-	void DOFsActive();						//Checa e aponta os graus de liberdade ativos e inativos de acordo com os elementos, special constraints e constraints
-	void MountLocal();						//Montagem dos elementos e particulas (informações locais)
-	void MountElementLoads();				//Montagem dos carregamentos de campo em elementos (informações locais)
-	void MountContacts();					//Montagem dos contatos (informações locais)
-	void MountSpecialConstraints();			//Montagem das special constraints (informações locais)
-	void MountGlobal();						//Espalhamento das informações locais nas matrizes/vetores globais
-	void MountDisplacements();				//Inclui info de deslocamentos impostos nas matrizes/vetores globais
-	void MountLoads();						//Inclui info de carregamentos impostos nas matrizes/vetores globais
-	void UpdateDisps();						//Atualiza os deslocamentos nodais e multiplicadores de Lagrange (Newton-Raphson)
-	void Zeros();							//Zera variaveis iterativas para chute inicial nulo
-	void ZerosVelAccel();					//Zera velocidades e acelerações para realização de analise estatica (seguida da dinamica)
-	void Clear();							//Limpa as matrizes globais
-	void SaveConfiguration();				//Salva configuração convergida
-	void RestoreConfiguration();			//Restaura a ultima configuração que convergiu
-	void SetGlobalSize();					//Seta o tamanho da matriz de rigidez global
-	void PinballCheck();					//Varre contatos e verifica pinball
-	void BeginStepCheck();					//checagem inicial de inicio de step para contatos
-	void MountMass();						//Monta matriz de massa e esforcos inerciais
-	void MountDamping(bool update_rayleigh);//Monta matriz de amortecimento
-	void MountDyn();						//Composicao de rigidez e esforcos para analise dinamica (informações locais)
-	void ComputeInitialConditions(bool zero_ICs);		//Computa as condições inciais nodais impostas
-	bool HaveErrors();						//Verifica erros que impedem avança da analise, mesmo em caso de convergência
-	void MountSparse();						//Monta matrizes esparsas
+	void SetGlobalDOFs();					//Performs the numbering of the global degrees of freedom
+	void DOFsActive();						//Checks and points the degrees of freedom active and inativos according to the elements, special constraints and constraints
+	void MountLocal();						//Assembly of the elements and particles (information local)
+	void MountElementLoads();				//Assembly of the loadings of field in elements (information local)
+	void MountContacts();					//Assembly of the contacts (information local)
+	void MountSpecialConstraints();			//Assembly of the special constraints (information local)
+	void MountGlobal();						//Espalhamento of the information local in the matrices/vectors global
+	void MountDisplacements();				//Inclui info of displacements impostos in the matrices/vectors global
+	void MountLoads();						//Inclui info of loadings impostos in the matrices/vectors global
+	void UpdateDisps();						//Updates the displacements nodal and Lagrange multipliers (Newton-Raphson)
+	void Zeros();							//Zeroes variables iterativas for initial guess null
+	void ZerosVelAccel();					//Zeroes velocities and acelerações for performing of analysis estatica (seguida of the dynamics)
+	void Clear();							//Limpa the matrices global
+	void SaveConfiguration();				//Saves configuration converged
+	void RestoreConfiguration();			//Restaura the last configuration that converged
+	void SetGlobalSize();					//Sets the size of the stiffness matrix global
+	void PinballCheck();					//Varre contacts and checks pinball
+	void BeginStepCheck();					//check initial of start of step for contacts
+	void MountMass();						//Assembles mass matrix and internal forces inerciais
+	void MountDamping(bool update_rayleigh);//Assembles damping matrix
+	void MountDyn();						//Composicao of stiffness and internal forces for analysis dynamics (information local)
+	void ComputeInitialConditions(bool zero_ICs);		//Computes the conditions inciais nodal impostas
+	bool HaveErrors();						//Checks errors that impedem avança of the analysis, same in case of convergence
+	void MountSparse();						//Assembles matrices esparsas
 };
 

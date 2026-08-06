@@ -1,18 +1,18 @@
 #include "Node.h"
 
 #include"Database.h"
-//Variaveis globais
+//Global variables
 extern
 Database db;
 
 Node::Node(int e_nGL)
 {
-	nGL = e_nGL;						//Seta o numero de graus de liberdade por nó
-	ref_coordinates = new double[nGL];	//Coordenadas do nó na configuração de referência
-	copy_coordinates = new double[nGL];	//Coordenadas do nó na configuração de cópia (ultima convergida)
+	nGL = e_nGL;						//Sets the number of degrees of freedom by node
+	ref_coordinates = new double[nGL];	//Coordinates of the node in the configuration of reference
+	copy_coordinates = new double[nGL];	//Coordinates of the node in the configuration of copies (last converged)
 	copy_rot_euler = new double[3];
-	displacements = new double[nGL];	//Deslocamentos do nó em relação a ultima cópia de coordenadas
-	vel = new double[nGL];				//Velocidades
+	displacements = new double[nGL];	//Displacements of the node in relação the last copies of coordinates
+	vel = new double[nGL];				//Velocities
 	copy_vel = new double[nGL];		
 	accel = new double[nGL];			//Acelerações
 	copy_accel = new double[nGL];
@@ -21,7 +21,7 @@ Node::Node(int e_nGL)
 	GLs = new int[nGL];
 	active_GL = new int[nGL];
 
-	//Zerando valores iniciais
+	//Zeroing values initial
 	for (int i = 0; i < nGL; i++)
 	{
 		GLs[i] = 0;
@@ -63,9 +63,9 @@ Node::Node(int e_nGL)
 	(*I3)(0, 0) = 1.0;
 	(*I3)(1, 1) = 1.0;
 	(*I3)(2, 2) = 1.0;
-	//Inicialização da matriz Q
+	//Initialization of the matrix Q
 	*Q = *I3;
-	//Inicialização da matriz Q0
+	//Initialization of the matrix Q0
 	*Q0 = *I3;
 
 	alpha_escalar = 0;
@@ -96,7 +96,7 @@ Node::Node(int e_nGL)
 
 void Node::ZeroIC()
 {
-	//Zerando valores iniciais
+	//Zeroing values initial
 	for (int i = 0; i < nGL; i++)
 	{
 		vel[i] = 0;
@@ -153,7 +153,7 @@ bool Node::Read(FILE *f)
 {
 	char s[1000];
 	fscanf(f, "%s", s);
-	//Verifica a palavra chave "Node"
+	//Checks the keyword "Node"
 	if (!strcmp(s, "Node"))
 	{
 		fscanf(f, "%s", s);
@@ -162,7 +162,7 @@ bool Node::Read(FILE *f)
 	else
 		return false;
 
-	//Leitura das coordenadas
+	//Reading of the coordinates
 	fscanf(f, "%s", s);
 	ref_coordinates[0] = atof(s);
 	copy_coordinates[0] = atof(s);
@@ -215,7 +215,7 @@ void Node::WriteResults(FILE *f)
 	copy_rot_euler[1],
 	copy_rot_euler[2]);
 
-	//Acrescentar aqui outros graus de liberdade possiveis
+	//Acrescentar here other degrees of freedom possiveis
 }
 
 void Node::WriteVTK(FILE *f)
@@ -227,16 +227,16 @@ void Node::WriteVTK(FILE *f)
 }
 void Node::WriteMonitor(FILE *f, bool first_record, double time)
 {
-	//Calculo do angulo de rotação
+	//Calculation of the angle of rotation
 	(*rot_rodrigues)(0, 0) = displacements[3];
 	(*rot_rodrigues)(1, 0) = displacements[4];
 	(*rot_rodrigues)(2, 0) = displacements[5];
-	//Esforços
+	//Internal forces
 	for (int j = 0; j < db.number_GLs_node; j++)
 	{
-		if (GLs[j] < 0 && active_GL[j] == 1)	//Se o grau de liberdade for fixo e ativo
+		if (GLs[j] < 0 && active_GL[j] == 1)	//If the degree of freedom for fixed and active
 			(*load)(j, 0) = db.global_P_B(-GLs[j] - 1, 0);
-		if (GLs[j] > 0 && active_GL[j] == 1)	//Se o grau de liberdade for livre e ativo
+		if (GLs[j] > 0 && active_GL[j] == 1)	//If the degree of freedom for free and active
 			(*load)(j, 0) = db.global_I_A(+GLs[j] - 1, 0);
 	}
 	
@@ -253,10 +253,10 @@ void Node::WriteMonitor(FILE *f, bool first_record, double time)
 		
 	if (flag_pseudo_moment)
 	{
-		//Conversão do pseudo-momento para momento (parametros de rotação de Rodrigues)
-		//Calculando o operador Xi
-		*A = skew(*rot_rodrigues);			//Matriz A
-		g = 4.0 / (4.0 + norm(*rot_rodrigues)*norm(*rot_rodrigues));		//função g(alpha) - em algumas ref. tb. chamado de h(alpha)
+		//Conversion of the pseudo-moment for moment (parameters of rotation of Rodrigues)
+		//Calculating the operator Xi
+		*A = skew(*rot_rodrigues);			//Matrix A
+		g = 4.0 / (4.0 + norm(*rot_rodrigues)*norm(*rot_rodrigues));		//function g(alpha) - in some ref. tb. called of h(alpha)
 		*Xi = g * (*I + 0.5*(*A));
 		*Xi_T_inv = invert3x3(transp(*Xi));
 		*moment = (*Xi_T_inv)*(*moment);
@@ -278,28 +278,28 @@ void Node::WriteMonitor(FILE *f, bool first_record, double time)
 	}
 		
 
-	//Cabeçalho
+	//Header
 	if (first_record == true)
 		fprintf(f, "TIME\tX\tY\tZ\tROTX\tROTY\tROTZ\tFX\tFY\tFZ\tMX\tMY\tMZ\tFXloc\tFYloc\tFZloc\tMXloc\tMYloc\tMZloc\tdX\tdY\tdZ\tdROTX\tdROTY\tdROTZ\tddX\tddY\tddZ\tddROTX\tddROTY\tddROTZ\n");
-	//Informações a serem salvas
+	//Information the to be saved
 	fprintf(f, "%.6e\t%.6e\t%.6e\t%.6e\t%.6e\t%.6e\t%.6e\t%.6e\t%.6e\t%.6e\t%.6e\t%.6e\t%.6e\t%.6e\t%.6e\t%.6e\t%.6e\t%.6e\t%.6e\t%.6e\t%.6e\t%.6e\t%.6e\t%.6e\t%.6e\t%.6e\t%.6e\t%.6e\t%.6e\t%.6e\t%.6e\n",
 		time,
-		//Deslocamentos - global, rotações pode ser local ou global
+		//Displacements - global, rotations can be local or global
 		copy_coordinates[0],
 		copy_coordinates[1],
 		copy_coordinates[2],
 		copy_rot_euler[0],
 		copy_rot_euler[1],
 		copy_rot_euler[2],
-		//Forças - global
+		//Forces - global
 		global_force(0, 0),
 		global_force(1, 0),
 		global_force(2, 0),
-		//Momentos - global
+		//Moments - global
 		global_moment(0, 0),
 		global_moment(1, 0),
 		global_moment(2, 0),
-		//Forças e momentos - local
+		//Forces and moments - local
 		(*load)(0, 0),
 		(*load)(1, 0),
 		(*load)(2, 0),
@@ -324,12 +324,12 @@ void Node::WriteMonitor(FILE *f, bool first_record, double time)
 
 void Node::SaveConfiguration()
 {
-	//Atualização de deslocamentos (descrição lagrangiana atualizada - incremental)
+	//Update of displacements (description lagrangiana updated - incremental)
 	copy_coordinates[0] += displacements[0];
 	copy_coordinates[1] += displacements[1];
 	copy_coordinates[2] += displacements[2];
 
-	//Atualização de rotações (descrição lagrangiana atualizada - incremental)
+	//Update of rotations (description lagrangiana updated - incremental)
 	alpha_1(0, 0) = copy_coordinates[3];
 	alpha_1(1, 0) = copy_coordinates[4];
 	alpha_1(2, 0) = copy_coordinates[5];
@@ -337,18 +337,18 @@ void Node::SaveConfiguration()
 	alpha_2(1, 0) = displacements[4];
 	alpha_2(2, 0) = displacements[5];
 
-	//Fórmula de Rodrigues
+	//Fórmula of Rodrigues
 	if (flag_material_description == false)
-		alpha_3 = 4.0 / (4.0 - dot(alpha_2, alpha_1))*(alpha_2 + alpha_1 + 0.5*cross(alpha_2, alpha_1));	//Vetor rotação de Rodrigues - atualização de descrição espacial
+		alpha_3 = 4.0 / (4.0 - dot(alpha_2, alpha_1))*(alpha_2 + alpha_1 + 0.5*cross(alpha_2, alpha_1));	//Vector rotation of Rodrigues - update of description espacial
 	else
-		alpha_3 = 4.0 / (4.0 - dot(alpha_1, alpha_2))*(alpha_1 + alpha_2 + 0.5*cross(alpha_1, alpha_2));	//Vetor rotação de Rodrigues - atualização de descrição material
+		alpha_3 = 4.0 / (4.0 - dot(alpha_1, alpha_2))*(alpha_1 + alpha_2 + 0.5*cross(alpha_1, alpha_2));	//Vector rotation of Rodrigues - update of description material
 			
 	copy_coordinates[3] = alpha_3(0, 0);
 	copy_coordinates[4] = alpha_3(1, 0);
 	copy_coordinates[5] = alpha_3(2, 0);
 	
 
-	////////////////////Salvando rotações de Euler////////////////////
+	////////////////////Saving rotations of Euler////////////////////
 	theta_escalar3 = 2.0*atan(norm(alpha_3) / 2.0);
 	if (norm(alpha_3) != 0.0)
 		theta3 = (theta_escalar3 / norm(alpha_3))*(alpha_3);
@@ -366,13 +366,13 @@ void Node::SaveConfiguration()
 	*Q = *I + g * (*A + 0.5*(*A)*(*A));
 	////////////////////////////////////////////////////////////////////////////////////////
 	
-	//Atualização de outros graus de liberdade (descrição lagrangiana total)
+	//Update of other degrees of freedom (description lagrangiana total)
 	for (int j = 6; j < db.number_GLs_node; j++)
 	{
 		copy_coordinates[j] = displacements[j];
 	}
 
-	//Atualização das velocidades e acelerações
+	//Update of the velocities and acelerações
 	for (int j = 0; j < db.number_GLs_node; j++)
 	{
 		copy_accel[j] = accel[j];
@@ -383,7 +383,7 @@ void Node::SaveConfiguration()
 	*copy_omega = *omega;
 }
 
-Matrix Node::InvXi(Matrix& alpha)
+Matrix Node::InvXi(const Matrix& alpha)
 {
 	double v[50];
 	Matrix invXi(3, 3);

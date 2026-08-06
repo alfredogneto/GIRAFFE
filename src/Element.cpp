@@ -4,7 +4,7 @@
 #include "Node.h"
 
 #include"Database.h"
-//Variaveis globais
+//Global variables
 extern
 Database db;
 
@@ -15,7 +15,7 @@ Element::Element()
 Element::~Element()
 {
 }
-//Calcula a banda gerada na matriz global pelo elemento
+//Calculates the band generated in the matrix global through the element
 void Element::Band(int* band_fixed, int* band_free)
 {
 	temp_band_free = 0;
@@ -28,12 +28,12 @@ void Element::Band(int* band_fixed, int* band_free)
 	free_marked = false;
 	fixed_marked = false;
 
-	//Percorre os nós para identificar graus de liberdade globais e determinar a banda
+	//Iterates over the nodes for identify global degrees of freedom and determine the band
 	for (int i = 0; i < n_nodes; i++)
 	{
 		for (int j = 0; j < db.number_GLs_node; j++)
 		{
-			//se o GL for livre e ativo
+			//if the GL for free and active
 			if (db.nodes[nodes[i] - 1]->constraints[j] == 0 && db.nodes[nodes[i] - 1]->active_GL[j] == 1)
 			{
 				if (db.nodes[nodes[i] - 1]->GLs[j] < lowest_free_global_DOF)
@@ -43,7 +43,7 @@ void Element::Band(int* band_fixed, int* band_free)
 				free_marked = true;
 			}
 
-			//se o GL for fixo e ativo
+			//if the GL for fixed and active
 			if (db.nodes[nodes[i] - 1]->constraints[j] == 1 && db.nodes[nodes[i] - 1]->active_GL[j] == 1)
 			{
 				if (-db.nodes[nodes[i] - 1]->GLs[j] < lowest_fixed_global_DOF)

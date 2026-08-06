@@ -6,7 +6,7 @@ class Hooke :
 public:
 	Hooke();
 	~Hooke();
-	double E, nu;	//Propriedades do material (Hooke)
+	double E, nu;	//Propriedades of the material (Hooke)
 
 	bool Read(FILE *f);
 	void Write(FILE *f);

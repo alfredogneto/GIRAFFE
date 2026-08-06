@@ -22,7 +22,7 @@ public:
 	int n_expressions;
 	std::string* expressions_read;
 
-	bool Read(FILE* f);					//Leitura do MathCode
+	bool Read(FILE* f);					//Reading of the MathCode
 	void Write(FILE *f);				//Writes output file
 };
 

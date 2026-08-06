@@ -7,7 +7,7 @@
 #include "Dynamic.h"
 
 #include"Database.h"
-//Variaveis globais
+//Global variables
 extern
 Database db;
 #define PI 3.1415926535897932384626433832795
@@ -28,12 +28,12 @@ Mass_1::Mass_1()
 	DOFs = new int *[n_nodes];
 	for (int i = 0; i < n_nodes;i++)
 		DOFs[i] = new int[db.number_GLs_node];
-	type_name = new char[20];//Nome do tipo do elemento
+	type_name = new char[20];//Name of the type of the element
 	sprintf(type_name, "Mass_1");
 	VTK_type = 1;
 	VTK_nodes[0] = 0;
 	
-	//Rotina para ativar os GLS de cada nó do elemento
+	//Routine for activate the GLS of each node of the element
 	for (int i = 0; i < n_nodes; i++)
 	{
 		for (int j = 0; j < db.number_GLs_node; j++)
@@ -45,11 +45,11 @@ Mass_1::Mass_1()
 		DOFs[i][2] = 1;
 	}
 
-	//Zerando coeficientes do elemento
+	//Zeroing coefficients of the element
 	m = 0.0;
 	
-	c_mass = Matrix(3, 3);									//Matriz de massa
-	c_loading = Matrix(3, 1);								//Vetor de esforços
+	c_mass = Matrix(3, 3);									//Mass matrix
+	c_loading = Matrix(3, 1);								//Vector of internal forces
 	I3 = Matrix(3, 3);
 	I3(0, 0) = 1.0;
 	I3(1, 1) = 1.0;
@@ -99,7 +99,7 @@ bool Mass_1::Read(FILE *f)
 	return true;
 }
 
-//Checa inconsistências no elemento para evitar erros de execução
+//Checks inconsistencies in the element for avoid errors of execution
 bool Mass_1::Check()
 {
 	for (int i = 0; i < n_nodes; i++)
@@ -114,13 +114,13 @@ void Mass_1::Write(FILE *f)
 {
 	fprintf(f, "Mass_1\t%d\tMass\t%.6e\tNode\t%d\n",number,m,nodes[0]);
 }
-//Escreve arquivo de resultados
+//Writes file of results
 void Mass_1::WriteResults(FILE *f)
 {
 	//DOES NOTHING
 }
 
-//Escreve no monitor do elemento//Escreve no monitor do elemento
+//Writes in the monitor of the element//Writes in the monitor of the element
 void Mass_1::WriteMonitor(FILE *f, bool first_record, double time)
 {
 	//DOES NOTHING
@@ -128,26 +128,26 @@ void Mass_1::WriteMonitor(FILE *f, bool first_record, double time)
 
 void Mass_1::WriteVTK_XMLBase(std::vector<float> *float_vector)
 {
-	//Imprime os resultados do elemento
+	//Prints the results of the element
 	int res_element = 0;
-	//Imprime valores nulos para resultados que não fazem sentido para esse tipo de elemento
+	//Prints values null for results that not fazem sentido for this element type
 	for (int i = res_element; i < db.n_element_results; i++)
 		float_vector->push_back(0.0);
 }
 
 void Mass_1::WriteVTK_XMLRender(FILE *f)
 {
-	//vetores para escrita no formato binario - usando a função 'enconde'
+	//vectors for writing in the formato binary - using the function 'enconde'
 	std::vector<float> float_vector;
 	std::vector<int> int_vector;
 
 	double p0x, p0y, p0z, px, py, pz;
-	//p0x, p0y,p0z - centro da esfera
+	//p0x, p0y,p0z - center of the sphere
 	p0x = db.nodes[nodes[0] - 1]->copy_coordinates[0];
 	p0y = db.nodes[nodes[0] - 1]->copy_coordinates[1];
 	p0z = db.nodes[nodes[0] - 1]->copy_coordinates[2];
 
-	int n = 10;		//discretização da renderização
+	int n = 10;		//discretização of the renderização
 	
 	int sq = n*n;
 	int points = (n + 1)*(n + 1);
@@ -228,9 +228,9 @@ void Mass_1::WriteVTK_XMLRender(FILE *f)
 	fprintf(f, "\t\t\t\t<DataArray Name=\"ElementResults\" type=\"Float32\" NumberOfComponents=\"%d\" format=\"binary\">\n", db.n_element_results);
 	for (int cell = 0; cell < n_cells; cell++)
 	{
-		//Imprime os resultados do elemento
+		//Prints the results of the element
 		int res_element = 0;
-		//Imprime valores nulos para resultados que não fazem sentido para esse tipo de elemento
+		//Prints values null for results that not fazem sentido for this element type
 		for (int i = res_element; i < db.n_element_results; i++)
 			float_vector.push_back(0.0);
 	}
@@ -258,14 +258,14 @@ void Mass_1::WriteVTK_XMLRender(FILE *f)
 	fprintf(f,"</Piece>\n");
 }
 
-//Monta carregamentos associados ao elemento
+//Assembles loadings associated to the element
 void Mass_1::MountElementLoads()
 {
 	zeros(&c_loading);
-	//////////////////Efeito do peso próprio////////////////////////////
+	//////////////////Effect of the weight próprio////////////////////////////
 	if (db.environment != NULL)
 	{
-		//Se existe campo gravitacional
+		//If exists field gravitacional
 		if (db.environment->g_exist == true)
 		{
 			load_multiplier = 1.0;
@@ -278,17 +278,17 @@ void Mass_1::MountElementLoads()
 	}
 }
 
-//Monta elementos
+//Assembles elements
 void Mass_1::Mount()
 {
 	//DOES NOTHING
 }
-//Monta matriz de transformação de coordenadas
+//Assembles transformation matrix of coordinates
 void Mass_1::TransformMatrix()
 {
 	//DOES NOTHING
 }
-//Preenche a contribuição do elemento nas matrizes globais
+//Fills the contribution of the element in the matrices global
 void Mass_1::MountGlobal()
 {
 	int GL_global_1 = 0;
@@ -297,7 +297,7 @@ void Mass_1::MountGlobal()
 	for (int i = 0; i < 3; i++)
 	{
 		GL_global_1 = db.nodes[nodes[0] - 1]->GLs[i];
-		//Caso o grau de liberdade seja livre:
+		//Case the degree of freedom be free:
 		if (GL_global_1 > 0)
 		{
 			anterior = db.global_P_A(GL_global_1 - 1, 0);
@@ -311,30 +311,30 @@ void Mass_1::MountGlobal()
 		for (int j = 0; j < 3; j++)
 		{
 			GL_global_2 = db.nodes[nodes[0] - 1]->GLs[j];
-			//Caso os graus de liberdade sejam ambos livres (Matriz Kaa)
+			//Case the degrees of freedom be both free (Matrix Kaa)
 			if (GL_global_1 > 0 && GL_global_2 > 0)
 				db.global_stiffness_AA.setValue(GL_global_1 - 1, GL_global_2 - 1, c_mass(i, j));
-			//Caso os graus de liberdade sejam ambos fixos (Matriz Kbb)
+			//Case the degrees of freedom be both fixed (Matrix Kbb)
 			if (GL_global_1 < 0 && GL_global_2 < 0)
 				db.global_stiffness_BB.setValue(-GL_global_1 - 1, -GL_global_2 - 1, c_mass(i, j));
-			//Caso os graus de liberdade sejam livre e fixo (Matriz Kab)
+			//Case the degrees of freedom be free and fixed (Matrix Kab)
 			if (GL_global_1 > 0 && GL_global_2 < 0)
 				db.global_stiffness_AB.setValue(GL_global_1 - 1, -GL_global_2 - 1, c_mass(i, j));
-			//Caso os graus de liberdade sejam fixo e livre (Matriz Kba)
+			//Case the degrees of freedom be fixed and free (Matrix Kba)
 			if (GL_global_1 < 0 && GL_global_2 > 0)
 				db.global_stiffness_BA.setValue(-GL_global_1 - 1, GL_global_2 - 1, c_mass(i, j));
 		}
 	}
 }
-//Salva variaveis nos pontos de Gauss uteis para descrição lagrangiana atualizada
+//Saves variables in the gauss points useful for description lagrangiana updated
 void Mass_1::SaveLagrange()
 {
 	//DOES NOTHING
 }
-//Pre-calculo de variaveis que e feito uma unica vez no inicio
+//Pre-calculation of variables that and done a single time in the start
 void Mass_1::PreCalc()
 {
-	//Tenta tomar como referência algum material existente no modelo
+	//Tries take as reference some material existing in the modelo
 	double rhomax = 0.0;
 	for (int i = 0; i < db.number_materials; i++)
 	{
@@ -344,45 +344,45 @@ void Mass_1::PreCalc()
 	if (rhomax != 0.0)
 		r = pow(3 * m / (4 * PI*rhomax), 0.3333333333333333);
 	else
-		r = 0.2*db.EvaluateBoundingBoxDiag() / db.number_nodes;		//r = raio
+		r = 0.2*db.EvaluateBoundingBoxDiag() / db.number_nodes;		//r = radius
 }
 
-//Monta a matriz de massa
+//Assembles the mass matrix
 void Mass_1::MountMass()
 {
 	c_mass = m*I3;
 }
-//Monta a matriz de massa
+//Assembles the mass matrix
 void Mass_1::MountMassModal()
 {
 	c_mass = m*I3;
 }
 
-//Monta a matriz de amortecimento para realização da analise modal
+//Assembles the damping matrix for performing of the analysis modal
 void Mass_1::MountDampingModal()
 {
 	Zeros();
 }
 
-//Monta a matriz de amortecimento
+//Assembles the damping matrix
 void Mass_1::MountDamping(bool update_rayleigh)
 {
 	//DOES NOTHING
 }
 
-//Montagens - Newmark
+//Assemblies - Newmark
 void Mass_1::MountDyn()
 {
 	Matrix accel(3);
 	for (int ind = 0; ind < 3; ind++)
 		accel(ind, 0) = db.nodes[nodes[0] - 1]->accel[ind];
-	//Modificações da dinamica nos esforços - presença das forças de inercia
+	//Modificações of the dynamics in the internal forces - presença of the forces of inertia
 	c_loading = c_loading + c_mass*accel;
-	//Modificações da dinamica na matriz de rigidez:
+	//Modificações of the dynamics in the stiffness matrix:
 	Dynamic* ptr_sol = static_cast<Dynamic*>(db.solution[db.current_solution_number - 1]);
 	c_mass = ptr_sol->a1*c_mass;
 }
-//Zera matrizes locais do elemento
+//Zeroes matrices local of the element
 void Mass_1::Zeros()
 {
 	c_mass.clear();
@@ -391,7 +391,7 @@ void Mass_1::Zeros()
 	strain_energy = 0.0;
 	potential_gravitational_energy = 0.0;
 }
-//Montagens para analise modal - inserção da matriz de massa e amortecimento na matriz de rigidez para posterior montagem global
+//Assemblies for analysis modal - insertion of the mass matrix and damping in the stiffness matrix for subsequent assembly global
 void Mass_1::MountDynModal()
 {
 	//DOES NOTHING

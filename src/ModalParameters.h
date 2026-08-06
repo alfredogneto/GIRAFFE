@@ -9,13 +9,13 @@ public:
 	bool Read(FILE *f);
 	void Write(FILE *f);
 
-	int sample;													//Amostragem para realização do problema de autovalor e salvar matrizes
-	double tolerance;											//Tolerancia para extração de autovalores - Arpack
-	int number_frames;											//Numero de frames para pós-processar os modos (vtk)
-	int number_modes;											//Numero de modos a serem calculados
-	bool export_matrices;										//Exportar ou não as matrizes para calculo externo ao Giraffe
-	bool compute_eigenvectors;									//Salva ou não os autovetores
+	int sample;													//Amostragem for performing of the eigenvalue problem and save matrices
+	double tolerance;											//Tolerance for extração of eigenvalues - Arpack
+	int number_frames;											//Number of frames for pós-processar the modos (vtk)
+	int number_modes;											//Number of modos the to be calculated
+	bool export_matrices;										//Exportar or not the matrices for calculation external to the Giraffe
+	bool compute_eigenvectors;									//Saves or not the eigenvectors
 
-	bool concomitant_modal;										//Flag que indica se deve ou não ser realizada analise modal concomitante a estatica/dinamica
+	bool concomitant_modal;										//Flag that indicates if must or not be realizada analysis modal concomitante the estatica/dynamics
 };
 

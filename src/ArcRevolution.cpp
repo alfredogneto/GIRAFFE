@@ -11,7 +11,7 @@
 #include "Encoding.h"
 
 #include"Database.h"
-//Variaveis globais
+//Global variables
 extern
 Database db;
 
@@ -26,18 +26,18 @@ ArcRevolution::ArcRevolution()
 	Alloc();
 	AllocSpecific();
 
-	//Rotina para ativar os GLS de cada nó
+	//Routine for activate the GLS of each node
 	for (int i = 0; i < n_nodes; i++)
 	{
 		for (int j = 0; j < db.number_GLs_node; j++)
 		{
 			DOFs[i][j] = 0;
 		}
-		//Translação
+		//Translation
 		DOFs[i][0] = 1;
 		DOFs[i][1] = 1;
 		DOFs[i][2] = 1;
-		//Rotação
+		//Rotation
 		DOFs[i][3] = 1;
 		DOFs[i][4] = 1;
 		DOFs[i][5] = 1;
@@ -61,7 +61,7 @@ void ArcRevolution::AllocSpecific()
 	sprintf(type_name, "ArcRevolution");
 	bv_offset = 0.0f;
 
-	//Variaveis para calcular estado atual (nas funcoes de bounding volume)
+	//Variables for calculate state current (in the functions of bounding volume)
 	xAf = new MatrixFloat(3);
 
 	flag_normal_int = false;
@@ -243,7 +243,7 @@ bool ArcRevolution::Check()
 }
 void ArcRevolution::PreCalc()
 {
-	//Atribuindo valores do arco - ponteiros
+	//Atribuindo values of the arc - pointers
 	radius = &db.arcs[arc_ID - 1]->radius;
 	c_point = &db.arcs[arc_ID - 1]->c_point;
 	i_point = &db.arcs[arc_ID - 1]->i_point;
@@ -264,13 +264,13 @@ void ArcRevolution::PreCalc()
 	//if (number == 14)
 	//	int test = 1;
 
-	//Apontando para posição que indica valor dos GLs globais
+	//Pointing for position that indicates value of the GLs global
 	for (int i = 0; i < 6; i++)
 	{
 		GLs[i] = &db.nodes[nodes[0] - 1]->GLs[i];
 	}
 	 
-	//Transformação de coordenadas
+	//Transformation of coordinates
 	Matrix e1g(3);
 	e1g(0, 0) = 1.0;
 	Matrix e2g(3);
@@ -281,7 +281,7 @@ void ArcRevolution::PreCalc()
 	Matrix e2l = *db.CS[cs - 1]->E2;
 	Matrix e3l = *db.CS[cs - 1]->E3;
 
-	//Salva a matriz de transformação de coordenadas (para orientar o plano da ST de acordo com a orientação de referência da superficie)
+	//Saves the transformation matrix of coordinates (for orientar the plane of the ST according to the orientation of reference of the surface)
 	(*Q0)(0, 0) = dot(e1g, e1l);
 	(*Q0)(0, 1) = dot(e1g, e2l);
 	(*Q0)(0, 2) = dot(e1g, e3l);
@@ -325,7 +325,7 @@ void ArcRevolution::PreCalc()
 	if ((*local_half_widths)(1, 0) > (*local_half_widths)(0, 0))
 		max_dimension = (*local_half_widths)(1, 0);
 
-	bv_offset = (1.0f + inc_len_factor) * (max_dimension + largest_gnb);	//offset a ser usado no AABB do BodyGeometry
+	bv_offset = (1.0f + inc_len_factor) * (max_dimension + largest_gnb);	//offset the be used in the AABB of the BodyGeometry
 	ptr_bv->inc_len_factor = inc_len_factor;
 
 	
@@ -351,26 +351,26 @@ void ArcRevolution::UpdateVariables()
 		alpha_A(i, 0) = db.nodes[nodes[0] - 1]->displacements[i + 3];
 	}
 	//Q_AAp
-	double alpha = norm(alpha_A);							//Valor escalar do parametro alpha
-	Matrix A = skew(alpha_A);								//Matriz A
-	double g = 4.0 / (4.0 + alpha * alpha);					//função g(alpha) - em algumas ref. tb. chamado de h(alpha)
-	Matrix Qd = *I3 + g * (A + 0.5*(A*A));					//Tensor de rotação
+	double alpha = norm(alpha_A);							//Value scalar of the parameter alpha
+	Matrix A = skew(alpha_A);								//Matrix A
+	double g = 4.0 / (4.0 + alpha * alpha);					//function g(alpha) - in some ref. tb. called of h(alpha)
+	Matrix Qd = *I3 + g * (A + 0.5*(A*A));					//Tensor of rotation
 	*Q_Ap = Qd * (*db.nodes[nodes[0] - 1]->Q) * (*Q0);
 	//x_Ap
 	*x_Ap = *x_Ai + u_A;
 }
 void ArcRevolution::UpdateBoundingVolumes()
 {
-	//Conversão para single precision
+	//Conversion for single precision
 	*xAf = *x_Ap;
 	*Qf = *Q_Ap;
 	
 	//Updating the bounding volume
 	BoundingBoxAxesOriented* ptr_bv = static_cast<BoundingBoxAxesOriented*>(bv);
-	MatrixFloat local(3);	//centro da caixa no sistema local
+	MatrixFloat local(3);	//center of the caixa in the system local
 	local(1, 0) = 0.5f * (y_min + y_max);
-	*ptr_bv->center = *xAf + (*Qf) * local;	//centro da caixa no sistema global
-	*ptr_bv->halfwidths = (*local_half_widths);	//dimensões da caixa no sistema local
+	*ptr_bv->center = *xAf + (*Qf) * local;	//center of the caixa in the system global
+	*ptr_bv->halfwidths = (*local_half_widths);	//dimensions of the caixa in the system local
 	
 	MatrixFloat e1(3);
 	e1(0, 0) = 1.0f;
@@ -378,7 +378,7 @@ void ArcRevolution::UpdateBoundingVolumes()
 	e2(1, 0) = 1.0f;
 	MatrixFloat e3(3);
 	e3(2, 0) = 1.0f;
-	//Orientação da caixa atual
+	//Orientation of the caixa current
 	*ptr_bv->x_local = (*Qf) * e1;
 	*ptr_bv->y_local = (*Qf) * e2;
 	*ptr_bv->z_local = (*Qf) * e3;
@@ -430,11 +430,11 @@ void ArcRevolution::WriteVTK_XMLRender(FILE *f)
 {
 	if (db.post_files->WriteRigidContactSurfaces_flag == true)
 	{
-		int n_circ1 = 24; //numero de divisões ao longo da revolução
-		int n_circ2 = 24; //numero de divisões ao longo do arco
-		//Numero de pontos a serem gerados
+		int n_circ1 = 24; //number of divisões to the longo of the revolução
+		int n_circ2 = 24; //number of divisões to the longo of the arc
+		//Number of points the to be gerados
 		int n_points = (2 * n_circ1 + 1) * (2 * n_circ2 + 1);
-		//Numero de celulas a serem geradas
+		//Number of celulas the to be geradas
 		int n_cells = n_circ1 * n_circ2;
 		double** points;
 		points = new double*[n_points];
@@ -442,7 +442,7 @@ void ArcRevolution::WriteVTK_XMLRender(FILE *f)
 			points[i] = new double[3];
 		int index = 0;
 		
-		double phi_f = 2 * PI;	//angulo de revolução
+		double phi_f = 2 * PI;	//angle of revolução
 	
 		//
 		double theta_i = db.arcs[arc_ID - 1]->theta_i;
@@ -467,7 +467,7 @@ void ArcRevolution::WriteVTK_XMLRender(FILE *f)
 
 			phi += dphi;
 		}
-		//vetores para escrita no formato binario - usando a função 'enconde'
+		//vectors for writing in the formato binary - using the function 'enconde'
 		std::vector<float> float_vector;
 		std::vector<int> int_vector;
 
@@ -480,18 +480,18 @@ void ArcRevolution::WriteVTK_XMLRender(FILE *f)
 		//Opens DataArray
 		fprintf(f, "\t\t\t\t<DataArray type=\"Float32\" NumberOfComponents=\"3\" format=\"binary\">\n");
 		float_vector.clear();
-		//Preenchendo as coordenadas dos pontos
+		//Filling the coordinates of the points
 		Matrix xO(3);
 		xO(0, 0) = db.nodes[nodes[0] - 1]->copy_coordinates[0];
 		xO(1, 0) = db.nodes[nodes[0] - 1]->copy_coordinates[1];
 		xO(2, 0) = db.nodes[nodes[0] - 1]->copy_coordinates[2];
-		for (int point = 0; point < n_points; point++)//Percorre os nós que descrevem o perimetro da ST
+		for (int point = 0; point < n_points; point++)//Iterates over the nodes that descrevem the perimetro of the ST
 		{
-			//Posição de cada ponto P no plano xy (referência)
+			//Position of each point P in the plane xy (reference)
 			vec_P(0, 0) = points[point][0];
 			vec_P(1, 0) = points[point][1];// -2 * (*c_point)(1, 0);
 			vec_P(2, 0) = points[point][2];
-			vec_P = xO + (*Q_Ai)*vec_P;//Operando rotacionando para o sistema da barra e translação
+			vec_P = xO + (*Q_Ai)*vec_P;//Operando rotacionando for the system of the bar and translation
 
 			float_vector.push_back((float)(vec_P(0, 0)));
 			float_vector.push_back((float)(vec_P(1, 0)));
@@ -510,7 +510,7 @@ void ArcRevolution::WriteVTK_XMLRender(FILE *f)
 		fprintf(f, "\t\t\t<Cells>\n");
 		//Opens DataArray
 		fprintf(f, "\t\t\t\t<DataArray type=\"Int32\" Name=\"connectivity\" format=\"binary\">\n");
-		//Linhas
+		//Rows
 		int nj = (2 * n_circ2 + 1);
 		int_vector.clear();
 		for (int i = 0; i < (2 * n_circ1 - 1); i = i + 2)

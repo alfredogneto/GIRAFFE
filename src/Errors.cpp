@@ -40,7 +40,7 @@
 #include "Spline.h"
 #include "SectionDetails.h"
 #include "Database.h"
-//Variaveis globais
+//Global variables
 extern
 Database db;
 

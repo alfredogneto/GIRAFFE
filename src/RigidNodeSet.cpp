@@ -6,7 +6,7 @@
 #include "Node.h"
 #include "InitialCondition.h"
 #include"Database.h"
-//Variaveis globais
+//Global variables
 extern
 Database db;
 
@@ -71,12 +71,12 @@ RigidNodeSet::~RigidNodeSet()
 	}
 }
 
-//Leitura
+//Reading
 bool RigidNodeSet::Read(FILE *f)
 {
 	char s[1000];
 	fscanf(f, "%s", s);
-	number = atoi(s);	//numero
+	number = atoi(s);	//number
 	fscanf(f, "%s", s);
 	if (!strcmp(s, "PilotNode"))
 	{
@@ -93,7 +93,7 @@ bool RigidNodeSet::Read(FILE *f)
 	}
 	else
 		return false;
-	//Salva a posição (stream)
+	//Saves the position (stream)
 	fpos_t pos;
 	fgetpos(f, &pos);
 	fscanf(f, "%s", s);
@@ -108,7 +108,7 @@ bool RigidNodeSet::Read(FILE *f)
 		flag_rotation = true;
 	}
 
-	//Salva a posição (stream)
+	//Saves the position (stream)
 	fgetpos(f, &pos);
 	fscanf(f, "%s", s);
 	if (!strcmp(s, "BoolTable"))
@@ -122,20 +122,20 @@ bool RigidNodeSet::Read(FILE *f)
 	return true;
 }
 
-//Gravação
+//Recording
 void RigidNodeSet::Write(FILE *f)
 {
 	fprintf(f, "RigidNodeSet\t%d\tPilotNode\t%d\tNodeSet\t%d\tRotationDOF\t%d\t", number, pilot_node, node_set_ID, (bool)flag_rotation);
 	bool_table.Write(f);
 }
 
-//Escreve no monitor do SpecialConstraint
+//Writes in the monitor of the SpecialConstraint
 void RigidNodeSet::WriteMonitor(FILE *f, bool first_record, double time)
 {
-	//Cabeçalho
+	//Header
 	if (first_record == true)
 		fprintf(f, "TIME\tLAGRANGE\n");
-	//Informações a serem salvas
+	//Information the to be saved
 	fprintf(f, "%.6e\t", time);
 	for (int i = 0; i < n_GL; i++)
 	{
@@ -149,10 +149,10 @@ void RigidNodeSet::WriteVTK_XMLRender(FILE *f)
 	if (db.post_files->WriteSpecialConstraints_flag == true)
 	{
 		
-		int i, offsets;			            /*numero de pontos*/
-		int tamanho = n_nodes_set+1;		/*tamanho dos vetores*/
-		int m = tamanho;                    /*numero de vertices*/
-		float *x, *y, *z;					/*pontos*/
+		int i, offsets;			            /*number of points*/
+		int tamanho = n_nodes_set+1;		/*size of the vectors*/
+		int m = tamanho;                    /*number of vertices*/
+		float *x, *y, *z;					/*points*/
 
 		x = new float[tamanho];
 		y = new float[tamanho];
@@ -223,7 +223,7 @@ void RigidNodeSet::WriteVTK_XMLRender(FILE *f)
 	}
 }
 
-//Checa inconsistências no SC para evitar erros de execução
+//Checks inconsistencies in the SC for avoid errors of execution
 bool RigidNodeSet::Check()
 {
 	if (pilot_node > db.number_nodes)
@@ -231,7 +231,7 @@ bool RigidNodeSet::Check()
 	if (node_set_ID > db.number_node_sets)
 		return false;
 
-	//Checagem das condições iniciais
+	//Check of the initial conditions
 	int temp_node1 = 0;
 	int temp_node2 = 0;
 	for (int i = 0; i < db.number_IC; i++)
@@ -250,7 +250,7 @@ bool RigidNodeSet::Check()
 	return true;
 }
 
-//Montagem dos residuos e rigidez tangente
+//Assembly of the residuals and stiffness tangent
 void RigidNodeSet::Mount()
 {
 	Matrix r(3);
@@ -283,8 +283,8 @@ void RigidNodeSet::Mount()
 		
 	for (int ei = 0; ei < n_nodes_set; ei++)
 	{
-		//Nesse vinculo a rigidez tangente não se modifica nunca. e montada no PreCalc()
-		//Se o vinculo estiver ativo, realiza a montagem
+		//In this constraint the stiffness tangent not if modifies never. and montada in the PreCalc()
+		//If the constraint is active, performs the assembly
 		if (active_lambda[ei * 3 + 0 + n_nodes_set * 3] == 1 && active_lambda[ei * 3 + 1 + n_nodes_set * 3] == 1 && active_lambda[ei * 3 + 2 + n_nodes_set * 3] == 1)
 		{
 			for (int i = 0; i < 3; i++)
@@ -318,10 +318,10 @@ void RigidNodeSet::Mount()
 		}
 		if (active_lambda[ei * 3 + 0] == 1 && active_lambda[ei * 3 + 1] == 1 && active_lambda[ei * 3 + 2] == 1)
 		{
-			//Parte 2 - Rotações
+			//Part 2 - Rotations
 			for (int i = 0; i < 3; i++)
 				r(i, 0) = db.nodes[pilot_node - 1]->displacements[i + 3] - db.nodes[db.node_sets[node_set_ID - 1]->node_list[ei] - 1]->displacements[i + 3];
-			//Atualização do vetor de residuos
+			//Update of the vector of residuals
 			(*residual2[ei])(0, 0) = lambda[ei * 3 + 0];
 			(*residual2[ei])(1, 0) = lambda[ei * 3 + 1];
 			(*residual2[ei])(2, 0) = lambda[ei * 3 + 2];
@@ -345,24 +345,24 @@ void RigidNodeSet::Mount()
 	
 }
 
-//Preenche a contribuição do elemento nas matrizes globais
+//Fills the contribution of the element in the matrices global
 void RigidNodeSet::MountGlobal()
 {
-	//Variaveis temporarias para salvar a indexação global dos graus de liberdade a serem setados na matriz de rigidez global
+	//Temporary variables for save the indexing global of the degrees of freedom the to be set in the stiffness matrix global
 	int GL_global_1 = 0;
 	int GL_global_2 = 0;
 	double anterior = 0;
 
-	//Parte 1 - Deslocamentos do NodeSet e rotação do Pilot Node
+	//Part 1 - Displacements of the NodeSet and rotation of the Pilot Node
 	for (int ei = 0; ei < n_nodes_set; ei++)
 	{
-		//Se o vinculo estiver ativo, realiza a montagem
+		//If the constraint is active, performs the assembly
 		if (active_lambda[ei * 3 + 0 + n_nodes_set * 3] == 1 && active_lambda[ei * 3 + 1 + n_nodes_set * 3] == 1 && active_lambda[ei * 3 + 2 + n_nodes_set * 3] == 1)
 		{
 			for (int i = 0; i < 12; i++)
 			{
-				//////////////MONTAGEM DO VETOR DE ESFORÇOS DESBALANCEADOS//////////////////
-				//Toma do vetor de GL globais, a indexação de cada grau de liberdade global
+				//////////////ASSEMBLY OF THE VECTOR OF INTERNAL FORCES UNBALANCED//////////////////
+				//Takes of the global-DOF vector, the indexing of each global degree of freedom
 				if (i < 3)//UA
 					GL_global_1 = db.nodes[pilot_node - 1]->GLs[i];
 				else
@@ -383,7 +383,7 @@ void RigidNodeSet::MountGlobal()
 					}
 				}
 
-				//Caso o grau de liberdade seja livre:
+				//Case the degree of freedom be free:
 				if (GL_global_1 > 0)
 				{
 					anterior = db.global_P_A(GL_global_1 - 1, 0);
@@ -398,8 +398,8 @@ void RigidNodeSet::MountGlobal()
 				}
 				for (int j = 0; j < 12; j++)
 				{
-					//////////////////////MONTAGEM DA MATRIZ DE RIGIDEZ/////////////////////////
-					//Toma do vetor de GL globais, a indexação de cada grau de liberdade global
+					//////////////////////ASSEMBLY OF THE STIFFNESS MATRIX/////////////////////////
+					//Takes of the global-DOF vector, the indexing of each global degree of freedom
 					if (j < 3)//UA
 						GL_global_2 = db.nodes[pilot_node - 1]->GLs[j];
 					else
@@ -420,16 +420,16 @@ void RigidNodeSet::MountGlobal()
 						}
 					}
 
-					//Caso os graus de liberdade sejam ambos livres (Matriz Kaa)
+					//Case the degrees of freedom be both free (Matrix Kaa)
 					if (GL_global_1 > 0 && GL_global_2 > 0)
 						db.global_stiffness_AA.setValue(GL_global_1 - 1, GL_global_2 - 1, (*stiffness1[ei])(i, j));
-					//Caso os graus de liberdade sejam ambos fixos (Matriz Kbb)
+					//Case the degrees of freedom be both fixed (Matrix Kbb)
 					if (GL_global_1 < 0 && GL_global_2 < 0)
 						db.global_stiffness_BB.setValue(-GL_global_1 - 1, -GL_global_2 - 1, (*stiffness1[ei])(i, j));
-					//Caso os graus de liberdade sejam livre e fixo (Matriz Kab)
+					//Case the degrees of freedom be free and fixed (Matrix Kab)
 					if (GL_global_1 > 0 && GL_global_2 < 0)
 						db.global_stiffness_AB.setValue(GL_global_1 - 1, -GL_global_2 - 1, (*stiffness1[ei])(i, j));
-					//Caso os graus de liberdade sejam fixo e livre (Matriz Kba)
+					//Case the degrees of freedom be fixed and free (Matrix Kba)
 					if (GL_global_1 < 0 && GL_global_2 > 0)
 						db.global_stiffness_BA.setValue(-GL_global_1 - 1, GL_global_2 - 1, (*stiffness1[ei])(i, j));
 				}
@@ -437,16 +437,16 @@ void RigidNodeSet::MountGlobal()
 		}
 	}
 
-	//Parte 2 - rotações
+	//Part 2 - rotations
 	for (int ei = 0; ei < n_nodes_set; ei++)
 	{
-		//Se o vinculo estiver ativo, realiza a montagem
+		//If the constraint is active, performs the assembly
 		if (active_lambda[ei * 3 + 0] == 1 && active_lambda[ei * 3 + 1] == 1 && active_lambda[ei * 3 + 2] == 1)
 		{
 			for (int i = 0; i < 9; i++)
 			{
-				//////////////MONTAGEM DO VETOR DE ESFORÇOS DESBALANCEADOS//////////////////
-				//Toma do vetor de GL globais, a indexação de cada grau de liberdade global
+				//////////////ASSEMBLY OF THE VECTOR OF INTERNAL FORCES UNBALANCED//////////////////
+				//Takes of the global-DOF vector, the indexing of each global degree of freedom
 				if (i < 3)//ROTA
 					GL_global_1 = db.nodes[pilot_node - 1]->GLs[i + 3];
 				else
@@ -460,7 +460,7 @@ void RigidNodeSet::MountGlobal()
 					}
 				}
 
-				//Caso o grau de liberdade seja livre:
+				//Case the degree of freedom be free:
 				if (GL_global_1 > 0)
 				{
 					anterior = db.global_P_A(GL_global_1 - 1, 0);
@@ -475,8 +475,8 @@ void RigidNodeSet::MountGlobal()
 				}
 				for (int j = 0; j < 9; j++)
 				{
-					//////////////////////MONTAGEM DA MATRIZ DE RIGIDEZ/////////////////////////
-					//Toma do vetor de GL globais, a indexação de cada grau de liberdade global
+					//////////////////////ASSEMBLY OF THE STIFFNESS MATRIX/////////////////////////
+					//Takes of the global-DOF vector, the indexing of each global degree of freedom
 					if (j < 3)//ROTA
 						GL_global_2 = db.nodes[pilot_node - 1]->GLs[j + 3];
 					else
@@ -490,16 +490,16 @@ void RigidNodeSet::MountGlobal()
 						}
 					}
 
-					//Caso os graus de liberdade sejam ambos livres (Matriz Kaa)
+					//Case the degrees of freedom be both free (Matrix Kaa)
 					if (GL_global_1 > 0 && GL_global_2 > 0)
 						db.global_stiffness_AA.setValue(GL_global_1 - 1, GL_global_2 - 1, (*stiffness2[ei])(i, j));
-					//Caso os graus de liberdade sejam ambos fixos (Matriz Kbb)
+					//Case the degrees of freedom be both fixed (Matrix Kbb)
 					if (GL_global_1 < 0 && GL_global_2 < 0)
 						db.global_stiffness_BB.setValue(-GL_global_1 - 1, -GL_global_2 - 1, (*stiffness2[ei])(i, j));
-					//Caso os graus de liberdade sejam livre e fixo (Matriz Kab)
+					//Case the degrees of freedom be free and fixed (Matrix Kab)
 					if (GL_global_1 > 0 && GL_global_2 < 0)
 						db.global_stiffness_AB.setValue(GL_global_1 - 1, -GL_global_2 - 1, (*stiffness2[ei])(i, j));
-					//Caso os graus de liberdade sejam fixo e livre (Matriz Kba)
+					//Case the degrees of freedom be fixed and free (Matrix Kba)
 					if (GL_global_1 < 0 && GL_global_2 > 0)
 						db.global_stiffness_BA.setValue(-GL_global_1 - 1, GL_global_2 - 1, (*stiffness2[ei])(i, j));
 				}
@@ -508,7 +508,7 @@ void RigidNodeSet::MountGlobal()
 	}
 }
 
-//Pre-calculo de variaveis que e feito uma unica vez no inicio
+//Pre-calculation of variables that and done a single time in the start
 void RigidNodeSet::PreCalc()
 {
 	Alloc();
@@ -541,21 +541,21 @@ void RigidNodeSet::PreCalc()
 
 void RigidNodeSet::ComputeInitialGuessDisplacements()
 {
-	//Se for o step de criação do vinculo inicializa condições iniciais
+	//If for the step of creation of the constraint initializes initial conditions
 	if (bool_table.GetAt(db.current_solution_number - 1) == true)
 	{
-		//Condições iniciais - transferindo as condições iniciais do pilot node para os outros nós do rigid node set
+		//Initial conditions - transferindo the initial conditions of the pilot node for the other nodes of the rigid node set
 		int  temp_node = 0;
 		Matrix omega_pilot(3);
 		Matrix velocity_slave(3);
 		Matrix velocity_pilot(3);
 		
-		//Velocidade - pilot node
+		//Velocity - pilot node
 		velocity_pilot(0, 0) = db.nodes[pilot_node - 1]->displacements[0];
 		velocity_pilot(1, 0) = db.nodes[pilot_node - 1]->displacements[1];
 		velocity_pilot(2, 0) = db.nodes[pilot_node - 1]->displacements[2];
 		
-		//Velocidade angular - pilot node
+		//Velocity angular - pilot node
 		omega_pilot(0, 0) = db.nodes[pilot_node - 1]->displacements[3];
 		omega_pilot(1, 0) = db.nodes[pilot_node - 1]->displacements[4];
 		omega_pilot(2, 0) = db.nodes[pilot_node - 1]->displacements[5];
@@ -565,10 +565,10 @@ void RigidNodeSet::ComputeInitialGuessDisplacements()
 		{
 			temp_node = db.node_sets[node_set_ID - 1]->node_list[ei];
 
-			//Velocidades dos nós do node set
+			//Velocities of the nodes of the node set
 			velocity_slave = velocity_pilot + cross(omega_pilot, *distancei[ei]);
 			
-			//Copiando informações calculadas
+			//Copying information calculated
 			db.nodes[temp_node - 1]->displacements[0] = velocity_slave(0, 0);
 			db.nodes[temp_node - 1]->displacements[1] = velocity_slave(1, 0);
 			db.nodes[temp_node - 1]->displacements[2] = velocity_slave(2, 0);
@@ -580,13 +580,13 @@ void RigidNodeSet::ComputeInitialGuessDisplacements()
 	}
 }
 
-//Computa efeito das condições iniciais nos nós da restrição
+//Computes effect of the initial conditions in the nodes of the constraint
 void RigidNodeSet::ComputeVelAccel()
 {
-	//Se for o step de criação do vinculo inicializa condições iniciais
+	//If for the step of creation of the constraint initializes initial conditions
 	if (bool_table.GetAt(db.current_solution_number - 1) == true)
 	{
-		//Condições iniciais - transferindo as condições iniciais do pilot node para os outros nós do rigid node set
+		//Initial conditions - transferindo the initial conditions of the pilot node for the other nodes of the rigid node set
 		int  temp_node = 0;
 		Matrix omega_pilot(3);
 		Matrix velocity_slave(3);
@@ -596,19 +596,19 @@ void RigidNodeSet::ComputeVelAccel()
 		Matrix omega_acc_pilot(3);
 		Matrix omega_acc_slave(3);
 
-		//Velocidade - pilot node
+		//Velocity - pilot node
 		velocity_pilot(0, 0) = db.nodes[pilot_node - 1]->vel[0];
 		velocity_pilot(1, 0) = db.nodes[pilot_node - 1]->vel[1];
 		velocity_pilot(2, 0) = db.nodes[pilot_node - 1]->vel[2];
-		//Aceleração - pilot node
+		//Acceleration - pilot node
 		acc_pilot(0, 0) = db.nodes[pilot_node - 1]->accel[0];
 		acc_pilot(1, 0) = db.nodes[pilot_node - 1]->accel[1];
 		acc_pilot(2, 0) = db.nodes[pilot_node - 1]->accel[2];
-		//Velocidade angular - pilot node
+		//Velocity angular - pilot node
 		omega_pilot(0, 0) = db.nodes[pilot_node - 1]->vel[3];
 		omega_pilot(1, 0) = db.nodes[pilot_node - 1]->vel[4];
 		omega_pilot(2, 0) = db.nodes[pilot_node - 1]->vel[5];
-		//Aceleração angular - pilot node
+		//Acceleration angular - pilot node
 		omega_acc_pilot(0, 0) = db.nodes[pilot_node - 1]->accel[3];
 		omega_acc_pilot(1, 0) = db.nodes[pilot_node - 1]->accel[4];
 		omega_acc_pilot(2, 0) = db.nodes[pilot_node - 1]->accel[5];
@@ -627,12 +627,12 @@ void RigidNodeSet::ComputeVelAccel()
 				xpB(i, 0) = db.nodes[temp_node - 1]->copy_coordinates[i] + db.nodes[temp_node - 1]->displacements[i];
 			distanceip = xpB - xpA;
 
-			//Velocidades dos nós do node set
+			//Velocities of the nodes of the node set
 			velocity_slave = velocity_pilot + cross(omega_pilot, distanceip);
-			//Aceleração dos nós do node set
+			//Acceleration of the nodes of the node set
 			acc_slave = acc_pilot + cross(omega_acc_pilot, distanceip) + cross(omega_pilot, cross(omega_pilot, distanceip));
 
-			//Copiando informações calculadas
+			//Copying information calculated
 			db.nodes[temp_node - 1]->vel[0] = velocity_slave(0, 0);
 			db.nodes[temp_node - 1]->vel[1] = velocity_slave(1, 0);
 			db.nodes[temp_node - 1]->vel[2] = velocity_slave(2, 0);
@@ -650,7 +650,7 @@ void RigidNodeSet::ComputeVelAccel()
 	}
 }
 
-//Salvando variaveis da configuração convergida
+//Saving variables of the configuration converged
 void RigidNodeSet::SaveLagrange()
 {
 	for (int i = 0; i < n_GL; i++)
@@ -671,14 +671,14 @@ void RigidNodeSet::SaveLagrange()
 	}*/
 }
 
-//Checa quais multiplicadores de lagrange serão ativados,de acordo com a ativação dos GLs dos nós dos quais a special constraint participa
+//Checks which Lagrange multipliers will be ativados,according to the activation of the GLs of the nodes of the which the special constraint participates
 void RigidNodeSet::ActivateDOFs()
 {
-	//Ativa GLs do Pilot Node (tanto os de translação como os de rotação)
+	//Active GLs of the Pilot Node (tanto the of translation as the of rotation)
 	for (int i = 0; i < 6; i++)
 		db.nodes[pilot_node - 1]->active_GL[i] = 1;
 
-	//Ativa GLs dos nós do node set
+	//Active GLs of the nodes of the node set
 	for (int ei = 0; ei < n_nodes_set; ei++)
 	{
 		db.nodes[db.node_sets[node_set_ID - 1]->node_list[ei] - 1]->active_GL[0] = 1;
@@ -695,7 +695,7 @@ void RigidNodeSet::ActivateDOFs()
 
 	if (bool_table.GetAt(db.current_solution_number - 1))
 	{
-		//Ativa GLs dos nós do node set e multiplicadores de Lagrange
+		//Active GLs of the nodes of the node set and Lagrange multipliers
 		for (int ei = 0; ei < n_nodes_set; ei++)
 		{
 			if (flag_rotation)
@@ -712,7 +712,7 @@ void RigidNodeSet::ActivateDOFs()
 	}
 	else
 	{
-		//Desativa GLs dos multiplicadores de Lagrange
+		//Desativa GLs of the Lagrange multipliers
 		for (int ei = 0; ei < n_nodes_set; ei++)
 		{ 
 			if (flag_rotation)
@@ -731,9 +731,9 @@ void RigidNodeSet::ActivateDOFs()
 void RigidNodeSet::Alloc()
 {
 	n_nodes_set = db.node_sets[node_set_ID - 1]->n_nodes;
-	n_GL = n_nodes_set * 3 + n_nodes_set * 3;						//Numero de graus de liberdade - multiplicadores de Lagrange 
-	//n_nodes_set * 3 - lambdas devidos as vinculações de rotações do NodeSet
-	//n_nodes_set * 3 - lambdas devidos as vinculações de deslocamentos do NodeSet
+	n_GL = n_nodes_set * 3 + n_nodes_set * 3;						//Number of degrees of freedom - Lagrange multipliers 
+	//n_nodes_set * 3 - lambdas devidos the vinculações of rotations of the NodeSet
+	//n_nodes_set * 3 - lambdas devidos the vinculações of displacements of the NodeSet
 	active_lambda = new int[n_GL];
 	GLs = new int[n_GL];
 	lambda = new double[n_GL];
@@ -743,8 +743,8 @@ void RigidNodeSet::Alloc()
 	{
 		active_lambda[i] = 0;
 		GLs[i] = 0;
-		//Chute inicial para os lambdas: valores unitarios
-		lambda[i] = 1.0;//Valor não nulo para evitar divergência na primeira iteração
+		//Initial guess for the lambdas: values unitarios
+		lambda[i] = 1.0;//Value not null for avoid divergence in the first iteration
 		copy_lambda[i] = 1.0;
 	}
 

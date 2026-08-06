@@ -1,4 +1,5 @@
 #include "SECylinder.h"
+#include "PlatformCompat.h"
 
 #include "BoundingCylinder.h"
 #include "MatrixFloat.h"
@@ -14,7 +15,7 @@
 //extern
 //FILE *fdebug;
 
-//Variaveis globais
+//Global variables
 extern
 Database db;
 
@@ -28,18 +29,18 @@ SECylinder::SECylinder()
 	Alloc();
 	AllocSpecific();
 
-	//Rotina para ativar os GLS de cada nó
+	//Routine for activate the GLS of each node
 	for (int i = 0; i < n_nodes; i++)
 	{
 		for (int j = 0; j < db.number_GLs_node; j++)
 		{
 			DOFs[i][j] = 0;
 		}
-		//Translação
+		//Translation
 		DOFs[i][0] = 1;
 		DOFs[i][1] = 1;
 		DOFs[i][2] = 1;
-		//Rotação
+		//Rotation
 		DOFs[i][3] = 1;
 		DOFs[i][4] = 1;
 		DOFs[i][5] = 1;
@@ -54,7 +55,7 @@ void SECylinder::AllocSpecific()
 	sprintf(type_name, "SECylinder");
 	bv_offset = 0.0f;
 
-	//Variaveis para calcular estado atual (nas funcoes de bounding volume)
+	//Variables for calculate state current (in the functions of bounding volume)
 	xAf = new MatrixFloat(3);
 	xBf = new MatrixFloat(3);
 
@@ -186,11 +187,11 @@ bool SECylinder::Read(FILE* f)
 	}
 	else
 		return false;
-	//Leitura dos sistemas de coordenadas para criação da superficie
-	//Salva a posição (stream)
+	//Reading of the coordinate systems for creation of the surface
+	//Saves the position (stream)
 	fpos_t pos;
 	fgetpos(f, &pos);
-	//Caso 1 - um unico sistema
+	//Case 1 - a single system
 	fscanf(f, "%s", s);
 	if (!strcmp(s, "CS"))
 	{
@@ -201,7 +202,7 @@ bool SECylinder::Read(FILE* f)
 	else
 	{
 		fsetpos(f, &pos);
-		//Caso 2 - dois sistemas
+		//Case 2 - two systems
 		fscanf(f, "%s", s);
 		if (!strcmp(s, "CSA"))
 		{
@@ -306,7 +307,7 @@ bool SECylinder::Check()
 }
 void SECylinder::PreCalc()
 {
-	//Apontando para posição que indica valor dos GLs globais
+	//Pointing for position that indicates value of the GLs global
 	for (int i = 0; i < 6; i++)
 	{
 		GLs[i] = &db.nodes[nodes[0] - 1]->GLs[i];
@@ -314,7 +315,7 @@ void SECylinder::PreCalc()
 	}
 	*e = 2.0 / *n;	//expoente
 
-	//Transformação de coordenadas
+	//Transformation of coordinates
 	Matrix e1g(3);
 	e1g(0, 0) = 1.0;
 	Matrix e2g(3);
@@ -325,7 +326,7 @@ void SECylinder::PreCalc()
 	Matrix e2l = *db.CS[csA - 1]->E2;
 	Matrix e3l = *db.CS[csA - 1]->E3;
 
-	//Salva a matriz de transformação de coordenadas (para orientar o plano da ST de acordo com a orientação de referência da superficie)
+	//Saves the transformation matrix of coordinates (for orientar the plane of the ST according to the orientation of reference of the surface)
 	(*Q0A)(0, 0) = dot(e1g, e1l);
 	(*Q0A)(0, 1) = dot(e1g, e2l);
 	(*Q0A)(0, 2) = dot(e1g, e3l);
@@ -342,7 +343,7 @@ void SECylinder::PreCalc()
 	e2l = *db.CS[csB - 1]->E2;
 	e3l = *db.CS[csB - 1]->E3;
 
-	//Salva a matriz de transformação de coordenadas (para orientar o plano da ST de acordo com a orientação de referência da superficie)
+	//Saves the transformation matrix of coordinates (for orientar the plane of the ST according to the orientation of reference of the surface)
 	(*Q0B)(0, 0) = dot(e1g, e1l);
 	(*Q0B)(0, 1) = dot(e1g, e2l);
 	(*Q0B)(0, 2) = dot(e1g, e3l);
@@ -372,7 +373,7 @@ void SECylinder::PreCalc()
 		rad = (float)*a;
 	if ((float)*b > rad)
 		rad = (float)*b;
-	bv_offset = (1.0f + inc_len_factor) * (rad + largest_gnb);	//offset a ser usado no BV do BodyGeometry
+	bv_offset = (1.0f + inc_len_factor) * (rad + largest_gnb);	//offset the be used in the BV of the BodyGeometry
 
 	BoundingCylinder* ptr_bv = static_cast<BoundingCylinder*>(bv);
 	
@@ -414,16 +415,16 @@ void SECylinder::UpdateVariables()
 		alpha_B(i, 0) = db.nodes[nodes[1] - 1]->displacements[i + 3];
 	}
 	//Q_AAp
-	double alpha = norm(alpha_A);							//Valor escalar do parametro alpha
-	Matrix A = skew(alpha_A);								//Matriz A
-	double g = 4.0 / (4.0 + alpha * alpha);					//função g(alpha) - em algumas ref. tb. chamado de h(alpha)
-	Matrix Qd = *I3 + g * (A + 0.5*(A*A));					//Tensor de rotação
+	double alpha = norm(alpha_A);							//Value scalar of the parameter alpha
+	Matrix A = skew(alpha_A);								//Matrix A
+	double g = 4.0 / (4.0 + alpha * alpha);					//function g(alpha) - in some ref. tb. called of h(alpha)
+	Matrix Qd = *I3 + g * (A + 0.5*(A*A));					//Tensor of rotation
 	*Q_Ap = Qd * (*db.nodes[nodes[0] - 1]->Q) * (*Q0A);
 	//Q_BAp
-	alpha = norm(alpha_B);									//Valor escalar do parametro alpha
-	A = skew(alpha_B);										//Matriz A
-	g = 4.0 / (4.0 + alpha * alpha);						//função g(alpha) - em algumas ref. tb. chamado de h(alpha)
-	Qd = *I3 + g * (A + 0.5*(A*A));							//Tensor de rotação
+	alpha = norm(alpha_B);									//Value scalar of the parameter alpha
+	A = skew(alpha_B);										//Matrix A
+	g = 4.0 / (4.0 + alpha * alpha);						//function g(alpha) - in some ref. tb. called of h(alpha)
+	Qd = *I3 + g * (A + 0.5*(A*A));							//Tensor of rotation
 	*Q_Bp = Qd * (*db.nodes[nodes[1] - 1]->Q) * (*Q0B);
 	//x_Ap
 	*x_Ap = *x_Ai + u_A;
@@ -433,7 +434,7 @@ void SECylinder::UpdateVariables()
 
 void SECylinder::UpdateBoundingVolumes()
 {
-	//Conversão para single precision
+	//Conversion for single precision
 	*xAf = *x_Ap;
 	*xBf = *x_Bp;
 	
@@ -521,14 +522,14 @@ void SECylinder::WriteVTK_XMLRender(FILE *f)
 			points[index][0] = phi * *a*cos(theta);
 			points[index][1] = phi * *b*sin(theta);
 		}
-		//vetores para escrita no formato binario - usando a função 'enconde'
+		//vectors for writing in the formato binary - using the function 'enconde'
 		std::vector<float> float_vector;
 		std::vector<int> int_vector;
 
 		Matrix vec_P(3);
-		//Numero de pontos a serem gerados
+		//Number of points the to be gerados
 		int n_points = n_circ * 2;
-		//Numero de celulas a serem geradas
+		//Number of celulas the to be geradas
 		int n_cells = n_circ;
 		//Opens Piece
 		fprintf(f, "\t\t<Piece NumberOfPoints=\"%d\" NumberOfCells=\"%d\">\n", n_points, n_cells);
@@ -537,21 +538,21 @@ void SECylinder::WriteVTK_XMLRender(FILE *f)
 		//Opens DataArray
 		fprintf(f, "\t\t\t\t<DataArray type=\"Float32\" NumberOfComponents=\"3\" format=\"binary\">\n");
 		float_vector.clear();
-		//Preenchendo as coordenadas dos pontos
-		for (int i = 0; i < 2; i++)//percorrendo os 2 nós das extremidades
+		//Filling the coordinates of the points
+		for (int i = 0; i < 2; i++)//percorrendo the 2 nodes of the extremidades
 		{
-			for (int point = 0; point < n_circ; point++)//Percorre os nós que descrevem o perimetro da ST
+			for (int point = 0; point < n_circ; point++)//Iterates over the nodes that descrevem the perimetro of the ST
 			{
-				//Posição de cada ponto P no plano xy (referência)
+				//Position of each point P in the plane xy (reference)
 				vec_P(0, 0) = points[point][0];
 				vec_P(1, 0) = points[point][1];
 				vec_P(2, 0) = 0.0;
 				if (i == 0)
-					vec_P = (*Q_Ai)*vec_P;//Operando rotacionando para o sistema da barra
+					vec_P = (*Q_Ai)*vec_P;//Operando rotacionando for the system of the bar
 				else
-					vec_P = (*Q_Bi)*vec_P;//Operando rotacionando para o sistema da barra
+					vec_P = (*Q_Bi)*vec_P;//Operando rotacionando for the system of the bar
 				for (int c = 0; c < 3; c++)
-					vec_P(c, 0) += db.nodes[nodes[i] - 1]->ref_coordinates[c] + db.post_files->mag_factor*(db.nodes[nodes[i] - 1]->copy_coordinates[c] - db.nodes[nodes[i] - 1]->ref_coordinates[c]);//Translação - soma a posição do centro da barra (do ponto em questão)
+					vec_P(c, 0) += db.nodes[nodes[i] - 1]->ref_coordinates[c] + db.post_files->mag_factor*(db.nodes[nodes[i] - 1]->copy_coordinates[c] - db.nodes[nodes[i] - 1]->ref_coordinates[c]);//Translation - sum the position of the center of the bar (of the point in question)
 
 				float_vector.push_back((float)(vec_P(0, 0)));
 				float_vector.push_back((float)(vec_P(1, 0)));

@@ -3,7 +3,7 @@
 #include "Solution.h"
 #include"Database.h"
 
-//Variaveis globais
+//Global variables
 extern
 Database db;
 
@@ -44,7 +44,7 @@ bool BoolTable::Read(FILE *f)
 	return true;
 }
 
-//Atribui valor 1
+//Assigns value 1
 void BoolTable::SetDefault(bool def)
 {
 	data_table.clear();
@@ -108,18 +108,18 @@ double BoolTable::GetLinearFactorAtCurrentTime()
 	return l_factor;
 }
 
-//Seta a tabela de dados booleanos
+//Sets the table of data booleanos
 void BoolTable::SetBoolTable(vector<bool> data)
 {
-	//Limpa atual data_table
+	//Limpa current data_table
 	data_table.clear();
-	//Re-alocação da data_table
+	//Re-allocation of the data_table
 	data_table.resize(data.size());
 	for (int i = 0; i < data.size(); i++)
 		data_table[i] = data[i];
 }
 
-//Operador de Atribuição	
+//Assignment operator	
 BoolTable &BoolTable::operator = (BoolTable const &bool1)
 {
 	data_table.clear();

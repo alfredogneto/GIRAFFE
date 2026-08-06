@@ -1,7 +1,7 @@
 #include "SuperNodeSet.h"
 
 #include"Database.h"
-//Variaveis globais
+//Global variables
 extern
 Database db;
 
@@ -28,7 +28,7 @@ bool SuperNodeSet::Read(FILE *f)
 {
 	char s[1000];
 	fscanf(f, "%s", s);
-	//Verifica a palavra chave "Set"
+	//Checks the keyword "Set"
 	if (!strcmp(s, "SuperNodeSet"))
 	{
 		fscanf(f, "%s", s);
@@ -37,17 +37,17 @@ bool SuperNodeSet::Read(FILE *f)
 	else
 		return false;
 	fscanf(f, "%s", s);
-	//Verifica a palavra chave "SuperNodes"
+	//Checks the keyword "SuperNodes"
 	if (!strcmp(s, "SuperNodes"))
 	{
 		fscanf(f, "%s", s);
 		n_super_nodes = atoi(s);
-		//Alocação do vetor de nós
+		//Allocation of the vector of nodes
 		super_node_list = new int[n_super_nodes];
 	}
 	else
 		return false;
-	//Duas possibilidades de leitura:
+	//Two possibilities of reading:
 	//1 - List
 	//2 - Sequence
 	fscanf(f, "%s", s);
@@ -56,7 +56,7 @@ bool SuperNodeSet::Read(FILE *f)
 		list = true;
 		for (int i = 0; i < n_super_nodes; i++)
 		{
-			fscanf(f, "%s", s);//Leitura do numero do nó
+			fscanf(f, "%s", s);//Reading of the number of the node
 			super_node_list[i] = atoi(s);
 		}
 	}
@@ -81,7 +81,7 @@ bool SuperNodeSet::Read(FILE *f)
 			}
 			else
 				return false;
-			//Geração da lista de nós
+			//Geração of the list of nodes
 			for (int i = 0; i < n_super_nodes; i++)
 			{
 				super_node_list[i] = initial + i * increment;
@@ -90,7 +90,7 @@ bool SuperNodeSet::Read(FILE *f)
 		else
 			return false;
 	}
-	//Se atingiu esse ponto, sinal de leitura correta de tudo: retorna true
+	//If atingiu this point, sign of reading correct of tudo: returns true
 	return true;
 }
 

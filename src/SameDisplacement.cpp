@@ -3,14 +3,14 @@
 #include "Node.h"
 #include "InitialCondition.h"
 #include "Database.h"
-//Variaveis globais
+//Global variables
 extern
 Database db;
 
 SameDisplacement::SameDisplacement()
 {
 	
-	n_GL = 3;						//Três graus de liberdade (esse vinculo possui 3 multiplicadores de lagrange)
+	n_GL = 3;						//Três degrees of freedom (this constraint has 3 Lagrange multipliers)
 	active_lambda = new int[n_GL];
 	lambda = new double[n_GL];
 	copy_lambda = new double[n_GL];
@@ -22,7 +22,7 @@ SameDisplacement::SameDisplacement()
 	{
 		active_lambda[i] = 0;
 		GLs[i] = 0;
-		//Chute inicial para os lambdas: valores nulos
+		//Initial guess for the lambdas: values null
 		lambda[i] = 0.0;
 		copy_lambda[i] = 0.0;
 	}
@@ -34,7 +34,7 @@ SameDisplacement::SameDisplacement()
 	I3(1, 1) = 1.0;
 	I3(2, 2) = 1.0;
 	r = Matrix(3);
-	//Matriz de rigidez tangente e vetor residuo
+	//Stiffness matrix tangent and vector residual
 	stiffness = new Matrix(9,9);
 	residual = new Matrix(9,1);
 
@@ -50,7 +50,7 @@ SameDisplacement::~SameDisplacement()
 	delete residual;
 }
 
-//Leitura
+//Reading
 bool SameDisplacement::Read(FILE *f)
 {
 	char s[1000];
@@ -68,7 +68,7 @@ bool SameDisplacement::Read(FILE *f)
 	}
 	else
 		return false;
-	//Salva a posição (stream)
+	//Saves the position (stream)
 	fpos_t pos;
 	fgetpos(f, &pos);
 	fscanf(f, "%s", s);
@@ -83,7 +83,7 @@ bool SameDisplacement::Read(FILE *f)
 	return true;
 }
 
-//Gravação
+//Recording
 void SameDisplacement::Write(FILE *f)
 {
 	fprintf(f, "SameDisplacement\t%d\tNodes\t%d\t%d\n",
@@ -92,7 +92,7 @@ void SameDisplacement::Write(FILE *f)
 		node_B);
 }
 
-//Escreve no monitor do SpecialConstraint
+//Writes in the monitor of the SpecialConstraint
 void SameDisplacement::WriteMonitor(FILE *f, bool first_record, double time)
 {
 
@@ -103,14 +103,14 @@ void SameDisplacement::WriteVTK_XMLRender(FILE *f)
 
 }
 
-//Checa inconsistências no SC para evitar erros de execução
+//Checks inconsistencies in the SC for avoid errors of execution
 bool SameDisplacement::Check()
 {
 	if (node_A > db.number_nodes)
 		return false;
 	if (node_B > db.number_nodes)
 		return false;
-	//Checagem das condições iniciais
+	//Check of the initial conditions
 	int temp_node = 0;
 	for (int i = 0; i < db.number_IC; i++)
 	{
@@ -123,17 +123,17 @@ bool SameDisplacement::Check()
 	return true;
 }
 
-//Montagem dos residuos e rigidez tangente
+//Assembly of the residuals and stiffness tangent
 void SameDisplacement::Mount()
 {
-	//Nesse vinculo a rigidez tangente não se modifica nunca. e montada no PreCalc()
-	//Se o vinculo estiver ativo, realiza a montagem
+	//In this constraint the stiffness tangent not if modifies never. and montada in the PreCalc()
+	//If the constraint is active, performs the assembly
 	if (active_lambda[0] == 1 && active_lambda[1] == 1 && active_lambda[2] == 1)
 	{
 		for (int i = 0; i < 3; i++)
 			r(i, 0) = db.nodes[node_A - 1]->displacements[i] - db.nodes[node_B - 1]->displacements[i];
 
-		//Atualização do vetor de residuos
+		//Update of the vector of residuals
 		(*residual)(0, 0) = lambda[0];
 		(*residual)(1, 0) = lambda[1];
 		(*residual)(2, 0) = lambda[2];
@@ -148,20 +148,20 @@ void SameDisplacement::Mount()
 	}
 }
 
-//Preenche a contribuição do elemento nas matrizes globais
+//Fills the contribution of the element in the matrices global
 void SameDisplacement::MountGlobal()
 {
-	//Variaveis temporarias para salvar a indexação global dos graus de liberdade a serem setados na matriz de rigidez global
+	//Temporary variables for save the indexing global of the degrees of freedom the to be set in the stiffness matrix global
 	int GL_global_1 = 0;
 	int GL_global_2 = 0;
 	double anterior = 0;
-	//Se o vinculo estiver ativo, realiza a montagem
+	//If the constraint is active, performs the assembly
 	if (active_lambda[0] == 1 && active_lambda[1] == 1 && active_lambda[2] == 1)
 	{
 		for (int i = 0; i < 9; i++)
 		{
-			//////////////MONTAGEM DO VETOR DE ESFORÇOS DESBALANCEADOS//////////////////
-			//Toma do vetor de GL globais, a indexação de cada grau de liberdade global
+			//////////////ASSEMBLY OF THE VECTOR OF INTERNAL FORCES UNBALANCED//////////////////
+			//Takes of the global-DOF vector, the indexing of each global degree of freedom
 			if (i < 3)//uA
 				GL_global_1 = db.nodes[node_A - 1]->GLs[i];
 			else
@@ -175,7 +175,7 @@ void SameDisplacement::MountGlobal()
 				}
 			}
 
-			//Caso o grau de liberdade seja livre:
+			//Case the degree of freedom be free:
 			if (GL_global_1 > 0)
 			{
 				anterior = db.global_P_A(GL_global_1 - 1, 0);
@@ -190,8 +190,8 @@ void SameDisplacement::MountGlobal()
 			}
 			for (int j = 0; j < 9; j++)
 			{
-				//////////////////////MONTAGEM DA MATRIZ DE RIGIDEZ/////////////////////////
-				//Toma do vetor de GL globais, a indexação de cada grau de liberdade global
+				//////////////////////ASSEMBLY OF THE STIFFNESS MATRIX/////////////////////////
+				//Takes of the global-DOF vector, the indexing of each global degree of freedom
 				if (j < 3)//uA
 					GL_global_2 = db.nodes[node_A - 1]->GLs[j];
 				else
@@ -205,16 +205,16 @@ void SameDisplacement::MountGlobal()
 					}
 				}
 
-				//Caso os graus de liberdade sejam ambos livres (Matriz Kaa)
+				//Case the degrees of freedom be both free (Matrix Kaa)
 				if (GL_global_1 > 0 && GL_global_2 > 0)
 					db.global_stiffness_AA.setValue(GL_global_1 - 1, GL_global_2 - 1, (*stiffness)(i, j));
-				//Caso os graus de liberdade sejam ambos fixos (Matriz Kbb)
+				//Case the degrees of freedom be both fixed (Matrix Kbb)
 				if (GL_global_1 < 0 && GL_global_2 < 0)
 					db.global_stiffness_BB.setValue(-GL_global_1 - 1, -GL_global_2 - 1, (*stiffness)(i, j));
-				//Caso os graus de liberdade sejam livre e fixo (Matriz Kab)
+				//Case the degrees of freedom be free and fixed (Matrix Kab)
 				if (GL_global_1 > 0 && GL_global_2 < 0)
 					db.global_stiffness_AB.setValue(GL_global_1 - 1, -GL_global_2 - 1, (*stiffness)(i, j));
-				//Caso os graus de liberdade sejam fixo e livre (Matriz Kba)
+				//Case the degrees of freedom be fixed and free (Matrix Kba)
 				if (GL_global_1 < 0 && GL_global_2 > 0)
 					db.global_stiffness_BA.setValue(-GL_global_1 - 1, GL_global_2 - 1, (*stiffness)(i, j));
 			}
@@ -224,10 +224,10 @@ void SameDisplacement::MountGlobal()
 
 void SameDisplacement::ComputeInitialGuessDisplacements()
 {
-	//Se for o step de criação do vinculo inicializa condições iniciais
+	//If for the step of creation of the constraint initializes initial conditions
 	if (bool_table.GetAt(db.current_solution_number - 1) == true)
 	{
-		//Percorre GL e seta condições iniciais
+		//Iterates over GL and sets initial conditions
 		for (int i = 0; i < 3; i++)
 		{
 			if (active_lambda[i] == 1)
@@ -239,13 +239,13 @@ void SameDisplacement::ComputeInitialGuessDisplacements()
 	}
 }
 
-//Computa efeito das condições iniciais nos nós da restrição
+//Computes effect of the initial conditions in the nodes of the constraint
 void SameDisplacement::ComputeVelAccel()
 {
-	//Se for o step de criação do vinculo inicializa condições iniciais
+	//If for the step of creation of the constraint initializes initial conditions
 	if (bool_table.GetAt(db.current_solution_number - 1))
 	{
-		//Percorre GL e seta condições iniciais
+		//Iterates over GL and sets initial conditions
 		for (int i = 0; i < 3; i++)
 		{
 			if (active_lambda[i] == 1)
@@ -261,7 +261,7 @@ void SameDisplacement::ComputeVelAccel()
 	
 }
 
-//Pre-calculo de variaveis que e feito uma unica vez no inicio
+//Pre-calculation of variables that and done a single time in the start
 void SameDisplacement::PreCalc()
 {
 	for (int i = 0; i < 3; i++)
@@ -276,7 +276,7 @@ void SameDisplacement::PreCalc()
 	}
 }
 
-//Salvando variaveis da configuração convergida
+//Saving variables of the configuration converged
 void SameDisplacement::SaveLagrange()
 {
 	//PrintPtr(lambda, 3);
@@ -284,10 +284,10 @@ void SameDisplacement::SaveLagrange()
 		copy_lambda[i] = lambda[i];
 }
 
-//Checa quais multiplicadores de lagrange serão ativados,de acordo com a ativação dos GLs dos nós dos quais a special constraint participa
+//Checks which Lagrange multipliers will be ativados,according to the activation of the GLs of the nodes of the which the special constraint participates
 void SameDisplacement::ActivateDOFs()
 {
-	//Ativa GLs de translação dos nós A e B
+	//Active GLs of translation of the nodes A and B
 	for (int i = 0; i < 3; i++)
 		db.nodes[node_A - 1]->active_GL[i] = 1;
 	for (int i = 0; i < 3; i++)
@@ -296,7 +296,7 @@ void SameDisplacement::ActivateDOFs()
 	if (bool_table.GetAt(db.current_solution_number - 1))
 	{
 		
-		//Ativa GLs de multiplicadores de Lagrange
+		//Active GLs of Lagrange multipliers
 		active_lambda[0] = 1;
 		active_lambda[1] = 1;
 		active_lambda[2] = 1;

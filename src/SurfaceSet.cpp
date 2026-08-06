@@ -3,7 +3,7 @@
 
 
 #include"Database.h"
-//Variaveis globais
+//Global variables
 extern
 Database db;
 
@@ -30,7 +30,7 @@ bool SurfaceSet::Read(FILE *f)
 {
 	char s[1000];
 	fscanf(f, "%s", s);
-	//Verifica a palavra chave "SurfaceSet"
+	//Checks the keyword "SurfaceSet"
 	if (!strcmp(s, "SurfaceSet"))
 	{
 		fscanf(f, "%s", s);
@@ -39,17 +39,17 @@ bool SurfaceSet::Read(FILE *f)
 	else
 		return false;
 	fscanf(f, "%s", s);
-	//Verifica a palavra chave "Surfaces"
+	//Checks the keyword "Surfaces"
 	if (!strcmp(s, "Surfaces"))
 	{
 		fscanf(f, "%s", s);
 		n_surf = atoi(s);
-		//Alocação do vetor de nós
+		//Allocation of the vector of nodes
 		surf_list = new int[n_surf];
 	}
 	else
 		return false;
-	//Duas possibilidades de leitura:
+	//Two possibilities of reading:
 	//1 - List
 	//2 - Sequence
 	fscanf(f, "%s", s);
@@ -58,7 +58,7 @@ bool SurfaceSet::Read(FILE *f)
 		list = true;
 		for (int i = 0; i < n_surf; i++)
 		{
-			fscanf(f, "%s", s);//Leitura do numero do nó
+			fscanf(f, "%s", s);//Reading of the number of the node
 			surf_list[i] = atoi(s);
 		}
 	}
@@ -83,7 +83,7 @@ bool SurfaceSet::Read(FILE *f)
 			}
 			else
 				return false;
-			//Geração da lista de nós
+			//Geração of the list of nodes
 			for (int i = 0; i < n_surf; i++)
 			{
 				surf_list[i] = initial + i*increment;
@@ -92,7 +92,7 @@ bool SurfaceSet::Read(FILE *f)
 		else
 			return false;
 	}
-	//Se atingiu esse ponto, sinal de leitura correta de tudo: retorna true
+	//If atingiu this point, sign of reading correct of tudo: returns true
 	return true;
 }
 

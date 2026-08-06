@@ -11,14 +11,14 @@
 #include "SPContactData.h"
 #include "Matrix.h"
 #include"Database.h"
-//Variaveis globais
+//Global variables
 extern
 Database db;
 #define PI 3.1415926535897932384626433832795
 
 SPSP::SPSP()
 {
-	type_name = new char[20];		//Nome do tipo do contato
+	type_name = new char[20];		//Name of the type of the contact
 	sprintf(type_name, "SPSP");
 	number = 0;
 	n_SP1 = 0;
@@ -34,7 +34,7 @@ SPSP::SPSP()
 	number_pointwise_interactions = 1;
 	write_report = false;
 
-	//Abaixo as variaveis que dependem do numero de elementos para serem alocadas - Alocação feita na função Alloc, quando chamada durante o PreCalc
+	//Below the variables that dependem of the number of elements for to be allocated - Allocation done in the function Alloc, when called durante the PreCalc
 	typeOK1 = NULL;
 	typeOK2 = NULL;
 	activate = NULL;
@@ -81,14 +81,14 @@ void SPSP::Alloc()
 		{
 			cd[i][j] = new SPContactData();
 			cd[i][j]->n_solutions = number_pointwise_interactions;
-			//Alocação de cada um dos cd[i][j] sera feita de acordo com a proximidade de contato - função Pinball
+			//Allocation of each a of the cd[i][j] will be done according to the proximidade of contact - function Pinball
 		}
 	}
 
 	DOFs_surfaces1 = new int[number_surfaces1];
 	DOFs_surfaces2 = new int[number_surfaces2];
 
-	//Alocação parcial de matrizes
+	//Allocation partial of matrices
 	i_loading = new Matrix * **[number_surfaces1];
 	for (int i = 0; i < number_surfaces1; i++)
 	{
@@ -105,14 +105,14 @@ void SPSP::Alloc()
 			contact_stiffness[i][j] = new double** [number_pointwise_interactions];
 	}
 
-	//Atribuição de valores iniciais
+	//Assignment of values initial
 	for (int i = 0; i < number_surfaces1; i++)
 	{
 		for (int j = 0; j < number_surfaces2; j++)
 		{
 			activate[i][j] = false;
 			for (int k = 0; k < number_pointwise_interactions; k++)
-				alloc_control[i][j][k] = false;	//Não ha alocação no inicio
+				alloc_control[i][j][k] = false;	//Not there is allocation in the start
 		}
 	}
 	for (int j = 0; j < number_surfaces1; j++)
@@ -129,7 +129,7 @@ void SPSP::Alloc()
 			surf_pair[i][j] = NULL;
 	}
 
-	//Alocação de matrizes
+	//Allocation of matrices
 	fn = new Matrix * **[number_surfaces1];
 	ft = new Matrix * **[number_surfaces1];
 
@@ -155,10 +155,10 @@ void SPSP::Alloc()
 
 }
 
-//Alocação especifica para o contato surface1_index, surface2_index
+//Allocation specifies for the contact surface1_index, surface2_index
 void SPSP::AllocSpecific(int surface1_index, int surface2_index, int sol_index)
 {
-	//Caso não esteja ainda alocado, realiza a alocação
+	//Case not esteja still allocated, performs the allocation
 	if (alloc_control[surface1_index][surface2_index][sol_index] == false)
 	{
 		i_loading[surface1_index][surface2_index][sol_index] = new Matrix(DOFs_surfaces1[surface1_index] + DOFs_surfaces2[surface2_index]);
@@ -173,10 +173,10 @@ void SPSP::AllocSpecific(int surface1_index, int surface2_index, int sol_index)
 	}
 }
 
-//Liberação especifica para o surface1_index, surface2_index
+//Liberação specifies for the surface1_index, surface2_index
 void SPSP::FreeSpecific(int surface1_index, int surface2_index, int sol_index)
 {
-	//Caso esteja alocado, realiza a desalocação
+	//Case esteja allocated, performs the desalocação
 	if (alloc_control[surface1_index][surface2_index][sol_index] == true)
 	{
 		delete i_loading[surface1_index][surface2_index][sol_index];
@@ -199,7 +199,7 @@ void SPSP::EvaluateNormalGap(int surf1_index, int surf2_index, int sol_index)
 	for (int co = 0; co < 2; co++)
 		temp_conv(co, 0) = cd[surf1_index][surf2_index]->convective[sol_index][co];
 
-	//Calculo da função gap (escalar)
+	//Calculation of the function gap (scalar)
 	Matrix GammaA(3);
 	Matrix GammaB(3);
 	double* ra;
@@ -212,12 +212,12 @@ void SPSP::EvaluateNormalGap(int surf1_index, int surf2_index, int sol_index)
 	//Copies to surface data
 	*cd[surf1_index][surf2_index]->surf1->G_p[sol_index] = GammaA;
 	*cd[surf1_index][surf2_index]->surf2->G_p[sol_index] = GammaB;
-	//Gap vetorial
+	//Gap cross
 	*cd[surf1_index][surf2_index]->g[sol_index] = GammaA - GammaB;
 
-	//Normal do contato
+	//Normal of the contact
 	*cd[surf1_index][surf2_index]->n[sol_index] = -(1.0 / norm(*cd[surf1_index][surf2_index]->g[sol_index])) * (*cd[surf1_index][surf2_index]->g[sol_index]);
-	//Gap escalar
+	//Gap scalar
 	cd[surf1_index][surf2_index]->g_n[sol_index] = (norm(*cd[surf1_index][surf2_index]->g[sol_index]) - (*ra + *rb));
 
 }
@@ -335,7 +335,7 @@ SPSP::~SPSP()
 
 void SPSP::WriteVTK_XMLRender(FILE* f)
 {
-	////Plota superficies
+	////Plots surfaces
 	//int temp_surf1 = 0;
 	//for (int j = 0; j < number_surfaces1; j++)
 	//{
@@ -353,13 +353,13 @@ void SPSP::WriteVTK_XMLRender(FILE* f)
 
 void SPSP::WriteVTK_XMLForces(FILE* f)
 {
-	//Plotagem de forças de contato
+	//Plotting of contact forces
 	if (db.post_files->WriteContactForces_flag == true)
 	{
-		//vetores para escrita no formato binario - usando a função 'enconde'
+		//vectors for writing in the formato binary - using the function 'enconde'
 		std::vector<float> float_vector;
 		std::vector<int> int_vector;
-		//Verificação dos pontos a serem plotados
+		//Check of the points the to be plotados
 		int count = 0;
 		for (int surf1_index = 0; surf1_index < number_surfaces1; surf1_index++)
 			for (int surf2_index = 0; surf2_index < number_surfaces2; surf2_index++)
@@ -373,7 +373,7 @@ void SPSP::WriteVTK_XMLForces(FILE* f)
 		//Opens DataArray
 		fprintf(f, "\t\t\t\t<DataArray type=\"Float32\" NumberOfComponents=\"3\" format=\"binary\">\n");
 		float_vector.clear();
-		//Preenchendo as coordenadas dos pontos
+		//Filling the coordinates of the points
 		for (int surf1_index = 0; surf1_index < number_surfaces1; surf1_index++)
 			for (int surf2_index = 0; surf2_index < number_surfaces2; surf2_index++)
 				for (int sol_index = 0; sol_index < number_pointwise_interactions; sol_index++)
@@ -500,7 +500,7 @@ bool SPSP::Read(FILE* f)
 	else
 		return false;
 
-	//Salva a posição (stream)
+	//Saves the position (stream)
 	fpos_t pos;
 	fgetpos(f, &pos);
 	fscanf(f, "%s", s);
@@ -540,7 +540,7 @@ bool SPSP::Read(FILE* f)
 	else
 		return false;
 
-	//Salva a posição (stream)
+	//Saves the position (stream)
 	fgetpos(f, &pos);
 	fscanf(f, "%s", s);
 	if (!strcmp(s, "EPNN"))
@@ -587,7 +587,7 @@ bool SPSP::Read(FILE* f)
 	else
 		return false;
 
-	//Salva a posição (stream)
+	//Saves the position (stream)
 	fgetpos(f, &pos);
 	fscanf(f, "%s", s);
 	if (!strcmp(s, "MaxPointwiseInt"))
@@ -601,7 +601,7 @@ bool SPSP::Read(FILE* f)
 		number_pointwise_interactions = 1;
 	}
 
-	//Salva a posição (stream)
+	//Saves the position (stream)
 	fgetpos(f, &pos);
 	fscanf(f, "%s", s);
 	if (!strcmp(s, "BoolTable"))
@@ -612,7 +612,7 @@ bool SPSP::Read(FILE* f)
 		bool_table.SetDefault(true);
 	}
 
-	//Salva a posição (stream)
+	//Saves the position (stream)
 	fgetpos(f, &pos);
 	fscanf(f, "%s", s);
 	if (!strcmp(s, "SpecialLCP"))
@@ -623,7 +623,7 @@ bool SPSP::Read(FILE* f)
 		specialLCP = false;
 	}
 
-	//Salva a posição (stream)
+	//Saves the position (stream)
 	fgetpos(f, &pos);
 	fscanf(f, "%s", s);
 	if (!strcmp(s, "WriteReport"))
@@ -634,7 +634,7 @@ bool SPSP::Read(FILE* f)
 		write_report = false;
 	}
 
-	//Salva a posição (stream)
+	//Saves the position (stream)
 	fgetpos(f, &pos);
 	fscanf(f, "%s", s);
 	if (!strcmp(s, "WriteReportDiverged"))
@@ -655,7 +655,7 @@ void SPSP::Write(FILE* f)
 	bool_table.Write(f);
 }
 
-//Checa inconsistências no elemento para evitar erros de execução
+//Checks inconsistencies in the element for avoid errors of execution
 bool SPSP::Check()
 {
 	if (n_SP1 > db.number_splines || n_SP2 > db.number_splines)
@@ -671,13 +671,13 @@ bool SPSP::Check()
 	return true;
 }
 
-//Escreve arquivo de resultados
+//Writes file of results
 void SPSP::WriteResults(FILE* f)
 {
-	//TODO
+	//ALL
 }
 
-//Escreve no monitor do contato
+//Writes in the monitor of the contact
 void SPSP::WriteMonitor(FILE* f, bool first_record, double time)
 {
 	if (db.monitor->contact_special_output)
@@ -707,7 +707,7 @@ void SPSP::WriteMonitor(FILE* f, bool first_record, double time)
 	}
 	else
 	{
-		//Cabeçalho
+		//Header
 		if (first_record == true)
 		{
 			fprintf(f, "\t");
@@ -791,29 +791,29 @@ void SPSP::Mount()
 			int const tempsurf2 = db.splines[n_SP2 - 1]->sp_elements_list[surf2_index];
 			if (activate[surf1_index][surf2_index] == true && surf_pair[surf1_index][surf2_index] != NULL)
 			{
-				//Solução do problema de minima distancia
+				//Solution of the problem of minimum distance
 				surf_pair[surf1_index][surf2_index]->SolveLCP(cd[surf1_index][surf2_index]);
-				//Varredura nos possiveis pontos de interação pointwise
+				//Sweep in the possiveis points of interação pointwise
 				for (int sol_index = 0; sol_index < number_pointwise_interactions; sol_index++)
 				{
-					//Se não for uma raiz repetida (ja computada anteriormente)
+					//If not for a raiz repetida (already computada anteriormente)
 					if (cd[surf1_index][surf2_index]->repeated[sol_index] == false)
 					{
 						if (cd[surf1_index][surf2_index]->return_value[sol_index] == 0 || cd[surf1_index][surf2_index]->return_value[sol_index] == 4)
 							EvaluateNormalGap(surf1_index, surf2_index, sol_index);
 						else
-							cd[surf1_index][surf2_index]->g_n[sol_index] = 1.0;	//valor para indicar que não ha contato
+							cd[surf1_index][surf2_index]->g_n[sol_index] = 1.0;	//value for indicate that not there is contact
 						//if (cd[surf1_index][surf2_index]->return_value[sol_index] == 0)
 						//	ReportContact(surf1_index, surf2_index, sol_index);
-						//Se houver penetração e o range de coordenadas convectivas for valido monta a contribuição do contato na forma fraca e operador tangente
+						//If there is penetração and the range of convective coordinates for valid assembles the contribution of the contact in the way fraca and operator tangent
 						if (cd[surf1_index][surf2_index]->g_n[sol_index] < -pen_tol && (cd[surf1_index][surf2_index]->return_value[sol_index] == 0 || cd[surf1_index][surf2_index]->return_value[sol_index] == 4))
 						{
-							//Aloca espaço para salvar a matriz de rigidez e vetor de esforços
+							//Allocates espaço for save the stiffness matrix and vector of internal forces
 							AllocSpecific(surf1_index, surf2_index, sol_index);
 							bool previouscontact = false;
 							if (cd[surf1_index][surf2_index]->copy_g_n[sol_index] < -pen_tol)
 								previouscontact = true;
-							//Avalia contribuições de contato
+							//Evaluates contributions of contact
 							surf_pair[surf1_index][surf2_index]->ContactSS(&cd[surf1_index][surf2_index]->copy_stick[sol_index], &cd[surf1_index][surf2_index]->stick[sol_index], &previouscontact,
 								i_loading[surf1_index][surf2_index][sol_index]->getMatrix(), contact_stiffness[surf1_index][surf2_index][sol_index],
 								cd[surf1_index][surf2_index]->invHessian[sol_index], cd[surf1_index][surf2_index]->convective[sol_index],
@@ -831,32 +831,32 @@ void SPSP::Mount()
 	}
 }
 
-//Montagens - Newmark
+//Assemblies - Newmark
 void SPSP::MountDyn()
 {
 	//NOT USED (dynamic effects added inside the function Mount())
 }
-//Preenche a contribuição do contato nas matrizes globais
+//Fills the contribution of the contact in the matrices global
 void SPSP::MountGlobal()
 {
-	//Variaveis temporarias para salvar a indexação global dos graus de liberdade a serem setados na matriz de rigidez global
+	//Temporary variables for save the indexing global of the degrees of freedom the to be set in the stiffness matrix global
 	int GL_global_1 = 0;
 	int GL_global_2 = 0;
 	double anterior = 0;
 	int tempsurf1, tempsurf2;
 	for (int surf1_index = 0; surf1_index < number_surfaces1; surf1_index++)
 	{
-		//Superficie 1
+		//Surface 1
 		tempsurf1 = db.splines[n_SP1 - 1]->sp_elements_list[surf1_index];
 		for (int surf2_index = 0; surf2_index < number_surfaces2; surf2_index++)
 		{
 			if (activate[surf1_index][surf2_index] == true && surf_pair[surf1_index][surf2_index] != NULL)
 			{
-				//Superficie 2
+				//Surface 2
 				tempsurf2 = db.splines[n_SP2 - 1]->sp_elements_list[surf2_index];
 				for (int sol_index = 0; sol_index < number_pointwise_interactions; sol_index++)
 				{
-					//Se não for uma raiz repetida (ja computada anteriormente)
+					//If not for a raiz repetida (already computada anteriormente)
 					if (cd[surf1_index][surf2_index]->repeated[sol_index] == false)
 					{
 						//if (cd[surf1_index][surf2_index]->return_value[sol_index] == 0 || cd[surf1_index][surf2_index]->return_value[sol_index] == 4)
@@ -869,12 +869,12 @@ void SPSP::MountGlobal()
 							for (int i = 0; i < (DOFs_surfaces1[surf1_index] + DOFs_surfaces2[surf2_index]); i++)
 							{
 								if (i < DOFs_surfaces1[surf1_index]) {
-									//GL_global_1 = *db.surfaces[tempsurf1 - 1]->GLs[i];									//GLs da superficie 1
-									GL_global_1 = *db.splines[n_SP1 - 1]->sp_element[tempsurf1]->GLs[i];				//GLs da superficie 1
+									//GL_global_1 = *db.surfaces[tempsurf1 - 1]->GLs[i];									//GLs of the surface 1
+									GL_global_1 = *db.splines[n_SP1 - 1]->sp_element[tempsurf1]->GLs[i];				//GLs of the surface 1
 								}
 								else
-									GL_global_1 = *db.splines[n_SP2 - 1]->sp_element[tempsurf2]->GLs[i - DOFs_surfaces1[surf1_index]];		//GLs da superficie 2
-								//Caso o grau de liberdade seja livre:
+									GL_global_1 = *db.splines[n_SP2 - 1]->sp_element[tempsurf2]->GLs[i - DOFs_surfaces1[surf1_index]];		//GLs of the surface 2
+								//Case the degree of freedom be free:
 								if (GL_global_1 > 0)
 								{
 									anterior = db.global_P_A(GL_global_1 - 1, 0);
@@ -884,7 +884,7 @@ void SPSP::MountGlobal()
 								}
 								else
 								{
-									if (GL_global_1 != 0)//se o GL e ativo
+									if (GL_global_1 != 0)//if the GL and active
 									{
 										anterior = db.global_P_B(-GL_global_1 - 1, 0);
 										db.global_P_B(-GL_global_1 - 1, 0) = anterior + (*i_loading[surf1_index][surf2_index][sol_index])(i, 0);
@@ -894,20 +894,20 @@ void SPSP::MountGlobal()
 								for (int j = 0; j < (DOFs_surfaces1[surf1_index] + DOFs_surfaces2[surf2_index]); j++)
 								{
 									if (j < DOFs_surfaces1[surf1_index])
-										GL_global_2 = *db.splines[n_SP1 - 1]->sp_element[tempsurf1]->GLs[j];									//GLs da superficie 1
+										GL_global_2 = *db.splines[n_SP1 - 1]->sp_element[tempsurf1]->GLs[j];									//GLs of the surface 1
 									else
-										GL_global_2 = *db.splines[n_SP2 - 1]->sp_element[tempsurf2]->GLs[j - DOFs_surfaces1[surf1_index]];		//GLs da superficie 2
+										GL_global_2 = *db.splines[n_SP2 - 1]->sp_element[tempsurf2]->GLs[j - DOFs_surfaces1[surf1_index]];		//GLs of the surface 2
 
-									//Caso os graus de liberdade sejam ambos livres (Matriz Kaa)
+									//Case the degrees of freedom be both free (Matrix Kaa)
 									if (GL_global_1 > 0 && GL_global_2 > 0)
 										db.global_stiffness_AA.setValue(GL_global_1 - 1, GL_global_2 - 1, contact_stiffness[surf1_index][surf2_index][sol_index][i][j]);
-									//Caso os graus de liberdade sejam ambos fixos (Matriz Kbb)
+									//Case the degrees of freedom be both fixed (Matrix Kbb)
 									if (GL_global_1 < 0 && GL_global_2 < 0)
 										db.global_stiffness_BB.setValue(-GL_global_1 - 1, -GL_global_2 - 1, contact_stiffness[surf1_index][surf2_index][sol_index][i][j]);
-									//Caso os graus de liberdade sejam livre e fixo (Matriz Kab)
+									//Case the degrees of freedom be free and fixed (Matrix Kab)
 									if (GL_global_1 > 0 && GL_global_2 < 0)
 										db.global_stiffness_AB.setValue(GL_global_1 - 1, -GL_global_2 - 1, contact_stiffness[surf1_index][surf2_index][sol_index][i][j]);
-									//Caso os graus de liberdade sejam fixo e livre (Matriz Kba)
+									//Case the degrees of freedom be fixed and free (Matrix Kba)
 									if (GL_global_1 < 0 && GL_global_2 > 0)
 										db.global_stiffness_BA.setValue(-GL_global_1 - 1, GL_global_2 - 1, contact_stiffness[surf1_index][surf2_index][sol_index][i][j]);
 								}
@@ -920,22 +920,22 @@ void SPSP::MountGlobal()
 	}
 }
 
-//Calcula a banda na matriz global devido a esse contato
+//Calculates the band in the matrix global due the this contact
 void SPSP::Band(int* band_fixed, int* band_free)
 {
 	//NOT IMPLEMENTED
 }
 
-//Pre-calculo de variaveis que e feito uma unica vez no inicio
+//Pre-calculation of variables that and done a single time in the start
 void SPSP::PreCalc()
 {
 	number_surfaces1 = db.splines[n_SP1 - 1]->size_sp_elements;
 	number_surfaces2 = db.splines[n_SP2 - 1]->size_sp_elements;
 	int temp_surf = 0;
 
-	//Neste ponto ja foi chamado o PreCalc() das Surfaces. Com isso ja ha informação de degeneração calculada em cada uma delas.
+	//In this point already was called the PreCalc() of the Surfaces. With this already there is information of degeneration calculated in each a delas.
 
-	//Setando os numero de interações pontuais por par de superficie - de acordo com o numero de degenerações presentes
+	//Setting the number of interações pontuais by pair of surface - according to the number of degenerations presentes
 	//int n1, n2;
 	//for (int i = 0; i < number_surfaces1; i++)
 	//{
@@ -951,7 +951,7 @@ void SPSP::PreCalc()
 
 	number_pointwise_interactions = 1;
 
-	Alloc();	//Alocação dinamica
+	Alloc();	//Allocation dynamics
 
 	for (int j = 0; j < number_surfaces1; j++)
 	{
@@ -963,17 +963,17 @@ void SPSP::PreCalc()
 		//temp_surf = db.splines[n_SP2 - 1]->sp_elements_list[j];
 		DOFs_surfaces2[j] = db.splines[n_SP2 - 1]->sp_element[j]->nDOFs;;
 	}
-	//Atribui e aloca pares de superficies
+	//Assigns and allocates pairs of surfaces
 	SetPairs();
 }
 
-//checagem inicial do contato  - inicio de cada incremento
+//check initial of the contact  - start of each increment
 void SPSP::BeginStepCheck()
 {
 	for (int surf1_index = 0; surf1_index < number_surfaces1; surf1_index++)
 		for (int surf2_index = 0; surf2_index < number_surfaces2; surf2_index++)
 		{
-			//Se o contato for ativo - realiza estudo de degeneração do inicio do step
+			//If the contact for active - performs estudo of degeneration of the start of the step
 			if (activate[surf1_index][surf2_index] == true)
 				surf_pair[surf1_index][surf2_index]->BeginStepCheck(cd[surf1_index][surf2_index]);
 		}
@@ -1008,15 +1008,15 @@ void SPSP::PinballCheck()
 				if (dist_cc_square <= rrpinball_square)
 				{
 					activate[surf1_index][surf2_index] = true;					//Near to contact
-					cd[surf1_index][surf2_index]->Alloc();						//Aloca - caso não haja pre-alocação, atribui valores iniciais a todas as variaveis
+					cd[surf1_index][surf2_index]->Alloc();						//Allocates - case not haja pre-allocation, assigns values initial the all the variables
 					surf_pair[surf1_index][surf2_index]->Alloc(cd[surf1_index][surf2_index]);
 				}
 				else
 				{
 					activate[surf1_index][surf2_index] = false;					//Far to contact
 					for (int sol_index = 0; sol_index < number_pointwise_interactions; sol_index++)
-						FreeSpecific(surf1_index, surf2_index, sol_index);		//Libera memória RAM
-					cd[surf1_index][surf2_index]->Free();						//Desaloca
+						FreeSpecific(surf1_index, surf2_index, sol_index);		//Frees memory RAM
+					cd[surf1_index][surf2_index]->Free();						//Deallocates
 					surf_pair[surf1_index][surf2_index]->Free();
 				}
 
@@ -1025,7 +1025,7 @@ void SPSP::PinballCheck()
 		}
 	}
 }
-//Salva variaveis para descrição lagrangiana atualizada
+//Saves variables for description lagrangiana updated
 void SPSP::SaveLagrange()
 {
 	for (int surf1_index = 0; surf1_index < number_surfaces1; surf1_index++)
@@ -1036,10 +1036,10 @@ void SPSP::SaveLagrange()
 			{
 				for (int sol_index = 0; sol_index < number_pointwise_interactions; sol_index++)
 				{
-					//Zera o gap tangencial se:
-					//1 - gn for positivo (não ha contato)
-					//2 - copy_gn for positivo (e a primeira ocorrência de contato - não ha como acumular gap tangencial pois o contato acaba de começar)
-					//3 - return value e 2 - contato não estabelecido - e não e strong candidate, mas pode ocorrer em próximos instantes
+					//Zeroes the gap tangential if:
+					//1 - gn for positive (not there is contact)
+					//2 - copy_gn for positive (and the first ocorrência of contact - not there is as acumular gap tangential since the contact acaba of começar)
+					//3 - return value and 2 - contact not estabelecido - and not and strong candidate, but can ocorrer in próximos instantes
 					if (cd[surf1_index][surf2_index]->g_n[sol_index] >= pen_tol || cd[surf1_index][surf2_index]->copy_g_n[sol_index] >= pen_tol || cd[surf1_index][surf2_index]->return_value[sol_index] == 2)
 					{
 						zeros(cd[surf1_index][surf2_index]->g_t[sol_index]);
@@ -1061,7 +1061,7 @@ void SPSP::SaveLagrange()
 	}
 }
 
-//Pode ser inserido algum criterio impeditivo de convergência aqui
+//Can be inserted some criterion impeditivo of convergence here
 bool SPSP::HaveErrors()
 {
 	for (int i = 0; i < number_surfaces1; i++)
@@ -1075,25 +1075,25 @@ bool SPSP::HaveErrors()
 				//for (int sol_index = 0; sol_index < number_pointwise_interactions; sol_index++)
 				//{
 				//	if (cd[i][j]->g_n[sol_index] < -pen_tol) {
-				//		//Criterio numerico para indicar praticamente uma inversão do vetor normal de contato
+				//		//Criterion numerico for indicate praticamente a inversão of the normal vector of contact
 				//		if (dot(*cd[i][j]->n[sol_index], *cd[i][j]->copy_n[sol_index]) < -0.9) 
 				//		{
 				//			ReportContact(i, j, 0);
-				//			//A função abaixo e encarregada de checar de acordo com a conveniência do par de superficies as condições para cut-back
+				//			//A function below and encarregada of check according to the conveniência of the pair of surfaces the conditions for cut-back
 				//			return true;
 				//		}						
 				//	}
 				//}
 				
 				//ReportContact(i, j, 0);
-				//A função abaixo e encarregada de checar de acordo com a conveniência do par de superficies as condições para cut-back				
+				//A function below and encarregada of check according to the conveniência of the pair of surfaces the conditions for cut-back				
 			}
 		}
 	}
 	return false;
 }
 
-////Calcula matriz com gap normal entre surface1, surface2
+////Calculates matrix with gap normal between surface1, surface2
 //void SPSP::EvaluateNormalGap(int surf1_index, int surf2_index, int sol_index)
 //{
 //	int const tempsurf1 = db.splines[n_SP1 - 1]->sp_elements_list[surf1_index];
@@ -1101,7 +1101,7 @@ bool SPSP::HaveErrors()
 //	Matrix temp_conv(4);
 //	for (int co = 0; co < 4; co++)
 //		temp_conv(co, 0) = cd[surf1_index][surf2_index]->convective[sol_index][co];
-//	//Calculo da função gap (escalar)
+//	//Calculation of the function gap (scalar)
 //	Matrix GammaA(3);
 //	Matrix GammaB(3);
 //	db.splines[n_SP1 - 1]->sp_element[tempsurf1 - 1]->SurfacePoint(temp_conv(0, 0), temp_conv(1, 0), GammaA);
@@ -1109,15 +1109,15 @@ bool SPSP::HaveErrors()
 //	//Copies to surface data
 //	*cd[surf1_index][surf2_index]->surf1->G_p[sol_index] = GammaA;
 //	*cd[surf1_index][surf2_index]->surf2->G_p[sol_index] = GammaB;
-//	//Gap vetorial
+//	//Gap cross
 //	*cd[surf1_index][surf2_index]->g[sol_index] = GammaA - GammaB;
-//	//Normal do contato
+//	//Normal of the contact
 //	if (norm(*cd[surf1_index][surf2_index]->g[sol_index]) != 0.0)
 //		*cd[surf1_index][surf2_index]->n[sol_index] = (1.0 / norm(*cd[surf1_index][surf2_index]->g[sol_index]))*(*cd[surf1_index][surf2_index]->g[sol_index]);
 //	else
 //		zeros(cd[surf1_index][surf2_index]->n[sol_index]);
 //
-//	//Gap escalar - tentativa de calculo com base na normal anterior (se a mesma existir)
+//	//Gap scalar - attempt of calculation with base in the normal previous (if the same exist)
 //	if (cd[surf1_index][surf2_index]->copy_return_value[sol_index] != 2)
 //	{
 //		bool previouscontact = false;
@@ -1138,10 +1138,10 @@ bool SPSP::HaveErrors()
 //		else
 //			cd[surf1_index][surf2_index]->g_n[sol_index] = +1.0*norm(*cd[surf1_index][surf2_index]->g[sol_index]);
 //	}
-//	//Gap escalar - calculo com base nas normais das superficies
+//	//Gap scalar - calculation with base in the normal of the surfaces
 //	else
 //	{
-//		//Verificação de normais 
+//		//Check of normal 
 //		bool passed_normal_test = false;
 //		Matrix n1(3);
 //		Matrix n2(3);
@@ -1156,7 +1156,7 @@ bool SPSP::HaveErrors()
 //	}
 //}
 //
-////Calcula matriz com gap tangencial
+////Calculates matrix with gap tangential
 //void SPSP::EvaluateTangentialGap(int surf1_index, int surf2_index, int sol_index)
 //{
 //	int const tempsurf1 = db.splines[n_SP1 - 1]->sp_elements_list[surf1_index];
@@ -1176,7 +1176,7 @@ bool SPSP::HaveErrors()
 //	Matrix gtdelta(3);
 //	gtdelta = (*I3 - dyadic(nip, nip))*(GammaA - GammaB);
 //
-//	//Rotação da normal de contato para rotacao do gap tangencial acumulado dos passos anteriores
+//	//Rotation of the normal of contact for rotation of the gap tangential acumulado of the passos anteriores
 //	Matrix Qdelta(3, 3);
 //	Matrix esin = cross(ni, nip);
 //	double norm_esin = norm(esin);
@@ -1189,7 +1189,7 @@ bool SPSP::HaveErrors()
 //		Matrix alpha = alpha_scalar * e;
 //		Matrix A = skew(alpha);
 //		double g = 4.0 / (4.0 + alpha_scalar * alpha_scalar);
-//		Qdelta = *I3 + g * (A + 0.5*A*A);			//Tensor de rotação
+//		Qdelta = *I3 + g * (A + 0.5*A*A);			//Tensor of rotation
 //	}
 //	else
 //		Qdelta = *I3;
@@ -1197,7 +1197,7 @@ bool SPSP::HaveErrors()
 //	*cd[surf1_index][surf2_index]->g_t[sol_index] = gtdelta + Qdelta * (*cd[surf1_index][surf2_index]->copy_g_t[sol_index]);
 //}e
 
-//Imprime na tela informações do par de contato
+//Prints in the tela information of the contact pair
 void SPSP::ReportContact(int surf1_index, int surf2_index, int sol_index)
 {
 	db.myprintf("Contact number %d\n", number);
@@ -1217,7 +1217,7 @@ void SPSP::ReportContact(int surf1_index, int surf2_index, int sol_index)
 	//db.myprintf("Friction force: %.6e\n", norm(*cd[surf1_index][surf2_index]->copy_g_t[sol_index])*ept);
 }
 
-//Atribui pares de superficies, de acordo com varredura feita entre os surface sets 1 e 2
+//Assigns pairs of surfaces, according to sweep done between the surface sets 1 and 2
 void SPSP::SetPairs()
 {
 	int temp_ID_1, temp_ID_2;
@@ -1293,7 +1293,7 @@ void SPSP::SetPairs()
 			{
 				db.myprintf("Warning! No Spline Elements Pair exists for splines %d and %d in contact SPSP %d. This pair is ignored during analysis.", temp_ID_1, temp_ID_2, number);
 			}
-			//Acrescentar aqui outros possiveis pares de superficies
+			//Acrescentar here other possiveis pairs of surfaces
 			////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 			surf_pair[i][j]->write_report = write_report;
 			surf_pair[i][j]->write_report_diverged = write_report_diverged;

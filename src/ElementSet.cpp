@@ -1,7 +1,7 @@
 #include "ElementSet.h"
 
 #include"Database.h"
-//Variaveis globais
+//Global variables
 extern
 Database db;
 
@@ -28,7 +28,7 @@ bool ElementSet::Read(FILE *f)
 {
 	char s[1000];
 	fscanf(f, "%s", s);
-	//Verifica a palavra chave "ElementSet"
+	//Checks the keyword "ElementSet"
 	if (!strcmp(s, "ElementSet"))
 	{
 		fscanf(f, "%s", s);
@@ -37,17 +37,17 @@ bool ElementSet::Read(FILE *f)
 	else
 		return false;
 	fscanf(f, "%s", s);
-	//Verifica a palavra chave "Elements"
+	//Checks the keyword "Elements"
 	if (!strcmp(s, "Elements"))
 	{
 		fscanf(f, "%s", s);
 		n_el = atoi(s);
-		//Alocação do vetor de nós
+		//Allocation of the vector of nodes
 		el_list = new int[n_el];
 	}
 	else
 		return false;
-	//Duas possibilidades de leitura:
+	//Two possibilities of reading:
 	//1 - List
 	//2 - Sequence
 	fscanf(f, "%s", s);
@@ -56,7 +56,7 @@ bool ElementSet::Read(FILE *f)
 		list = true;
 		for (int i = 0; i < n_el; i++)
 		{
-			fscanf(f, "%s", s);//Leitura do numero do elemento
+			fscanf(f, "%s", s);//Reading of the number of the element
 			el_list[i] = atoi(s);
 		}
 	}
@@ -81,7 +81,7 @@ bool ElementSet::Read(FILE *f)
 			}
 			else
 				return false;
-			//Geração da lista de elementos
+			//Geração of the list of elements
 			for (int i = 0; i < n_el; i++)
 			{
 				el_list[i] = initial + i*increment;
@@ -90,7 +90,7 @@ bool ElementSet::Read(FILE *f)
 		else
 			return false;
 	}
-	//Se atingiu esse ponto, sinal de leitura correta de tudo: retorna true
+	//If atingiu this point, sign of reading correct of tudo: returns true
 	return true;
 }
 

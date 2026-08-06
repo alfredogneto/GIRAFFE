@@ -8,31 +8,31 @@ class Shell_1 :
 public:
 	Shell_1();
 	~Shell_1();
-	bool Check();				//Checa inconsistências no elemento para evitar erros de execução
+	bool Check();				//Checks inconsistencies in the element for avoid errors of execution
 	bool Read(FILE *f);
 	void Write(FILE *f);
-	void WriteResults(FILE *f);									//Escreve arquivo de resultados
-	void WriteMonitor(FILE *f, bool first_record, double time);	//Escreve no monitor do elemento
+	void WriteResults(FILE *f);									//Writes file of results
+	void WriteMonitor(FILE *f, bool first_record, double time);	//Writes in the monitor of the element
 	void WriteVTK_XMLBase(std::vector<float> *float_vector);
 	void WriteVTK_XMLRender(FILE *f);
-	void Mount();												//Monta elementos
-	void MountElementLoads();									//Monta carregamentos associados ao elemento
-	void MountMass();											//Monta a matriz de massa
-	void MountMassModal();										//Monta a matriz de massa para realização da analise modal
-	void MountDampingModal();									//Monta a matriz de amortecimento para realização da analise modal
-	void MountDamping(bool update_rayleigh);					//Monta a matriz de amortecimento
-	void MountDyn();											//Montagens - Newmark
-	void MountDynModal();										//Montagens para analise modal - inserção da matriz de massa e amortecimento na matriz de rigidez para posterior montagem global
-	void TransformMatrix();										//Monta matriz de transformação de coordenadas
-	void MountGlobal();											//Preenche a contribuição do elemento nas matrizes globais
-	void MountFieldLoads();										//Monta carregamentos de campo (ex: peso próprio)
-	void MountShellSpecialLoads(int l_number);					//Monta carregamentos de pressão na casca
+	void Mount();												//Assembles elements
+	void MountElementLoads();									//Assembles loadings associated to the element
+	void MountMass();											//Assembles the mass matrix
+	void MountMassModal();										//Assembles the mass matrix for performing of the analysis modal
+	void MountDampingModal();									//Assembles the damping matrix for performing of the analysis modal
+	void MountDamping(bool update_rayleigh);					//Assembles the damping matrix
+	void MountDyn();											//Assemblies - Newmark
+	void MountDynModal();										//Assemblies for analysis modal - insertion of the mass matrix and damping in the stiffness matrix for subsequent assembly global
+	void TransformMatrix();										//Assembles transformation matrix of coordinates
+	void MountGlobal();											//Fills the contribution of the element in the matrices global
+	void MountFieldLoads();										//Assembles loadings of field (ex: weight próprio)
+	void MountShellSpecialLoads(int l_number);					//Assembles loadings of pressão in the shell
 
-	void SaveLagrange();										//Salva variaveis nos pontos de Gauss uteis para descrição lagrangiana atualizada
-	void PreCalc();												//Pre-calculo de variaveis que e feito uma unica vez no inicio
-	void Zeros();												//Zera matrizes
+	void SaveLagrange();										//Saves variables in the gauss points useful for description lagrangiana updated
+	void PreCalc();												//Pre-calculation of variables that and done a single time in the start
+	void Zeros();												//Zeroes matrices
 
-	//Funções de forma e suas derivadas
+	//Functions of way and its derivatives
 	double* N1u;												
 	double* N2u;
 	double* N3u;
@@ -63,11 +63,11 @@ public:
 	double* N5a_x2;
 	double* N6a_x2;
 
-	Matrix** N;							//6x27//Matriz das funções de forma
-	Matrix** deltaN;					//15x27//Matriz deltaN (com funções de forma e suas derivadas) 
+	Matrix** N;							//6x27//Matrix of the functions of way
+	Matrix** deltaN;					//15x27//Matrix deltaN (with functions of way and its derivatives) 
 
-	//////////////////////////////// Funções de forma para integração de grau 4 (6 pontos de Gauss)
-	//Funções de forma
+	//////////////////////////////// Functions of way for integration of degree 4 (6 gauss points)
+	//Functions of way
 	double* N1u4;
 	double* N2u4;
 	double* N3u4;
@@ -92,28 +92,28 @@ public:
 	double* N5u4_x2;
 	double* N6u4_x2;
 
-	Matrix** N4;							//6x27//Matriz das funções de forma
-	Matrix** N4_u_x1;						//3x18//Matriz das funções de forma
-	Matrix** N4_u_x2;						//3x18//Matriz das funções de forma
+	Matrix** N4;							//6x27//Matrix of the functions of way
+	Matrix** N4_u_x1;						//3x18//Matrix of the functions of way
+	Matrix** N4_u_x2;						//3x18//Matrix of the functions of way
 	double* w4;								//pesos
 	Matrix** alpha_i4;
 	////////////////////////////////////
 	
-	//Variaveis para descrever a cinematica
+	//Variables for descrever the cinematica
 	Matrix** alpha_delta;
 	Matrix** alpha_delta_x1;
 	Matrix** alpha_delta_x2;
 	Matrix** u_delta;
 	Matrix** u_delta_x1;
 	Matrix** u_delta_x2;
-	Matrix* e1r;	//Direção 1 da casca (global)
-	Matrix* e2r;	//Direção 2	da casca (global)
-	Matrix* e3r;	//Direção 2	da casca (global)
-	Matrix* e1rlocal;	//Direção 1 da casca (local)
-	Matrix* e2rlocal;	//Direção 2	da casca (local)
-	Matrix* e3rlocal;	//Direção 3	da casca (local)
+	Matrix* e1r;	//Direction 1 of the shell (global)
+	Matrix* e2r;	//Direction 2	of the shell (global)
+	Matrix* e3r;	//Direction 2	of the shell (global)
+	Matrix* e1rlocal;	//Direction 1 of the shell (local)
+	Matrix* e2rlocal;	//Direction 2	of the shell (local)
+	Matrix* e3rlocal;	//Direction 3	of the shell (local)
 
-	//Variaveis a serem salvas - Lag. Atualizado
+	//Variables the to be saved - Lag. Updated
 	Matrix** Q_i;
 	Matrix** Q_delta;
 	Matrix** Xi_delta;
@@ -126,59 +126,59 @@ public:
 	Matrix** z_x1_i;
 	Matrix** z_x2_i;
 
-	Matrix* stiffness;								//Matriz de rigidez
-	Matrix* mass;									//Matriz de massa
-	Matrix* mass_modal;								//Matriz de massa para analise modal
-	Matrix* damping;								//Matriz de amortecimento
-	Matrix* damping_modal;							//Matriz de amortecimento para analise modal
-	Matrix* damping_loading;						//Esforços de amortecimento
-	Matrix* rayleigh_damping;						//Matriz de amortecimento inicial do problema
-	Matrix* i_loading;								//Vetor de esforços internos
-	Matrix* inertial_loading;						//Vetor de esforços de inercia
-	Matrix* P_loading;								//Vetor de esforços desbalanceados
-	Matrix* e_loading;								//Vetor de esforços externos
+	Matrix* stiffness;								//Stiffness matrix
+	Matrix* mass;									//Mass matrix
+	Matrix* mass_modal;								//Mass matrix for analysis modal
+	Matrix* damping;								//Damping matrix
+	Matrix* damping_modal;							//Damping matrix for analysis modal
+	Matrix* damping_loading;						//Internal forces of damping
+	Matrix* rayleigh_damping;						//Damping matrix initial of the problem
+	Matrix* i_loading;								//Vector of internal forces internal
+	Matrix* inertial_loading;						//Vector of internal forces of inertia
+	Matrix* P_loading;								//Vector of internal forces unbalanced
+	Matrix* e_loading;								//Vector of internal forces external
 
-	Matrix* transform;								//Matriz de transformação de coordenadas
-	Matrix* transform3;								//Matriz de transformação de coordenadas 3x3
+	Matrix* transform;								//Transformation matrix of coordinates
+	Matrix* transform3;								//Transformation matrix of coordinates 3x3
 
 	double lambda, mu;								//Lame
-	double stiff_drill;								//Rigidez ao drilling
-	double area;									//area do elemento
-	double alpha1;									//Pesos de integração
+	double stiff_drill;								//Stiffness to the drilling
+	double area;									//area of the element
+	double alpha1;									//Pesos of integration
 
-	double coef1, coef2, coef3;						//Coeficientes para uso na matriz de massa
+	double coef1, coef2, coef3;						//Coefficients for use in the mass matrix
 
 	Matrix I3;
 
-	Matrix** eta_r1;			//deformação em er1
-	Matrix** eta_r2;			//deformação em er2
-	Matrix** kappa_r1;			//rot/comp em er1
-	Matrix** kappa_r2;			//rot/comp em er2
-	Matrix** n_r1;				//força em er1
-	Matrix** n_r2;				//força em er2
-	Matrix** m_r1;				//momento em er1
-	Matrix** m_r2;				//momento em er2
+	Matrix** eta_r1;			//strain in er1
+	Matrix** eta_r2;			//strain in er2
+	Matrix** kappa_r1;			//rot/comp in er1
+	Matrix** kappa_r2;			//rot/comp in er2
+	Matrix** n_r1;				//force in er1
+	Matrix** n_r2;				//force in er2
+	Matrix** m_r1;				//moment in er1
+	Matrix** m_r2;				//moment in er2
 
-	Matrix** eta_r1_global;			//deformação em er1
-	Matrix** eta_r2_global;			//deformação em er2
-	Matrix** kappa_r1_global;		//rot/comp em er1
-	Matrix** kappa_r2_global;		//rot/comp em er2
-	Matrix** n_r1_global;			//força em er1
-	Matrix** n_r2_global;			//força em er2
-	Matrix** m_r1_global;			//momento em er1
-	Matrix** m_r2_global;			//momento em er2
+	Matrix** eta_r1_global;			//strain in er1
+	Matrix** eta_r2_global;			//strain in er2
+	Matrix** kappa_r1_global;		//rot/comp in er1
+	Matrix** kappa_r2_global;		//rot/comp in er2
+	Matrix** n_r1_global;			//force in er1
+	Matrix** n_r2_global;			//force in er2
+	Matrix** m_r1_global;			//moment in er1
+	Matrix** m_r2_global;			//moment in er2
 
-	//Variaveis internas para uso na dinamica
+	//Variables internal for use in the dynamics
 	Matrix** alpha_dot;
 	Matrix** Xi_dot;
 	Matrix** Mip;
 	Matrix** Jip;
 	Matrix** M;
 	Matrix** Md1;
-	Matrix v_ipp;//Estimativa da velocidade no instante posterior
+	Matrix v_ipp;//Estimativa of the velocity in the instant subsequent
 
 
-	//Matrizes para transformação dos resultados
+	//Matrices for transformation of the results
 	Matrix n_1;
 	Matrix n_2;
 	Matrix m_1;
@@ -189,7 +189,7 @@ public:
 	Matrix k_1;
 	Matrix k_2;
 
-	//Calcula as contribuições inerciais para a analise dinamica - inclui todas as contribuições para a forma fraca e para o operador tangente
+	//Calculates the contributions inerciais for the analysis dynamics - inclui all the contributions for the way fraca and for the operator tangent
 	void EvaluateInertialContributions(double* v, double(*a1)
 		, double(*a2), double(*a3), double(*a4), double(*a5), double(*a6)
 		, double* alphai, double* alphad, double* ui, double* ud, double* omegai
@@ -198,24 +198,24 @@ public:
 
 	void EvaluateMassModal(double* v, double* alphai, double* coef1, double* coef2, double* coef3, double* e3r, double** matrixm);
 
-	//Variaveis para função gerada no AceGen
-	double temp_v[2000];				//variavel temporaria para calculos internos
+	//Variables for function generated in the AceGen
+	double temp_v[2000];				//temporary variable for calculations internal
 	Matrix *DdT;
 	Matrix *dT;
 	double** pDdT;
 	double* tempkin;
 
-	//Variaveis para calculo de steps
+	//Variables for calculation of steps
 	int t1, t2;
 	double load_multiplier, l_factor, mult;
 
 	//COMPOSITE MATERIAL
-	Matrix* D_comp;				//Matriz Constitutiva Compósito
-	double thick_comp;			//Espessura do Material Compósito
-	double rho_comp;			//Rho do material compósito
-	double stiff_drill_comp1;	//Rigidiz ao drilling na direção 1
-	double stiff_drill_comp2;	//Rigidez ao drilling na direção 2
-	bool composite_shell;		//Verifica se a casca e de material compósito
+	Matrix* D_comp;				//Matrix Constitutiva Compósito
+	double thick_comp;			//Espessura of the Material Compósito
+	double rho_comp;			//Rho of the material compósito
+	double stiff_drill_comp1;	//Rigidiz to the drilling in the direction 1
+	double stiff_drill_comp2;	//Stiffness to the drilling in the direction 2
+	bool composite_shell;		//Checks if the shell and of material compósito
 
 
 };

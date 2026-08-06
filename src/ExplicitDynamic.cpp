@@ -17,13 +17,13 @@ using namespace std::chrono;
 #include "Boundary.h"
 
 #include"Database.h"
-//Variaveis globais
+//Global variables
 extern
 Database db;
 
 ExplicitDynamic::ExplicitDynamic()
 {
-	file_index = 1;								//Numero do arquivo para salvar resultados
+	file_index = 1;								//Number of the file for save results
 	zero_IC_flag = false;
 	solution_number = 0;
 
@@ -37,7 +37,7 @@ ExplicitDynamic::ExplicitDynamic()
 	//Damping
 	alpha = 0;
 	beta = 0;
-	update = 0;	//booleana
+	update = 0;	//boolean
 
 	I3 = new Matrix(3, 3);
 	(*I3)(0, 0) = 1.0;
@@ -129,7 +129,7 @@ bool ExplicitDynamic::Read(FILE *f)
 
 	
 
-	//Salva a posição (stream)
+	//Saves the position (stream)
 	fpos_t pos;
 	fgetpos(f, &pos);
 	fscanf(f, "%s", s);
@@ -150,10 +150,10 @@ void ExplicitDynamic::Write(FILE *f)
 		fprintf(f, "ZeroIC\n");
 }
 
-//Escreve resultados
+//Writes results
 void ExplicitDynamic::WriteResults()
 {
-	//Atualiza arquivos de pós-processamento
+	//Updates files of pós-processamento
 	db.post_files->UpdateSinglePartPostFiles(solution_number, time, file_index);
 	db.post_files->WriteConfigurationResults(solution_number, time, file_index);
 	file_index++;
@@ -168,7 +168,7 @@ void ExplicitDynamic::SetGlobalSizeExplicit()
 	int temp_node = 0;
 	int temp_element = 0;
 	
-	//FORÇAS
+	//FORCES
 	db.global_P_A.setLines(db.n_GL_free);
 	db.global_P_A.setColumns(1);
 	db.global_P_A.alloc();
@@ -181,7 +181,7 @@ void ExplicitDynamic::SetGlobalSizeExplicit()
 	db.global_P_B.setColumns(1);
 	db.global_P_B.alloc();
 
-	//DESLOCAMENTOS PRESCRITOS
+	//DISPLACEMENTS PRESCRITOS
 	db.global_X_B.setLines(db.n_GL_fixed);
 	db.global_X_B.setColumns(1);
 	db.global_X_B.alloc();
@@ -191,37 +191,37 @@ void ExplicitDynamic::SetGlobalSizeExplicit()
 //Solves solution routine
 bool ExplicitDynamic::Solve()
 {
-	bool aborted = false;						//flag para abortar simulação
+	bool aborted = false;						//flag for abortar simulation
 	db.last_converged_time = start_time;
 	time = db.last_converged_time;
-	//Atualiza monitor - somente se for o primeira solution
+	//Updates monitor - only if for the first solution
 	if (db.monitor_exist == true && solution_number == 1)
 		db.monitor->UpdateMonitor(db.last_converged_time);
-	//Atualiza analise concomitante
+	//Updates analysis concomitante
 	if (db.concomitant_solution_exist == true)
 		db.concomitant_solution->UpdateConcomitantSolution(db.last_converged_time);
-	WriteResults();								//salvando resultados
-	high_resolution_clock::time_point t1 = high_resolution_clock::now();//Inicia a marcação de tempo de execução
-	//Plotagem do dia da simulação
+	WriteResults();								//saving results
+	high_resolution_clock::time_point t1 = high_resolution_clock::now();//Inicia the marcação of time of execution
+	//Plotting of the dia of the simulation
 	system_clock::time_point today = system_clock::now();
 	time_t tt;
 	tt = system_clock::to_time_t(today);
 	db.myprintf("\nSolution step %d started at %s\n", solution_number, ctime(&tt));
-	DOFsActive();								//Para cada nó ativa DOFs - tambem opera sobre multiplicadores de Lagrange de SpecialConstraints
-	SetGlobalDOFs();							//Numeração de graus de liberdade
-	SetGlobalSizeExplicit();					//Calcula o tamanho de contribuições globais - com base nos GLs livres e fixos
+	DOFsActive();								//For each node active DOFs - tambem opera on Lagrange multipliers of SpecialConstraints
+	SetGlobalDOFs();							//Numbering of degrees of freedom
+	SetGlobalSizeExplicit();					//Calculates the size of contributions global - with base in the GLs free and fixed
 
 	//Time variables
 	time_step = i_time_step;
 	InitialEvaluations();
-	ComputeInitialConditions(zero_IC_flag);	//Computa as condições iniciais nodais impostas
-	bool first = true;						//Flag para saber quando computar Rayleigh Damping
+	ComputeInitialConditions(zero_IC_flag);	//Computes the initial conditions nodal impostas
+	bool first = true;						//Flag for saber when compute Rayleigh Damping
 
 	if (db.gcs_exist)
 		if (db.gcs->bool_table.GetAt(db.current_solution_number - 1))
 			db.gcs->SolutionStepInitialCheck();					//General contact initial check
 
-	aborted = false;	//Flag que indica se o caso deve ser abortado
+	aborted = false;	//Flag that indicates if the case must be abortado
 	
 	int steps_to_increase = 3;
 	double inc_factor = 1.5;
@@ -232,24 +232,24 @@ bool ExplicitDynamic::Solve()
 	////////////////////////////////////////////////////////////////////////////////
 	while (time < end_time  && aborted == false)
 	{
-		//Setando variaveis no database
+		//Setting variables in the database
 		db.last_converged_time = time;
-		time += time_step;	//Incremento do time step, de acordo com a progressão da solução
-		if (time > end_time)//Se ja estiver alem do ultimo instante de interesse	
+		time += time_step;	//Increment of the time step, according to the progressão of the solution
+		if (time > end_time)//If already is alem of the last instant of interest	
 		{
 			time = end_time;
 			time_step = end_time - db.last_converged_time;
 		}
 		db.current_time_step = time_step;
 		db.myprintf("\nTime: %.9f\t\tTime step: %.9f\n\n", time, time_step);
-		Zeros();	//zera deslocamentos e rotações incrementais nos nós
+		Zeros();	//zeroes displacements and rotations incrementais in the nodes
 		
 		if (!strcmp(method, "Euler"))
 			Euler();
 		if (!strcmp(method, "RungeKutta4"))
 			RungeKutta4();
 		
-		//Teste para avaliar que o time step esta muito pequeno - ABORT SIMULATION
+		//Test for evaluate that the time step this very small - ABORT SIMULATION
 		if (time_step < min_time_step && time != end_time)
 		{
 			db.myprintf("\nAborting simulation. Step size is too small!\n\n");
@@ -257,61 +257,61 @@ bool ExplicitDynamic::Solve()
 		}
 		FinalUpdateContactsExplicit(time);
 
-		/////////////////////////////////SALVANDO CONFIGURAÇÃO/////////////////////////////////
+		/////////////////////////////////SAVING CONFIGURATION/////////////////////////////////
 		if (HaveErrors() != true)
 		{
 			steps_computed++;
 			steps_control++;
-			SaveConfiguration();	//Salva configuração convergida
+			SaveConfiguration();	//Saves configuration converged
 			
-			//Analise da facilidade de convergência:
+			//Analysis of the facilidade of convergence:
 			if (steps_computed >= steps_to_increase)
 			{
 				time_step = time_step * inc_factor;
 				if (time_step > max_time_step)
 					time_step = max_time_step;
-				steps_computed = 0;	//Zera o convergence counter
+				steps_computed = 0;	//Zeroes the convergence counter
 			}
 
-			//Escrita em arquivos de resultados
-			if (aborted == false)	//Salva o arquivo, de acordo com amostragem
+			//Writing in files of results
+			if (aborted == false)	//Saves the file, according to amostragem
 			{
 				if ((steps_control%sample == 0 || time == end_time))
-					WriteResults();								//salvando resultados
-				//Atualiza monitor
+					WriteResults();								//saving results
+				//Updates monitor
 				if (db.monitor_exist == true && (steps_control%db.monitor->sample == 0 || time == end_time))
 					db.monitor->UpdateMonitor(time);
-				//Atualiza analise concomitante
+				//Updates analysis concomitante
 				if (db.concomitant_solution_exist == true && (steps_control%db.concomitant_solution->sample == 0 || time == end_time))
 					db.concomitant_solution->UpdateConcomitantSolution(time);
-				//Atualiza configuration save
+				//Updates configuration save
 				if (db.config_save_exist == true && (steps_control%db.config_save->sample == 0 || time == end_time))
 					db.config_save->ExportConfiguration(time);
 			}
 		}
-		/////////////////////////////////RETOMANDO CONFIGURAÇÃO/////////////////////////////////
+		/////////////////////////////////RETOMANDO CONFIGURATION/////////////////////////////////
 		else
 		{
-			RestoreConfiguration();	//Restaura a ultima configuração que convergiu
-			//Modificação do loading factor increment:
+			RestoreConfiguration();	//Restaura the last configuration that converged
+			//Modificação of the loading factor increment:
 			time -= time_step;
 			time_step = time_step / 2.0;	 //Bissecção
 			steps_computed = 0;
 		}
-	}//Fim
+	}//End
 	high_resolution_clock::time_point t2 = high_resolution_clock::now();
 	auto duration = std::chrono::duration_cast<std::chrono::microseconds>(t2 - t1).count();
 	db.myprintf("\nSolution step %d time:\t   %lf sec.\n", solution_number, duration / 1e6);
 	printf("\nSolution step %d time:\t   %lf sec.\n", solution_number, duration / 1e6);
-	//Plotagem do dia da simulação
+	//Plotting of the dia of the simulation
 	today = system_clock::now();
 	tt = system_clock::to_time_t(today);
 	db.myprintf("\nSolution step %d finished at %s\n", solution_number, ctime(&tt));
 
 	if (aborted == true)
-		return false;//Erro
+		return false;//Error
 	else
-		return true;//Não erro
+		return true;//Not error
 }
 
 void ExplicitDynamic::Euler()
@@ -819,14 +819,14 @@ void ExplicitDynamic::MountDisplacementsExplicit(double t)
 
 void ExplicitDynamic::MountContactsExplicit(double t)
 {
-	//Paralelização dentro da função SolveContacts
+	//Paralelização inside of the function SolveContacts
 	if (db.gcs_exist)
 		if (db.gcs->bool_table.GetAt(db.current_solution_number - 1))
 			db.gcs->MountContactsExplicit(t);
 }
 void ExplicitDynamic::FinalUpdateContactsExplicit(double t)
 {
-	//Paralelização dentro da função do gcs
+	//Paralelização inside of the function of the gcs
 	if (db.gcs_exist)
 		if (db.gcs->bool_table.GetAt(db.current_solution_number - 1))
 			db.gcs->FinalUpdateContactsExplicit(t);

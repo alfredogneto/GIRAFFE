@@ -20,7 +20,7 @@ public:
 	vector<ContactBodyBody*>* contactBOBO_list;
 	vector<ContactParticleBody*>* contactPBO_list;
 	
-	BoolTable bool_table;							//Bool table que ativa ou desativa na seq. de solutions
+	BoolTable bool_table;							//Bool table that active or desativa in the seq. of solutions
 
 	GeneralContactSearch();
 	~GeneralContactSearch();
@@ -28,7 +28,7 @@ public:
 	void PreCalc();									//Pre calculation (allocation,etc.)
 	bool Read(FILE *f);								//Reads data
 	void Write(FILE *f);							//Writes data 
-	bool Check();									//Checa falta de dados de interfaces de contato
+	bool Check();									//Checks falta of data of interfaces of contact
 	void UpdateBoundingVolumes();					//Updates all the bounding volumes of particles, surfaces, etc.
 	bool HaveErrors();								//Checks for untreated potential collisions for rolling back in time
 	void SaveConfiguration();						//Saves a converged configuration data
@@ -37,7 +37,7 @@ public:
 	void MountContactsGlobalExplicit();				//Mounts all the contact global contributions detected during the global check (explicit)
 	void FinalUpdateContactsExplicit(double t);		//Updates gap, normal and another quantities for the final check on the explicit method
 	void MountContactsGlobal();						//Mounts all the contact global contributions detected during the global check
-	void SolutionStepInitialCheck();				//Computes the bounding volumes on the initial of a solution step (first computing)
+	void SolutionStepInitialCheck();				//Computes the bounding volumes on the initial of the solution step (first computing)
 	void ContactSearch();							//Overall collision detection
 	void AlltoAll();								//Checks all to all entities for collision detection
 	void LinkedCellsMethod();						//Uses the linked cell algorithm to enhance the collision detection search in space

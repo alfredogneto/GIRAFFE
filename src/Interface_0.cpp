@@ -1,7 +1,7 @@
 #include "Interface_0.h"
 #include"Database.h"
 #include <math.h>
-//Variaveis globais
+//Global variables
 extern
 Database db;
 
@@ -30,7 +30,7 @@ Interface_0::~Interface_0()
 
 }
 
-//Checa inconsistências no elemento para evitar erros de execução
+//Checks inconsistencies in the element for avoid errors of execution
 bool Interface_0::Check()
 {
 	if (material_1 > db.number_materials)
@@ -58,7 +58,7 @@ bool Interface_0::Read(FILE *f)
 	else
 		return false;
 
-	//Salva a posição (stream)
+	//Saves the position (stream)
 	fpos_t pos;
 	fgetpos(f, &pos);
 
@@ -143,7 +143,7 @@ void Interface_0::Write(FILE *f)
 		number, material_1, material_2, epsn1, n1, zetan, mus, mud, epst, ct);
 }
 
-//Pre-calculo de variaveis que e feito uma unica vez no inicio
+//Pre-calculation of variables that and done a single time in the start
 void Interface_0::PreCalc()
 {
 

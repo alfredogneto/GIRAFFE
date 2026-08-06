@@ -10,18 +10,18 @@ public:
 	Section() {}
 	virtual ~Section() {}
 
-	int number;							//ID da seção
-	double A, I11, I22, I12, I33, It;	//propriedades da seção
-	//A - area da ST  [L^2]
-	//I11 - momento de inercia em torno do eixo 1 [L^4]
-	//I22 - momento de inercia em torno do eixo 2 [L^4]
-	//I12 - produto de inercia em relação aos eixos 1 e 2 [L^4]
-	//I33 - momento de inercia em relação ao eixo 3 [L^4]
-	//It - momento de torção  [L^4]
+	int number;							//ID of the section
+	double A, I11, I22, I12, I33, It;	//propriedades of the section
+	//A - area of the ST  [L^2]
+	//I11 - moment of inertia in torno of the axis 1 [L^4]
+	//I22 - moment of inertia in torno of the axis 2 [L^4]
+	//I12 - product of inertia in relação to the eixos 1 and 2 [L^4]
+	//I33 - moment of inertia in relação to the axis 3 [L^4]
+	//It - moment of torção  [L^4]
 
-	int aerodynamicdataID = 0;				//ID de propriedades aerodinamicas associadas a seção transversal em questão
-	Matrix AC;								//Centro aerodinamico (no plano e1 x e2 da ST)
-	double aero_length;						//Comprimento de referência para calculo aerodinamico (corda)
+	int aerodynamicdataID = 0;				//ID of propriedades aerodinamicas associated the section transversal in question
+	Matrix AC;								//Center aerodinamico (in the plane e1 x e2 of the ST)
+	double aero_length;						//Length of reference for calculation aerodinamico (corda)
 	SectionDetails *sec_details;
 
 	virtual bool Read(FILE *f) = 0;

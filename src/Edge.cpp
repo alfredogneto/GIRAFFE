@@ -4,7 +4,7 @@
 #include "Matrix.h"
 #include "MatrixFloat.h"
 #include"Database.h"
-//Variaveis globais
+//Global variables
 extern
 Database db;
 
@@ -19,7 +19,7 @@ Edge::Edge()
 	length = 0.0f;
 }
 
-//Construtor de cópia
+//Copy constructor
 Edge::Edge(const Edge &copied)
 {
 	ID = copied.ID;
@@ -53,8 +53,8 @@ Edge::~Edge()
 	faceIDs.clear();
 }
 
-//Verificação de igualdade
-bool operator == (Edge &e1, Edge &e2)
+//Equality check
+bool operator == (const Edge &e1, const Edge &e2)
 {
 	if (e1.verticesIDs[0] == e2.verticesIDs[0] && e1.verticesIDs[1] == e2.verticesIDs[1])
 		return true;

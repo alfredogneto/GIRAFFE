@@ -12,7 +12,7 @@ MultiCellSection::MultiCellSection()
 	axis_position[1] = 0.0;	//Ref position
 	sprintf(section_type, "MultiCellSection");
 }
-//Construtor de cópia
+//Copy constructor
 MultiCellSection::MultiCellSection(MultiCellSection &copied)
 {
 	n_points = 0;;
@@ -25,13 +25,13 @@ MultiCellSection::MultiCellSection(MultiCellSection &copied)
 	sprintf(section_type, "MultiCellSection");
 
 	Alloc(copied.n_points, copied.n_webs);
-	//Copia os valores dos pontos
+	//Copies the values of the points
 	for (long i = 0; i < copied.n_points; i++)
 	{
 		points[i][0] = copied.points[i][0];
 		points[i][1] = copied.points[i][1];
 	}
-	//Copia os valores das webs
+	//Copies the values of the webs
 	for (long i = 0; i < copied.n_webs; i++)
 	{
 		webs[i][0] = copied.webs[i][0];
@@ -44,7 +44,7 @@ MultiCellSection::MultiCellSection(MultiCellSection &copied)
 
 void MultiCellSection::Alloc(int e_points, int e_webs)
 {
-	//Desaloca matrizes
+	//Deallocates matrices
 	if (points != NULL)
 	{
 		for (int i = 0; i < n_points; i++)
@@ -59,7 +59,7 @@ void MultiCellSection::Alloc(int e_points, int e_webs)
 	}
 	n_points = e_points;
 	n_webs = e_webs;
-	//Aloca matrizes
+	//Allocates matrices
 	points = new double*[n_points];
 	for (int i = 0; i < n_points; i++)
 		points[i] = new double[2];
@@ -70,7 +70,7 @@ void MultiCellSection::Alloc(int e_points, int e_webs)
 
 MultiCellSection::~MultiCellSection()
 {
-	//Desaloca matrizes
+	//Deallocates matrices
 	if (points != NULL)
 	{
 		for (int i = 0; i < n_points; i++)
@@ -119,7 +119,7 @@ bool MultiCellSection::Read(FILE *f)
 		return false;
 
 	Alloc(n_points, n_webs);
-	//Leitura dos pontos
+	//Reading of the points
 	double x, y;
 	int index;
 	for (int p = 0; p < n_points; p++)
@@ -139,7 +139,7 @@ bool MultiCellSection::Read(FILE *f)
 		else
 			return false;
 	}
-	//Leitura dos webs
+	//Reading of the webs
 	int p1, p2;
 	for (int web = 0; web < n_webs; web++)
 	{

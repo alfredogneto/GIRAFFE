@@ -42,7 +42,7 @@ bool SecTube::Read(FILE *f)
 	else
 		return false;
 
-	//Salva a posição (stream)
+	//Saves the position (stream)
 	fpos_t pos;
 	fgetpos(f, &pos);
 	fscanf(f, "%s", s);
@@ -72,7 +72,7 @@ bool SecTube::Read(FILE *f)
 			return false;
 	}
 	else
-		fsetpos(f, &pos);	//volta a posição anterior
+		fsetpos(f, &pos);	//turn the position previous
 
 
 	return true;

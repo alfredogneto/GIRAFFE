@@ -53,7 +53,7 @@ bool  DisplacementField::Read(FILE *f)
 	else
 		return false;
 
-	//Salva a posição (stream)
+	//Saves the position (stream)
 	fpos_t pos;
 	fgetpos(f, &pos);
 	fscanf(f, "%s", s);
@@ -98,23 +98,23 @@ bool  DisplacementField::Read(FILE *f)
 	return true;
 }
 
-//Alocação dinamica de variaveis
+//Allocation dynamics of variables
 void DisplacementField::Alloc()
 {
 	Free();
-	//Alocando
+	//Allocating
 	nodes = new int[n_nodes];
 	displacements = new double*[n_nodes];
 	for (int i = 0; i < n_nodes; i++)
 		displacements[i] = new double[n_values];
-	//Zerando valores
+	//Zeroing values
 	for (int i = 0; i < n_nodes; i++)
 		for (int j = 0; j < n_values; j++)
 			displacements[i][j] = 0.0;
 	alloced = true;
 }
 
-//Desalocação dinamica de variaveis
+//Desalocação dynamics of variables
 void DisplacementField::Free()
 {
 	if (alloced == true)
@@ -176,7 +176,7 @@ void DisplacementField::Mount()
 		int temp_node = 0;
 		int GL;
 		double factor = (db.last_converged_time + db.current_time_step - db.solution[solution_step - 1]->start_time) / (db.solution[solution_step - 1]->end_time - db.solution[solution_step - 1]->start_time);
-		//Varredura no node set pelos nós definidos, para imposição dos deslocamentos
+		//Sweep in the node set through the nodes definidos, for imposição of the displacements
 		for (int index_node = 0; index_node < n_nodes; index_node++)
 		{
 			temp_node = nodes[index_node];
@@ -193,26 +193,26 @@ void DisplacementField::Mount()
 					GL = -db.nodes[temp_node - 1]->GLs[j] - 1;
 					db.global_X_B(GL, 0) = disp(j, 0);
 					db.nodes[temp_node - 1]->displacements[j] = db.global_X_B(GL, 0);
-					db.nodes[temp_node - 1]->vel[j] = db.global_X_B(GL, 0) / db.current_time_step;	//Velocidade prescrita
-					db.nodes[temp_node - 1]->accel[j] = (db.nodes[temp_node - 1]->vel[j] - db.nodes[temp_node - 1]->copy_vel[j]) / db.current_time_step;	//Aceleração prescrita
+					db.nodes[temp_node - 1]->vel[j] = db.global_X_B(GL, 0) / db.current_time_step;	//Velocity prescrita
+					db.nodes[temp_node - 1]->accel[j] = (db.nodes[temp_node - 1]->vel[j] - db.nodes[temp_node - 1]->copy_vel[j]) / db.current_time_step;	//Acceleration prescrita
 				}
 			}
 			
-			//Rotações
+			//Rotations
 			Matrix euler(3, 1);
 			Matrix rodrigues(3, 1);
 			MountEulerVector(&euler, &rodrigues, temp_node, index_node, factor);
 
 			for (int j = 3; j < 6; j++)
 			{
-				//Se o grau de liberdade for fixo
+				//If the degree of freedom for fixed
 				if (db.nodes[temp_node - 1]->constraints[j] == 1 && db.nodes[temp_node - 1]->active_GL[j] == 1)
 				{
 					GL = -db.nodes[temp_node - 1]->GLs[j] - 1;
 					db.global_X_B(GL, 0) = rodrigues(j - 3, 0);
 					db.nodes[temp_node - 1]->displacements[j] = db.global_X_B(GL, 0);
-					db.nodes[temp_node - 1]->vel[j] = euler(j - 3, 0) / db.current_time_step;	//Velocidade prescrita
-					db.nodes[temp_node - 1]->accel[j] = (db.nodes[temp_node - 1]->vel[j] - db.nodes[temp_node - 1]->copy_vel[j]) / db.current_time_step;	//Aceleração prescrita
+					db.nodes[temp_node - 1]->vel[j] = euler(j - 3, 0) / db.current_time_step;	//Velocity prescrita
+					db.nodes[temp_node - 1]->accel[j] = (db.nodes[temp_node - 1]->vel[j] - db.nodes[temp_node - 1]->copy_vel[j]) / db.current_time_step;	//Acceleration prescrita
 				}
 			}
 		}
@@ -222,7 +222,7 @@ void DisplacementField::Mount()
 
 void DisplacementField::MountEulerVector(Matrix* euler, Matrix* rodrigues, int temp_node, int index_node, double factor)
 {
-	//Rotações
+	//Rotations
 	if (!strcmp(angular_parameters, "EulerVector"))
 	{
 		Matrix euler_ip(3, 1);
@@ -246,7 +246,7 @@ void DisplacementField::MountEulerVector(Matrix* euler, Matrix* rodrigues, int t
 		Q = I + g * (A + 0.5*A*A);
 		////////////////////////////////////////////////////////////////////////////////////////
 	}
-	//Rotações
+	//Rotations
 	if (!strcmp(angular_parameters, "EulerAngles"))
 	{
 		double phi = 0.0;

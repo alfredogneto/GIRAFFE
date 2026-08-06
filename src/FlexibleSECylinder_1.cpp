@@ -1,4 +1,5 @@
 #include "FlexibleSECylinder_1.h"
+#include "PlatformCompat.h"
 
 #include "Dynamic.h"
 #include "PostFiles.h"
@@ -9,7 +10,7 @@
 
 
 #include"Database.h"
-//Variaveis globais
+//Global variables
 extern
 Database db;
 
@@ -29,18 +30,18 @@ FlexibleSECylinder_1::FlexibleSECylinder_1()
 		DOFs[i] = new int[db.number_GLs_node];
 	VTK_nodes[0] = 0;
 	VTK_nodes[1] = 1;
-	//Rotina para ativar os GLS de cada nó
+	//Routine for activate the GLS of each node
 	for (int i = 0; i < n_nodes; i++)
 	{
 		for (int j = 0; j < db.number_GLs_node; j++)
 		{
 			DOFs[i][j] = 0;
 		}
-		//Translação
+		//Translation
 		DOFs[i][0] = 1;
 		DOFs[i][1] = 1;
 		DOFs[i][2] = 1;
-		//Rotação
+		//Rotation
 		DOFs[i][3] = 1;
 		DOFs[i][4] = 1;
 		DOFs[i][5] = 1;
@@ -142,7 +143,7 @@ void FlexibleSECylinder_1::SetMinMaxRange()
 	u2_range = 2 * PI;
 }
 
-//Obtem ponto da superficie
+//Obtains point of the surface
 void FlexibleSECylinder_1::SurfacePoint(double& zeta, double& theta, Matrix& point)
 {
 	double phi = 1.0 / pow(pow(abs(sin(theta)), n) + pow(abs(cos(theta)), n), 1.0 / n);
@@ -150,11 +151,11 @@ void FlexibleSECylinder_1::SurfacePoint(double& zeta, double& theta, Matrix& poi
 	ar(0, 0) = a * phi*cos(theta);
 	ar(1, 0) = b * phi*sin(theta);
 	ar(2, 0) = 0.0;
-	//Gamma na posicao atual
+	//Gamma in the position current
 	point = (1 - zeta) / 2*(*x_AAp + (*Q_AAp) * ar) + (1 + zeta) / 2 *(*x_BAp + (*Q_BAp) * ar);
 }
 
-//Normal exterior a superficie na posição escolhida
+//Normal exterior the surface in the position chosen
 void FlexibleSECylinder_1::NormalExt(double* zeta, double* theta, Matrix* n)
 {
 	double *aA = &a;
@@ -262,7 +263,7 @@ void FlexibleSECylinder_1::NormalExt(double* zeta, double* theta, Matrix* n)
 	normal[2] = v[132] * v[158] - v[130] * v[160];
 }
 
-//Retorna a curvatura da superficie segundo certa direção e calculada em certo conjunto de coordenadas convectivas
+//Returns the curvature of the surface second certa direction and calculated in certo set of convective coordinates
 double FlexibleSECylinder_1::Curvature(double zeta, double theta, Matrix* e_dir)
 {
 	double *aA = &a;
@@ -398,7 +399,7 @@ double FlexibleSECylinder_1::Curvature(double zeta, double theta, Matrix* e_dir)
 	return kap;
 }
 
-//Posição da superficie nas coordenadas convectivas escolhidas
+//Position of the surface in the convective coordinates escolhidas
 void FlexibleSECylinder_1::Gamma(double* zeta, double* theta, Matrix* G)
 {
 	double *aA = &a;
@@ -475,13 +476,13 @@ void FlexibleSECylinder_1::Gamma(double* zeta, double* theta, Matrix* G)
 		+ QBAi[2][1] * v[85]) + xBAi[2]);
 }
 
-//Intersecção Gamma com a reta
+//Intersection Gamma with the reta
 void FlexibleSECylinder_1::GammaIntersectionLine(Matrix* p_PO, Matrix* p_t, double* p_lambda, Matrix* p_c)
 {
-	double* PO = p_PO->getMatrix();		//ponteiro para variavel - AceGen
-	double* tang = p_t->getMatrix();		//ponteiro para variavel - AceGen
-	double* c = p_c->getMatrix();		//variaveis convectivas - AceGen
-	double* lamb = p_lambda;			//variavel convectiva - AceGen
+	double* PO = p_PO->getMatrix();		//pointer for variable - AceGen
+	double* tang = p_t->getMatrix();		//pointer for variable - AceGen
+	double* c = p_c->getMatrix();		//variables convective - AceGen
+	double* lamb = p_lambda;			//variable convective - AceGen
 	
 	double *aA = &a;
 	double *bA = &b;
@@ -493,8 +494,8 @@ void FlexibleSECylinder_1::GammaIntersectionLine(Matrix* p_PO, Matrix* p_t, doub
 	double* dA = d_A->getMatrix();
 
 	Matrix mGra(3);
-	double* Gra = mGra.getMatrix();		//Residuo
-	double Hes[3][3];					//Jacobiano
+	double* Gra = mGra.getMatrix();		//Residual
+	double Hes[3][3];					//Jacobian
 	Matrix mHes(3, 3);
 	Matrix delta(3);
 
@@ -652,26 +653,26 @@ void FlexibleSECylinder_1::GammaIntersectionLine(Matrix* p_PO, Matrix* p_t, doub
 			)*v[227] + (v[116] * v[184] + v[115] * v[187])*v[228])*v[243] + ((v[110] * v[184] + v[109] * v[187])*v[227] +
 			(v[119] * v[184] + v[118] * v[187])*v[228])*v[244]);
 #pragma endregion
-		//Calcula erro
+		//Calculates error
 		error = norm(mGra);
 		if (error > tol)
 		{
-			//Conversões para matrizes
+			//Conversões for matrices
 			for (int i = 0; i < 3; i++)
 			for (int j = 0; j < 3; j++)
 				mHes(i, j) = Hes[i][j];
 			//mHes.print();
 			//mGra.print();
-			//Resolve sistema linear
+			//Solves linear system
 			delta = fullsystem(mHes, -1.0*mGra, &flag_error);
-			//Atualiza variaveis
+			//Updates variables
 			c3 = c3 + delta;
 
 			//error = norm(delta);
 		}
 		it++;
 	}
-	//Salvando para retorno
+	//Saving for return
 	(*p_c)(0, 0) = c[0];
 	(*p_c)(1, 0) = c[1];
 	delete Ob;
@@ -696,14 +697,14 @@ void FlexibleSECylinder_1::WriteVTK_XMLRender(FILE *f)
 			points[index][0] = phi*a*cos(theta);
 			points[index][1] = phi*b*sin(theta);
 		}
-		//vetores para escrita no formato binario - usando a função 'enconde'
+		//vectors for writing in the formato binary - using the function 'enconde'
 		std::vector<float> float_vector;
 		std::vector<int> int_vector;
 
 		Matrix vec_P(3);
-		//Numero de pontos a serem gerados
+		//Number of points the to be gerados
 		int n_points = n_circ * 2;
-		//Numero de celulas a serem geradas
+		//Number of celulas the to be geradas
 		int n_cells = n_circ;
 		//Opens Piece
 		fprintf(f, "\t\t<Piece NumberOfPoints=\"%d\" NumberOfCells=\"%d\">\n", n_points, n_cells);
@@ -712,21 +713,21 @@ void FlexibleSECylinder_1::WriteVTK_XMLRender(FILE *f)
 		//Opens DataArray
 		fprintf(f, "\t\t\t\t<DataArray type=\"Float32\" NumberOfComponents=\"3\" format=\"binary\">\n");
 		float_vector.clear();
-		//Preenchendo as coordenadas dos pontos
-		for (int i = 0; i < 2; i++)//percorrendo os 2 nós das extremidades
+		//Filling the coordinates of the points
+		for (int i = 0; i < 2; i++)//percorrendo the 2 nodes of the extremidades
 		{
-			for (int point = 0; point < n_circ; point++)//Percorre os nós que descrevem o perimetro da ST
+			for (int point = 0; point < n_circ; point++)//Iterates over the nodes that descrevem the perimetro of the ST
 			{
-				//Posição de cada ponto P no plano xy (referência)
+				//Position of each point P in the plane xy (reference)
 				vec_P(0, 0) = points[point][0];
 				vec_P(1, 0) = points[point][1];
 				vec_P(2, 0) = 0.0;
 				if (i == 0)
-					vec_P = (*Q_AAi)*vec_P;//Operando rotacionando para o sistema da barra
+					vec_P = (*Q_AAi)*vec_P;//Operando rotacionando for the system of the bar
 				else
-					vec_P = (*Q_BAi)*vec_P;//Operando rotacionando para o sistema da barra
+					vec_P = (*Q_BAi)*vec_P;//Operando rotacionando for the system of the bar
 				for (int c = 0; c < 3; c++)
-					vec_P(c, 0) += db.nodes[nodes[i] - 1]->ref_coordinates[c] + db.post_files->mag_factor*(db.nodes[nodes[i] - 1]->copy_coordinates[c] - db.nodes[nodes[i] - 1]->ref_coordinates[c]);//Translação - soma a posição do centro da barra (do ponto em questão)
+					vec_P(c, 0) += db.nodes[nodes[i] - 1]->ref_coordinates[c] + db.post_files->mag_factor*(db.nodes[nodes[i] - 1]->copy_coordinates[c] - db.nodes[nodes[i] - 1]->ref_coordinates[c]);//Translation - sum the position of the center of the bar (of the point in question)
 					
 				float_vector.push_back((float)(vec_P(0, 0)));
 				float_vector.push_back((float)(vec_P(1, 0)));
@@ -835,11 +836,11 @@ bool FlexibleSECylinder_1::Read(FILE *f)
 	}
 	else
 		return false;
-	//Leitura dos sistemas de coordenadas para criação da superficie
-	//Salva a posição (stream)
+	//Reading of the coordinate systems for creation of the surface
+	//Saves the position (stream)
 	fpos_t pos;
 	fgetpos(f, &pos);
-	//Caso 1 - um unico sistema
+	//Case 1 - a single system
 	fscanf(f, "%s", s);
 	if (!strcmp(s, "CS"))
 	{
@@ -850,7 +851,7 @@ bool FlexibleSECylinder_1::Read(FILE *f)
 	else
 	{
 		fsetpos(f, &pos);
-		//Caso 2 - dois sistemas
+		//Case 2 - two systems
 		fscanf(f, "%s", s);
 		if (!strcmp(s, "CSA"))
 		{
@@ -906,7 +907,7 @@ void FlexibleSECylinder_1::Write(FILE *f)
 	fprintf(f, "FlexibleSECylinder_1\t%d\tA\t%.6e\tB\t%.6e\tN\t%.6e\tCSA\t%d\tCSB\t%d\t%s\tNodes\t%d\t%d\n", number, a, b, n, csA, csB, s, nodes[0], nodes[1]);
 }
 
-//Checa inconsistências para evitar erros de execução
+//Checks inconsistencies for avoid errors of execution
 bool FlexibleSECylinder_1::Check()
 {
 	for (int i = 0; i < n_nodes; i++)
@@ -919,13 +920,13 @@ bool FlexibleSECylinder_1::Check()
 	if (csB > db.number_CS)
 		return false;
 	
-	////Checagem do alinhamento dos eixos do CS com direção dos nós
+	////Check of the alinhamento of the eixos of the CS with direction of the nodes
 	//Matrix e1r = *data.CS[csA - 1]->E1;
 	//Matrix e2r = *data.CS[csA - 1]->E2;
 	//Matrix e3r = *data.CS[csA - 1]->E3;
 	//double tolortho = 1e-8;
 	//Matrix e3_check(3);
-	////Versor e3_check (configuração de referência)
+	////Versor e3_check (configuration of reference)
 	//e3_check(0, 0) = data.nodes[nodes[1] - 1]->ref_coordinates[0] - data.nodes[nodes[0] - 1]->ref_coordinates[0];
 	//e3_check(1, 0) = data.nodes[nodes[1] - 1]->ref_coordinates[1] - data.nodes[nodes[0] - 1]->ref_coordinates[1];
 	//e3_check(2, 0) = data.nodes[nodes[1] - 1]->ref_coordinates[2] - data.nodes[nodes[0] - 1]->ref_coordinates[2];
@@ -938,17 +939,17 @@ bool FlexibleSECylinder_1::Check()
 	return true;
 }
 
-//Realiza chute inicial para as variaveis zeta e theta
+//Performs initial guess for the variables zeta and theta
 void FlexibleSECylinder_1::InitialGuess(Matrix* xS, double** convective, int n_solutions)
 {
 	Matrix bA = 0.5*(*x_AAi + *x_BAi);
 	Matrix tA = 0.5*(*x_BAi - *x_AAi);
 	double csi;
 	csi = dot(*xS - bA, tA) / dot(tA,tA);
-	Matrix Q_Acsi = (*Q_AAi)*(0.5 - 0.5*csi) + (*Q_BAi)*(0.5 + 0.5*csi);				//Tensor rotação no csiA
-	Matrix x_Acsi = (*x_AAi)*(0.5 - 0.5*csi) + (*x_BAi)*(0.5 + 0.5*csi);				//Posição da projeção na reta
+	Matrix Q_Acsi = (*Q_AAi)*(0.5 - 0.5*csi) + (*Q_BAi)*(0.5 + 0.5*csi);				//Tensor rotation in the csiA
+	Matrix x_Acsi = (*x_AAi)*(0.5 - 0.5*csi) + (*x_BAi)*(0.5 + 0.5*csi);				//Position of the projeção in the reta
 	
-	//Vetor e1_A atualizado (em csi)
+	//Vector e1_A updated (in csi)
 	Matrix e1_A(3);
 	e1_A(0, 0) = 1.0;
 	Matrix e2_A(3);
@@ -956,7 +957,7 @@ void FlexibleSECylinder_1::InitialGuess(Matrix* xS, double** convective, int n_s
 	e1_A = Q_Acsi*e1_A;
 	e2_A = Q_Acsi*e2_A;
 	
-	//Estimativa dos theta_A e theta_B
+	//Estimativa of the theta_A and theta_B
 	double theta = 0;
 	Matrix xSxA = *xS - x_Acsi;
 	double distance = norm(xSxA);
@@ -965,7 +966,7 @@ void FlexibleSECylinder_1::InitialGuess(Matrix* xS, double** convective, int n_s
 	{
 		double cos_e1_A = dot(xSxA, e1_A) / distance;
 		double cos_e2_A = dot(xSxA, e2_A) / distance;
-		//Evitando erros de arredondamento - cos
+		//Evitando errors of arredondamento - cos
 		if (cos_e1_A > 1.0)
 			cos_e1_A = 1.0;
 		if (cos_e1_A < -1.0)
@@ -974,27 +975,27 @@ void FlexibleSECylinder_1::InitialGuess(Matrix* xS, double** convective, int n_s
 			cos_e2_A = 1.0;
 		if (cos_e2_A < -1.0)
 			cos_e2_A = -1.0;
-		//Primeiro ou quarto quadrantes
+		//First or fourth quadrantes
 		if (cos_e1_A >= 0.0)
 		{
-			if (cos_e2_A >= 0.0)//primeiro
+			if (cos_e2_A >= 0.0)//first
 				theta = abs(acos(cos_e1_A));
-			else //quarto
+			else //fourth
 				theta = -abs(acos(cos_e1_A));
 		}
-		//Segundo ou terceiro quadrantes
+		//Second or third quadrantes
 		else
 		{
-			if (cos_e2_A >= 0.0)//segundo
+			if (cos_e2_A >= 0.0)//second
 				theta = abs(acos(cos_e2_A)) + PI / 2;
-			else //terceiro
+			else //third
 				theta = abs(acos(-cos_e1_A)) + PI;
 		}
 	}
-	//Salva nas variaveis - solução principal
+	//Saves in the variables - solution main
 	convective[0][0] = csi;
 	convective[0][1] = theta;
-	//Salva nas variaveis - soluções secundarias
+	//Saves in the variables - solutions secundarias
 	for (int i = 1; i < n_solutions; i++)
 	{
 		convective[i][0] = csi;
@@ -1004,7 +1005,7 @@ void FlexibleSECylinder_1::InitialGuess(Matrix* xS, double** convective, int n_s
 
 void FlexibleSECylinder_1::PreCalc()
 {
-	//Apontando para posição que indica valor dos GLs globais
+	//Pointing for position that indicates value of the GLs global
 	for (int i = 0; i < 6; i++)
 	{
 		GLs[i] = &db.nodes[nodes[0] - 1]->GLs[i];
@@ -1012,7 +1013,7 @@ void FlexibleSECylinder_1::PreCalc()
 	}
 	e = 2.0 / n;	//expoente
 
-	//Transformação de coordenadas
+	//Transformation of coordinates
 	Matrix e1g(3);
 	e1g(0, 0) = 1.0;
 	Matrix e2g(3);
@@ -1023,7 +1024,7 @@ void FlexibleSECylinder_1::PreCalc()
 	Matrix e2l = *db.CS[csA - 1]->E2;
 	Matrix e3l = *db.CS[csA - 1]->E3;
 
-	//Salva a matriz de transformação de coordenadas (para orientar o plano da ST de acordo com a orientação de referência da superficie)
+	//Saves the transformation matrix of coordinates (for orientar the plane of the ST according to the orientation of reference of the surface)
 	(*Q0A)(0, 0) = dot(e1g, e1l);
 	(*Q0A)(0, 1) = dot(e1g, e2l);
 	(*Q0A)(0, 2) = dot(e1g, e3l);
@@ -1040,7 +1041,7 @@ void FlexibleSECylinder_1::PreCalc()
 	e2l = *db.CS[csB - 1]->E2;
 	e3l = *db.CS[csB - 1]->E3;
 
-	//Salva a matriz de transformação de coordenadas (para orientar o plano da ST de acordo com a orientação de referência da superficie)
+	//Saves the transformation matrix of coordinates (for orientar the plane of the ST according to the orientation of reference of the surface)
 	(*Q0B)(0, 0) = dot(e1g, e1l);
 	(*Q0B)(0, 1) = dot(e1g, e2l);
 	(*Q0B)(0, 2) = dot(e1g, e3l);
@@ -1058,10 +1059,10 @@ void FlexibleSECylinder_1::PreCalc()
 	DegenerationPreCalc();
 }
 
-//Retorna as coordenadas da superficie para um par (zeta,theta) - configuração anterior convergida
+//Returns the coordinates of the surface for a pair (zeta,theta) - configuration previous converged
 void FlexibleSECylinder_1::Gamma_and_Triad(Matrix* G_p, Matrix* t1_p, Matrix* t2_p, Matrix* n_p, Matrix* G_i, Matrix* t1_i, Matrix* t2_i, Matrix* n_i, Matrix* G_ip, double* zi, double* thi, double* zp, double* thp)
 {
-	double *d = d_A->getMatrix();		//ponteiro para o vetor d
+	double *d = d_A->getMatrix();		//pointer for the vector d
 	double *aA = &a;
 	double *bA = &b;
 	double *eA = &e;
@@ -1070,18 +1071,18 @@ void FlexibleSECylinder_1::Gamma_and_Triad(Matrix* G_p, Matrix* t1_p, Matrix* t2
 	double** QAAi = aQ_AAi;
 	double** QBAi = aQ_BAi;
 
-	double *Gp = G_p->getMatrix();		//ponteiro para o vetor Gp 
-	double *t1p = t1_p->getMatrix();	//ponteiro para o vetor t1p 
-	double *t2p = t2_p->getMatrix();	//ponteiro para o vetor t2p
-	double *np = n_p->getMatrix();		//ponteiro para o vetor np
+	double *Gp = G_p->getMatrix();		//pointer for the vector Gp 
+	double *t1p = t1_p->getMatrix();	//pointer for the vector t1p 
+	double *t2p = t2_p->getMatrix();	//pointer for the vector t2p
+	double *np = n_p->getMatrix();		//pointer for the vector np
 
-	double *t1i = t1_i->getMatrix();	//ponteiro para o vetor t1i 
-	double *t2i = t2_i->getMatrix();	//ponteiro para o vetor t2i
-	double *ni = n_i->getMatrix();		//ponteiro para o vetor ni
+	double *t1i = t1_i->getMatrix();	//pointer for the vector t1i 
+	double *t2i = t2_i->getMatrix();	//pointer for the vector t2i
+	double *ni = n_i->getMatrix();		//pointer for the vector ni
 
-	double *Gip = G_ip->getMatrix();	//ponteiro para o vetor Gip
-	double *Gi = G_i->getMatrix();		//ponteiro para o vetor Gi
-	bool* normalint = &flag_normal_int;	//ponteiro para booleana flag_normal_int
+	double *Gip = G_ip->getMatrix();	//pointer for the vector Gip
+	double *Gi = G_i->getMatrix();		//pointer for the vector Gi
+	bool* normalint = &flag_normal_int;	//pointer for boolean flag_normal_int
 	double v[1000];
 
 	//ACEGEN
@@ -1280,10 +1281,10 @@ void FlexibleSECylinder_1::Gamma_and_Triad(Matrix* G_p, Matrix* t1_p, Matrix* t2
 	Gi[2] = v[168] * v[302] + v[169] * v[303];
 }
 
-//Dado o ponto xS, calcula as coordenadas (zeta,theta) referentes a minima distancia
+//Data the point xS, calculates the coordinates (zeta,theta) referring to the minimum distance
 void FlexibleSECylinder_1::FindMinimimumParameters(Matrix* xS, NSContactData* cd)
 {
-	double *d = d_A->getMatrix();		//ponteiro para o vetor d
+	double *d = d_A->getMatrix();		//pointer for the vector d
 	double *aA = &a;
 	double *bA = &b;
 	double *eA = &e;
@@ -1292,13 +1293,13 @@ void FlexibleSECylinder_1::FindMinimimumParameters(Matrix* xS, NSContactData* cd
 	double** QAAi = aQ_AAi;
 	double** QBAi = aQ_BAi;
 
-	//Parametros NR
+	//Parameters NR
 	double tol_ortho = 1e-12;
 	int max_it = 20;
 	double v[1000];
 
 	double** J;
-	//Alocação J
+	//Allocation J
 	J = new double*[2];
 	for (int i = 0; i < 2; i++)
 		J[i] = new double[2];
@@ -1307,11 +1308,11 @@ void FlexibleSECylinder_1::FindMinimimumParameters(Matrix* xS, NSContactData* cd
 	Matrix residual(2);
 	Matrix delta(2);
 	double max_delta = 0.0;
-	double *pxS = xS->getMatrix();			//ponteiro para o vetor xS
-	double *r = residual.getMatrix();		//ponteiro para o vetor residual
-	double *vi = vNR->getMatrix();			//pointeiro para vNR
+	double *pxS = xS->getMatrix();			//pointer for the vector xS
+	double *r = residual.getMatrix();		//pointer for the vector residual
+	double *vi = vNR->getMatrix();			//pointeiro for vNR
 
-	//Inicialização de chute inicial
+	//Initialization of initial guess
 	for (int sol_index = 0; sol_index < cd->n_solutions; sol_index++)
 	{
 		if (sol_index == 0 && cd->return_value[sol_index] == 1)
@@ -1320,14 +1321,14 @@ void FlexibleSECylinder_1::FindMinimimumParameters(Matrix* xS, NSContactData* cd
 		(*vNR)(1, 0) = cd->convective[sol_index][1];
 		
 		
-		double error = tol_ortho + 1.0;	//Forçando entrar no loop
+		double error = tol_ortho + 1.0;	//Forcing enter in the loop
 		int it = 1;
 		int flag_error;
 		while (error > tol_ortho && it <= max_it)
 		{
 			if (error > tol_ortho)
 			{
-				//Calculo do residuo e jacobiano
+				//Calculation of the residual and Jacobian
 				v[221] = 2e0 / (*eA);
 				v[223] = 1e0 / v[221];
 				v[222] = -1e0 + v[221];
@@ -1445,40 +1446,40 @@ void FlexibleSECylinder_1::FindMinimimumParameters(Matrix* xS, NSContactData* cd
 					(v[177] * v[95] + v[174] * v[96])) + v[156] * ((v[108] * v[174] + v[107] * v[177])*v[220] + v[219] * (v[177] * v[98]
 					+ v[174] * v[99]));
 
-				Jacobian.PtrToMatrix(J, 2);									//Conversão do Jacobiano para matriz
+				Jacobian.PtrToMatrix(J, 2);									//Conversion of the Jacobian for matrix
 				//Jacobian.print();
 				//residual.print();
-				delta = fullsystem(Jacobian, -1.0*residual, &flag_error);	//Resolve sistema linear
-				if (flag_error == 0)										//Se conseguiu fazer o sistema linear
+				delta = fullsystem(Jacobian, -1.0*residual, &flag_error);	//Solves linear system
+				if (flag_error == 0)										//If conseguiu do the linear system
 				{
-					(*vNR) = (*vNR) + delta;								//Atualização das variaveis
-					error = norm(delta);									//Norma do residuo
+					(*vNR) = (*vNR) + delta;								//Update of the variables
+					error = norm(delta);									//Norm of the residual
 					it++;
 				}
 				else
 				{
-					it = max_it + 1;//Força saida - divergência
+					it = max_it + 1;//Force output - divergence
 				}
 			}
 		}//end while NR
 
-		//Convergiu - ainda ha ações a verificar...
+		//Converged - still there is ações the check...
 		if (error <= tol_ortho && flag_error == 0)
 		{
 			if (norm(delta) > max_delta)
 				max_delta = norm(delta);
-			//Salva nas variaveis
+			//Saves in the variables
 			cd->convective[sol_index][0] = (*vNR)(0, 0);
 			cd->convective[sol_index][1] = (*vNR)(1, 0);
-			//Se esta no range local de interesse - dominio fisico do cilindro super-eliptico
+			//If this in the range local of interest - domain physical of the cilindro super-eliptico
 			if (abs((*vNR)(0, 0)) <= 1.0)
 				cd->return_value[sol_index] = 0;
 			else
 			{
-				//Se esta em região próxima, mas não no range local de interesse
+				//If this in região next, but not in the range local of interest
 				if (abs((*vNR)(0, 0)) < 1.2)
 					cd->return_value[sol_index] = 3;
-				//Se não estiver no range de interesse
+				//If not is in the range of interest
 				else
 					cd->return_value[sol_index] = 2;
 			}
@@ -1493,11 +1494,11 @@ void FlexibleSECylinder_1::FindMinimimumParameters(Matrix* xS, NSContactData* cd
 		delete[]J[i];
 	delete[]J;
 	
-	//Retornos da função
-	//0 - Convergiu e esta no range de interesse para contato
-	//1 - Não houve convergência (pode ou não estar no range para contato) - retorno problematico!!
-	//2 - Houve convergência, mas não esta no range para contato
-	//3 - Houve convergência, esta fora do range para contato, mas próximo
+	//Retornos of the function
+	//0 - Converged and this in the range of interest for contact
+	//1 - Not there was convergence (can or not to be in the range for contact) - return problematico!!
+	//2 - There was convergence, but not this in the range for contact
+	//3 - There was convergence, this outside of the range for contact, but next
 	if (flag_normal_int == true)
 		cd->CheckRepeated(max_delta*1e3);
 	else
@@ -1508,7 +1509,7 @@ void FlexibleSECylinder_1::FindMinimimumParameters(Matrix* xS, NSContactData* cd
 	}
 }
 
-//Atualiza as variaveis internas da superficie
+//Updates the variables internal of the surface
 void FlexibleSECylinder_1::FillNodes()
 {
 	Matrix alphaAA(3);
@@ -1529,16 +1530,16 @@ void FlexibleSECylinder_1::FillNodes()
 		alphaBA(i, 0) = db.nodes[nodes[1] - 1]->displacements[i + 3];
 	}
 	//Q_AAp
-	double alpha = norm(alphaAA);							//Valor escalar do parametro alpha
-	Matrix A = skew(alphaAA);								//Matriz A
-	double g = 4.0 / (4.0 + alpha * alpha);					//função g(alpha) - em algumas ref. tb. chamado de h(alpha)
-	Matrix Qd = *I3 + g * (A + 0.5*(A*A));					//Tensor de rotação
+	double alpha = norm(alphaAA);							//Value scalar of the parameter alpha
+	Matrix A = skew(alphaAA);								//Matrix A
+	double g = 4.0 / (4.0 + alpha * alpha);					//function g(alpha) - in some ref. tb. called of h(alpha)
+	Matrix Qd = *I3 + g * (A + 0.5*(A*A));					//Tensor of rotation
 	*Q_AAp = Qd*(*Q_AAi);
 	//Q_BAp
-	alpha = norm(alphaBA);							//Valor escalar do parametro alpha
-	A = skew(alphaBA);								//Matriz A
-	g = 4.0 / (4.0 + alpha * alpha);				//função g(alpha) - em algumas ref. tb. chamado de h(alpha)
-	Qd = *I3 + g * (A + 0.5*(A*A));					//Tensor de rotação
+	alpha = norm(alphaBA);							//Value scalar of the parameter alpha
+	A = skew(alphaBA);								//Matrix A
+	g = 4.0 / (4.0 + alpha * alpha);				//function g(alpha) - in some ref. tb. called of h(alpha)
+	Qd = *I3 + g * (A + 0.5*(A*A));					//Tensor of rotation
 	*Q_BAp = Qd * (*Q_BAi);
 	//x_AAp
 	*x_AAp = *x_AAi + uA;
@@ -1546,13 +1547,13 @@ void FlexibleSECylinder_1::FillNodes()
 	*x_BAp = *x_BAi + uB;
 }
 
-//Retorna coordenadas globais do ponto central da superficie a ser utilizado para calculos grosseiros de sua localização (pinball)
+//Returns coordinates global of the point central of the surface the be used for calculations coarse of its location (pinball)
 void FlexibleSECylinder_1::CenterPoint(Matrix* center)
 {
 	*center = 0.5*(*x_AAi + *x_BAi);
 }
 
-//Salva vetores de configuração convergida
+//Saves vectors of configuration converged
 void FlexibleSECylinder_1::SaveConfiguration()
 {
 	d_A->clear();
@@ -1574,20 +1575,20 @@ void FlexibleSECylinder_1::SaveConfiguration()
 		(*alpha_BA)(i, 0) = db.nodes[nodes[1] - 1]->copy_coordinates[i + 3];
 	}
 	//Q_AAi
-	double alpha = norm(*alpha_AA);							//Valor escalar do parametro alpha
-	Matrix A = skew(*alpha_AA);								//Matriz A
-	double g = 4.0 / (4.0 + alpha*alpha);					//função g(alpha) - em algumas ref. tb. chamado de h(alpha)
-	*Q_AAi = *I3 + g*(A + 0.5*(A*A));						//Tensor de rotação
-	*Q_AAic = *Q_AAi;										//Cópia - antes da transformação embutida
-	*Q_AAi = (*Q_AAi)*(*Q0A);								//Para ja realizar a transformação da parametrização da super-elipse para o sistema global
+	double alpha = norm(*alpha_AA);							//Value scalar of the parameter alpha
+	Matrix A = skew(*alpha_AA);								//Matrix A
+	double g = 4.0 / (4.0 + alpha*alpha);					//function g(alpha) - in some ref. tb. called of h(alpha)
+	*Q_AAi = *I3 + g*(A + 0.5*(A*A));						//Tensor of rotation
+	*Q_AAic = *Q_AAi;										//Copies - before of the transformation embutida
+	*Q_AAi = (*Q_AAi)*(*Q0A);								//For already perform the transformation of the parametrização of the super-elipse for the system global
 	Q_AAi->MatrixToPtr(aQ_AAi, 3);
 	//Q_BAi
-	alpha = norm(*alpha_BA);								//Valor escalar do parametro alpha
-	A = skew(*alpha_BA);									//Matriz A
-	g = 4.0 / (4.0 + alpha*alpha);							//função g(alpha) - em algumas ref. tb. chamado de h(alpha)
-	*Q_BAi = *I3 + g*(A + 0.5*(A*A));						//Tensor de rotação
-	*Q_BAic = *Q_BAi;										//Cópia - antes da transformação embutida
-	*Q_BAi = (*Q_BAi)*(*Q0B);								//Para ja realizar a transformação da parametrização da super-elipse para o sistema global
+	alpha = norm(*alpha_BA);								//Value scalar of the parameter alpha
+	A = skew(*alpha_BA);									//Matrix A
+	g = 4.0 / (4.0 + alpha*alpha);							//function g(alpha) - in some ref. tb. called of h(alpha)
+	*Q_BAi = *I3 + g*(A + 0.5*(A*A));						//Tensor of rotation
+	*Q_BAic = *Q_BAi;										//Copies - before of the transformation embutida
+	*Q_BAi = (*Q_BAi)*(*Q0B);								//For already perform the transformation of the parametrização of the super-elipse for the system global
 	Q_BAi->MatrixToPtr(aQ_BAi, 3);
 
 	*Q_AAp = *Q_AAi;
@@ -1613,17 +1614,17 @@ void FlexibleSECylinder_1::UpdateBox()
 		alphaB(i, 0) = db.nodes[nodes[1] - 1]->displacements[i + 3];
 	}
 	//QA
-	double alpha = norm(alphaA);							//Valor escalar do parametro alpha
-	Matrix A = skew(alphaA);								//Matriz A
-	double g = 4.0 / (4.0 + alpha*alpha);					//função g(alpha) - em algumas ref. tb. chamado de h(alpha)
-	QA = *I3 + g*(A + 0.5*(A*A));							//Tensor de rotação
+	double alpha = norm(alphaA);							//Value scalar of the parameter alpha
+	Matrix A = skew(alphaA);								//Matrix A
+	double g = 4.0 / (4.0 + alpha*alpha);					//function g(alpha) - in some ref. tb. called of h(alpha)
+	QA = *I3 + g*(A + 0.5*(A*A));							//Tensor of rotation
 	QA = QA*(*Q_AAi);
 	//QB
 
-	alpha = norm(alphaB);							//Valor escalar do parametro alpha
-	A = skew(alphaB);								//Matriz A
-	g = 4.0 / (4.0 + alpha*alpha);					//função g(alpha) - em algumas ref. tb. chamado de h(alpha)
-	QB = *I3 + g*(A + 0.5*(A*A));							//Tensor de rotação
+	alpha = norm(alphaB);							//Value scalar of the parameter alpha
+	A = skew(alphaB);								//Matrix A
+	g = 4.0 / (4.0 + alpha*alpha);					//function g(alpha) - in some ref. tb. called of h(alpha)
+	QB = *I3 + g*(A + 0.5*(A*A));							//Tensor of rotation
 	QB = QB*(*Q_BAi);
 
 	//Bounding box
@@ -1695,11 +1696,11 @@ void FlexibleSECylinder_1::UpdateBox()
 	y[7] = vec(1, 0);
 	z[7] = vec(2, 0);
 
-	//Setando os vertices
+	//Setting the vertices
 	box.SetVertices(x, y, z);
 }
 
-//Calcula contribuições de contato entre esfera e superficie
+//Calculates contributions of contact between sphere and surface
 void FlexibleSECylinder_1::ContactSphereSurfaceSticking(double* Rc, double** Kc, double zetap, double thetap, double zetai, double thetai, double* gti, int node, double* epsn, double* epst, double* cn, double* ct, double* mu, double* radius)
 {
 	double *aA = &a;
@@ -1765,7 +1766,7 @@ void FlexibleSECylinder_1::ContactSphereSurfaceSticking(double* Rc, double** Kc,
 		ddui[i + 12] = db.nodes[nodes[1] - 1]->copy_accel[i];
 		ddui[i + 15] = db.nodes[nodes[1] - 1]->copy_accel[i + 3];
 	}
-	bool* normalint = &flag_normal_int;	//ponteiro para booleana flag_normal_int
+	bool* normalint = &flag_normal_int;	//pointer for boolean flag_normal_int
 	double v[30000];
 	//ACEGEN
 	//int b612;
@@ -20383,7 +20384,7 @@ void FlexibleSECylinder_1::ContactSphereSurfaceSticking(double* Rc, double** Kc,
 		+ v[1277] * v[5004] + v[19330] * v[670] + v[19308] * v[671] + v[19286] * v[672]);
 }
 
-//Calcula contribuições de contato entre esfera e superficie
+//Calculates contributions of contact between sphere and surface
 void FlexibleSECylinder_1::ContactSphereSurfaceSliding(double* Rc, double** Kc, double zetap, double thetap, double zetai, double thetai, double* gti, int node, double* epsn, double* epst, double* cn, double* ct, double* mu, double* radius)
 {
 	double *aA = &a;
@@ -20449,7 +20450,7 @@ void FlexibleSECylinder_1::ContactSphereSurfaceSliding(double* Rc, double** Kc, 
 		ddui[i + 12] = db.nodes[nodes[1] - 1]->copy_accel[i];
 		ddui[i + 15] = db.nodes[nodes[1] - 1]->copy_accel[i + 3];
 	}
-	bool* normalint = &flag_normal_int;	//ponteiro para booleana flag_normal_int
+	bool* normalint = &flag_normal_int;	//pointer for boolean flag_normal_int
 	double v[30000];
 	//ACEGEN
 	//int b612;

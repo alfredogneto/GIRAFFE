@@ -38,9 +38,9 @@ public:
 	int n_times;										//NTimes (of table)
 	int n_values;										//Number of values (columns) on table
 
-	//Variables - definition to a single node and global CS
+	//Variables - definition to the single node and global CS
 	int single_node;
 
-	BoolTable bool_table;				//Bool table que ativa ou desativa na seq. de solutions
+	BoolTable bool_table;				//Bool table that active or desativa in the seq. of solutions
 };
 

@@ -17,7 +17,7 @@
 #include "Encoding.h"
 #include "Dynamic.h"
 #include"Database.h"
-//Variaveis globais
+//Global variables
 extern
 Database db;
 
@@ -73,7 +73,7 @@ VEMPolyhedron::VEMPolyhedron()
 	domainData = NULL;														//Domain data
 	elementData = NULL;														//Element data
 	
-	type_name = new char[20];//Nome do tipo da particula
+	type_name = new char[20];//Name of the type of the particle
 	sprintf(type_name, "VEMPolyhedron");
 
 	I3 = new Matrix(3, 3);
@@ -249,7 +249,7 @@ bool VEMPolyhedron::Read(FILE *f)
 	else
 		return false;
 
-	//Salva a posição (stream)
+	//Saves the position (stream)
 	fpos_t pos;
 	fgetpos(f, &pos);
 	fscanf(f, "%s", s);
@@ -303,14 +303,14 @@ void VEMPolyhedron::Write(FILE *f)
 }
 void VEMPolyhedron::WriteModifyingParameters(FILE *f, int e_material, int e_node, int e_number, int e_cs)
 {
-	//TODO (used in saving configuration)
+	//ALL (used in saving configuration)
 }
 
 void VEMPolyhedron::PreCalc()
 {
 	////////////////////////////////////////////////////////////////
-	//Matriz para transformação de coordenadas  local-global
-	// vlocal = (sistema do CAD)
+	//Matrix for transformation of coordinates  local-global
+	// vlocal = (system of the CAD)
 	// Q0*vlocal = vglobal
 	////////////////////////////////////////////////////////////////
 	(*Q0)(0, 0) = (*db.CS[cs - 1]->E1)(0, 0);
@@ -524,10 +524,10 @@ void VEMPolyhedron::SaveLagrange()
 
 	///////////////////////Potential gravitational energy//////////////////////////////////////////
 	Matrix center(3);	//Updated center of mass of the body
-	Matrix g(3);		//Vetor gravidade
+	Matrix g(3);		//Vector gravidade
 	if (db.environment_exist == true)
 	{
-		//Se existe campo gravitacional
+		//If exists field gravitacional
 		if (db.environment->g_exist == true)
 		{
 			//Gravity field
@@ -665,7 +665,7 @@ void VEMPolyhedron::UpdateGeometricEntities()
 	BoundingCylinder* ptr_bv3;
 	for (int i = ptr_cad->n_faces; i < ptr_cad->n_faces + (int)ptr_cad->edges.size(); i++)
 	{
-		//Determining the radius of the cylinder (smallest radius related to a neighboring face)
+		//Determining the radius of the cylinder (smallest radius related to the neighboring face)
 		float temp_radius = FLT_MAX;
 		for (int j = 0; j < ptr_cad->edges[i - ptr_cad->n_faces].faceIDs.size(); j++)
 		{
@@ -691,7 +691,7 @@ void VEMPolyhedron::UpdateGeometricEntities()
 	BoundingSphere* ptr_bv4;
 	for (int i = ptr_cad->n_faces + (int)ptr_cad->edges.size(); i < ptr_cad->n_faces + (int)ptr_cad->edges.size() + (int)ptr_cad->vertices.size(); i++)
 	{
-		//Determining the radius of the cylinder (smallest radius related to a neighboring face)
+		//Determining the radius of the cylinder (smallest radius related to the neighboring face)
 		float temp_radius = FLT_MAX;
 		for (int j = 0; j < ptr_cad->vertices[i - ptr_cad->n_faces - (int)ptr_cad->edges.size()].faceIDs.size(); j++)
 		{
@@ -720,7 +720,7 @@ void VEMPolyhedron::WriteVTK_XMLRender(FILE *f)
 	STLSurface* ptr_cad = static_cast<STLSurface*>(db.cad_data[CADDATA_ID - 1]);
 	std::vector<int> vint;
 	
-	//Abre piece
+	//Opens piece
 	fprintf(f, "\n<Piece NumberOfPoints=\"%d\" NumberOfCells=\"%d\">\n<Points>\n<DataArray type = \"Float32\" NumberOfComponents = \"3\" format = \"binary\">\n", n_vertices, ptr_cad->n_faces);
 	std::vector<float> coord2;
 	std::vector<float> float_vector;
@@ -818,7 +818,7 @@ void VEMPolyhedron::WriteVTK_XMLRender(FILE *f)
 	fprintf(f, "<CellData FieldData = \"ElementData\">\n");
 	//Opens DataArray
 	fprintf(f, "<DataArray Name = \"ElementResults\" type = \"Float32\" NumberOfComponents=\"%d\" format=\"binary\">\n", res_element);
-	//Imprime os resultados do elemento
+	//Prints the results of the element
 	float_vector.clear();
 	for (int i = 0; i < ptr_cad->n_faces; i++)
 	{
@@ -834,7 +834,7 @@ void VEMPolyhedron::WriteVTK_XMLRender(FILE *f)
 
 	//Opens DataArray
 	fprintf(f, "\t\t\t\t<DataArray Name=\"ParticleData\" type=\"Int32\" NumberOfComponents=\"%d\" format=\"binary\">\n", 4);
-	//Imprime os dados da particula
+	//Prints the data of the particle
 	vint.clear();
 	for (int i = 0; i < ptr_cad->n_faces; i++)
 	{
@@ -996,14 +996,14 @@ void VEMPolyhedron::UpdateVariables()
 
 void VEMPolyhedron::MountGlobal()
 {
-	//Variaveis temporarias para salvar a indexação global dos graus de liberdade a serem setados na matriz de rigidez global
+	//Temporary variables for save the indexing global of the degrees of freedom the to be set in the stiffness matrix global
 	int GL_global_1 = 0;
 	int GL_global_2 = 0;
 	double anterior = 0;
 	for (int i = 0; i < db.super_nodes[super_node-1]->n_DOFs; i++)
 	{
 		GL_global_1 = db.super_nodes[super_node - 1]->DOFs[i];
-		//Caso o grau de liberdade seja livre:
+		//Case the degree of freedom be free:
 		if (GL_global_1 > 0)
 		{
 			anterior = db.global_P_A(GL_global_1 - 1, 0);
@@ -1011,34 +1011,34 @@ void VEMPolyhedron::MountGlobal()
 			anterior = db.global_I_A(GL_global_1 - 1, 0);
 			db.global_I_A(GL_global_1 - 1, 0) = anterior + local_residual[i];
 			//Convergence criteria
-			/*anterior = db.global_ABS_P_A(GL_global_1 - 1, 0);
-			db.global_ABS_P_A(GL_global_1 - 1, 0) = anterior + local_abs_load[i];
+			/*previous = db.global_ABS_P_A(GL_global_1 - 1, 0);
+			db.global_ABS_P_A(GL_global_1 - 1, 0) = previous + local_abs_load[i];
 			db.global_COUNT_ABS_P_A(GL_global_1 - 1, 0) = db.global_COUNT_ABS_P_A(GL_global_1 - 1, 0) + count_local_abs_load[i];*/
 		}
-		//Caso o grau de liberdade seja fixo:
+		//Case the degree of freedom be fixed:
 		if (GL_global_1 < 0)
 		{
 			anterior = db.global_P_B(-GL_global_1 - 1, 0);
 			db.global_P_B(-GL_global_1 - 1, 0) = anterior + local_residual[i];
 			//Convergence criteria
-			/*anterior = db.global_ABS_P_B(-GL_global_1 - 1, 0);
-			db.global_ABS_P_B(-GL_global_1 - 1, 0) = anterior + local_abs_load[i];
+			/*previous = db.global_ABS_P_B(-GL_global_1 - 1, 0);
+			db.global_ABS_P_B(-GL_global_1 - 1, 0) = previous + local_abs_load[i];
 			db.global_COUNT_ABS_P_B(-GL_global_1 - 1, 0) = db.global_COUNT_ABS_P_B(-GL_global_1 - 1, 0) + count_local_abs_load[i];*/
 		}
 		for (int j = 0; j < db.super_nodes[super_node - 1]->n_DOFs; j++)
 		{
 			GL_global_2 = db.super_nodes[super_node - 1]->DOFs[j];
 			
-			//Caso os graus de liberdade sejam ambos livres (Matriz Kaa)
+			//Case the degrees of freedom be both free (Matrix Kaa)
 			if (GL_global_1 > 0 && GL_global_2 > 0)
 				db.global_stiffness_AA.setValue(GL_global_1 - 1, GL_global_2 - 1, local_stiffness[i][j]);
-			//Caso os graus de liberdade sejam ambos fixos (Matriz Kbb)
+			//Case the degrees of freedom be both fixed (Matrix Kbb)
 			if (GL_global_1 < 0 && GL_global_2 < 0)
 				db.global_stiffness_BB.setValue(-GL_global_1 - 1, -GL_global_2 - 1, local_stiffness[i][j]);
-			//Caso os graus de liberdade sejam livre e fixo (Matriz Kab)
+			//Case the degrees of freedom be free and fixed (Matrix Kab)
 			if (GL_global_1 > 0 && GL_global_2 < 0)
 				db.global_stiffness_AB.setValue(GL_global_1 - 1, -GL_global_2 - 1, local_stiffness[i][j]);
-			//Caso os graus de liberdade sejam fixo e livre (Matriz Kba)
+			//Case the degrees of freedom be fixed and free (Matrix Kba)
 			if (GL_global_1 < 0 && GL_global_2 > 0)
 				db.global_stiffness_BA.setValue(-GL_global_1 - 1, GL_global_2 - 1, local_stiffness[i][j]);
 		}
@@ -1071,7 +1071,7 @@ void VEMPolyhedron::Mount()
 	l_factor = 0.0;
 	if (db.environment_exist == true)
 	{
-		//Se existe campo gravitacional
+		//If exists field gravitacional
 		if (db.environment->g_exist == true)
 		{
 			if (db.gcs_exist)
@@ -2751,9 +2751,9 @@ void VEMPolyhedron::MountFieldLoading()
 				local_residual[i * 3 + 1] -= mass * ptr_cad->vertice_factors[i] * l_factor * db.environment->G(1, 0);
 				local_residual[i * 3 + 2] -= mass * ptr_cad->vertice_factors[i] * l_factor * db.environment->G(2, 0);
 				//Updating local_abs_load:
-				/*local_abs_load[i * 3 + 0] += abs(mass * ptr_cad->vertice_factors[i] * l_factor * db.environment->G(0, 0));
-				local_abs_load[i * 3 + 1] += abs(mass * ptr_cad->vertice_factors[i] * l_factor * db.environment->G(1, 0));
-				local_abs_load[i * 3 + 2] += abs(mass * ptr_cad->vertice_factors[i] * l_factor * db.environment->G(2, 0));
+				/*local_abs_load[i * 3 + 0] += abs(mass * ptr_cad->vertex_factors[i] * l_factor * db.environment->G(0, 0));
+				local_abs_load[i * 3 + 1] += abs(mass * ptr_cad->vertex_factors[i] * l_factor * db.environment->G(1, 0));
+				local_abs_load[i * 3 + 2] += abs(mass * ptr_cad->vertex_factors[i] * l_factor * db.environment->G(2, 0));
 				count_local_abs_load[i * 3 + 0]++;
 				count_local_abs_load[i * 3 + 1]++;
 				count_local_abs_load[i * 3 + 2]++;*/
@@ -2775,7 +2775,7 @@ void VEMPolyhedron::MountFieldLoading()
 	
 }
 
-//Calcula contribuições de inercia
+//Calculates contributions of inertia
 void VEMPolyhedron::InertialContributions()
 {
 	//CAD pointer

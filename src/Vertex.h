@@ -11,7 +11,7 @@ class Vertex
 public:
 	Vertex();
 	~Vertex();
-	Vertex(const Vertex &copied);						//Construtor de cópia
+	Vertex(const Vertex &copied);						//Copy constructor
 	float tol;											//Tolerance on coordinates
 	int ID;
 	MatrixFloat* coord_float;
@@ -22,5 +22,5 @@ public:
 	vector<int> edgeIDs;
 };
 
-bool operator == (Vertex &v1, Vertex &v2);				//Verificação de igualdade com tol_equal
+bool operator == (const Vertex &v1, const Vertex &v2);				//Equality check with tol_equal
 

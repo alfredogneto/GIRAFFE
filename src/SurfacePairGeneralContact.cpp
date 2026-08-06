@@ -7,7 +7,9 @@
 ////////////////////////////////////////////////////////////////////
 #define _CRTDBG_MAP_ALLOC
 #include <stdlib.h>
+#ifdef _WIN32
 #include <crtdbg.h>
+#endif
 #ifdef _DEBUG
 #define DBG_NEW new ( _NORMAL_BLOCK , __FILE__ , __LINE__ )
 // Replace _NORMAL_BLOCK with _CLIENT_BLOCK if you want the
@@ -65,7 +67,7 @@ void SurfacePairGeneralContact::Free()
 	FreeSpecific();
 }
 
-//Calcula a inversa da Hessiana
+//Calculates the inversa of the Hessian
 void SurfacePairGeneralContact::EvaluateInvertedHessian()
 {
 	Matrix invHes(4, 4);
@@ -84,7 +86,7 @@ void SurfacePairGeneralContact::EvaluateInvertedHessian()
 		Matrix P(order_minor, order_minor);
 		Matrix D(order_minor, order_minor);
 		fulleigen1(Hes_minor, P, D, tol_eig);
-		//Inversão da Hessiana
+		//Inversão of the Hessian
 		for (int i = 0; i < order_minor; i++)
 		{
 			D(i, i) = 1.0 / D(i, i);

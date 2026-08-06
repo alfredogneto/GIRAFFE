@@ -18,17 +18,17 @@ public:
 	STLSurface();
 	~STLSurface();
 
-	vector<float> coord_float;										//Coordenadas dos pontos do arquivo stl (CAD)
-	vector<double> coord_double;									//Coordenadas dos pontos do arquivo stl (CAD)
-	int n_CAD_points;												//Numero de pontos do arquivo stl (CAD)
+	vector<float> coord_float;										//Coordinates of the points of the file stl (CAD)
+	vector<double> coord_double;									//Coordinates of the points of the file stl (CAD)
+	int n_CAD_points;												//Number of points of the file stl (CAD)
 
-	bool Read(FILE *f);												//Leitura do arquivo de entrada
-	void Write(FILE *f);											//Escrita do arquivo de saida
+	bool Read(FILE *f);												//Reading of the input file
+	void Write(FILE *f);											//File writing of output
 	void PreCalc();													//PreCalc
 
-	bool ReadCADFile();												//Leitura do arquivo de CAD
-	bool ReadMeshFile();											//Leitura do arquivo de malha (opcional)
-	void WriteVTK_XMLRender(FILE *f, Matrix& pos, Matrix& rot, int number);		//Plots CAD Data
+	bool ReadCADFile();												//File reading of CAD
+	bool ReadMeshFile();											//File reading of mesh (optional)
+	void WriteVTK_XMLRender(FILE *f, const Matrix& pos, const Matrix& rot, int number);		//Plots CAD Data
 	void WriteVTK_XMLMesh(MatrixFloat& pos, MatrixFloat& rot);		//Plots CAD Data
 
 	void CreateVerticesEdges();

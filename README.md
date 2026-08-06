@@ -49,6 +49,17 @@ git clone https://github.com/alfredogneto/GIRAFFE.git
 
    `build.bat`: sets up the project files for [Microsoft Visual Studio](https://visualstudio.microsoft.com/) and builds **Giraffe** (Release mode by default). Both the project files and executable can be found in `./build` and `./build/Release` respectively.
 
+## macOS
+
+The following instructions build **Giraffe** on macOS, using [Homebrew](https://brew.sh) instead of vcpkg/oneMKL:
+
+1. Install [Homebrew](https://brew.sh), [CMake](https://cmake.org/) (`brew install cmake`), and Git (ships with Xcode Command Line Tools).
+2. Clone the repository, as above.
+3. Run `./install_dependencies.sh`. It installs `arpack`, `libomp`, and `eigen` via Homebrew, and clones `exprtk` into `/dependencies`, mirroring `install_dependencies.bat`. Restart your terminal (or `source` your shell profile) afterward so `GIRAFFE_INSTALL` is set.
+4. Run `./build.sh`. The executable is produced at `./build/Giraffe`.
+
+On macOS, Giraffe links against OpenBLAS/LAPACK and arpack-ng (via Homebrew) instead of Intel oneMKL/PARDISO. Sparse linear systems are solved with Eigen's `SparseLU` instead of PARDISO — direct solves only; the PARDISO "Iterative" solver option has no equivalent on this path. The `PSY.exe` file-coupling feature (`CoupleByFile`) also has no macOS equivalent, since `PSY.exe` itself is a separate Windows-only tool.
+
 # Executing 
 
 **Giraffe** execution is based on reading input files, with a proper syntax. Examples of input files are found in the folder `/inputs`. 
@@ -80,6 +91,5 @@ To compile and execute **Giraffe** you need some additional resources:
 
 # Disclaimer
 
-   Currently, **Giraffe** is built and tested only with [Microsoft Visual Studio](https://visualstudio.microsoft.com/) and the MS Windows OS.
- We plan to expand it to Linux and Mac soon.
+   **Giraffe** was originally built and tested only with [Microsoft Visual Studio](https://visualstudio.microsoft.com/) and the MS Windows OS. A macOS build path (using Homebrew, OpenBLAS/LAPACK, and Eigen's SparseLU in place of oneMKL/PARDISO) is now also available, see the macOS instructions above. We plan to expand it to Linux soon.
    

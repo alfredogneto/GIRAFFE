@@ -9,7 +9,7 @@
 
 #include"Database.h"
 
-//Variaveis globais
+//Global variables
 extern
 Database db;
 
@@ -23,7 +23,7 @@ SolidSection::SolidSection()
 	axis_position[1] = 0.0;	//Ref position
 	sprintf(section_type, "SolidSection");
 }
-//Construtor de cópia
+//Copy constructor
 SolidSection::SolidSection(SolidSection &copied)
 {
 	n_points = 0;
@@ -34,7 +34,7 @@ SolidSection::SolidSection(SolidSection &copied)
 	sprintf(section_type, "SolidSection");
 
 	Alloc(copied.n_points);
-	//Copia os valores dos pontos
+	//Copies the values of the points
 	for (long i = 0; i < copied.n_points; i++)
 	{
 		points[i][0] = copied.points[i][0];
@@ -47,7 +47,7 @@ SolidSection::SolidSection(SolidSection &copied)
 
 void SolidSection::Alloc(int e_points)
 {
-	//Desaloca matrizes
+	//Deallocates matrices
 	if (points != NULL)
 	{
 		for (int i = 0; i < n_points; i++)
@@ -55,7 +55,7 @@ void SolidSection::Alloc(int e_points)
 		delete[]points;
 	}
 	n_points = e_points;
-	//Aloca matrizes
+	//Allocates matrices
 	points = new double*[n_points];
 	for (int i = 0; i < n_points; i++)
 		points[i] = new double[2];
@@ -63,7 +63,7 @@ void SolidSection::Alloc(int e_points)
 
 SolidSection::~SolidSection()
 {
-	//Desaloca matrizes
+	//Deallocates matrices
 	if (points != NULL)
 	{
 		for (int i = 0; i < n_points; i++)
@@ -98,7 +98,7 @@ bool SolidSection::Read(FILE *f)
 		return false;
 
 	Alloc(n_points);
-	//Leitura dos pontos
+	//Reading of the points
 	double x, y;
 	int index;
 	for (int p = 0; p < n_points; p++)
@@ -134,7 +134,7 @@ void SolidSection::Write(FILE *f)
 
 void SolidSection::WriteVTK_XMLRender(FILE *f, Beam_1* elem)
 {
-	//vetores para escrita no formato binario - usando a função 'enconde'
+	//vectors for writing in the formato binary - using the function 'enconde'
 	std::vector<float> float_vector;
 	std::vector<int> int_vector;
 	
@@ -143,9 +143,9 @@ void SolidSection::WriteVTK_XMLRender(FILE *f, Beam_1* elem)
 	double alpha_escalar;
 	Matrix A;
 	Matrix vec_P(3);
-	//Numero de pontos a serem gerados
+	//Number of points the to be gerados
 	int n_p = elem->n_nodes*n_points;
-	//Numero de celulas a serem geradas - laterais + duas "tampas"
+	//Number of celulas the to be geradas - laterais + two "tampas"
 	int n_cells = n_points*(elem->n_nodes - 1) + 2;
 	//Opens Piece
 	fprintf(f, "\t\t<Piece NumberOfPoints=\"%d\" NumberOfCells=\"%d\">\n", n_p, n_cells);
@@ -154,10 +154,10 @@ void SolidSection::WriteVTK_XMLRender(FILE *f, Beam_1* elem)
 	//Opens DataArray
 	fprintf(f, "\t\t\t\t<DataArray type=\"Float32\" NumberOfComponents=\"3\" format=\"binary\">\n");
 	float_vector.clear();
-	//Preenchendo as coordenadas dos pontos
-	for (int i = 0; i < elem->n_nodes; i++)//percorrendo os 3 nós do elemento
+	//Filling the coordinates of the points
+	for (int i = 0; i < elem->n_nodes; i++)//percorrendo the 3 nodes of the element
 	{
-		//Para cada nó do elemento, calcula o tensor rotação
+		//For each node of the element, calculates the tensor rotation
 		alpha_1(0, 0) = db.nodes[elem->nodes[i] - 1]->copy_coordinates[3];
 		alpha_1(1, 0) = db.nodes[elem->nodes[i] - 1]->copy_coordinates[4];
 		alpha_1(2, 0) = db.nodes[elem->nodes[i] - 1]->copy_coordinates[5];
@@ -165,18 +165,18 @@ void SolidSection::WriteVTK_XMLRender(FILE *f, Beam_1* elem)
 		A = skew(alpha_1);
 		double g = 4.0 / (4.0 + alpha_escalar*alpha_escalar);
 		Q = *elem->I3 + g*(A + 0.5*A*A);
-		Q = Q*transp(*elem->transform3);//Matriz de transformação para trazer o vetor da ST do plano xy para o plano atual em que ela se encontra
+		Q = Q*transp(*elem->transform3);//Transformation matrix for trazer the vector of the ST of the plane xy for the plane current in that it if finds
 
-		//Percorre os nós que descrevem o perimetro da ST
+		//Iterates over the nodes that descrevem the perimetro of the ST
 		for (int point = 0; point < n_points; point++)
 		{
-			//Posição de cada ponto P no plano xy (referência)
+			//Position of each point P in the plane xy (reference)
 			vec_P(0, 0) = points[point][0] - db.sections[elem->section - 1]->sec_details->axis_position[0];
 			vec_P(1, 0) = points[point][1] - db.sections[elem->section - 1]->sec_details->axis_position[1];
 			vec_P(2, 0) = 0.0;
-			vec_P = Q*vec_P;//Operando rotacionando para o sistema da barra
+			vec_P = Q*vec_P;//Operando rotacionando for the system of the bar
 			for (int c = 0; c < 3; c++)
-				vec_P(c, 0) += db.nodes[elem->nodes[i] - 1]->ref_coordinates[c] + db.post_files->mag_factor*(db.nodes[elem->nodes[i] - 1]->copy_coordinates[c] - db.nodes[elem->nodes[i] - 1]->ref_coordinates[c]);//Translação - soma a posição do centro da barra (do ponto em questão)
+				vec_P(c, 0) += db.nodes[elem->nodes[i] - 1]->ref_coordinates[c] + db.post_files->mag_factor*(db.nodes[elem->nodes[i] - 1]->copy_coordinates[c] - db.nodes[elem->nodes[i] - 1]->ref_coordinates[c]);//Translation - sum the position of the center of the bar (of the point in question)
 			float_vector.push_back((float)(vec_P(0, 0)));
 			float_vector.push_back((float)(vec_P(1, 0)));
 			float_vector.push_back((float)(vec_P(2, 0)));
@@ -197,7 +197,7 @@ void SolidSection::WriteVTK_XMLRender(FILE *f, Beam_1* elem)
 	int_vector.clear();
 	for (int index = 0; index < n_points; index++)
 	{
-		//Celulas com os pontos do perimetro
+		//Celulas with the points of the perimetro
 		if (index != n_points-1)
 		{
 			nodes[0] = index;
@@ -210,7 +210,7 @@ void SolidSection::WriteVTK_XMLRender(FILE *f, Beam_1* elem)
 			nodes[6] = index + 2*n_points + 1;
 			nodes[7] = index + n_points + 1;
 		}
-		//ultima celula do perimetro (relacionada com a numeração da primeira - para fechar a figura)
+		//last celula of the perimetro (relacionada with the numbering of the first - for close the figura)
 		else
 		{
 			nodes[0] = index;
@@ -233,7 +233,7 @@ void SolidSection::WriteVTK_XMLRender(FILE *f, Beam_1* elem)
 		int_vector.push_back(nodes[6]);
 		int_vector.push_back(nodes[7]);
 	}
-	//Celulas com os pontos das tampas
+	//Celulas with the points of the tampas
 	for (int index = 0; index < n_points; index++)
 		int_vector.push_back(index);
 	int_vector.push_back(0);
@@ -290,7 +290,7 @@ void SolidSection::WriteVTK_XMLRender(FILE *f, Beam_1* elem)
 	fprintf(f, "\t\t\t\t<DataArray Name=\"ElementResults\" type=\"Float32\" NumberOfComponents=\"%d\" format=\"binary\">\n", db.n_element_results);
 	for (int cell = 0; cell < n_cells; cell++)
 	{
-		//Imprime os resultados do elemento
+		//Prints the results of the element
 		int res_element = 6;
 		float_vector.push_back((float)((*elem->sigma_r[0])(0, 0) + (*elem->sigma_r[1])(0, 0)) / 2);
 		float_vector.push_back((float)((*elem->sigma_r[0])(1, 0) + (*elem->sigma_r[1])(1, 0)) / 2);
@@ -298,7 +298,7 @@ void SolidSection::WriteVTK_XMLRender(FILE *f, Beam_1* elem)
 		float_vector.push_back((float)((*elem->sigma_r[0])(3, 0) + (*elem->sigma_r[1])(3, 0)) / 2);
 		float_vector.push_back((float)((*elem->sigma_r[0])(4, 0) + (*elem->sigma_r[1])(4, 0)) / 2);
 		float_vector.push_back((float)((*elem->sigma_r[0])(5, 0) + (*elem->sigma_r[1])(5, 0)) / 2);
-		//Imprime valores nulos para resultados que não fazem sentido para esse tipo de elemento
+		//Prints values null for results that not fazem sentido for this element type
 		for (int i = res_element; i < db.n_element_results; i++)
 			float_vector.push_back(0.0);
 	}

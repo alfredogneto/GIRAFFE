@@ -14,12 +14,12 @@ public:
 	Matrix* E2;
 	Matrix* E3;
 
-	Matrix* Q; //matriz de transformação de coordenadas
+	Matrix* Q; //transformation matrix of coordinates
 
-	//////////////Transformação de coordenadas///////////////
+	//////////////Transformation of coordinates///////////////
 	//                     UL = Q*UG                       //
-	//    UL -> vetor com coordenadas no sistema local     //
-	//    UG -> vetor com coordenadas no sistema global    //
+	//    UL -> vector with coordinates in the system local     //
+	//    UG -> vector with coordinates in the system global    //
 	/////////////////////////////////////////////////////////
 	bool Read(FILE *f);
 	void Write(FILE *f);

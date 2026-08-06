@@ -3,7 +3,7 @@
 #include "SolidSection.h"
 #include "Hooke.h"
 #include "Database.h"
-//Variaveis globais
+//Global variables
 extern
 Database db;
 #define PI 3.1415926535897932384626433832795
@@ -76,7 +76,7 @@ bool SecHelicalFiber::Read(FILE *f)
 	else
 		return false;
 
-	//Salva a posição (stream)
+	//Saves the position (stream)
 	fpos_t pos;
 	fgetpos(f, &pos);
 	fscanf(f, "%s", s);
@@ -106,7 +106,7 @@ bool SecHelicalFiber::Read(FILE *f)
 			return false;
 	}
 	else
-		fsetpos(f, &pos);	//volta a posição anterior
+		fsetpos(f, &pos);	//turn the position previous
 
 	return true;
 }

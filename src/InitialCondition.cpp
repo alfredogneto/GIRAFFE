@@ -4,7 +4,7 @@
 #include "SuperNode.h"
 
 #include"Database.h"
-//Variaveis globais
+//Global variables
 extern
 Database db;
 
@@ -26,7 +26,7 @@ bool InitialCondition::Read(FILE *f)
 {
 	char s[1000];
 	fscanf(f, "%s", s);
-	//Verifica a palavra chave "InitialCondition"
+	//Checks the keyword "InitialCondition"
 	if (!strcmp(s, "InitialCondition"))
 	{
 		fscanf(f, "%s", s);
@@ -36,7 +36,7 @@ bool InitialCondition::Read(FILE *f)
 		return false;
 
 	fscanf(f, "%s", s);
-	//Verifica a palavra chave "Node"
+	//Checks the keyword "Node"
 	if (!strcmp(s, "Node"))
 	{
 		fscanf(f, "%s", s);

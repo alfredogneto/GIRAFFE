@@ -12,7 +12,7 @@
 #include "Sphere.h"
 #include "Hooke.h"
 #include"Database.h"
-//Variaveis globais
+//Global variables
 extern
 Database db;
 
@@ -44,7 +44,7 @@ PSYCoupling::~PSYCoupling()
 	}
 }
 
-//Leitura no arquivo de entrada do Giraffe
+//Reading in the input file of the Giraffe
 bool PSYCoupling::Read(FILE *f)
 {
 	char s[1000];
@@ -67,7 +67,7 @@ bool PSYCoupling::Read(FILE *f)
 	return true;
 }
 
-//Saida no arquivo de entrada do Giraffe
+//Output in the input file of the Giraffe
 void PSYCoupling::Write(FILE *f)
 {
 	fprintf(f, "PSYCoupling\t");
@@ -83,18 +83,18 @@ void PSYCoupling::PreCalc()
 {
 	number_psy_displacements = db.number_particles;
 	number_psy_constraints = db.number_particles;
-	//Alocação do vetor
+	//Alocaï¿½ï¿½o of the vector
 	psy_displacements = new Displacement*[number_psy_displacements];
 	psy_constraints = new Constraint*[number_psy_constraints];
 	for (int i = 0; i < number_psy_displacements; i++)
 	{
-		psy_displacements[i] = new NodalDisplacement();		//Alocação de cada objeto
-		psy_constraints[i] = new NodalConstraint();			//Alocação de cada objeto
+		psy_displacements[i] = new NodalDisplacement();		//Alocaï¿½ï¿½o of each object
+		psy_constraints[i] = new NodalConstraint();			//Alocaï¿½ï¿½o of each object
 		NodalDisplacement* ptr_disp = static_cast<NodalDisplacement*>(psy_displacements[i]);
 		NodalConstraint* ptr_constr = static_cast<NodalConstraint*>(psy_constraints[i]);
 
 		ptr_disp->single_node = db.particles[i]->node;
-		ptr_disp->table = new Table(2, 6);				//Alocação da tabela dentro de cada objeto (o destrutor do objeto se encarrega de deletar no fim da execução)
+		ptr_disp->table = new Table(2, 6);				//Alocaï¿½ï¿½o of the table inside of each object (the destructor of the object if takes care of delete in the end of the execuï¿½ï¿½o)
 
 		ptr_constr->single_node = db.particles[i]->node;
 		//All particles are constrained - during all solution steps
@@ -134,25 +134,29 @@ void PSYCoupling::CoupleByFile()
 {
 	WritePSYFile();
 	cout << "Running PSY - coupling by file..." << "\n";
+#ifdef _WIN32
 	_spawnl(P_WAIT, "PSY.exe", "1", NULL);
+#else
+	cout << "PSY coupling by file requires PSY.exe, which is only available on Windows. Skipping.\n";
+#endif
 	ReadPSYFile();
 }
 
 void PSYCoupling::CoupleByBinary()
 {
-	//Criar cópias em variaveis-espelho para passar como referência a dll do PSY - se basear na função WritePSYFile()
+	//Create cï¿½pias in variables-mirror for pass as referï¿½ncia the dll of the PSY - if base in the funï¿½ï¿½o WritePSYFile()
 	cout << "Running PSY - coupling by binary..." << "\n";
-	//Chamar função do PSY - com parametros de entrada como sendo a estrutura toda psy_info
-	//Ler variaveis-espelho escritas pelo PSY e salvar no Giraffe - se basear na função ReadPSYFile()
+	//Call funï¿½ï¿½o of the PSY - with parameters of input as being the structure all psy_info
+	//Read variables-mirror written through the PSY and save in the Giraffe - if base in the funï¿½ï¿½o ReadPSYFile()
 }
 
-//Lê o arquivo do PSY
+//Lï¿½ the file of the PSY
 void PSYCoupling::ReadPSYFile()
 {
 	double time_value = db.last_converged_time + db.current_time_step;
 	double dt = db.current_time_step;
 
-	//Leitura e preenchimento da tabela de deslocamentos prescritos
+	//Reading and filling of the table of displacements prescritos
 	FILE *f = NULL;
 	f = fopen("gir_psy.rst", "r");
 	char s[1000];
@@ -163,10 +167,10 @@ void PSYCoupling::ReadPSYFile()
 	int node = 0;
 	Matrix coordinates(3);
 	Matrix velocity(3);
-	//Leitura dos dados das particulas
+	//Data reading of the particles
 	for (int i = 0; i < db.number_particles; i++)
 	{
-		//Numero
+		//Number
 		fscanf(f, "%s", s);
 		node = db.particles[atoi(s) - 1]->node;
 		fscanf(f, "%s", s);
@@ -183,30 +187,30 @@ void PSYCoupling::ReadPSYFile()
 		velocity(2, 0) = atof(s);
 
 		NodalDisplacement* ptr_disp = static_cast<NodalDisplacement*>(psy_displacements[i]);
-		//Deslocamentos prescritos - preenchimento da tabela
+		//Displacements prescritos - filling of the table
 		ptr_disp->table->SetTime(0, time_value - dt);
 		ptr_disp->table->SetTime(1, time_value);
 		ptr_disp->table->SetValue(0, 0, 0);
 		ptr_disp->table->SetValue(0, 1, 0);
 		ptr_disp->table->SetValue(0, 2, 0);
-		ptr_disp->table->SetValue(1, 0, coordinates(0, 0) - db.nodes[node - 1]->copy_coordinates[0]); //deslocamento prescrito em x
-		ptr_disp->table->SetValue(1, 1, coordinates(1, 0) - db.nodes[node - 1]->copy_coordinates[1]); //deslocamento prescrito em y
-		ptr_disp->table->SetValue(1, 2, coordinates(2, 0) - db.nodes[node - 1]->copy_coordinates[2]); //deslocamento prescrito em z
-		//no caso de querer impor rotacoes, colocar aqui.
+		ptr_disp->table->SetValue(1, 0, coordinates(0, 0) - db.nodes[node - 1]->copy_coordinates[0]); //displacement prescrito in x
+		ptr_disp->table->SetValue(1, 1, coordinates(1, 0) - db.nodes[node - 1]->copy_coordinates[1]); //displacement prescrito in y
+		ptr_disp->table->SetValue(1, 2, coordinates(2, 0) - db.nodes[node - 1]->copy_coordinates[2]); //displacement prescrito in z
+		//in the case of wanting impose rotations, place here.
 	}
 	fclose(f);
 }
 
-//Escreve o arquivo do PSY
+//Writes the file of the PSY
 void PSYCoupling::WritePSYFile()
 {
 	double time_value = db.last_converged_time + db.current_time_step;
 	double dt = db.current_time_step;
 
-	//Escrita do arquivo PSY
+	//File writing PSY
 	FILE *f_PSY;
 	f_PSY = fopen("gir_psy.inp", "w");
-	//Cabeçalho do arquivo PSY
+	//Cabeï¿½alho of the file PSY
 	fprintf(f_PSY, "$system_name\n");
 	fprintf(f_PSY, "\t'File generated by Giraffe'\n");
 	fprintf(f_PSY, "$no_particles\n");
@@ -214,21 +218,21 @@ void PSYCoupling::WritePSYFile()
 	fprintf(f_PSY, "$rotational_dofs !on/off\n");
 	fprintf(f_PSY, "\toff\n");
 	fprintf(f_PSY, "$particle_attributes_and_radius  !number, kind, radius, material_set_number, pressurf_number\n");
-	//Impressão das particulas
+	//Impressï¿½o of the particles
 	for (int i = 0; i < db.number_particles; i++)
 	{
-		//Particula esferica
-		//Ponteiro para o Sphere
+		//Particle esferica
+		//Pointer for the Sphere
 		Sphere* ptr = static_cast<Sphere*>(db.particles[i]);
 		fprintf(f_PSY, "\t%d\tjet_sphere\t%.6e\t%d\t%d\n", ptr->number, ptr->radius, ptr->material, 0);
 	}
-	//Impressão dos materiais
+	//Impressï¿½o of the materials
 	fprintf(f_PSY, "$no_material_sets\n");
 	fprintf(f_PSY, "\t%d\n", db.number_materials);
 	fprintf(f_PSY, "$material_sets  !set_number, mass_dens, charge_dens, E, ni, damping_rate, e, static_friction, dynamic_friction\n");
 	for (int i = 0; i < db.number_materials; i++)
 	{
-		//Ponteiro para o Material
+		//Pointer for the Material
 		Hooke* ptr = static_cast<Hooke*>(db.materials[i]);
 		double damping_rate = 9.000E-01;
 		double e = 1;
@@ -236,7 +240,7 @@ void PSYCoupling::WritePSYFile()
 		double dynamic_friction = 0.1;
 		fprintf(f_PSY, "\t%d\t%.6e\t%.6e\t%.6e\t%.6e\t%.6e\t%.6e\t%.6e\t%.6e\n", ptr->number, ptr->rho, 0.0, ptr->E, ptr->nu, damping_rate, e, static_friction, dynamic_friction);
 	}
-	//Impressão das coordenadas das particulas e velocidades iniciais
+	//Impressï¿½o of the coordinates of the particles and velocities initial
 	fprintf(f_PSY, "$particle_coordinates_and_initial_velocities  ! number, x, y, z, vx, vy, vz, wx, wy, wz\n");
 	for (int i = 0; i < db.number_particles; i++)
 	{
@@ -254,17 +258,17 @@ void PSYCoupling::WritePSYFile()
 	fprintf(f_PSY, "\t%d\n", 0);
 	fprintf(f_PSY, "$no_particles_with_initial_given_forces_and_moments\n");
 	fprintf(f_PSY, "\t%d\n", db.number_particles);
-	//Impressão das forças nas particulas (reações vinculares da simulação do Giraffe)
+	//Impressï¿½o of the forï¿½as in the particles (reaï¿½ï¿½es vinculares of the simulaï¿½ï¿½o of the Giraffe)
 	fprintf(f_PSY, "$particle_initial_given_forces_and_moments\n");
 	int node = 0;
 	Matrix forces(3);
 	for (int i = 0; i < db.number_particles; i++)
 	{
 		node = db.particles[i]->node;
-		//Esforços
+		//Esforï¿½os
 		for (int j = 0; j < 3; j++)
 		{
-			if (db.nodes[node - 1]->GLs[j] < 0 && db.nodes[node - 1]->active_GL[j] == 1)	//Se o grau de liberdade for fixo e ativo
+			if (db.nodes[node - 1]->GLs[j] < 0 && db.nodes[node - 1]->active_GL[j] == 1)	//If the degree of freedom for fixed and active
 				forces(j, 0) = db.global_P_B(-db.nodes[node - 1]->GLs[j] - 1, 0);
 			else
 			{
@@ -275,7 +279,7 @@ void PSYCoupling::WritePSYFile()
 		}
 		fprintf(f_PSY, "\t%d\t%.6e\t%.6e\t%.6e\t%.6e\t%.6e\t%.6e\n", db.particles[i]->number, -forces(0, 0), -forces(1, 0), -forces(2, 0), 0.0, 0.0, 0.0);
 	}
-	//Impressão dos rigid walls
+	//Impressï¿½o of the rigid walls
 	fprintf(f_PSY, "$no_rigid_walls\n");
 	fprintf(f_PSY, "%d\n", 5);
 	//fprintf(f_PSY, "%d\n", 1);

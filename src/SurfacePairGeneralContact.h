@@ -14,21 +14,21 @@ public:
 	int sub_index2;			//sub index 2
 
 	//Degenerations to employ while considering contact
-	int deg_pointA;	//ID of the point in surface A to be considered in the degeneration (zero if no degeneration)
-	int deg_curveA; //ID of the curve in surface A to be considered in the degeneration (zero if no degeneration)
-	int deg_pointB; //ID of the point in surface B to be considered in the degeneration (zero if no degeneration)
-	int deg_curveB; //ID of the curve in surface B to be considered in the degeneration (zero if no degeneration)
+	int deg_pointA;	//ID of the point in surface A to be considered in the degeneration (zero if in the degeneration)
+	int deg_curveA; //ID of the curve in surface A to be considered in the degeneration (zero if in the degeneration)
+	int deg_pointB; //ID of the point in surface B to be considered in the degeneration (zero if in the degeneration)
+	int deg_curveB; //ID of the curve in surface B to be considered in the degeneration (zero if in the degeneration)
 
 	//Variables for contact evaluation:
 	SSContactData* cd;						//information of the contact between surfaces
-	double* Rc;								//Vetor de esforços internos
-	double** Kc;							//Matriz de rigidez
+	double* Rc;								//Vector of internal forces internal
+	double** Kc;							//Stiffness matrix
 
 	//Time step control data
 	TimeStepControlData* td;
 	
 	bool GetActive();
-	void EvaluateInvertedHessian();			//Calcula a inversa da Hessiana
+	void EvaluateInvertedHessian();			//Calculates the inversa of the Hessian
 	void SetActive();
 	void SetUnnactive();
 	void Alloc();

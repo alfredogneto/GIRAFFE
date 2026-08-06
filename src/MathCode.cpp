@@ -3,7 +3,7 @@
 #include <iostream>
 
 #include"Database.h"
-//Variaveis globais
+//Global variables
 extern
 Database db;
 using namespace std;
@@ -30,7 +30,7 @@ MathCode::MathCode(int e_n_expressions)
 	}
 }
 
-//Retorna o valor no instante requerido
+//Returns the value in the instant required
 double MathCode::GetValueAt(double time_value, int value_index)
 {
 	t = time_value;
@@ -52,7 +52,7 @@ MathCode::~MathCode()
 	
 }
 
-//Leitura do arquivo de MathCode
+//File reading of MathCode
 bool  MathCode::Read(FILE* f)
 {
 	char s[1000];

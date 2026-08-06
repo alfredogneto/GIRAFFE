@@ -33,22 +33,22 @@ public:
 	void WriteVTK_XMLBase(FILE *f);
 	void WriteVTK_XMLRender(FILE *f);
 
-	//Variaveis para calcular estado atual (nas funcoes de contato)
+	//Variables for calculate state current (in the functions of contact)
 	Matrix* Qip;
 	Matrix* x0ip;
-	//Variaveis para calcular estado anterior (nas funcoes de contato)
+	//Variables for calculate state previous (in the functions of contact)
 	Matrix* Qi;
 	Matrix* x0i;
 
 	//Rigid body variables
-	double mass;													//Massa
-	double** Jr;													//Tensor de inercia - formato double**
-	double* br;														//Vetor br - formato double*
-	double** DdT;													//Operador tangente
-	double* dT;														//Residuo
-	double** Ddfield;												//Carregamento de campo linearizado
-	double* dfield;													//Residuo carregamento de campo
-	//Variaveis cinematicas
+	double mass;													//Mass
+	double** Jr;													//Tensor of inertia - formato double**
+	double* br;														//Vector br - formato double*
+	double** DdT;													//Operator tangent
+	double* dT;														//Residual
+	double** Ddfield;												//Loading of field linearizado
+	double* dfield;													//Residual loading of field
+	//Variables cinematicas
 	double alphai[3];
 	double ud[3];
 	double alphad[3];

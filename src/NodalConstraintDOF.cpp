@@ -17,7 +17,7 @@ NodalConstraintDOF::NodalConstraintDOF()
 	ROTY_table.SetDefault(false);
 	ROTZ_table.SetDefault(false);
 
-	n_GL = 6;						//Três graus de liberdade (esse vinculo possui 3 multiplicadores de lagrange)
+	n_GL = 6;						//Três degrees of freedom (this constraint has 3 Lagrange multipliers)
 	active_lambda = new int[n_GL];
 	lambda = new double[n_GL];
 	copy_lambda = new double[n_GL];
@@ -29,7 +29,7 @@ NodalConstraintDOF::NodalConstraintDOF()
 	{
 		active_lambda[i] = 0;
 		GLs[i] = 0;
-		//Chute inicial para os lambdas: valores nulos
+		//Initial guess for the lambdas: values null
 		lambda[i] = 0.0;
 		copy_lambda[i] = 0.0;
 	}
@@ -42,7 +42,7 @@ NodalConstraintDOF::NodalConstraintDOF()
 	I6(4, 4) = 1.0;
 	I6(5, 5) = 1.0;
 	r = Matrix(6);
-	//Matriz de rigidez tangente e vetor residuo
+	//Stiffness matrix tangent and vector residual
 	stiffness = new Matrix(18, 18);
 	residual = new Matrix(18, 1);
 
@@ -167,16 +167,16 @@ void NodalConstraintDOF::Write(FILE* f)
 	ROTZ_table.Write(f);
 }
 
-//Escreve no monitor do SpecialConstraint
+//Writes in the monitor of the SpecialConstraint
 void NodalConstraintDOF::WriteMonitor(FILE *f, bool first_record, double time)
 {
 
 }
 
-//Checa quais multiplicadores de lagrange serão ativados,de acordo com a ativação dos GLs dos nós dos quais a special constraint participa
+//Checks which Lagrange multipliers will be ativados,according to the activation of the GLs of the nodes of the which the special constraint participates
 void NodalConstraintDOF::ActivateDOFs()
 {
-	//Ativa GLs dos nós A e B e os multiplicadores de Lagrange
+	//Active GLs of the nodes A and B and the Lagrange multipliers
 	if (UX_table.GetAt(db.current_solution_number - 1) == 1) {
 		db.nodes[node_A - 1]->active_GL[0] = 1;
 		db.nodes[node_B - 1]->active_GL[0] = 1;
@@ -246,7 +246,7 @@ bool NodalConstraintDOF::Check()
 		return false;
 	if (node_B > db.number_nodes)
 		return false;
-	//Checagem das condições iniciais
+	//Check of the initial conditions
 	int temp_node = 0;
 	for (int i = 0; i < db.number_IC; i++)
 	{
@@ -261,10 +261,10 @@ bool NodalConstraintDOF::Check()
 
 void NodalConstraintDOF::ComputeVelAccel()
 {
-	//Se for o step de criação do vinculo inicializa condições iniciais
+	//If for the step of creation of the constraint initializes initial conditions
 	if (UX_table.GetAt(db.current_solution_number - 1))
 	{
-		//Percorre GL e seta condições iniciais
+		//Iterates over GL and sets initial conditions
 		if (active_lambda[0] == 1)
 		{
 			db.nodes[node_B - 1]->vel[0] = db.nodes[node_A - 1]->vel[0];
@@ -273,7 +273,7 @@ void NodalConstraintDOF::ComputeVelAccel()
 	}
 	if (UY_table.GetAt(db.current_solution_number - 1))
 	{
-		//Percorre GL e seta condições iniciais
+		//Iterates over GL and sets initial conditions
 		if (active_lambda[1] == 1)
 		{
 			db.nodes[node_B - 1]->vel[1] = db.nodes[node_A - 1]->vel[1];
@@ -282,7 +282,7 @@ void NodalConstraintDOF::ComputeVelAccel()
 	}
 	if (UZ_table.GetAt(db.current_solution_number - 1))
 	{
-		//Percorre GL e seta condições iniciais
+		//Iterates over GL and sets initial conditions
 		if (active_lambda[2] == 1)
 		{
 			db.nodes[node_B - 1]->vel[2] = db.nodes[node_A - 1]->vel[2];
@@ -291,7 +291,7 @@ void NodalConstraintDOF::ComputeVelAccel()
 	}
 	if (ROTX_table.GetAt(db.current_solution_number - 1))
 	{
-		//Percorre GL e seta condições iniciais
+		//Iterates over GL and sets initial conditions
 		if (active_lambda[3] == 1)
 		{
 			db.nodes[node_B - 1]->vel[3] = db.nodes[node_A - 1]->vel[3];
@@ -300,7 +300,7 @@ void NodalConstraintDOF::ComputeVelAccel()
 	}
 	if (ROTY_table.GetAt(db.current_solution_number - 1))
 	{
-		//Percorre GL e seta condições iniciais
+		//Iterates over GL and sets initial conditions
 		if (active_lambda[4] == 1)
 		{
 			db.nodes[node_B - 1]->vel[4] = db.nodes[node_A - 1]->vel[4];
@@ -309,7 +309,7 @@ void NodalConstraintDOF::ComputeVelAccel()
 	}
 	if (ROTZ_table.GetAt(db.current_solution_number - 1))
 	{
-		//Percorre GL e seta condições iniciais
+		//Iterates over GL and sets initial conditions
 		if (active_lambda[5] == 1)
 		{
 			db.nodes[node_B - 1]->vel[5] = db.nodes[node_A - 1]->vel[5];
@@ -320,10 +320,10 @@ void NodalConstraintDOF::ComputeVelAccel()
 
 void NodalConstraintDOF::ComputeInitialGuessDisplacements()
 {
-	//Se for o step de criação do vinculo inicializa condições iniciais
+	//If for the step of creation of the constraint initializes initial conditions
 	if (UX_table.GetAt(db.current_solution_number - 1) == true)
 	{
-		//Percorre GL e seta condições iniciais
+		//Iterates over GL and sets initial conditions
 		if (active_lambda[0] == 1)
 		{
 			db.nodes[node_B - 1]->displacements[0] = db.nodes[node_A - 1]->displacements[0];
@@ -331,7 +331,7 @@ void NodalConstraintDOF::ComputeInitialGuessDisplacements()
 	}
 	if (UY_table.GetAt(db.current_solution_number - 1) == true)
 	{
-		//Percorre GL e seta condições iniciais
+		//Iterates over GL and sets initial conditions
 		if (active_lambda[1] == 1)
 		{
 			db.nodes[node_B - 1]->displacements[1] = db.nodes[node_A - 1]->displacements[1];
@@ -339,7 +339,7 @@ void NodalConstraintDOF::ComputeInitialGuessDisplacements()
 	}
 	if (UZ_table.GetAt(db.current_solution_number - 1) == true)
 	{
-		//Percorre GL e seta condições iniciais
+		//Iterates over GL and sets initial conditions
 		if (active_lambda[2] == 1)
 		{
 			db.nodes[node_B - 1]->displacements[2] = db.nodes[node_A - 1]->displacements[2];
@@ -347,7 +347,7 @@ void NodalConstraintDOF::ComputeInitialGuessDisplacements()
 	}
 	if (ROTX_table.GetAt(db.current_solution_number - 1) == true)
 	{
-		//Percorre GL e seta condições iniciais
+		//Iterates over GL and sets initial conditions
 		if (active_lambda[3] == 1)
 		{
 			db.nodes[node_B - 1]->displacements[3] = db.nodes[node_A - 1]->displacements[3];
@@ -355,7 +355,7 @@ void NodalConstraintDOF::ComputeInitialGuessDisplacements()
 	}
 	if (ROTY_table.GetAt(db.current_solution_number - 1) == true)
 	{
-		//Percorre GL e seta condições iniciais
+		//Iterates over GL and sets initial conditions
 		if (active_lambda[4] == 1)
 		{
 			db.nodes[node_B - 1]->displacements[4] = db.nodes[node_A - 1]->displacements[4];
@@ -363,7 +363,7 @@ void NodalConstraintDOF::ComputeInitialGuessDisplacements()
 	}
 	if (ROTZ_table.GetAt(db.current_solution_number - 1) == true)
 	{
-		//Percorre GL e seta condições iniciais
+		//Iterates over GL and sets initial conditions
 		if (active_lambda[5] == 1)
 		{
 			db.nodes[node_B - 1]->displacements[5] = db.nodes[node_A - 1]->displacements[5];
@@ -375,7 +375,7 @@ void NodalConstraintDOF::WriteVTK_XMLRender(FILE* f)
 {
 }
 
-//Salvando variaveis da configuração convergida
+//Saving variables of the configuration converged
 void NodalConstraintDOF::SaveLagrange()
 {
 	//PrintPtr(lambda, 3);
@@ -383,16 +383,16 @@ void NodalConstraintDOF::SaveLagrange()
 		copy_lambda[i] = lambda[i];
 }
 
-//Montagem dos residuos e rigidez tangente
+//Assembly of the residuals and stiffness tangent
 void NodalConstraintDOF::Mount()
 {
-	//Nesse vinculo a rigidez tangente não se modifica nunca. e montada no PreCalc()
-	//Se o vinculo estiver ativo, realiza a montagem
+	//In this constraint the stiffness tangent not if modifies never. and montada in the PreCalc()
+	//If the constraint is active, performs the assembly
 	for (int i = 0; i < n_GL; i++) {
 		if (active_lambda[i] == 1)
 		{
 			r(i, 0) = db.nodes[node_A - 1]->displacements[i] - db.nodes[node_B - 1]->displacements[i];
-			//Atualização do vetor de residuos
+			//Update of the vector of residuals
 			(*residual)(i, 0) = lambda[i];
 			(*residual)(6 + i, 0) = -lambda[i];
 			(*residual)(12 + i, 0) = r(i, 0);
@@ -400,22 +400,22 @@ void NodalConstraintDOF::Mount()
 	}
 }
 
-//Preenche a contribuição do elemento nas matrizes globais
+//Fills the contribution of the element in the matrices global
 void NodalConstraintDOF::MountGlobal()
 {
-	//Variaveis temporarias para salvar a indexação global dos graus de liberdade a serem setados na matriz de rigidez global
+	//Temporary variables for save the indexing global of the degrees of freedom the to be set in the stiffness matrix global
 	int GL_global_1 = 0;
 	int GL_global_2 = 0;
 	double anterior = 0;
-	//Se o vinculo estiver ativo, realiza a montagem
+	//If the constraint is active, performs the assembly
 	if (active_lambda[0] == 1 || active_lambda[1] == 1 || active_lambda[2] == 1 || active_lambda[3] == 1 || active_lambda[4] == 1 || active_lambda[5] == 1)
 	{
 		for (int i = 0; i < 18; i++)
 		{
 			if (active_lambda[i % 6] == 1)
 			{
-				//////////////MONTAGEM DO VETOR DE ESFORÇOS DESBALANCEADOS//////////////////
-				//Toma do vetor de GL globais, a indexação de cada grau de liberdade global
+				//////////////ASSEMBLY OF THE VECTOR OF INTERNAL FORCES UNBALANCED//////////////////
+				//Takes of the global-DOF vector, the indexing of each global degree of freedom
 				if (i < 6)//uA
 				{
 					GL_global_1 = db.nodes[node_A - 1]->GLs[i];
@@ -433,7 +433,7 @@ void NodalConstraintDOF::MountGlobal()
 					}
 				}
 
-				//Caso o grau de liberdade seja livre:
+				//Case the degree of freedom be free:
 				if (GL_global_1 > 0)
 				{
 					anterior = db.global_P_A(GL_global_1 - 1, 0);
@@ -451,8 +451,8 @@ void NodalConstraintDOF::MountGlobal()
 				{
 					if (active_lambda[j % 6] == 1)
 					{
-						//////////////////////MONTAGEM DA MATRIZ DE RIGIDEZ/////////////////////////
-						//Toma do vetor de GL globais, a indexação de cada grau de liberdade global
+						//////////////////////ASSEMBLY OF THE STIFFNESS MATRIX/////////////////////////
+						//Takes of the global-DOF vector, the indexing of each global degree of freedom
 						if (j < 6)//uA
 						{
 							GL_global_2 = db.nodes[node_A - 1]->GLs[j];
@@ -470,16 +470,16 @@ void NodalConstraintDOF::MountGlobal()
 							}
 						}
 
-						//Caso os graus de liberdade sejam ambos livres (Matriz Kaa)
+						//Case the degrees of freedom be both free (Matrix Kaa)
 						if (GL_global_1 > 0 && GL_global_2 > 0)
 							db.global_stiffness_AA.setValue(GL_global_1 - 1, GL_global_2 - 1, (*stiffness)(i, j));
-						//Caso os graus de liberdade sejam ambos fixos (Matriz Kbb)
+						//Case the degrees of freedom be both fixed (Matrix Kbb)
 						if (GL_global_1 < 0 && GL_global_2 < 0)
 							db.global_stiffness_BB.setValue(-GL_global_1 - 1, -GL_global_2 - 1, (*stiffness)(i, j));
-						//Caso os graus de liberdade sejam livre e fixo (Matriz Kab)
+						//Case the degrees of freedom be free and fixed (Matrix Kab)
 						if (GL_global_1 > 0 && GL_global_2 < 0)
 							db.global_stiffness_AB.setValue(GL_global_1 - 1, -GL_global_2 - 1, (*stiffness)(i, j));
-						//Caso os graus de liberdade sejam fixo e livre (Matriz Kba)
+						//Case the degrees of freedom be fixed and free (Matrix Kba)
 						if (GL_global_1 < 0 && GL_global_2 > 0)
 							db.global_stiffness_BA.setValue(-GL_global_1 - 1, GL_global_2 - 1, (*stiffness)(i, j));
 					}
@@ -491,7 +491,7 @@ void NodalConstraintDOF::MountGlobal()
 
 
 
-//Pre-calculo de variaveis que e feito uma unica vez no inicio
+//Pre-calculation of variables that and done a single time in the start
 void NodalConstraintDOF::PreCalc()
 {
 	for (int i = 0; i < 6; i++)

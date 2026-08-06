@@ -8,10 +8,10 @@ public:
 	ContactInterface() {}
 	virtual ~ContactInterface() {}
 
-	virtual bool Check() = 0;				//Checa inconsistências para evitar erros de execução
+	virtual bool Check() = 0;				//Checks inconsistencies for avoid errors of execution
 	virtual bool Read(FILE *f) = 0;
 	virtual void Write(FILE *f) = 0;
-	virtual void PreCalc() = 0;				//Pre-calculo de variaveis que e feito uma unica vez no inicio
+	virtual void PreCalc() = 0;				//Pre-calculation of variables that and done a single time in the start
 
 
 	int number;			//ID

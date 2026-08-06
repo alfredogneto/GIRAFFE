@@ -8,8 +8,8 @@ class Verlet
 public:
 	Verlet();
 	~Verlet();
-	bool Read(FILE *f);					//Leitura
-	void Write(FILE *f);				//Gravação
+	bool Read(FILE *f);					//Reading
+	void Write(FILE *f);				//Recording
 
 	void AllocTables();
 	void FreeTables();

@@ -31,7 +31,7 @@ bool ShellLoad::Read(FILE *f)
 	fscanf(f, "%s", s);
 	number = atoi(s);
 
-	//Leitura do ElementSet
+	//Reading of the ElementSet
 	fscanf(f, "%s", s);
 	if (!strcmp(s, "ElementSet"))
 	{
@@ -41,12 +41,12 @@ bool ShellLoad::Read(FILE *f)
 	else
 		return false;
 
-	//Leitura do AreaUpdate
+	//Reading of the AreaUpdate
 	fscanf(f, "%s", s);
 	if (!strcmp(s, "AreaUpdate"))
 	{
 		fscanf(f, "%s", s);
-		if (atoi(s) != 0 && atoi(s) != 1)//Se não for 0 ou 1
+		if (atoi(s) != 0 && atoi(s) != 1)//If not for 0 or 1
 			return false;
 		if (atoi(s) == 1)
 			area_update = true;
@@ -124,7 +124,7 @@ void ShellLoad::PreCalc()
 
 }
 
-//Atualiza dados necessarios e que sejam dependentes de DOFs ativos/inativos - chamado no inicio de cada solution step
+//Updates data necessarios and that be dependentes of DOFs active/inativos - called in the start of each solution step
 void ShellLoad::UpdateforSolutionStep()
 {
 
@@ -132,7 +132,7 @@ void ShellLoad::UpdateforSolutionStep()
 
 void ShellLoad::Mount()
 {
-	//Percorre elementos
+	//Iterates over elements
 	int element;
 	for (int index = 0; index < db.element_sets[element_set - 1]->n_el; index++)
 	{

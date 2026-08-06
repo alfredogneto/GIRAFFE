@@ -60,7 +60,7 @@ bool SecSuperEllipse::Read(FILE *f)
 	else
 		return false;
 
-	//Salva a posição (stream)
+	//Saves the position (stream)
 	fpos_t pos;
 	fgetpos(f, &pos);
 	fscanf(f, "%s", s);
@@ -90,7 +90,7 @@ bool SecSuperEllipse::Read(FILE *f)
 			return false;
 	}
 	else
-		fsetpos(f, &pos);	//volta a posição anterior
+		fsetpos(f, &pos);	//turn the position previous
 
 
 	return true;
@@ -144,11 +144,11 @@ double SecSuperEllipse::Beta(double p1, double p2)
 
 double SecSuperEllipse::MDF_SaintVenantSE()
 {
-	//Malha do MDF
+	//Mesh of the MDF
 	int nx = div_mesh_a;
 	int ny = (int)(div_mesh_a*b/a);
 
-	//Matriz com informações condensadas de todos os pontos do grid
+	//Matrix with information condensadas of all the points of the grid
 	double *** info_p;
 	info_p = new double **[nx + 1];
 	for (int i = 0; i < nx+1; i++)
@@ -157,33 +157,33 @@ double SecSuperEllipse::MDF_SaintVenantSE()
 	for (int j = 0; j < ny+1; j++)
 		info_p[i][j] = new double[6];
 
-	//indices utilizados
-	//0 - não utilizado
+	//indices used
+	//0 - not used
 	//1 - x
 	//2 - y
 	//3 - phi(x, y)
-	//4 - status(0) - inativo - (1) ativo
-	//5 - numero da linha(equação)
+	//4 - status(0) - inactive - (1) active
+	//5 - number of the linha(equação)
 
-	//%%%%%%%%%%%%%%%%%%%%%%%%%%GERAÇÃO DE MALHA%%%%%%%%%%%%%%%%%%%%%%%
-	//percorre por linhas
+	//%%%%%%%%%%%%%%%%%%%%%%%%%%GERAÇÃO OF MESH%%%%%%%%%%%%%%%%%%%%%%%
+	//iterates over by rows
 	for (int j = 0; j <= ny;j++)
 	{
 		double y_cur = j*b / ny;
-		//percorre por colunas
+		//iterates over by columns
 		for (int i = 0; i <= nx; i++)
 		{
-			info_p[i][j][1] = (a*i / nx);		//coordenada x
-			info_p[i][j][2] = y_cur;			//coordenada y
+			info_p[i][j][1] = (a*i / nx);		//coordinate x
+			info_p[i][j][2] = y_cur;			//coordinate y
 			double xmax = a*pow(1.0 - pow(y_cur / b,n),1/n);
 			if ((a*i / nx) <= xmax)
 			{
-				//ponto ativo
+				//point active
 				info_p[i][j][4] = 1;
 			}
 			else
 			{
-				//ponto inativo
+				//point inactive
 				info_p[i][j][4] = 0;
 			}
 		}
@@ -200,30 +200,30 @@ double SecSuperEllipse::MDF_SaintVenantSE()
 			}
 		}
 	}
-	//Banda da matriz A
+	//Band of the matrix A
 	int larger = nx;
 	if (ny > nx)
 		larger = ny;
 	SparseMatrix A(n_GL,n_GL,larger*3);
 	
 	Matrix B(n_GL);
-	//%%%%%%%%%%%%%%%%%%%%%%%%%%MONTAGEM DE MATRIZES%%%%%%%%%%%%%%%%%%%%%%%
+	//%%%%%%%%%%%%%%%%%%%%%%%%%%ASSEMBLY OF MATRICES%%%%%%%%%%%%%%%%%%%%%%%
 	double hy = b / ny;
 	double hx = a / nx;
 	double coefx = 1.0 / (hx*hx);
 	double coefy = 1.0 / (hy*hy);
-	//percorre por linhas
+	//iterates over by rows
 	for (int j = 0; j <= ny; j++)
 	{
-		//percorre por colunas
+		//iterates over by columns
 		for (int i = 0; i <= nx; i++)
 		{
-			//Se o ponto se encontra no dominio
+			//If the point if finds in the domain
 			if (info_p[i][j][4] == 1)
 			{
 				A.setValue((long)(info_p[i][j][5]), (long)(info_p[i][j][5]), -2.0 * coefx - 2.0 * coefy);
 				B((long)(info_p[i][j][5]), 0) = -2;
-				//ponto a esquerda - simetria - eixo y
+				//point the left - simetria - axis y
 				if (i == 0)
 				{
 					if (i + 1 <= nx)
@@ -232,7 +232,7 @@ double SecSuperEllipse::MDF_SaintVenantSE()
 							A.setValue((long)(info_p[i][j][5]), (long)(info_p[i + 1][j][5]), 2.0 * coefx);
 					}
 				}
-				//ponto no interior do dominio ou no contorno
+				//point in the interior of the domain or in the boundary
 				else
 				{
 					if (i + 1 <= nx)
@@ -248,7 +248,7 @@ double SecSuperEllipse::MDF_SaintVenantSE()
 					}
 				}
 
-				//ponto em y = 0 - simetria - eixo x
+				//point in y = 0 - simetria - axis x
 				if (j == 0)
 				{
 					if (j + 1 <= ny)
@@ -259,7 +259,7 @@ double SecSuperEllipse::MDF_SaintVenantSE()
 						}
 					}
 				}
-				//ponto no interior do dominio ou no contorno
+				//point in the interior of the domain or in the boundary
 				else
 				{
 					if (j + 1 <= ny)
@@ -281,11 +281,11 @@ double SecSuperEllipse::MDF_SaintVenantSE()
 	int flag;
 	Matrix phi = sparsesystem(A, B, &flag,1,0);
 
-	//composição do phi em info_p
-	//percorre por linhas
+	//composição of the phi in info_p
+	//iterates over by rows
 	for (int j = 0; j <= ny; j++)
 	{
-		//percorre por colunas
+		//iterates over by columns
 		for (int i = 0; i <= nx; i++)
 		{
 			if (info_p[i][j][4] == 1)
@@ -294,23 +294,23 @@ double SecSuperEllipse::MDF_SaintVenantSE()
 
 	}
 
-	//Integração
+	//Integration
 	double temp_int = 0;
 	for (int j = 0; j <= ny; j++)
 	{
-		//percorre por colunas
+		//iterates over by columns
 		for (int i = 0; i <= nx; i++)
 		{
-			// Se o ponto se encontra no dominio
+			// If the point if finds in the domain
 			if (info_p[i][j][4] == 1)
 			{
-				if ((i == 0 && j == 0) || (i == 0 && j == ny) || (i == nx && j == 0) || (i == nx && j == ny)) // ponto nos cantos
+				if ((i == 0 && j == 0) || (i == 0 && j == ny) || (i == nx && j == 0) || (i == nx && j == ny)) // point in the cantos
 				{
 					temp_int = temp_int + info_p[i][j][3] * (hx*hy) / 4;
 				}
 				else
 				{
-					if (i == 0 || j == 0 || j == ny || i == nx) // ponto nas bordas
+					if (i == 0 || j == 0 || j == ny || i == nx) // point in the bordas
 					{
 						temp_int = temp_int + info_p[i][j][3] * (hx*hy) / 2;
 					}

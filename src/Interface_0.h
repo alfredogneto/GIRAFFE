@@ -7,10 +7,10 @@ public:
 	Interface_0();
 	~Interface_0();
 
-	bool Check();				//Checa inconsistências para evitar erros de execução
+	bool Check();				//Checks inconsistencies for avoid errors of execution
 	bool Read(FILE *f);
 	void Write(FILE *f);
-	void PreCalc();				//Pre-calculo de variaveis que e feito uma unica vez no inicio
+	void PreCalc();				//Pre-calculation of variables that and done a single time in the start
 
 	//Normal contact
 	double epsn1;

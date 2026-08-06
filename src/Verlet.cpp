@@ -8,7 +8,7 @@
 #include "Geometry.h"
 #include"Database.h"
 
-//Variaveis globais
+//Global variables
 extern
 Database db;
 
@@ -47,7 +47,7 @@ bool Verlet::Read(FILE *f)
 {
 	char s[1000];
 
-	//Salva a posição (stream)
+	//Saves the position (stream)
 	fpos_t pos;
 	fgetpos(f, &pos);
 	/*fscanf(f, "%s", s);
@@ -372,7 +372,7 @@ void Verlet::RefreshVerletTables()
 																	final_sample = Nsampling;
 															}
 
-															//Atualização do ponteiro. Obs: o ultimo apontara NULL, mas não entrara no loop (sai antes)
+															//Update of the pointer. Note: the last will point NULL, but not will enter in the loop (exits before)
 															ptr_subbv = ptr_subbv->next;
 														}
 													}
@@ -386,7 +386,7 @@ void Verlet::RefreshVerletTables()
 											final_sample = Nsampling;
 									}
 								}
-								//Atualização do ponteiro. Obs: o ultimo apontara NULL, mas não entrara no loop (sai antes)
+								//Update of the pointer. Note: the last will point NULL, but not will enter in the loop (exits before)
 								ptr_bv = ptr_bv->next;
 							}
 						}
@@ -455,7 +455,7 @@ void Verlet::RefreshVerletTables()
 																final_sample = Nsampling;
 														}
 
-														//Atualização do ponteiro. Obs: o ultimo apontara NULL, mas não entrara no loop (sai antes)
+														//Update of the pointer. Note: the last will point NULL, but not will enter in the loop (exits before)
 														ptr_subbv = ptr_subbv->next;
 													}
 												}
@@ -468,7 +468,7 @@ void Verlet::RefreshVerletTables()
 									if (final_sample > Nsampling)
 										final_sample = Nsampling;
 								}
-								//Atualização do ponteiro. Obs: o ultimo apontara NULL, mas não entrara no loop (sai antes)
+								//Update of the pointer. Note: the last will point NULL, but not will enter in the loop (exits before)
 								ptr_bv = ptr_bv->next;
 							}
 						}
@@ -542,7 +542,7 @@ void Verlet::RefreshVerletTables()
 																	final_sample = Nsampling;
 															}
 
-															//Atualização do ponteiro. Obs: o ultimo apontara NULL, mas não entrara no loop (sai antes)
+															//Update of the pointer. Note: the last will point NULL, but not will enter in the loop (exits before)
 															ptr_subbv = ptr_subbv->next;
 														}
 													}
@@ -557,7 +557,7 @@ void Verlet::RefreshVerletTables()
 									}
 								}
 
-								//Atualização do ponteiro. Obs: o ultimo apontara NULL, mas não entrara no loop (sai antes)
+								//Update of the pointer. Note: the last will point NULL, but not will enter in the loop (exits before)
 								ptr_bv = ptr_bv->next;
 							}
 						}
@@ -628,7 +628,7 @@ void Verlet::RefreshVerletTables()
 																final_sample = Nsampling;
 														}
 
-														//Atualização do ponteiro. Obs: o ultimo apontara NULL, mas não entrara no loop (sai antes)
+														//Update of the pointer. Note: the last will point NULL, but not will enter in the loop (exits before)
 														ptr_subbv = ptr_subbv->next;
 													}
 												}
@@ -641,7 +641,7 @@ void Verlet::RefreshVerletTables()
 									if (final_sample > Nsampling)
 										final_sample = Nsampling;
 								}
-								//Atualização do ponteiro. Obs: o ultimo apontara NULL, mas não entrara no loop (sai antes)
+								//Update of the pointer. Note: the last will point NULL, but not will enter in the loop (exits before)
 								ptr_bv = ptr_bv->next;
 							}
 						}
@@ -792,7 +792,7 @@ void Verlet::ComputeVerletUpdateItems(float* C_i, float* C_j, float size_i, floa
 		{
 			//temp is another variation of 'num', employed with a distinct increase len factor. This is to avoid establishing too low Nsampling
 			//if the same inc len factor is used for both inclusion on Verlet list and sampling, it is quite often to have Nsampling = 1
-			//0.5f * db.gcs->inc_len_factor is a possibility. Another values could be tried, also taking some info on interface laws, etc.
+			//0.5f * db.gcs->inc_len_factor is the possibility. Another values could be tried, also taking some info on interface laws, etc.
 			float temp = ((d_ij - cutoff_ij * (1.0f + 0.5f * db.gcs->inc_len_factor) / (1.0f + db.gcs->inc_len_factor)) / den);
 			if (temp < (float)INT_MAX)
 				*Nsampling = (int)temp;

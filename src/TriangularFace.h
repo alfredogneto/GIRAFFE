@@ -16,9 +16,9 @@ public:
 	int verticesIDs[3];
 	double vertice_weight[3];
 	int edgesIDs[3];
-	int ID;												//ID da face
+	int ID;												//ID of the face
 
-	MatrixFloat* centroid;								//Coordenadas centroide (float)
+	MatrixFloat* centroid;								//Coordinates centroide (float)
 	float radius;										//Radius
 	double area;
 

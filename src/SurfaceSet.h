@@ -7,15 +7,15 @@ public:
 	SurfaceSet();
 	~SurfaceSet();
 
-	int n_surf;			//numero de superficies
-	int* surf_list;		//lista de superficies
-	int number;			//numero de referência
+	int n_surf;			//number of surfaces
+	int* surf_list;		//list of surfaces
+	int number;			//reference number
 
 	
-	bool sequence;		//true se e do tipo sequence
-	bool list;			//true se e do tipo list
+	bool sequence;		//true if and of the type sequence
+	bool list;			//true if and of the type list
 
-	//Para o caso de sequence
+	//For the case of sequence
 	int initial;
 	int increment;
 

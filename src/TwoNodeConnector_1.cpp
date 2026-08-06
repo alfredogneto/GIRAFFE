@@ -4,7 +4,7 @@
 #include "CoordinateSystem.h"
 #include "Dynamic.h"
 #include"Database.h"
-//Variaveis globais
+//Global variables
 extern
 Database db;
 
@@ -30,10 +30,10 @@ TwoNodeConnector_1::TwoNodeConnector_1()
 	for (int i = 0; i < n_nodes; i++)
 		DOFs[i] = new int[db.number_GLs_node];
 
-	type_name = new char[20];//Nome do tipo do elemento
+	type_name = new char[20];//Name of the type of the element
 	sprintf(type_name, "TwoNodeConnector_1");
 
-	//Rotina para ativar os GLS de cada nó do elemento
+	//Routine for activate the GLS of each node of the element
 	for (int i = 0; i < n_nodes; i++)
 	{
 		for (int j = 0; j < db.number_GLs_node; j++)
@@ -48,7 +48,7 @@ TwoNodeConnector_1::TwoNodeConnector_1()
 		DOFs[i][5] = 1;
 	}
 
-	//Variaveis do elemento
+	//Variables of the element
 	K = new Matrix(12, 12);													
 	C = new Matrix(12, 12);	
 	Q = new Matrix(12, 12);
@@ -151,7 +151,7 @@ bool TwoNodeConnector_1::Read(FILE *f)
 	return true;
 }
 
-//Checa inconsistências no elemento para evitar erros de execução
+//Checks inconsistencies in the element for avoid errors of execution
 bool TwoNodeConnector_1::Check()
 {
 	for (int i = 0; i < n_nodes; i++)
@@ -186,13 +186,13 @@ void TwoNodeConnector_1::Write(FILE *f)
 		fprintf(f, "\n");
 	}
 }
-//Escreve arquivo de resultados
+//Writes file of results
 void TwoNodeConnector_1::WriteResults(FILE *f)
 {
 	//DOES NOTHING
 }
 
-//Escreve no monitor do elemento//Escreve no monitor do elemento
+//Writes in the monitor of the element//Writes in the monitor of the element
 void TwoNodeConnector_1::WriteMonitor(FILE *f, bool first_record, double time)
 {
 	//DOES NOTHING
@@ -205,25 +205,25 @@ void TwoNodeConnector_1::WriteVTK_XMLBase(std::vector<float> *float_vector)
 
 void TwoNodeConnector_1::WriteVTK_XMLRender(FILE *f)
 {
-	//TODO
+	//ALL
 }
 
-//Monta carregamentos associados ao elemento
+//Assembles loadings associated to the element
 void TwoNodeConnector_1::MountElementLoads()
 {
 	//DOES NOTHING
 }
 
-//Monta elementos
+//Assembles elements
 void TwoNodeConnector_1::Mount()
 {
-	//Posições atuais dos GL do elemento
+	//Positions current of the GL of the element
 	Matrix xipp(12);
 	Matrix uA(3);
 	Matrix uB(3);
 	Matrix alphaA(3);
 	Matrix alphaB(3);
-	//Deslocamentos
+	//Displacements
 	for (int i = 0; i < 3; i++)
 	{
 		uA(i, 0) = db.nodes[nodes[0] - 1]->copy_coordinates[i] + db.nodes[nodes[0] - 1]->displacements[i] - db.nodes[nodes[0] - 1]->ref_coordinates[i];
@@ -231,37 +231,37 @@ void TwoNodeConnector_1::Mount()
 	}
 	Matrix alpha_1(3);
 	Matrix alpha_2(3);
-	//Rotações - nó A
+	//Rotations - node A
 	alpha_1(0, 0) = db.nodes[nodes[0] - 1]->copy_coordinates[3];
 	alpha_1(1, 0) = db.nodes[nodes[0] - 1]->copy_coordinates[4];
 	alpha_1(2, 0) = db.nodes[nodes[0] - 1]->copy_coordinates[5];
 	alpha_2(0, 0) = db.nodes[nodes[0] - 1]->displacements[3];
 	alpha_2(1, 0) = db.nodes[nodes[0] - 1]->displacements[4];
 	alpha_2(2, 0) = db.nodes[nodes[0] - 1]->displacements[5];
-	//Fórmula de Rodrigues
-	alphaA = 4.0 / (4.0 - dot(alpha_2, alpha_1))*(alpha_2 + alpha_1 + 0.5*cross(alpha_2, alpha_1));	//Vetor rotação de Rodrigues
-	//////////////////////Salvando rotações de Euler////////////////////
-	//double theta_escalar = 2.0*atan(norm(alphaA) / 2.0);
+	//Fórmula of Rodrigues
+	alphaA = 4.0 / (4.0 - dot(alpha_2, alpha_1))*(alpha_2 + alpha_1 + 0.5*cross(alpha_2, alpha_1));	//Vector rotation of Rodrigues
+	//////////////////////Saving rotations of Euler////////////////////
+	//double theta_scalar = 2.0*atan(norm(alphaA) / 2.0);
 	//if (norm(alphaA) != 0.0)
-	//	alphaA = (theta_escalar / norm(alphaA))*(alphaA);
+	//	alphaA = (theta_scalar / norm(alphaA))*(alphaA);
 	//else
 	//	zeros(&alphaA);
-	//Rotações - nó B
+	//Rotations - node B
 	alpha_1(0, 0) = db.nodes[nodes[1] - 1]->copy_coordinates[3];
 	alpha_1(1, 0) = db.nodes[nodes[1] - 1]->copy_coordinates[4];
 	alpha_1(2, 0) = db.nodes[nodes[1] - 1]->copy_coordinates[5];
 	alpha_2(0, 0) = db.nodes[nodes[1] - 1]->displacements[3];
 	alpha_2(1, 0) = db.nodes[nodes[1] - 1]->displacements[4];
 	alpha_2(2, 0) = db.nodes[nodes[1] - 1]->displacements[5];
-	//Fórmula de Rodrigues
-	alphaB = 4.0 / (4.0 - dot(alpha_2, alpha_1))*(alpha_2 + alpha_1 + 0.5*cross(alpha_2, alpha_1));	//Vetor rotação de Rodrigues
-	//////////////////////Salvando rotações de Euler////////////////////
-	//theta_escalar = 2.0*atan(norm(alphaB) / 2.0);
+	//Fórmula of Rodrigues
+	alphaB = 4.0 / (4.0 - dot(alpha_2, alpha_1))*(alpha_2 + alpha_1 + 0.5*cross(alpha_2, alpha_1));	//Vector rotation of Rodrigues
+	//////////////////////Saving rotations of Euler////////////////////
+	//theta_scalar = 2.0*atan(norm(alphaB) / 2.0);
 	//if (norm(alphaB) != 0.0)
-	//	alphaB = (theta_escalar / norm(alphaB))*(alphaB);
+	//	alphaB = (theta_scalar / norm(alphaB))*(alphaB);
 	//else
 	//	zeros(&alphaB);
-	//Compondo o vetor xipp
+	//Compondo the vector xipp
 	for (int i = 0; i < 3; i++)
 	{
 		xipp(i, 0) = uA(i, 0);
@@ -270,19 +270,19 @@ void TwoNodeConnector_1::Mount()
 		xipp(i + 9, 0) = alphaB(i, 0);
 	}
 
-	//Forças elasticas
+	//Forces elasticas
 	*f = (*K)*xipp;
-	//Operador tangente (parcela da rigidez)
+	//Operator tangent (parcela of the stiffness)
 	*Kt = (*K);
 	//f->print();
 	//Kt->print();
 }
-//Monta matriz de transformação de coordenadas
+//Assembles transformation matrix of coordinates
 void TwoNodeConnector_1::TransformMatrix()
 {
 	//DOES NOTHING
 }
-//Preenche a contribuição do elemento nas matrizes globais
+//Fills the contribution of the element in the matrices global
 void TwoNodeConnector_1::MountGlobal()
 {
 	int GL_global_1 = 0;
@@ -290,14 +290,14 @@ void TwoNodeConnector_1::MountGlobal()
 	double anterior = 0;
 	for (int i = 0; i < 12; i++)
 	{
-		//Nó 1
+		//Node 1
 		if (i < 6)
 			GL_global_1 = db.nodes[nodes[0] - 1]->GLs[i];
-		//Nó 2
+		//Node 2
 		else
 			GL_global_1 = db.nodes[nodes[1] - 1]->GLs[i - 6];
 
-		//Caso o grau de liberdade seja livre:
+		//Case the degree of freedom be free:
 		if (GL_global_1 > 0)
 		{
 			anterior = db.global_P_A(GL_global_1 - 1, 0);
@@ -312,37 +312,37 @@ void TwoNodeConnector_1::MountGlobal()
 		}
 		for (int j = 0; j < 12; j++)
 		{
-			//Nó 1
+			//Node 1
 			if (j < 6)
 				GL_global_2 = db.nodes[nodes[0] - 1]->GLs[j];
-			//Nó 2
+			//Node 2
 			else
 				GL_global_2 = db.nodes[nodes[1] - 1]->GLs[j - 6];
 
-			//Caso os graus de liberdade sejam ambos livres (Matriz Kaa)
+			//Case the degrees of freedom be both free (Matrix Kaa)
 			if (GL_global_1 > 0 && GL_global_2 > 0)
 				db.global_stiffness_AA.setValue(GL_global_1 - 1, GL_global_2 - 1, (*Kt)(i, j));
-			//Caso os graus de liberdade sejam ambos fixos (Matriz Kbb)
+			//Case the degrees of freedom be both fixed (Matrix Kbb)
 			if (GL_global_1 < 0 && GL_global_2 < 0)
 				db.global_stiffness_BB.setValue(-GL_global_1 - 1, -GL_global_2 - 1, (*Kt)(i, j));
-			//Caso os graus de liberdade sejam livre e fixo (Matriz Kab)
+			//Case the degrees of freedom be free and fixed (Matrix Kab)
 			if (GL_global_1 > 0 && GL_global_2 < 0)
 				db.global_stiffness_AB.setValue(GL_global_1 - 1, -GL_global_2 - 1, (*Kt)(i, j));
-			//Caso os graus de liberdade sejam fixo e livre (Matriz Kba)
+			//Case the degrees of freedom be fixed and free (Matrix Kba)
 			if (GL_global_1 < 0 && GL_global_2 > 0)
 				db.global_stiffness_BA.setValue(-GL_global_1 - 1, GL_global_2 - 1, (*Kt)(i, j));
 		}
 	}
 }
-//Salva variaveis nos pontos de Gauss uteis para descrição lagrangiana atualizada
+//Saves variables in the gauss points useful for description lagrangiana updated
 void TwoNodeConnector_1::SaveLagrange()
 {
 	//DOES NOTHING
 }
-//Pre-calculo de variaveis que e feito uma unica vez no inicio
+//Pre-calculation of variables that and done a single time in the start
 void TwoNodeConnector_1::PreCalc()
 {
-	//Transformação de coordenadas 3x3
+	//Transformation of coordinates 3x3
 	(*Q_m)(0, 0) = (*db.CS[cs - 1]->E1)(0, 0);
 	(*Q_m)(0, 1) = (*db.CS[cs - 1]->E1)(1, 0);
 	(*Q_m)(0, 2) = (*db.CS[cs - 1]->E1)(2, 0);
@@ -353,7 +353,7 @@ void TwoNodeConnector_1::PreCalc()
 	(*Q_m)(2, 1) = (*db.CS[cs - 1]->E3)(1, 0);
 	(*Q_m)(2, 2) = (*db.CS[cs - 1]->E3)(2, 0);
 
-	//Preenchendo a transformação de coordenadas 12x12
+	//Filling the transformation of coordinates 12x12
 	for (int i = 0; i < 3; i++)
 	{
 		for (int j = 0; j < 3; j++)
@@ -364,7 +364,7 @@ void TwoNodeConnector_1::PreCalc()
 			(*Q)(i + 9, j + 9) = (*Q_m)(i, j);
 		}
 	}
-	//Composição da matriz de rigidez e amortecimento (antes da transformação de coordenadas)
+	//Composição of the stiffness matrix and damping (before of the transformation of coordinates)
 	for (int i = 0; i < 6; i++)
 	{
 		for (int j = 0; j < 6; j++)
@@ -382,39 +382,39 @@ void TwoNodeConnector_1::PreCalc()
 	}
 	//K->print();
 	//C->print();
-	//Transformação de coordenadas
+	//Transformation of coordinates
 	*K = transp(*Q)*(*K)*(*Q);
 	*C = transp(*Q)*(*C)*(*Q);
 	//K->print();
 	//C->print();
 }
 
-//Monta a matriz de massa
+//Assembles the mass matrix
 void TwoNodeConnector_1::MountMass()
 {
 	//DOES NOTHING
 }
-//Monta a matriz de massa
+//Assembles the mass matrix
 void TwoNodeConnector_1::MountMassModal()
 {
 	//DOES NOTHING
 }
 
-//Monta a matriz de amortecimento para realização da analise modal
+//Assembles the damping matrix for performing of the analysis modal
 void TwoNodeConnector_1::MountDampingModal()
 {
 	//DOES NOTHING
 }
 
-//Monta a matriz de amortecimento
+//Assembles the damping matrix
 void TwoNodeConnector_1::MountDamping(bool update_rayleigh)
 {
 	if (typeid(*db.solution[db.current_solution_number - 1]) == typeid(Dynamic))
 	{
 		Dynamic* ptr_sol = static_cast<Dynamic*>(db.solution[db.current_solution_number - 1]);
-		//Amortecimento de Rayleigh + Matriz de amortecimento definida
+		//Damping of Rayleigh + Damping matrix definida
 		*Ct = ptr_sol->beta*(*K) + (*C);
-		//Velocidade nos GL do elemento
+		//Velocity in the GL of the element
 		Matrix vipp(12);
 		for (int i = 0; i < 6; i++)
 		{
@@ -422,19 +422,19 @@ void TwoNodeConnector_1::MountDamping(bool update_rayleigh)
 			vipp(i + 6, 0) = db.nodes[nodes[1] - 1]->vel[i];
 		}
 		*fd = (*Ct) * vipp;
-		//Damping para Newmark para compor o operador tangente
+		//Damping for Newmark for compor the operator tangent
 		*Ct = ptr_sol->a4*(*Ct);
 	}
 }
 
-//Montagens - Newmark
+//Assemblies - Newmark
 void TwoNodeConnector_1::MountDyn()
 {
 	*f = (*f) + (*fd);
 	*Kt = (*Kt) + (*Ct);
 }
 
-//Montagens para analise modal - inserção da matriz de massa e amortecimento na matriz de rigidez para posterior montagem global
+//Assemblies for analysis modal - insertion of the mass matrix and damping in the stiffness matrix for subsequent assembly global
 void TwoNodeConnector_1::MountDynModal()
 {
 	//No influences are considered (no mass, neither damping)
@@ -442,7 +442,7 @@ void TwoNodeConnector_1::MountDynModal()
 	zeros(Ct);
 }
 
-//Zera algumas matrizes utilizadas nos calculos
+//Zeroes some matrices used in the calculations
 void TwoNodeConnector_1::Zeros()
 {
 	zeros(f);

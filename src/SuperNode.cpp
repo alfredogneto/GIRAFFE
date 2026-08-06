@@ -119,7 +119,7 @@ bool SuperNode::Read(FILE *f)
 {
 	char s[1000];
 	fscanf(f, "%s", s);
-	//Verifica a palavra chave "SuperNode"
+	//Checks the keyword "SuperNode"
 	if (!strcmp(s, "SuperNode"))
 	{
 		fscanf(f, "%s", s);
@@ -127,7 +127,7 @@ bool SuperNode::Read(FILE *f)
 	}
 	else
 		return false;
-	//Leitura das coordenadas
+	//Reading of the coordinates
 	fscanf(f, "%s", s);
 	super_node_coordinates[0] = atof(s);
 	fscanf(f, "%s", s);

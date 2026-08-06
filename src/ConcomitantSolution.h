@@ -13,14 +13,14 @@ public:
 	void UpdateConcomitantSolution(double time);
 	void EndConcomitantSolution();
 
-	bool Read(FILE *f);					//Leitura
-	void Write(FILE *f);				//Gravação
+	bool Read(FILE *f);					//Reading
+	void Write(FILE *f);				//Recording
 	bool Check();						//Checking inconsistencies
 
 	int sample;
 
 protected:
-	//variaveis internas
+	//variables internal
 	BoolTable	bool_concomitant;
 	Solution* sol;
 	FILE *f_output;

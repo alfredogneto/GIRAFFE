@@ -11,9 +11,9 @@ public:
 	Matrix* N;	//normal
 	Matrix* T1;
 	Matrix* T2;
-	Matrix* P;	//Ponto pertencente ao plano
+	Matrix* P;	//Point pertencente to the plane
 	void PreCalc();
-	double len;					//Tamanho do bounding box (para pós-processamento)
+	double len;					//Size of the bounding box (for pós-processamento)
 	bool Read(FILE *f);
 	void Write(FILE *f);
 	double Distance(Matrix &O);	//Calculates the distance between the Analytical Surface and a given point in space

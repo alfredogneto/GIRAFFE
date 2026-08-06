@@ -15,22 +15,22 @@ public:
 
 	bool ReadCommon(FILE *f);
 
-	//Funções
-	void FillNodes();														//Atualiza as variaveis internas da superficie, para pegarem info do pilot node para uso posterior com posição atualizada
-	void SaveConfiguration();												//Salva vetores de configuração convergida
-	void CenterPoint(Matrix* center, double* radii);						//Retorna coordenadas globais do ponto central da superficie a ser utilizado para calculos grosseiros de sua localização (pinball)
-	bool Check();															//Checa inconsistências para evitar erros de execução
+	//Functions
+	void FillNodes();														//Updates the variables internal of the surface, for grab info of the pilot node for use subsequent with position updated
+	void SaveConfiguration();												//Saves vectors of configuration converged
+	void CenterPoint(Matrix* center, double* radii);						//Returns coordinates global of the point central of the surface the be used for calculations coarse of its location (pinball)
+	bool Check();															//Checks inconsistencies for avoid errors of execution
 	void SetMinMaxRange();
-	void SplinePoint(double & zeta, Matrix& point);					//Obtem ponto da spline
+	void SplinePoint(double & zeta, Matrix& point);					//Obtains point of the spline
 	void UpdateBox();
 
-	int *nodes;		//Nós globais - conectividade
-	int n_nodes;	//Numero de nós da superficie
-	int **DOFs;		//Indica para a indexação de cada grau de liberdade, 1 ou 0, ativo ou inativo para o elemento em questão
-	int nDOFs;		//Numero de GL
-	//int VTK_type;	//Tipo de celula para VTK
-	int *VTK_nodes;	//Indexação para converter numeração do formato giraffe para o formato da celula equivalente do paraview
-	int **GLs;		//Ponteiro para os GL globais utilizados na superficie
+	int *nodes;		//Nodes global - conectividade
+	int n_nodes;	//Number of nodes of the surface
+	int **DOFs;		//Indicates for the indexing of each degree of freedom, 1 or 0, active or inactive for the element in question
+	int nDOFs;		//Number of GL
+	//int VTK_type;	//Type of celula for VTK
+	int *VTK_nodes;	//Indexing for convert numbering of the formato giraffe for the formato of the celula equivalente of the paraview
+	int **GLs;		//Pointer for the GL global used in the surface
 
 	Box box;
 
@@ -56,7 +56,7 @@ public:
 	Matrix* dui;
 	Matrix* ddui;
 
-	Matrix* I3;																//Identidade de ordem 3
+	Matrix* I3;																//Identidade of order 3
 
 };
 

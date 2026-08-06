@@ -12,14 +12,16 @@ public:
 	int number;										//ID
 	int CADData_ID;									//ID do CAD
 	bool CAD_entered;
-	double mass;									//massa
-	Matrix* J_G;									//Tensor de inercia
-	Matrix* G;										//Posição do baricentro
-	
+	char CAD_file[500];								//Filename from a directly-embedded "CADFile" mesh reference (visualization only - not yet wired to a renderer)
+	bool CAD_file_entered;
+	double mass;									//mass
+	Matrix* J_G;									//Tensor of inertia
+	Matrix* G;										//Position of the baricentro
+
 	bool Read(FILE *f);
 	void Write(FILE *f);
 
 	void PreCalc();
-	void WriteVTK_XMLRender(FILE *f, int pole_node, int cs);//Plota corpo rigido - formato XML VTK - recebe o numero do nó que e o pólo e o sistema de coordenadas de referência (que e atualizado de acordo com rotações sofridas pelo nó)
+	void WriteVTK_XMLRender(FILE *f, int pole_node, int cs);//Plots rigid body - formato XML VTK - receives the number of the node that and the pole and the coordinate system of reference (that and updated according to rotations sofridas through the node)
 };
 

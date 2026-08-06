@@ -66,9 +66,9 @@ public:
 	void InertialContributions();
 	void DampingContributions();
 	void UpdateVariables();
-	void PreCalc();								//Pre-calculo de variaveis que e feito uma unica vez no inicio
+	void PreCalc();								//Pre-calculation of variables that and done a single time in the start
 	void UpdateBoundingVolumes();
-	void SaveLagrange();						//Salva variaveis
+	void SaveLagrange();						//Saves variables
 	void WriteVTK_XMLBase(FILE *f);
 	void WriteVTK_XMLRender(FILE *f);
 	void PostProcessing();

@@ -16,11 +16,11 @@ public:
 	void PreCalc();							//Pre-calculus
 	void Mount();
 	bool Check();							//Checking inconsistencies
-	void Alloc();							//Alocação dinamica de variaveis
-	void Free();							//Desalocação dinamica de variaveis
+	void Alloc();							//Allocation dynamics of variables
+	void Free();							//Desalocação dynamics of variables
 
 	//Variables
-	bool alloced;							//Controle de alocação de memória
+	bool alloced;							//Control of allocation of memory
 	int solution_step;						//Solution step to prescribe displacement field
 	int cs;									//Coordinate system for input data
 	int *nodes;								//List of nodes to apply the displacement field

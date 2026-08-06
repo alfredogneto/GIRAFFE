@@ -1,91 +1,119 @@
 #include "Matrix.h"
+#ifdef GIRAFFE_USE_MKL
 #include <mkl.h>
+#else
+#include <cblas.h>
+// Non-MKL LAPACK (OpenBLAS/Accelerate/reference LAPACK) exports the classic
+// Fortran-mangled names (trailing underscore) instead of MKL's bare C aliases.
+extern "C" {
+	void dgetrf_(int *m, int *n, double *a, int *lda, int *ipiv, int *info);
+	void dgetrs_(char *trans, int *n, int *nrhs, double *a, int *lda, int *ipiv, double *b, int *ldb, int *info);
+	void dsyev_(char *jobz, char *uplo, int *n, double *a, int *lda, double *w, double *work, int *lwork, int *info);
+	void dsyevr_(char *jobz, char *range, char *uplo, int *n, double *a, int *lda, double *vl, double *vu, int *il, int *iu, double *abstol, int *m, double *w, double *z, int *ldz, int *isuppz, double *work, int *lwork, int *iwork, int *liwork, int *info);
+}
+static inline void dgetrf(int *m, int *n, double *a, int *lda, int *ipiv, int *info)
+{
+	dgetrf_(m, n, a, lda, ipiv, info);
+}
+static inline void dgetrs(char *trans, int *n, int *nrhs, double *a, int *lda, int *ipiv, double *b, int *ldb, int *info)
+{
+	dgetrs_(trans, n, nrhs, a, lda, ipiv, b, ldb, info);
+}
+static inline void dsyev(char *jobz, char *uplo, int *n, double *a, int *lda, double *w, double *work, int *lwork, int *info)
+{
+	dsyev_(jobz, uplo, n, a, lda, w, work, lwork, info);
+}
+static inline void dsyevr(char *jobz, char *range, char *uplo, int *n, double *a, int *lda, double *vl, double *vu, int *il, int *iu, double *abstol, int *m, double *w, double *z, int *ldz, int *isuppz, double *work, int *lwork, int *iwork, int *liwork, int *info)
+{
+	dsyevr_(jobz, range, uplo, n, a, lda, vl, vu, il, iu, abstol, m, w, z, ldz, isuppz, work, lwork, iwork, liwork, info);
+}
+#endif
 
 #define PI 3.1415926535897932384626433832795
 
-//Construtor Padrão
+//Constructor Padrï¿½o
 Matrix::Matrix(void)
 {
 	m_lines_deleted = true;
 	m_alloced_lines = 0;
 	m_lines = 1;
 	m_columns = 1;
-	//Inicializa a matriz como null e tenta aloca-la
+	//Initializes the matrix as null and tries allocates-it
 	m_matrix = NULL;
 	if(!alloc())
 		printf("Nao foi possivel alocar matriz! \n");
 }
-//Construtor de matriz quadrada
+//Constructor of square matrix
 Matrix::Matrix(long lines)
 {
 	m_lines_deleted = true;
 	m_alloced_lines = 0;
 	m_lines = lines;
 	m_columns = 1;
-	//Inicializa a matriz como null e tenta aloca-la
+	//Initializes the matrix as null and tries allocates-it
 	m_matrix = NULL;
 	if(!alloc())
 		printf("Nao foi possivel alocar matriz! \n");
 }
-//Construtor Parametrico
+//Parametric constructor
 Matrix::Matrix(long lines, long columns)
 {
 	m_lines_deleted = true;
 	m_alloced_lines = 0;
 	m_lines = lines;
 	m_columns = columns;
-	//Inicializa a matriz como null e tenta aloca-la
+	//Initializes the matrix as null and tries allocates-it
 	m_matrix = NULL;
 	if(!alloc())
 		printf("Nao foi possivel alocar matriz! \n");
 }
-//Construtor de cópia
+//Constructor of cï¿½pia
 Matrix::Matrix(const Matrix &copied)
 {
-	//Verifica dimensões da matriz - se necessario, faz re-alocação
+	//Checks dimensï¿½es of the matrix - if necessary, does re-alocaï¿½ï¿½o
 	//if (copied.m_alloced_lines != m_alloced_lines)
 	//{
 		m_alloced_lines = 0;
 		m_lines = copied.m_lines;
 		m_columns = copied.m_columns;
 		m_lines_deleted = true;
-		//Inicializa a matriz como null e tenta aloca-la
+		//Initializes the matrix as null and tries allocates-it
 		m_matrix = NULL;
 		if(!alloc())
 			printf("Nao foi possivel alocar matriz! \n");
 	//}
-	//Copia os valores na nova matriz
+	//Copies the values in the new matrix
 	for(long i=0; i < copied.m_alloced_lines; i++)
 		m_matrix[i] = copied.m_matrix[i];	
 }
-//Destrutor Padrão
+//Destructor Padrï¿½o
 Matrix::~Matrix(void)
 {
 	flush();
 }
 
-//Retorna o numero de linhas da matriz
-long Matrix::getLines()
+//Returns the number of rows of the matrix
+long Matrix::getLines() const
 {
 	return this->m_lines;
 }
-//Retorna o numero de colunas da matriz 
-long Matrix::getColumns()
+//Returns the number of columns of the matrix 
+long Matrix::getColumns() const
 {
 	return this->m_columns;
 }
-//Define o numero de linhas da matriz
+//Defines the number of rows of the matrix
 void Matrix::setLines(long value) 
 {
 	m_lines = value;
 }
-//Define o numero de colunas da matriz
+//Defines the number of columns of the matrix
 void Matrix::setColumns(long value) 
 {
 	m_columns = value;
 }
 
-//Imprime a matriz na tela
+//Prints the matrix in the tela
 void Matrix::print()
 {
 	printf("\n");
@@ -103,7 +131,7 @@ void Matrix::print()
 	}
 	printf("\n");
 }
-//Imprime a matriz em um arquivo de texto, cujo nome esta no char s
+//Prints the matrix in a file of text, whose name this in the char s
 void Matrix::fprint(char* s)
 {
 	FILE *file1 = fopen(s,"w");
@@ -122,15 +150,15 @@ void Matrix::fprint(char* s)
 	fprintf(file1,"\n");
 	fclose(file1);
 }
-//Aloca a matriz
+//Allocates the matrix
 bool Matrix::alloc()
 {
 	flush();
-	//Tenta alocar a matriz
+	//Tries allocate the matrix
 	if(!(m_matrix = new double[m_lines*m_columns]))
 			//Falha
 			return false;
-	//Caso consiga
+	//Case consiga
 	else
 	{
 		m_alloced_lines = m_lines*m_columns;
@@ -141,86 +169,86 @@ bool Matrix::alloc()
 		return true;
 	}	
 }
-//Libera a memória ocupada pela matriz
+//Frees the memï¿½ria occupied through the matrix
 bool Matrix::flush()
 {
-	//Percorre as linhas
-	//Se ha linhas para desalocar
+	//Iterates over the rows
+	//If there is rows for deallocate
 	if (this->m_lines_deleted == false)
 	{
 		if (m_matrix)
 			delete[]m_matrix;
-		//Desalocada com sucesso
-		m_lines_deleted=true;	//para evitar desalocação novamente
+		//Desalocada with sucesso
+		m_lines_deleted=true;	//for avoid desalocaï¿½ï¿½o novamente
 		m_matrix = NULL;
 		m_alloced_lines = 0;
 	}
 	return true;
 }
-//Zera a matriz, mantando as dimensões atuais
+//Zeroes the matrix, keeping the dimensï¿½es current
 void Matrix::clear()
 {
 	for(int i=0; i < m_alloced_lines; i++)
 			m_matrix[i] = 0.0;
 }
 
-//Operador Soma
-Matrix operator + (Matrix &matrix1, Matrix &matrix2)
+//Operator Sum
+Matrix operator + (const Matrix &matrix1, const Matrix &matrix2)
 {
-	//Verifica se as dimensões das matrizes são compativeis
+	//Checks if the dimensï¿½es of the matrices sï¿½o compatible
 	if((matrix1.getLines() != matrix2.getLines()) || (matrix1.getColumns() != matrix2.getColumns()))
 	{
-		//Mensagem de erro - Dimensões Incompativeis
+		//Mensagem of error - Dimensï¿½es Incompatible
 		printf("Matrizes devem possuir a mesma dimensao! \n");
-		//Retorna vazio
+		//Returns vazio
 		return NULL;
 	}
-	//Caso as dimensões sejam compativeis
+	//Case the dimensï¿½es be compatible
 	else
 	{
-		//Cria uma matriz de retorno
+		//Creates a matrix of return
 		Matrix return_matrix(matrix1.getLines(),matrix1.getColumns());
 		
-		//Subtrai elemento a elemento da matriz
+		//Subtrai element the element of the matrix
 		for(long i=0; i < matrix1.m_alloced_lines; i++)
 			return_matrix.m_matrix[i] = matrix1.m_matrix[i] + matrix2.m_matrix[i];
 		
-		//Retorna a matriz subtração
+		//Returns the matrix subtraï¿½ï¿½o
 		return return_matrix;
 	}
 }
-//Operador Subtração
-Matrix operator - (Matrix &matrix1, Matrix &matrix2)
+//Operator Subtraï¿½ï¿½o
+Matrix operator - (const Matrix &matrix1, const Matrix &matrix2)
 {
-	//Verifica se as dimensões das matrizes são compativeis
+	//Checks if the dimensï¿½es of the matrices sï¿½o compatible
 	if((matrix1.getLines() != matrix2.getLines()) || (matrix1.getColumns() != matrix2.getColumns()))
 	{
-		//Mensagem de erro - Dimensões Incompativeis
+		//Mensagem of error - Dimensï¿½es Incompatible
 		printf("Matrizes devem possuir a mesma dimensao! \n");
-		//Retorna vazio
+		//Returns vazio
 		return NULL;
 	}
-	//Caso as dimensões sejam compativeis
+	//Case the dimensï¿½es be compatible
 	else
 	{
-		//Cria uma matriz de retorno
+		//Creates a matrix of return
 		Matrix return_matrix(matrix1.getLines(),matrix1.getColumns());
 		
-		//Subtrai elemento a elemento da matriz
+		//Subtrai element the element of the matrix
 		for(long i=0; i < matrix1.m_alloced_lines; i++)
 			return_matrix.m_matrix[i] = matrix1.m_matrix[i] - matrix2.m_matrix[i];
 		
-		//Retorna a matriz subtração
+		//Returns the matrix subtraï¿½ï¿½o
 		return return_matrix;
 	}
 }
-//Operador Multiplicacao de matrizes
-Matrix operator * (Matrix &matrix1, Matrix &matrix2)
+//Operator Multiplication of matrices
+Matrix operator * (const Matrix &matrix1, const Matrix &matrix2)
 {
-	//Verificação da possibilidade de multiplicação
+	//Verificaï¿½ï¿½o of the possibility of multiplicaï¿½ï¿½o
 	if (matrix1.m_columns != matrix2.m_lines)
 	{
-		//Produto escalar
+		//Dot product
 		if (matrix1.m_lines == matrix2.m_lines)
 		{
 			Matrix ret(1,1);
@@ -238,61 +266,61 @@ Matrix operator * (Matrix &matrix1, Matrix &matrix2)
 	{
 		
 		Matrix return_m(matrix1.m_lines,matrix2.m_columns);
-		//Se a segunda matriz for um vetor
+		//If the second matrix for a vector
 		if (matrix2.m_columns == 1)
 			cblas_dgemv(CblasColMajor,CblasNoTrans,matrix1.m_lines,matrix1.m_columns,1.0,matrix1.m_matrix,matrix1.m_lines,matrix2.m_matrix,1,0.0,return_m.m_matrix,1);
-		//Se não
+		//Se nï¿½o
 		else
 			cblas_dgemm(CblasColMajor,CblasNoTrans,CblasNoTrans,matrix1.m_lines,matrix2.m_columns,matrix2.m_lines,1.0,matrix1.m_matrix,matrix1.m_lines,matrix2.m_matrix,matrix2.m_lines,1,return_m.m_matrix,return_m.m_lines);
 		//return_m.print();
 		return return_m;
 	}
 }
-//Operador Multiplicacao por escalar
-Matrix operator * (double escalar, Matrix &matrix1)
+//Operator Multiplication by scalar
+Matrix operator * (double escalar, const Matrix &matrix1)
 {
-	//Cria uma matriz de retorno
+	//Creates a matrix of return
 	Matrix return_matrix(matrix1.getLines(),matrix1.getColumns());
 
-	//Faz o produto de cada elemento da matriz pelo escalar
+	//Does the product of each element of the matrix through the scalar
 	for(long i=0; i < return_matrix.m_alloced_lines; i++)
 		return_matrix.m_matrix[i] = matrix1.m_matrix[i]*escalar;
 	
-	//Retorna a matriz produto por escalar
+	//Returns the matrix product by scalar
 	return return_matrix;
 
 	
 }
-//Operador Multiplicacao por escalar
-Matrix operator * (Matrix &matrix1, double escalar)
+//Operator Multiplication by scalar
+Matrix operator * (const Matrix &matrix1, double escalar)
 {
-	//Retorna a função anterior, ja que esta operação e comutativa
+	//Returns the funï¿½ï¿½o previous, already that this operaï¿½ï¿½o and comutativa
 	return escalar*matrix1;
 }
-//Verificação de igualdade
-bool operator == (Matrix &matrix1, Matrix &matrix2)
+//Verificaï¿½ï¿½o of equality
+bool operator == (const Matrix &matrix1, const Matrix &matrix2)
 {
-	//Verifica a igualdade de dimensões
+	//Checks the equality of dimensï¿½es
 	if((matrix1.getLines() != matrix2.getLines()) || (matrix1.getColumns() != matrix2.getColumns()))
 		return false;
 	else
 	{
-		//Varre a matriz e verifica a igualdade de elementos
+		//Varre the matrix and checks the equality of elements
 		for(long i=0; i < matrix1.m_alloced_lines; i++)
 				if(matrix1.m_matrix[i] != matrix2.m_matrix[i]) return false;
-		//Matrizes iguais
+		//Matrices iguais
 		return true;
 	}
 }
-//Verificação de inegualdade
-bool operator != (Matrix &matrix1, Matrix &matrix2)
+//Verificaï¿½ï¿½o of inequality
+bool operator != (const Matrix &matrix1, const Matrix &matrix2)
 {
 	return !(matrix1 == matrix2);
 }
-//Operador de Atribuição	
+//Operator of Atribuiï¿½ï¿½o	
 Matrix &Matrix::operator = (Matrix const &matrix1)
 {
-	//Verifica dimensões da matriz - se necessario, faz re-alocação
+	//Checks dimensï¿½es of the matrix - if necessary, does re-alocaï¿½ï¿½o
 	if (matrix1.m_alloced_lines != m_alloced_lines)
 	{
 		this->flush();
@@ -300,23 +328,23 @@ Matrix &Matrix::operator = (Matrix const &matrix1)
 		m_lines = matrix1.m_lines;
 		m_columns = matrix1.m_columns;
 		m_lines_deleted = matrix1.m_lines_deleted;
-		//Inicializa a matriz como null e tenta aloca-la
+		//Initializes the matrix as null and tries allocates-it
 		m_matrix = NULL;
 		if(!alloc())
 			printf("Nao foi possivel alocar matriz! \n");
 	}
-	//Copia os valores na nova matriz
+	//Copies the values in the new matrix
 	for(long i=0; i < matrix1.m_alloced_lines; i++)
 		m_matrix[i] = matrix1.m_matrix[i];
 
-	//Retorna esta matriz
+	//Returns this matrix
 	return *this;
 }
-//Retorno do valor na posição especificada
+//Return of the value in the posiï¿½ï¿½o specified
 double &Matrix::operator() (long line, long column)
 {
 	
-	//Verifica se a posição e valida
+	//Checks if the posiï¿½ï¿½o and valida
 	if(line > this->m_lines-1 || column > this->m_columns-1 || line < 0 || column < 0)
 	{
 		printf("Not valid position accessed in matrix! (%d,%d)\n",line,column);
@@ -325,13 +353,24 @@ double &Matrix::operator() (long line, long column)
 		return ret[0];
 	}
 	else
-		//Retorna o valor na posição desejada
+		//Returns the value in the posiï¿½ï¿½o desired
 		return this->m_matrix[line + column*m_lines];
 }
-//Operador produto escalar entre dois vetores
-double dot(Matrix &matrix1, Matrix &matrix2)
+//Return of the value in the posiï¿½ï¿½o specified (version const)
+double Matrix::operator() (long line, long column) const
 {
-	//Verificação da possibilidade do produto
+	if(line > this->m_lines-1 || column > this->m_columns-1 || line < 0 || column < 0)
+	{
+		printf("Not valid position accessed in matrix! (%d,%d)\n",line,column);
+		return 0;
+	}
+	else
+		return this->m_matrix[line + column*m_lines];
+}
+//Operator dot product between two vectors
+double dot(const Matrix &matrix1, const Matrix &matrix2)
+{
+	//Verificaï¿½ï¿½o of the possibility of the product
 	if (matrix1.m_lines != matrix2.m_lines)
 	{
 		printf("Nao e possivel calcular o produto escalar. Dimensoes incompativeis!");
@@ -345,10 +384,10 @@ double dot(Matrix &matrix1, Matrix &matrix2)
 		return return_value;
 	}
 }
-//Operador produto vetorial entre dois vetores
-Matrix cross(Matrix &matrix1, Matrix &matrix2)
+//Operator cross product between two vectors
+Matrix cross(const Matrix &matrix1, const Matrix &matrix2)
 {
-	//Verificação da possibilidade do produto
+	//Verificaï¿½ï¿½o of the possibility of the product
 	if (matrix1.m_columns != 1 || matrix2.m_columns != 1 || matrix1.m_lines != 3 || matrix2.m_lines != 3)
 	{
 		printf("Nao e possivel calcular o produto vetorial. Dimensoes incompativeis!");
@@ -363,10 +402,10 @@ Matrix cross(Matrix &matrix1, Matrix &matrix2)
 		return return_m;
 	}
 }
-//Inverte uma matriz 2x2
-Matrix invert2x2(Matrix &matrix)
+//Inverte a matrix 2x2
+Matrix invert2x2(const Matrix &matrix)
 {
-	//Verificação da possibilidade de inversão
+	//Verificaï¿½ï¿½o of the possibility of inversï¿½o
 	if (matrix.getColumns() != 2 || matrix.getLines() != 2)
 	{
 		printf("Nao e possivel inverter a matriz. Dimensoes incompativeis!");
@@ -389,10 +428,10 @@ Matrix invert2x2(Matrix &matrix)
 	}
 }
 
-//Inverte uma matriz 3x3
-Matrix invert3x3(Matrix &matrix)
+//Inverte a matrix 3x3
+Matrix invert3x3(const Matrix &matrix)
 {
-	//Verificação da possibilidade de inversão
+	//Verificaï¿½ï¿½o of the possibility of inversï¿½o
 	if (matrix.getColumns() != 3 || matrix.getLines() != 3)
 	{
 		printf("Nao e possivel inverter a matriz. Dimensoes incompativeis!");
@@ -420,8 +459,8 @@ Matrix invert3x3(Matrix &matrix)
 	}
 }
 
-//Inverte uma matriz 4x4
-Matrix invert4x4(Matrix &matrix)
+//Inverte a matrix 4x4
+Matrix invert4x4(const Matrix &matrix)
 {
 	double v[198];
 	Matrix invM(4, 4);
@@ -492,8 +531,8 @@ Matrix invert4x4(Matrix &matrix)
 	return invM;
 }
 
-//Inverte uma matriz 5x5
-Matrix invert5x5(Matrix &matrix)
+//Inverte a matrix 5x5
+Matrix invert5x5(const Matrix &matrix)
 {
 	double v[481];
 	Matrix invM(5, 5);
@@ -789,8 +828,8 @@ Matrix invert5x5(Matrix &matrix)
 }
 
 
-//Inverte uma matriz de 0x0 a 6x6 escolhendo automaticamente a função correta
-Matrix invert(Matrix &matrix)
+//Inverte a matrix of 0x0 the 6x6 escolhendo automaticamente the funï¿½ï¿½o correct
+Matrix invert(const Matrix &matrix)
 {
 	if (matrix.getLines() == 2 && matrix.getColumns() == 2)
 		return invert2x2(matrix);
@@ -838,10 +877,10 @@ Matrix invert(Matrix &matrix)
 	}
 }
 
-//Inverte uma matriz 6x6
-Matrix invert6x6(Matrix &matrix)
+//Inverte a matrix 6x6
+Matrix invert6x6(const Matrix &matrix)
 {
-	//Verificação da possibilidade de inversão
+	//Verificaï¿½ï¿½o of the possibility of inversï¿½o
 	if (matrix.getColumns() != 6 || matrix.getLines() != 6)
 	{
 		printf("Uncompatible dimensions for input matrix.\n");
@@ -1789,10 +1828,10 @@ Matrix invert6x6(Matrix &matrix)
 	}
 }
 
-//Operador produto tensorial entre dois vetores
-Matrix dyadic(Matrix &matrix1, Matrix &matrix2)
+//Operator tensor (dyadic) product between two vectors
+Matrix dyadic(const Matrix &matrix1, const Matrix &matrix2)
 {
-	//Verificação da possibilidade do produto
+	//Verificaï¿½ï¿½o of the possibility of the product
 	if (matrix1.m_columns != 1 || matrix2.m_columns != 1 || matrix1.m_lines != matrix2.m_lines)
 	{
 		printf("Nao e possivel calcular o produto tensorial. Dimensoes incompativeis!");
@@ -1808,10 +1847,10 @@ Matrix dyadic(Matrix &matrix1, Matrix &matrix2)
 		return return_m;
 	}
 }
-//Operador skew de um vetor
-Matrix skew(Matrix &matrix1)
+//Operator skew of a vector
+Matrix skew(const Matrix &matrix1)
 {
-	//Verificação da possibilidade do produto
+	//Verificaï¿½ï¿½o of the possibility of the product
 	if (matrix1.m_columns != 1 || matrix1.m_lines != 3)
 	{
 		printf("Nao e possivel calcular o produto escalar. Dimensoes incompativeis!");
@@ -1830,10 +1869,10 @@ Matrix skew(Matrix &matrix1)
 		return return_m;
 	}
 }
-//Operador axial de um vetor
-Matrix axial(Matrix &matrix1)
+//Operator axial of a vector
+Matrix axial(const Matrix &matrix1)
 {
-	//Verificação da possibilidade do produto
+	//Verificaï¿½ï¿½o of the possibility of the product
 	if (matrix1.m_columns != 3 || matrix1.m_lines != 3)
 	{
 		printf("Nao e possivel calcular o produto escalar. Dimensoes incompativeis!");
@@ -1848,8 +1887,8 @@ Matrix axial(Matrix &matrix1)
 		return return_m;
 	}
 }
-//Resolve o sistema linear da forma Ax=b (utilizando fatoração LU)
-Matrix fullsystem(Matrix &A, Matrix &b, int *flag_error)
+//Solves the linear system of the way Ax=b (utilizando fatoraï¿½ï¿½o LU)
+Matrix fullsystem(Matrix &A, Matrix b, int *flag_error)
 {
 	int n = A.getLines();
 	int nrhs = 1;
@@ -1859,13 +1898,13 @@ Matrix fullsystem(Matrix &A, Matrix &b, int *flag_error)
 	int *ipiv;
 	char param = 'N';
 	ipiv = new int[b.getLines()];
-	//Faz fatoracao LU
+	//Does LU factorization
 	dgetrf(&n,&n,A.getMatrix(),&lda,ipiv,&info);
 	if (info != 0)
 		*flag_error = 1;
 	else
 		*flag_error = 0;
-	//Resolve o sistema linear
+	//Solves the linear system
 	dgetrs(&param,&n,&nrhs,A.getMatrix(),&lda,ipiv,b.m_matrix,&ldb,&info);
 	if (info != 0)
 		*flag_error = 1;
@@ -1878,14 +1917,14 @@ Matrix fullsystem(Matrix &A, Matrix &b, int *flag_error)
 	delete []ipiv;
 	return b;
 }
-//Retorna o endereço de uma matriz
-double* Matrix::getMatrix()
+//Returns the endereï¿½o of a matrix
+double* Matrix::getMatrix() const
 {
 	return m_matrix;
 }
 
-//Retorna a norma de um vetor
-double norm(Matrix &matrix1)
+//Returns the norm of a vector
+double norm(const Matrix &matrix1)
 {
 	if (matrix1.getColumns() != 1)
 		printf("Dimensao nao consistente para calculo da norma");
@@ -1917,14 +1956,14 @@ double norm(Matrix &matrix1)
 					matrix1(5, 0)*matrix1(5, 0));
 				return return_value;
 			}
-			//printf("Norma infinito\n");
+			//printf("Norm infinito\n");
 			double max = 0;
 			for (int i=0; i< matrix1.getLines(); i++)
 			{
-				//Detecção de NaN
+				//Detecï¿½ï¿½o of NaN
 				if (matrix1(i, 0) == matrix1(i, 0))
 				{
-					//Detecção de infinito
+					//Detecï¿½ï¿½o of infinito
 					if (matrix1(i, 0) >= 1e300 || matrix1(i, 0) <= -1e300)
 						return 1e100;
 					else
@@ -1939,7 +1978,7 @@ double norm(Matrix &matrix1)
 					
 				}
 				else
-					return 1e100;//valor muito alto, pois detectou NaN
+					return 1e100;//value very alto, since detectou NaN
 				
 			}
 			return max;
@@ -1955,8 +1994,8 @@ double norm(Matrix &matrix1)
 	return 0;
 }
 
-//Retorna a norma de um vetor considerando somente os 4 primeiros graus de liberdade
-double norm4(Matrix &matrix1)
+//Returns the norm of a vector considerando only the 4 primeiros degrees of freedom
+double norm4(const Matrix &matrix1)
 {
 	if (matrix1.getLines() < 4)
 		printf("Error. Function norm4\n");
@@ -1971,8 +2010,8 @@ double norm4(Matrix &matrix1)
 	return 0;
 }
 
-//Retorna a transposta de uma matriz
-Matrix transp(Matrix &matrix1)
+//Returns the transposta of a matrix
+Matrix transp(const Matrix &matrix1)
 {
 	Matrix answer(matrix1.getColumns(),matrix1.getLines());
 	for (int j=0;j<matrix1.getColumns();j++)
@@ -1984,7 +2023,7 @@ Matrix transp(Matrix &matrix1)
 	}
 	return answer;
 }
-//Zera a matriz
+//Zeroes the matrix
 void zeros(Matrix* matrix1)
 {
 	for (int j=0;j<matrix1->getColumns();j++)
@@ -1995,10 +2034,10 @@ void zeros(Matrix* matrix1)
 		}
 	}
 }
-//Função para o calculo do operador V (para montagem da matriz de rigidez geometrica)
+//Funï¿½ï¿½o for the calculation of the operator V (for assembly of the geometric stiffness matrix)
 Matrix V(Matrix x, Matrix t,double alpha_escalar)
 {
-	//Funçoes da pag. 50 e afins da tese M. Lourdes
+	//Funï¿½oes of the pag. 50 and afins of the tese M. Lourdes
 	double h = 4.0/(4.0+alpha_escalar*alpha_escalar);
 	double h2 = 0.5*h;
 	double h3=0;
@@ -2010,10 +2049,10 @@ Matrix V(Matrix x, Matrix t,double alpha_escalar)
 		 h2*skew(t)-h3*(2*skew(x)*skew(t) - skew(t)*skew(x));
 	return return_m;
 }
-//Função para o calculo do operador d_V (para montagem da matriz de rigidez geometrica)
+//Funï¿½ï¿½o for the calculation of the operator d_V (for assembly of the geometric stiffness matrix)
 Matrix d_V(Matrix x,Matrix d_x, Matrix t,double alpha_escalar)
 {
-	//Funçoes da pag. 50 e afins da tese M. Lourdes
+	//Funï¿½oes of the pag. 50 and afins of the tese M. Lourdes
 	double h = 4.0/(4.0+alpha_escalar*alpha_escalar);
 	double h3=0;
 	double h4=-0.25*h*h;
@@ -2031,7 +2070,7 @@ Matrix d_V(Matrix x,Matrix d_x, Matrix t,double alpha_escalar)
 	return return_m;
 }
 
-//Retorna um vetor com esses componentes a,b,c
+//Returns a vector with these components the,b,c
 Matrix List(double a, double b, double c)
 {
 	Matrix return_m(3);
@@ -2069,32 +2108,32 @@ double Cos(double a)
 {
 	return cos(a);
 }
-//Operador Soma
-double operator + (double a, Matrix &matrix2)
+//Operator Sum
+double operator + (double a, const Matrix &matrix2)
 {
-	//Verifica se as dimensões das matrizes são compativeis
+	//Checks if the dimensï¿½es of the matrices sï¿½o compatible
 	if ((matrix2.getLines() != 1) || (matrix2.getColumns() != 1))
 	{
-		//Mensagem de erro - Dimensões Incompativeis
-		printf("Matriz deve ser unitaria! Função operator+(double,matrix)\n");
-		//Retorna vazio
+		//Mensagem of error - Dimensï¿½es Incompatible
+		printf("Matriz deve ser unitaria! Funï¿½ï¿½o operator+(double,matrix)\n");
+		//Returns vazio
 		return NULL;
 	}
-	//Caso as dimensões sejam compativeis
+	//Case the dimensï¿½es be compatible
 	else
 	{
 		return matrix2(0,0)+a;
 	}
 }
 
-//Produto de matrizes
-Matrix Dot(Matrix &matrix1, Matrix &matrix2)
+//Product of matrices
+Matrix Dot(const Matrix &matrix1, const Matrix &matrix2)
 {
 	return matrix1*matrix2;
 }
 
-//Retorna um ponteiro de duas dimensões que aponta para a matriz  
-void Matrix::MatrixToPtr(double** ptr, int order)
+//Returns a pointer of two dimensï¿½es that points for the matrix  
+void Matrix::MatrixToPtr(double** ptr, int order) const
 {
 	for (int i = 0; i < order; i++)
 	{
@@ -2104,7 +2143,7 @@ void Matrix::MatrixToPtr(double** ptr, int order)
 	
 }
 
-//Salva na matrix o conteudo do double**
+//Saves in the matrix the content of the double**
 void Matrix::PtrToMatrix(double** ptr, int order)
 {
 	for (int i = 0; i < order; i++)
@@ -2115,7 +2154,7 @@ void Matrix::PtrToMatrix(double** ptr, int order)
 	
 }
 
-//Salva na matrix o conteudo do double**
+//Saves in the matrix the content of the double**
 void Matrix::PtrToMatrix(double** ptr, int lines, int columns)
 {
 	for (int i = 0; i < lines; i++)
@@ -2127,11 +2166,11 @@ void Matrix::PtrToMatrix(double** ptr, int lines, int columns)
 
 
 
-//Calcula os autovalores e autovetores de uma matriz simetrica
-//A: matriz de entrada
-//P: matriz de saida - possui autovetores organizados em colunas
-//D: matrix de saida - possui autovalores na diagonal principal
-//abstol: tolerancia
+//Calculates the eigenvalues and eigenvectors of a matrix simetrica
+//A: matrix of input
+//P: matrix of output - has eigenvectors organizados in columns
+//D: matrix of output - has eigenvalues in the diagonal main
+//abstol: tolerance
 int fulleigen1(Matrix &A, Matrix &P, Matrix &D, double abstol)
 {
 	char jobz = 'V';
@@ -2141,7 +2180,7 @@ int fulleigen1(Matrix &A, Matrix &P, Matrix &D, double abstol)
 	int il, iu;
 	int m;
 	int n = A.getLines();
-	Matrix d(n);//onde autovalores são salvos
+	Matrix d(n);//where eigenvalues sï¿½o saved
 	int lwork = n * 26;
 	Matrix work(lwork);
 	int liwork = 10 * n;
@@ -2159,29 +2198,29 @@ int fulleigen1(Matrix &A, Matrix &P, Matrix &D, double abstol)
 		printf("Error in function 'fulleigen'!\n");
 		return info;
 	}
-	//Valores para retorno:
+	//Values for return:
 	for (int i = 0; i < n; i++)
 	{
-		//Autovalores:
+		//Eigenvalues:
 		D(i, i) = d(i, 0);
-		//Autovetores ja estão salvos na matriz P
+		//Eigenvectors already estï¿½o saved in the matrix P
 	}
-	P = z;//Copia valores da saida (autovetores) para a matriz P - organizados em colunas
+	P = z;//Copies values of the output (eigenvectors) for the matrix P - organizados in columns
 
 	delete []isuppz;
 	delete []iwork;
 	return info;
 }
-//Calcula os autovalores e autovetores de uma matriz simetrica
-//A: matriz de entrada
-//P: matriz de saida - possui autovetores organizados em colunas
-//d: matrix de saida - possui autovalores na diagonal principal
+//Calculates the eigenvalues and eigenvectors of a matrix simetrica
+//A: matrix of input
+//P: matrix of output - has eigenvectors organizados in columns
+//d: matrix of output - has eigenvalues in the diagonal main
 int fulleigen2(Matrix &A, Matrix &P, Matrix &D)
 {
 	char jobz = 'V';
 	char uplo = 'U';
 	int n = A.getLines();
-	Matrix d(n);//onde autovalores são salvos
+	Matrix d(n);//where eigenvalues sï¿½o saved
 	int lwork = n * 3;
 	Matrix work(lwork);
 	int info;
@@ -2192,17 +2231,17 @@ int fulleigen2(Matrix &A, Matrix &P, Matrix &D)
 		printf("Error in function 'eigen'!\n");
 		return info;
 	}
-	//Valores para retorno:
+	//Values for return:
 	for (int i = 0; i < n; i++)
 	{
-		//Autovalores:
+		//Eigenvalues:
 		D(i, i) = d(i, 0);
-		//Autovetores ja estão salvos na matriz P
+		//Eigenvectors already estï¿½o saved in the matrix P
 	}
-	P = A;//Copia valores da saida (autovetores) para a matriz P - organizados em colunas
+	P = A;//Copies values of the output (eigenvectors) for the matrix P - organizados in columns
 	return info;
 }
-//Calcula o menor autovalor de uma matriz simetrica
+//Calculates the smallest eigenvalue of a matrix simetrica
 double mineigen(Matrix &A, Matrix &P, Matrix &D, double abstol)
 {
 	char jobz = 'N';
@@ -2213,7 +2252,7 @@ double mineigen(Matrix &A, Matrix &P, Matrix &D, double abstol)
 	int iu = 1;
 	int m;
 	int n = A.getLines();
-	Matrix d(n);//onde autovalores são salvos
+	Matrix d(n);//where eigenvalues sï¿½o saved
 	int lwork = n * 26;
 	Matrix work(lwork);
 	int liwork = 10 * n;
@@ -2230,27 +2269,27 @@ double mineigen(Matrix &A, Matrix &P, Matrix &D, double abstol)
 	{
 		printf("Error in function 'fulleigen'!\n");
 	}
-	//Valores para retorno:
+	//Values for return:
 	for (int i = 0; i < n; i++)
 	{
-		//Autovalores:
+		//Eigenvalues:
 		D(i, i) = d(i, 0);
-		//Autovetores ja estão salvos na matriz P
+		//Eigenvectors already estï¿½o saved in the matrix P
 	}
-	P = z;//Copia valores da saida (autovetores) para a matriz P - organizados em colunas
+	P = z;//Copies values of the output (eigenvectors) for the matrix P - organizados in columns
 
 	delete[]isuppz;
 	delete[]iwork;
 	return d(0,0);
 }
 
-//Calcula redução a primeira volta [-pi,pi]
+//Calculates reduï¿½ï¿½o the first turn [-pi,pi]
 double ArcReduction(double arc)
 {
 	double cosarc = cos(arc);
 	double sinarc = sin(arc);
 
-	//Evita erros numericos
+	//Avoids errors numericos
 	if (cosarc > 1.0)
 		cosarc = 1.0;
 	if (cosarc < -1.0)
@@ -2274,13 +2313,13 @@ double ArcReduction(double arc)
 	return ret_arc;
 }
 
-//Calcula redução a primeira volta [0,2*pi]
+//Calculates reduï¿½ï¿½o the first turn [0,2*pi]
 double ArcReduction2p(double arc)
 {
 	double cosarc = cos(arc);
 	double sinarc = sin(arc);
 
-	//Evita erros numericos
+	//Avoids errors numericos
 	if (cosarc > 1.0)
 		cosarc = 1.0;
 	if (cosarc < -1.0)
